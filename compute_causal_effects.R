@@ -37,6 +37,7 @@ compute_causal_effect <- function (source, sink) {
   sink.id <- match(sink, node.list)
   
   ida.res <- pcalg::ida(source.id, sink.id, cov.mat, gn, verbose=TRUE)
+  return(ida.res)
 }
 
 df.graph %>% 
