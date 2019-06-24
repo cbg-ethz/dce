@@ -14,8 +14,6 @@
 # ---
 
 # +
-import os
-
 import numpy as np
 import pandas as pd
 import networkx as nx
@@ -66,14 +64,25 @@ plt.legend(loc='best')
 # # Plot graph
 
 @np.vectorize
-def symlog(x):
-    if x > 0:
-        return np.log(x)
-    elif x < 0:
-        return -np.log(abs(x))
+def symlog(x, linthres=1):
+    """Pos./Neg. logarithm with linear scale close to 0."""
+    if x > linthres:
+        return np.log10(x)
+    elif x < -linthres:
+        return -np.log10(abs(x))
     else:
-        return 0
+        return x
 
+
+# +
+tmp = max(abs(symlog(df_graph['causal.effect']).min()), abs(symlog(df_graph['causal.effect']).max()))
+custom_vmin = -tmp
+custom_vmax = tmp
+
+(custom_vmin, custom_vmax)
+
+
+# -
 
 def plot(graph, ax):
     # layout
@@ -81,33 +90,34 @@ def plot(graph, ax):
 
     # visualization
     nx.draw_networkx_nodes(graph, pos, ax=ax)
-    nx.draw_networkx_labels(
-        graph, pos, ax=ax,
-        labels={n: n for n in graph.nodes()})
+#     nx.draw_networkx_labels(
+#         graph, pos, ax=ax,
+#         labels={n: n for n in graph.nodes()})
 
     nx.draw_networkx_edges(
         graph, pos, ax=ax,
         edge_color=symlog([e[-1]['causal.effect'] for e in graph.edges(data=True)]),
-        edge_cmap=plt.get_cmap('bwr'))
+        edge_cmap=plt.get_cmap('bwr_r'),
+        edge_vmin=custom_vmin, edge_vmax=custom_vmax)
     nx.draw_networkx_edge_labels(
         graph, pos, ax=ax,
-        edge_labels={e[:2]: '{:.2}'.format(e[-1]['causal.effect'])
+        edge_labels={e[:2]: '{:.2f}'.format(round(e[-1]['causal.effect'], 2))
                      for e in graph.edges(data=True)})
 
 
 # +
-plt.figure(figsize=(24,12))
+plt.figure(figsize=(25,15))
 plt.gcf().set_facecolor('w')
 
 ax = plt.subplot(121)
 ax.set_axis_off()
 plot(graph_normal, ax)
-plt.title('Normal')
+ax.set_title('Normal')
 
 ax = plt.subplot(122)
 ax.set_axis_off()
 plot(graph_tumor, ax)
-plt.title('Tumor')
+ax.set_title('Tumor')
 
 plt.tight_layout()
 plt.savefig(snakemake.output['img_file'])
