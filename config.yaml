@@ -1,0 +1,4 @@
+projects: [TCGA-BLCA]
+pathways: [hsa05219]
+
+working_directory: pipeline_run

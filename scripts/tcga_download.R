@@ -10,7 +10,8 @@ df.projects %>%
   head(1)
 
 # prepare query
-project.list <- c("TCGA-BLCA")
+# TODO: download all project in single job
+project.list <- c(str_match(snakemake@output[["data_dir"]], ".*/(.*)/.*")[[2]])
 
 query <- TCGAbiolinks::GDCquery(
   project=project.list,
@@ -23,20 +24,19 @@ df.query <- query$results[[1]]
 table(df.query$tissue.definition)
 
 # download data
-download_path <- 'tcga_data'
-TCGAbiolinks::GDCdownload(query, directory=paste(c(download_path, "GDCdata"), collapse="/"))
+TCGAbiolinks::GDCdownload(query, directory=snakemake@output[["data_dir"]])
 
 # convert to expression matrix
 mat <- TCGAbiolinks::GDCprepare(
-  query, 
-  directory=paste(c(download_path, "GDCdata"), collapse="/"), 
+  query,
+  directory=snakemake@output[["data_dir"]],
   summarizedExperiment=FALSE)
 
 # save to file
 df.query %>%
   dplyr::select(cases, tissue.definition) %>%
-  write_csv(paste(c(download_path, "case_classifications.csv"), collapse="/"))
+  write_csv(snakemake@output[["classification_file"]])
 
 mat %>%
   dplyr::rename(gene=X1) %>%
-  write_csv(paste(c(download_path, "expression_matrix.csv"), collapse="/"))
+  write_csv(snakemake@output[["expression_file"]])
