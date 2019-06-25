@@ -3,6 +3,10 @@ library(tidyverse)
 library(TCGAbiolinks)
 library(KEGGgraph)
 library(igraph)
+library(Rgraphviz) # for `layoutGraph`
+
+library(cowplot)
+library(ggplotify)
 
 library(AnnotationDbi)
 library(org.Hs.eg.db)
@@ -15,6 +19,16 @@ if (!file.exists(fname)) {
 }
 
 gR <- KEGGgraph::parseKGML2Graph(fname, genesOnly=TRUE, expandGenes=TRUE)
+
+# plot pathway
+p1 <- ggplotify::as.ggplot(~KEGGgraph::plotKEGGgraph(gR))
+p2 <- ggplotify::as.ggplot(~KEGGgraph::KEGGgraphLegend())
+
+p <- cowplot::plot_grid(p1, p2)
+cowplot::save_plot(
+  snakemake@output[["plot_file"]], p,
+  ncol=2, nrow=1,
+  base_height=8, base_width=10)
 
 # relabel nodes
 convert.id <- function (x.kegg) {

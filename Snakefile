@@ -17,7 +17,8 @@ rule download_TCGA:
 rule download_KEGG:
     output:
         xml_file = 'kegg_data/{pathway}.xml',
-        network_file = 'kegg_data/{pathway}.edgelist.csv'
+        network_file = 'kegg_data/{pathway}.edgelist.csv',
+        plot_file = 'kegg_data/{pathway}.pdf'
     script:
         'scripts/kegg_download.R'
 
