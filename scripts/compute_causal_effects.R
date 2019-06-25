@@ -37,6 +37,7 @@ compute <- function (tissue.type) {
   # pcalg::isValidGraph(gn)
 
   # estimate causal effects
+  # TODO: actually use `dce` package
   compute_causal_effect <- function (source, sink) {
     source.id <- match(source, node.list)
     sink.id <- match(sink, node.list)
