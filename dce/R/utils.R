@@ -52,10 +52,11 @@ rmvDAG_2 <- function (n, dag, errDist = c("normal", "cauchy", "t4", "mix",
 
 ## put noise (here resample) on the weights of a dag (for tumor samples):
 
-newWeights <- function(g, lB = -1, uB = 1) {
+newWeights <- function(g, lB = -1, uB = 1, tp = 0.5) {
     n <- length(g@nodes)
     w <- g@edgeData@data
-    for (i in 1:length(w)) {
+    arediff <- sample(seq_len(length(w)), floor(tp*length(w)))
+    for (i in arediff) {
         w[[i]]$weight <- runif(1, lB, uB)
     }
     g@edgeData@data <- w

@@ -46,5 +46,9 @@ compute_differential_causal_effects <- function(
   ce.ctrl <- compute_causal_effects(graph.ctrl, df.expr.ctrl)
   ce.mut <- compute_causal_effects(graph.mut, df.expr.mut)
 
-  as.matrix(ce.ctrl - ce.mut)
+  res <- t(as.matrix(ce.ctrl - ce.mut))
+  class("res") <- "dce"
+}
+
+plot.dce <- function(x, ...) {
 }
