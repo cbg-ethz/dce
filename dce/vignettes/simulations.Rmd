@@ -55,7 +55,7 @@ library(assertthat)
 
 ## Parameters
 
-First we set specfici parameters to define the scope and noise levels
+First we set specific parameters to define the scope and noise levels
 of the simulated data.
 
 ```{r, fig.height=6, fig.width=10, fig.cap=fig.cap0}
@@ -75,10 +75,9 @@ truepos <- 0.5
 ## Simulation loop
 
 We create an array to store the accuracy results for our method, the
-random baseline and competing methods bla and blabla. {\color{red}see
-github project}
+random baseline and competing methods bla and blabla. \textcolor{red}{see github project}
 
-After simulation we use a boxpülot to compare the accuracies of the
+After simulation we use a boxplot to compare the accuracies of the
 respective methods.
 
 ```{r, fig.height=6, fig.width=10, fig.cap=fig.cap0}
