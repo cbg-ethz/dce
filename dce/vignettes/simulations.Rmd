@@ -35,12 +35,13 @@ BiocManager::install("dce")
 ```
 Load the package with the library function.
 ```{r}
-library(dce)
+# library(dce)
 
 ## can be removed once dce is installed
-
-source("CausalPathways/dce/R/utils.R")
-source("CausalPathways/dce/R/main.R")
+cur.wd <- knitr::current_input(dir=TRUE)
+parts <- strsplit(cur.wd, "/")[[1]]
+package.dir <- paste(parts[1:(length(parts)-2)], collapse="/")
+devtools::load_all(package.dir)
 
 library(tidyverse)
 library(purrr)
