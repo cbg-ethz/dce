@@ -67,10 +67,10 @@ lB <- -1
 uB <- 1
 ## others:
 n <- 10 # number of nodes
-m <- 100 # number of samples
+m <- 1000 # number of samples
 sd <- 0.1 # standard deviation for variable distributions
 ## the fraction of true pos (causal effects that are differential)
-truepos <- 0.5
+truepos <- 0.9
 ```
 
 ## Simulation loop
@@ -89,7 +89,7 @@ acc <- array(0, c(100,4,5),
                                          "metric4", "metric5")))
 
 for (i in 1:runs) {
-
+    cat(i)
     #for (j in 1:1000) {
      #   set.seed(j)
   normal <- randomDAG(n, p, lB, uB)
@@ -136,7 +136,7 @@ for (i in 1:runs) {
 
   ## random base line:
   dcer <- dcet
-  dcer[which(dcet != 0)] <- runif(sum(dcet != 0), lB, uB)
+  dcer[which(dcei != 0)] <- runif(sum(dcei != 0), lB, uB)
   dcerb <- dcer
   dcerb[which(abs(dcer) > 0.5)] <- 1
   dcerb[which(abs(dcer) <= 0.5)] <- 0
@@ -159,11 +159,11 @@ for (i in 1:runs) {
 }
 
 par(mfrow=c(2,3))
-boxplot(acc[, 1:4, 1], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,1,0), rgb(0,0,1)))
-boxplot(acc[, 1:4, 2], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,1,0), rgb(0,0,1)))
-boxplot(acc[, 1:4, 3], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,1,0), rgb(0,0,1)))
-boxplot(acc[, 1:4, 4], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,1,0), rgb(0,0,1)))
-boxplot(acc[, 1:4, 5], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,1,0), rgb(0,0,1)))
+boxplot(acc[seq_len(runs), 1:4, 1], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,1,0), rgb(0,0,1)))
+boxplot(acc[seq_len(runs), 1:4, 2], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,1,0), rgb(0,0,1)))
+boxplot(acc[seq_len(runs), 1:4, 3], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,1,0), rgb(0,0,1)))
+boxplot(acc[seq_len(runs), 1:4, 4], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,1,0), rgb(0,0,1)))
+boxplot(acc[seq_len(runs), 1:4, 5], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,1,0), rgb(0,0,1)))
 ```
 
 ## Visualisation of one simulations run
@@ -171,9 +171,9 @@ boxplot(acc[, 1:4, 5], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,1,0), rgb(0,0
 
 ```{r, fig.height=6, fig.width=10, fig.cap=fig.cap0}
 ## set.seed(1) # awesome result
-efreq <- round(dcet[which(dcet != 0)], 2)
+efreq <- round(dcet[which(dcei != 0)], 2)
 efreqi <- round(dcei[which(dcei != 0)], 2)
-efreqr <- round(dcer[which(dcer != 0)], 2)
+efreqr <- round(dcer[which(dcei != 0)], 2)
 ## even though the gtn does not allow for dce > 2, noise can pass that limit (just for the colors)
 efreq[abs(efreq) > 2] <- 2
 efreqi[abs(efreqi) > 2] <- 2
