@@ -5,9 +5,9 @@ library(dce)
 
 
 # read data
-df.expr <- read_csv("tcga_data/expression_matrix.csv")
-df.classi <- read_csv("tcga_data/case_classifications.csv")
-df.graph <- read_csv("kegg_data/hsa05219.edgelist.csv")
+df.expr <- read_csv(snakemake@input[["expression_file"]])
+df.classi <- read_csv(snakemake@input[["classification_file"]])
+df.graph <- read_csv(snakemake@input[["network_file"]])
 
 g <- tidygraph::as_tbl_graph(df.graph)
 ig <- igraph::as.igraph(g)
@@ -78,8 +78,10 @@ df.comp <- data.frame(
   within.normal=unlist(df.within.normal),
   within.tumor=unlist(df.within.tumor)
 ) %>%
-  gather("type", "dce")
+  gather("type", "dce") %>%
+  write_csv(snakemake@output[["data_file"]])
 
 ggplot(df.comp, aes(x=type, y=abs(dce))) +
   geom_violin() +
   scale_y_log10()
+ggsave(snakemake@output[["plot_file"]])

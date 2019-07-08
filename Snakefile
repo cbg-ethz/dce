@@ -4,7 +4,8 @@ workdir: config['working_directory']
 
 rule all:
     input:
-        expand('images/pathway_comparison_{project}_{pathway}.pdf', project=config['projects'], pathway=config['pathways'])
+        expand('images/pathway_comparison_{project}_{pathway}.pdf', project=config['projects'], pathway=config['pathways']),
+        expand('images/group_relations_{project}_{pathway}.pdf', project=config['projects'], pathway=config['pathways'])
 
 rule download_TCGA:
     output:
@@ -41,3 +42,14 @@ rule visualize:
         img_file = 'images/pathway_comparison_{project}_{pathway}.pdf'
     script:
         'scripts/visualization.py'
+
+rule investigate_group_relations:
+    input:
+        expression_file = 'tcga_data/{project}/expression_matrix.csv',
+        classification_file = 'tcga_data/{project}/case_classifications.csv',
+        network_file = 'kegg_data/{pathway}.edgelist.csv'
+    output:
+        data_file = 'results/group_relations/{project}/{pathway}/dce_data.csv',
+        plot_file = 'images/group_relations_{project}_{pathway}.pdf'
+    script:
+        'scripts/group_relations.R'

@@ -1,6 +1,5 @@
 library(tidyverse)
 
-library(TCGAbiolinks)
 library(KEGGgraph)
 library(igraph)
 library(Rgraphviz) # for `layoutGraph`
