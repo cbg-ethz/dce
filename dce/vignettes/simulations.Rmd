@@ -17,7 +17,7 @@ vignette: >
 
 # Installation and loading
 ```{r global_options, include=FALSE}
-knitr::opts_chunk$set(message=FALSE, out.width="125%", fig.align="center",
+knitr::opts_chunk$set(message=FALSE, out.width="\\textwidth", fig.align="center",
                       strip.white=TRUE, warning=FALSE, tidy=TRUE,
                       #out.extra='style="display:block; margin:auto;"',
                       fig.height = 4, fig.width = 8, error=FALSE)
@@ -29,8 +29,9 @@ palette(paltmp)
 ```
 Install the package with the bioconductor manager package.
 ```{r, eval=FALSE}
-if (!requireNamespace("BiocManager", quietly = TRUE))
+if (!requireNamespace("BiocManager", quietly = TRUE)) {
     install.packages("BiocManager")
+}
 BiocManager::install("dce")
 ```
 Load the package with the library function.
@@ -159,11 +160,11 @@ for (i in 1:runs) {
 }
 
 par(mfrow=c(2,3))
-boxplot(acc[seq_len(runs), 1:4, 1], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,1,0), rgb(0,0,1)))
-boxplot(acc[seq_len(runs), 1:4, 2], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,1,0), rgb(0,0,1)))
-boxplot(acc[seq_len(runs), 1:4, 3], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,1,0), rgb(0,0,1)))
-boxplot(acc[seq_len(runs), 1:4, 4], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,1,0), rgb(0,0,1)))
-boxplot(acc[seq_len(runs), 1:4, 5], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,1,0), rgb(0,0,1)))
+boxplot(acc[seq_len(runs), 1:4, 1], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,1,0), rgb(0,0,1)), main="Correlation")
+boxplot(acc[seq_len(runs), 1:4, 2], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,1,0), rgb(0,0,1)), main="Distance")
+boxplot(acc[seq_len(runs), 1:4, 3], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,1,0), rgb(0,0,1)), main="Sensitivity")
+boxplot(acc[seq_len(runs), 1:4, 4], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,1,0), rgb(0,0,1)), main="Specificity")
+boxplot(acc[seq_len(runs), 1:4, 5], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,1,0), rgb(0,0,1)), main="Accuracy")
 ```
 
 ## Visualisation of one simulations run
