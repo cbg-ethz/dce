@@ -61,17 +61,19 @@ First we set specific parameters to define the scope and noise levels
 of the simulated data.
 
 ```{r, fig.height=6, fig.width=10, fig.cap=fig.cap0}
-runs <- 100 # simulation runs
+runs <- 10 # simulation runs
 p <- 0.2 # edge prob of the dag
 ## uniform limits:
 lB <- -1
 uB <- 1
 ## others:
 n <- 10 # number of nodes
-m <- 1000 # number of samples
-sd <- 0.1 # standard deviation for variable distributions
+m <- c(1000,100) # number of samples tumor and normal
+sd <- 1 # standard deviation for variable distributions
 ## the fraction of true pos (causal effects that are differential)
 truepos <- 0.9
+bsruns <- 100
+sspct <- 0.5
 ```
 
 ## Simulation loop
@@ -83,79 +85,133 @@ After simulation we use a boxplot to compare the accuracies of the
 respective methods.
 
 ```{r, fig.height=6, fig.width=10, fig.cap=fig.cap0}
-acc <- array(0, c(100,4,5),
+acc <- array(0, c(runs,4,5),
              dimnames = list(runs = paste0("run_", seq_len(runs)),
                              methods = c("dce", "random", "method3", "method3"),
                              metrics = c("correlation", "distance", "metric3",
                                          "metric4", "metric5")))
+gtnfeat <- array(0, c(runs, 6, 2),
+                 dimnames = list(runs = paste0("run_", seq_len(runs)),
+                                 features = c("avg children", "avg parents",
+                                              "childless", "parentless",
+                                              "maxpathlength", "density"),
+                                 gtn = c("originial", "transitive closure")))
+
 
 for (i in 1:runs) {
     cat(i)
-    #for (j in 1:1000) {
-     #   set.seed(j)
-  normal <- randomDAG(n, p, lB, uB)
-  dn <- rmvDAG_2(m, normal, normpars = c(0,sd))
+                                        #for (j in 1:1000) {
+                                        #   set.seed(j)
+    normal <- randomDAG(n, p, lB, uB)
+    dn <- rmvDAG_2(m[1], normal, normpars = c(0,sd))
+    
+    tumor <- newWeights(normal, lB, uB, truepos) # resample edge weights
+    dt <- rmvDAG_2(m[2], tumor, normpars = c(0,sd))
 
-  tumor <- newWeights(normal, lB, uB, truepos) # resample edge weights
-  dt <- rmvDAG_2(m, tumor, normpars = c(0,sd))
+    cn <- trueCov(normal)
+    ct <- trueCov(tumor)
 
-  cn <- trueCov(normal)
-  ct <- trueCov(tumor)
+    gm <- as(normal, "matrix")
+    gm[which(gm != 0)] <- 1
 
-  gm <- as(normal, "matrix")
-  gm[which(gm != 0)] <- 1
+    gtc <- mnem:::mytc(gm) # transitively closed graph as matrix
 
-  gtc <- mnem:::mytc(gm) # transitively closed graph as matrix
-  diag(gtc) <- 0
+    ## save features of gtn, which might correlate with accuracy:
+    gtr <- nem::transitive.reduction(gm)
+    gtnfeat[i, 1, 1] <- mean(apply(gm, 1, sum))
+    gtnfeat[i, 2, 1] <- mean(apply(gm, 2, sum))
+    gtnfeat[i, 3, 1] <- sum(apply(gm, 1, sum) == 0)
+    gtnfeat[i, 4, 1] <- sum(apply(gm, 2, sum) == 0)
+    diag(gtr) <- 1
+    for (j in seq_len(n)) {
+        gtr <- gtr%*%gtr
+        gtr[which(gtr > 1)] <- 1
+        if (all(gtr == gtc)) { break() }
+    }
+    gtnfeat[i, 5, 1] <- j+1
+    gtnfeat[i, 6, 1] <- sum(gm)
+    
+    diag(gtc) <- 0
 
-  ## ground truth:
-  dcet <- (cn - ct)*gtc # gtn for differential causal effects
-  dcetb <- dcet
-  dcetb[which(abs(dcet) > 0.5)] <- 1
-  dcetb[which(abs(dcet) <= 0.5)] <- 0
+    gtnfeat[i, 1, 2] <- mean(apply(gtc, 1, sum))
+    gtnfeat[i, 2, 2] <- mean(apply(gtc, 2, sum))
+    gtnfeat[i, 3, 2] <- sum(apply(gtc, 1, sum) == 0)
+    gtnfeat[i, 4, 2] <- sum(apply(gtc, 2, sum) == 0)
+    gtnfeat[i, 5, 2] <- j+1
+    gtnfeat[i, 6, 2] <- sum(gtc)
+    
+    ## ground truth:
+    dcet <- (cn - ct)*gtc # gtn for differential causal effects
+    dcetb <- dcet
+    dcetb[which(abs(dcet) > 0.5)] <- 1
+    dcetb[which(abs(dcet) <= 0.5)] <- 0
 
-  ## our inference:
-  dcei <- compute_differential_causal_effects(
-      normal, dn,
-      tumor, dt
-  )
+    ## our inference:
   
-  dcei <- dcei*gtc
-  dceib <- dcei
-  dceib[which(abs(dcei) > 0.5)] <- 1
-  dceib[which(abs(dcei) <= 0.5)] <- 0
+    ## bootstrap/subsampling:
+    dcei <- compute_differential_causal_effects(
+        normal, dn,
+        tumor, dt,
+        bootstrap = TRUE, runs = bsruns, replace = 0, frac = 0.5
+    )
+    
+    dcei <- dceibs <- dcei*gtc
+    dceib <- dcei
+    dceib[which(abs(dcei) > 0.5)] <- 1
+    dceib[which(abs(dcei) <= 0.5)] <- 0
 
-  acc[i, 1, 1] <- cor(as.vector(dcet), as.vector(dcei), method = "s")
-  acc[i, 1, 2] <- dist(rbind(as.vector(dcet), as.vector(dcei)))
-  tp <- sum(dcetb == 1 & dceib == 1)
-  fp <- sum(dcetb == 0 & dceib == 1)
-  fn <- sum(dcetb == 1 & dceib == 0)
-  tn <- sum(dcetb == 0 & dceib == 0)
-  acc[i, 1, 3] <- tp/(tp+fn)
-  acc[i, 1, 4] <- tn/(tn+fp)
-  acc[i, 1, 5] <- (tp+tn)/(tn+fp+tp+fn)
+    acc[i, 3, 1] <- cor(as.vector(dcet), as.vector(dcei), method = "s")
+    acc[i, 3, 2] <- dist(rbind(as.vector(dcet), as.vector(dcei)))
+    tp <- sum(dcetb == 1 & dceib == 1)
+    fp <- sum(dcetb == 0 & dceib == 1)
+    fn <- sum(dcetb == 1 & dceib == 0)
+    tn <- sum(dcetb == 0 & dceib == 0)
+    acc[i, 3, 3] <- tp/(tp+fn)
+    acc[i, 3, 4] <- tn/(tn+fp)
+    acc[i, 3, 5] <- (tp+tn)/(tn+fp+tp+fn)
+    
+    ## normal
+    dcei <- compute_differential_causal_effects(
+        normal, dn,
+        tumor, dt
+    )
+    
+    dcei <- dcei*gtc
+    dceib <- dcei
+    dceib[which(abs(dcei) > 0.5)] <- 1
+    dceib[which(abs(dcei) <= 0.5)] <- 0
 
-  ## random base line:
-  dcer <- dcet
-  dcer[which(dcei != 0)] <- runif(sum(dcei != 0), lB, uB)
-  dcerb <- dcer
-  dcerb[which(abs(dcer) > 0.5)] <- 1
-  dcerb[which(abs(dcer) <= 0.5)] <- 0
+    acc[i, 1, 1] <- cor(as.vector(dcet), as.vector(dcei), method = "s")
+    acc[i, 1, 2] <- dist(rbind(as.vector(dcet), as.vector(dcei)))
+    tp <- sum(dcetb == 1 & dceib == 1)
+    fp <- sum(dcetb == 0 & dceib == 1)
+    fn <- sum(dcetb == 1 & dceib == 0)
+    tn <- sum(dcetb == 0 & dceib == 0)
+    acc[i, 1, 3] <- tp/(tp+fn)
+    acc[i, 1, 4] <- tn/(tn+fp)
+    acc[i, 1, 5] <- (tp+tn)/(tn+fp+tp+fn)
+    
+    ## random base line:
+    dcer <- dcet
+    dcer[which(dcei != 0)] <- runif(sum(dcei != 0), lB, uB)
+    dcerb <- dcer
+    dcerb[which(abs(dcer) > 0.5)] <- 1
+    dcerb[which(abs(dcer) <= 0.5)] <- 0
 
-  acc[i, 2, 1] <- cor(as.vector(dcet), as.vector(dcer), method = "s")
-  acc[i, 2, 2] <- dist(rbind(as.vector(dcet), as.vector(dcer)))
-  tp <- sum(dcetb == 1 & dcerb == 1)
-  fp <- sum(dcetb == 0 & dcerb == 1)
-  fn <- sum(dcetb == 1 & dcerb == 0)
-  tn <- sum(dcetb == 0 & dcerb == 0)
-  acc[i, 2, 3] <- tp/(tp+fn)
-  acc[i, 2, 4] <- tn/(tn+fp)
-  acc[i, 2, 5] <- (tp+tn)/(tn+fp+tp+fn)
+    acc[i, 2, 1] <- cor(as.vector(dcet), as.vector(dcer), method = "s")
+    acc[i, 2, 2] <- dist(rbind(as.vector(dcet), as.vector(dcer)))
+    tp <- sum(dcetb == 1 & dcerb == 1)
+    fp <- sum(dcetb == 0 & dcerb == 1)
+    fn <- sum(dcetb == 1 & dcerb == 0)
+    tn <- sum(dcetb == 0 & dcerb == 0)
+    acc[i, 2, 3] <- tp/(tp+fn)
+    acc[i, 2, 4] <- tn/(tn+fp)
+    acc[i, 2, 5] <- (tp+tn)/(tn+fp+tp+fn)
 
-        #if (acc[i, 1, 1] > 0.9) { break() }
-    #}
+                                        #if (acc[i, 1, 1] < 0.1) { break() }
+                                        #}
 
-  ## acc[i, , ]
+    ## acc[i, , ]
 
 }
 
@@ -167,25 +223,40 @@ boxplot(acc[seq_len(runs), 1:4, 4], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,
 boxplot(acc[seq_len(runs), 1:4, 5], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,1,0), rgb(0,0,1)), main="Accuracy")
 ```
 
+## Show correlation of features to accuracy
+
+```{r}
+
+par(mfrow=c(2,6))
+for (i in seq_len(2)) {
+    for (j in seq_len(6)) {
+        plot(gtnfeat[, j, i], acc[, 1, 1], xlab = dimnames(gtnfeat)[[2]][j], ylab = "accuracy", main = dimnames(gtnfeat)[[3]][i])
+    }
+}
+
+```
+
 ## Visualisation of one simulations run
 
 
 ```{r, fig.height=6, fig.width=10, fig.cap=fig.cap0}
-## set.seed(1) # awesome result
-efreq <- round(dcet[which(dcei != 0)], 2)
-efreqi <- round(dcei[which(dcei != 0)], 2)
-efreqr <- round(dcer[which(dcei != 0)], 2)
+efreq <- round(t(dcet)[which(t(dcei) != 0)], 2)
+efreqi <- round(t(dcei)[which(t(dcei) != 0)], 2)
+efreqibs <- round(t(dceibs)[which(t(dceibs) != 0)], 2)
+efreqr <- round(t(dcer)[which(t(dcei) != 0)], 2)
 ## even though the gtn does not allow for dce > 2, noise can pass that limit (just for the colors)
 efreq[abs(efreq) > 2] <- 2
 efreqi[abs(efreqi) > 2] <- 2
+efreqibs[abs(efreqibs) > 2] <- 2
 efreqr[abs(efreqr) > 2] <- 2
 
-par(mfrow=c(1,3))
+par(mfrow=c(2,2))
 dnf <- mnem:::adj2dnf(gtc)
 dnf <- dnf[grep("=", dnf)] # this preprocessing will be implemented in plotDnf (bug)
-mnem::plotDnf(dnf, labels = efreq, edgecol = rgb(abs(efreq)/2,0,(2-abs(efreq))/2))
-mnem::plotDnf(dnf, labels = efreqi, edgecol = rgb(abs(efreqi)/2,0,(2-abs(efreqi))/2))
-mnem::plotDnf(dnf, labels = efreqr, edgecol = rgb(abs(efreqr)/2,0,(2-abs(efreqr))/2))
+mnem::plotDnf(dnf, labels = efreq, edgecol = rgb(abs(efreq)/2,0,(2-abs(efreq))/2), main = "ground truth")
+mnem::plotDnf(dnf, labels = efreqr, edgecol = rgb(abs(efreqr)/2,0,(2-abs(efreqr))/2), main = "random guess")
+mnem::plotDnf(dnf, labels = efreqi, edgecol = rgb(abs(efreqi)/2,0,(2-abs(efreqi))/2), main = "full data")
+mnem::plotDnf(dnf, labels = efreqibs, edgecol = rgb(abs(efreqibs)/2,0,(2-abs(efreqibs))/2), main = "data sampling")
 ```
 
 # Session information
