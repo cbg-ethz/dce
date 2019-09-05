@@ -132,6 +132,15 @@ compute_differential_causal_effects <- function(graph.ctrl, df.expr.ctrl,
 #' @export
 #' @examples
 plot.dce <- function(x, dec=3, ...) {
+    if(is.null(colnames(x))) {
+        colnames(x) <- rownames(x) <- seq_len(ncol(x))
+    }
+    adj <- x
+    adj[which(adj != 0)] <- 1
+    adj <- mnem:::mytc(adj)
+    diag(adj) <- 0
+    dnf <- mnem:::adj2dnf(adj)
+    dnf <- dnf[grep("=", dnf)]
     efreq <- efreqscale <- round(t(x)[which(t(x) != 0)], dec)
     efreqscale[abs(efreqscale) > 2] <- 2
     mnem::plotDnf(dnf, labels = efreq,

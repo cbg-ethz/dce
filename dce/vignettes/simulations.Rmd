@@ -68,12 +68,11 @@ lB <- -1
 uB <- 1
 ## others:
 n <- 10 # number of nodes
-m <- c(100,100) # number of samples tumor and normal
-sd <- 0.1 # standard deviation for variable distributions
+m <- c(1000,100) # number of samples tumor and normal
+sd <- 10 # standard deviation for variable distributions
 ## the fraction of true pos (causal effects that are differential)
 truepos <- 0.9
 bsruns <- 100
-sspct <- 0.5
 ```
 
 ## Simulation loop
@@ -157,12 +156,12 @@ for (i in 1:runs) {
         strap = 1
     )
     
-    dcei <- dceibs <- dcei*gtc
     dceib <- dcei
     dceib[which(abs(dcei) > 0.5)] <- 1
     dceib[which(abs(dcei) <= 0.5)] <- 0
 
-    acc[i, 6, 1] <- cor(as.vector(dcet), as.vector(dcei), method = "s")
+    coridx <- which(dcet != 0 & dcei != 0)
+    acc[i, 6, 1] <- cor(as.vector(dcet[coridx]), as.vector(dcei[coridx]), method = "s")
     acc[i, 6, 2] <- dist(rbind(as.vector(dcet), as.vector(dcei)))
     tp <- sum(dcetb == 1 & dceib == 1)
     fp <- sum(dcetb == 0 & dceib == 1)
@@ -184,7 +183,8 @@ for (i in 1:runs) {
     dceib[which(abs(dcei) > 0.5)] <- 1
     dceib[which(abs(dcei) <= 0.5)] <- 0
 
-    acc[i, 3, 1] <- cor(as.vector(dcet), as.vector(dcei), method = "s")
+    coridx <- which(dcet != 0 & dcei != 0)
+    acc[i, 3, 1] <- cor(as.vector(dcet[coridx]), as.vector(dcei[coridx]), method = "s")
     acc[i, 3, 2] <- dist(rbind(as.vector(dcet), as.vector(dcei)))
     tp <- sum(dcetb == 1 & dceib == 1)
     fp <- sum(dcetb == 0 & dceib == 1)
@@ -201,12 +201,12 @@ for (i in 1:runs) {
         bootstrap = TRUE, runs = bsruns, replace = 1, frac = 1
     )
     
-    dcei <- dceibs <- dcei*gtc
     dceib <- dcei
     dceib[which(abs(dcei) > 0.5)] <- 1
     dceib[which(abs(dcei) <= 0.5)] <- 0
 
-    acc[i, 4, 1] <- cor(as.vector(dcet), as.vector(dcei), method = "s")
+    coridx <- which(dcet != 0 & dcei != 0)
+    acc[i, 4, 1] <- cor(as.vector(dcet[coridx]), as.vector(dcei[coridx]), method = "s")
     acc[i, 4, 2] <- dist(rbind(as.vector(dcet), as.vector(dcei)))
     tp <- sum(dcetb == 1 & dceib == 1)
     fp <- sum(dcetb == 0 & dceib == 1)
@@ -222,12 +222,12 @@ for (i in 1:runs) {
         tumor, dt
     )
     
-    dcei <- dceibs <- dcei*gtc
     dceib <- dcei
     dceib[which(abs(dcei) > 0.5)] <- 1
     dceib[which(abs(dcei) <= 0.5)] <- 0
 
-    acc[i, 5, 1] <- cor(as.vector(dcet), as.vector(dcei), method = "s")
+    coridx <- which(dcet != 0 & dcei != 0)
+    acc[i, 5, 1] <- cor(as.vector(dcet[coridx]), as.vector(dcei[coridx]), method = "s")
     acc[i, 5, 2] <- dist(rbind(as.vector(dcet), as.vector(dcei)))
     tp <- sum(dcetb == 1 & dceib == 1)
     fp <- sum(dcetb == 0 & dceib == 1)
@@ -248,7 +248,8 @@ for (i in 1:runs) {
     dceib[which(abs(dcei) > 0.5)] <- 1
     dceib[which(abs(dcei) <= 0.5)] <- 0
 
-    acc[i, 1, 1] <- cor(as.vector(dcet), as.vector(dcei), method = "s")
+    coridx <- which(dcet != 0 & dcei != 0)
+    acc[i, 1, 1] <- cor(as.vector(dcet[coridx]), as.vector(dcei[coridx]), method = "s")
     acc[i, 1, 2] <- dist(rbind(as.vector(dcet), as.vector(dcei)))
     tp <- sum(dcetb == 1 & dceib == 1)
     fp <- sum(dcetb == 0 & dceib == 1)
@@ -265,7 +266,8 @@ for (i in 1:runs) {
     dcerb[which(abs(dcer) > 0.5)] <- 1
     dcerb[which(abs(dcer) <= 0.5)] <- 0
 
-    acc[i, 2, 1] <- cor(as.vector(dcet), as.vector(dcer), method = "s")
+    coridx <- which(dcet != 0 & dcer != 0)
+    acc[i, 2, 1] <- cor(as.vector(dcet[coridx]), as.vector(dcer[coridx]), method = "s")
     acc[i, 2, 2] <- dist(rbind(as.vector(dcet), as.vector(dcer)))
     tp <- sum(dcetb == 1 & dcerb == 1)
     fp <- sum(dcetb == 0 & dcerb == 1)
@@ -308,23 +310,12 @@ for (i in seq_len(2)) {
 
 
 ```{r, fig.height=6, fig.width=10, fig.cap=fig.cap0}
-efreq <- round(t(dcet)[which(t(dcei) != 0)], 2)
-efreqi <- round(t(dcei)[which(t(dcei) != 0)], 2)
-efreqibs <- round(t(dceibs)[which(t(dceibs) != 0)], 2)
-efreqr <- round(t(dcer)[which(t(dcei) != 0)], 2)
-## even though the gtn does not allow for dce > 2, noise can pass that limit (just for the colors)
-efreq[abs(efreq) > 2] <- 2
-efreqi[abs(efreqi) > 2] <- 2
-efreqibs[abs(efreqibs) > 2] <- 2
-efreqr[abs(efreqr) > 2] <- 2
-
 par(mfrow=c(2,2))
-dnf <- mnem:::adj2dnf(gtc)
-dnf <- dnf[grep("=", dnf)] # this preprocessing will be implemented in plotDnf (bug)
-mnem::plotDnf(dnf, labels = efreq, edgecol = rgb(abs(efreq)/2,0,(2-abs(efreq))/2), main = "ground truth")
-mnem::plotDnf(dnf, labels = efreqr, edgecol = rgb(abs(efreqr)/2,0,(2-abs(efreqr))/2), main = "random guess")
-mnem::plotDnf(dnf, labels = efreqi, edgecol = rgb(abs(efreqi)/2,0,(2-abs(efreqi))/2), main = "full data")
-mnem::plotDnf(dnf, labels = efreqibs, edgecol = rgb(abs(efreqibs)/2,0,(2-abs(efreqibs))/2), main = "data sampling")
+class(dcet) <- class(dcer) <- "dce"
+plot(dcet)
+plot(dcer)
+plot(dcei)
+plot(dceibs)
 ```
 
 # Session information
