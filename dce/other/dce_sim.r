@@ -1,90 +1,31 @@
----
-title: "Simulations: Differential causal effects for pathway enrichment \n
-Simulations of differential causal effects between two groups."
-author: "Kim Jablonski, Martin Pirkl"
-date: "`r Sys.Date()`"
-graphics: yes
-output: BiocStyle::pdf_document
-vignette: >
-    %\VignetteIndexEntry{dce}
-    %\VignetteEngine{knitr::rmarkdown}
-    %\VignetteEncoding{UTF-8}
----
-
-# Introduction
-
-
-
-# Installation and loading
-```{r global_options, include=FALSE}
-knitr::opts_chunk$set(message=FALSE, out.width="\\textwidth", fig.align="center",
-                      strip.white=TRUE, warning=FALSE, tidy=TRUE,
-                      #out.extra='style="display:block; margin:auto;"',
-                      fig.height = 4, fig.width = 8, error=FALSE)
-fig.cap0 <- "Figure caption 1."
-paltmp <- palette()
-paltmp[3] <- "blue"
-paltmp[4] <- "brown"
-palette(paltmp)
-```
-Install the package with the bioconductor manager package.
-```{r, eval=FALSE}
-if (!requireNamespace("BiocManager", quietly = TRUE)) {
-    install.packages("BiocManager")
-}
-BiocManager::install("dce")
-```
-Load the package with the library function.
-```{r}
-# library(dce)
-
-## can be removed once dce is installed
-cur.wd <- knitr::current_input(dir=TRUE)
-parts <- strsplit(cur.wd, "/")[[1]]
-package.dir <- paste(parts[1:(length(parts)-2)], collapse="/")
-devtools::load_all(package.dir)
+source("dce/main.R")
+source("dce/utils.R")
 
 library(tidyverse)
 library(purrr)
-
 library(graph)
 library(pcalg)
 library(assertthat)
 
-```
+m <- numeric(2)
+n <- as.numeric(commandArgs(TRUE)[1])
+m[1] <- as.numeric(commandArgs(TRUE)[2])
+m[2] <- as.numeric(commandArgs(TRUE)[3])
+sd <- as.numeric(commandArgs(TRUE)[4])
 
-# Simulations
-
-## Parameters
-
-First we set specific parameters to define the scope and noise levels
-of the simulated data.
-
-```{r, fig.height=6, fig.width=10, fig.cap=fig.cap0}
-runs <- 10 # simulation runs
+runs <- 100 # simulation runs
 p <- 0.2 # edge prob of the dag
 ## uniform limits:
 lB <- -1
 uB <- 1
 ## others:
-n <- 10 # number of nodes
-m <- c(100,100) # number of samples tumor and normal
-sd <- 0.1 # standard deviation for variable distributions
+#n <- 10 # number of nodes
+#m <- c(100,100) # number of samples tumor and normal
+#sd <- 0.1 # standard deviation for variable distributions
 ## the fraction of true pos (causal effects that are differential)
 truepos <- 0.9
 bsruns <- 100
-sspct <- 0.5
-```
 
-## Simulation loop
-
-We create an array to store the accuracy results for our method, the
-random baseline and competing methods bla and blabla. \textcolor{red}{see github project}
-
-After simulation we use a boxplot to compare the accuracies of the
-respective methods.
-
-```{r, fig.height=6, fig.width=10, fig.cap=fig.cap0}
 acc <- array(0, c(runs,6,5),
              dimnames = list(runs = paste0("run_", seq_len(runs)),
                              methods = c("dce", "random", "bootstrap",
@@ -105,7 +46,7 @@ for (i in 1:runs) {
                                         #   set.seed(j)
     normal <- randomDAG(n, p, lB, uB)
     dn <- rmvDAG_2(m[2], normal, normpars = c(0,sd))
-    
+
     tumor <- newWeights(normal, lB, uB, truepos) # resample edge weights
     dt <- rmvDAG_2(m[1], tumor, normpars = c(0,sd))
 
@@ -131,7 +72,7 @@ for (i in 1:runs) {
     }
     gtnfeat[i, 5, 1] <- j+1
     gtnfeat[i, 6, 1] <- sum(gm)
-    
+
     diag(gtc) <- 0
 
     gtnfeat[i, 1, 2] <- mean(apply(gtc, 1, sum))
@@ -140,7 +81,7 @@ for (i in 1:runs) {
     gtnfeat[i, 4, 2] <- sum(apply(gtc, 2, sum) == 0)
     gtnfeat[i, 5, 2] <- j+1
     gtnfeat[i, 6, 2] <- sum(gtc)
-    
+
     ## ground truth:
     dcet <- (cn - ct)*gtc # gtn for differential causal effects
     dcetb <- dcet
@@ -148,7 +89,7 @@ for (i in 1:runs) {
     dcetb[which(abs(dcet) <= 0.5)] <- 0
 
     ## our inference:
-  
+
     ## bootstrap/subsample2:
     dcei <- compute_differential_causal_effects(
         normal, dn,
@@ -156,7 +97,7 @@ for (i in 1:runs) {
         bootstrap = TRUE, runs = bsruns, replace = 0, frac = 0.5,
         strap = 1
     )
-    
+
     dcei <- dceibs <- dcei*gtc
     dceib <- dcei
     dceib[which(abs(dcei) > 0.5)] <- 1
@@ -171,14 +112,14 @@ for (i in 1:runs) {
     acc[i, 6, 3] <- tp/(tp+fn)
     acc[i, 6, 4] <- tn/(tn+fp)
     acc[i, 6, 5] <- (tp+tn)/(tn+fp+tp+fn)
-    
+
     ## bootstrap:
     dcei <- compute_differential_causal_effects(
         normal, dn,
         tumor, dt,
         bootstrap = TRUE, runs = bsruns, replace = 0, frac = 0.5
     )
-    
+
     dcei <- dceibs <- dcei*gtc
     dceib <- dcei
     dceib[which(abs(dcei) > 0.5)] <- 1
@@ -193,14 +134,14 @@ for (i in 1:runs) {
     acc[i, 3, 3] <- tp/(tp+fn)
     acc[i, 3, 4] <- tn/(tn+fp)
     acc[i, 3, 5] <- (tp+tn)/(tn+fp+tp+fn)
-    
+
     ## subsampling:
     dcei <- compute_differential_causal_effects(
         normal, dn,
         tumor, dt,
         bootstrap = TRUE, runs = bsruns, replace = 1, frac = 1
     )
-    
+
     dcei <- dceibs <- dcei*gtc
     dceib <- dcei
     dceib[which(abs(dcei) > 0.5)] <- 1
@@ -215,13 +156,13 @@ for (i in 1:runs) {
     acc[i, 4, 3] <- tp/(tp+fn)
     acc[i, 4, 4] <- tn/(tn+fp)
     acc[i, 4, 5] <- (tp+tn)/(tn+fp+tp+fn)
-    
+
     ## full linear model:
     dcei <- fulllin(
         normal, dn,
         tumor, dt
     )
-    
+
     dcei <- dceibs <- dcei*gtc
     dceib <- dcei
     dceib[which(abs(dcei) > 0.5)] <- 1
@@ -236,13 +177,13 @@ for (i in 1:runs) {
     acc[i, 5, 3] <- tp/(tp+fn)
     acc[i, 5, 4] <- tn/(tn+fp)
     acc[i, 5, 5] <- (tp+tn)/(tn+fp+tp+fn)
-    
+
     ## normal
     dcei <- compute_differential_causal_effects(
         normal, dn,
         tumor, dt
     )
-    
+
     dcei <- dcei*gtc
     dceib <- dcei
     dceib[which(abs(dcei) > 0.5)] <- 1
@@ -257,7 +198,7 @@ for (i in 1:runs) {
     acc[i, 1, 3] <- tp/(tp+fn)
     acc[i, 1, 4] <- tn/(tn+fp)
     acc[i, 1, 5] <- (tp+tn)/(tn+fp+tp+fn)
-    
+
     ## random base line:
     dcer <- dcet
     dcer[which(dcei != 0)] <- runif(sum(dcei != 0), lB, uB)
@@ -282,61 +223,46 @@ for (i in 1:runs) {
 
 }
 
+save(acc, gtnfeat, file = paste("dce/dce", n, paste(m, collapse = "_"), sd, ".rda", sep = "_"))
+
+stop()
+
+## euler commands (using local R version):
+
+module load bioconductor/3.6
+
+module load curl/7.49.1
+
+module load gmp/5.1.3
+
+##
+
+ram=1000
+
+rm error.txt
+
+rm output.txt
+
+rm .RData
+
+queue=4
+
+## parameters: n, m[1], m[2], sd
+bsub -M ${ram} -q normal.${queue}h -n 1 -e error.txt -o output.txt -R "rusage[mem=${ram}]" "R/bin/R --silent --no-save --args '10' '1000' '100' '2' < dce_sim.r"
+
+## results:
+
+path <- "~/Mount/Euler/"
+
+n <- 10
+m <- c(100, 100)
+sd <- 0.1
+
+load(paste0(path, paste("dce/dce", n, paste(m, collapse = "_"), sd, ".rda", sep = "_")))
+
 par(mfrow=c(2,3))
 boxplot(acc[seq_len(runs), 1:6, 1], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,1,0), rgb(0,0,1)), main="Correlation")
 boxplot(acc[seq_len(runs), 1:6, 2], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,1,0), rgb(0,0,1)), main="Distance")
 boxplot(acc[seq_len(runs), 1:6, 3], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,1,0), rgb(0,0,1)), main="Sensitivity")
 boxplot(acc[seq_len(runs), 1:6, 4], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,1,0), rgb(0,0,1)), main="Specificity")
 boxplot(acc[seq_len(runs), 1:6, 5], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,1,0), rgb(0,0,1)), main="Accuracy")
-
-```
-
-## Show correlation of features to accuracy
-
-```{r}
-
-par(mfrow=c(2,6))
-for (i in seq_len(2)) {
-    for (j in seq_len(6)) {
-        plot(gtnfeat[, j, i], acc[, 1, 1], xlab = dimnames(gtnfeat)[[2]][j], ylab = "accuracy", main = dimnames(gtnfeat)[[3]][i])
-    }
-}
-
-```
-
-## Visualisation of one simulations run
-
-
-```{r, fig.height=6, fig.width=10, fig.cap=fig.cap0}
-efreq <- round(t(dcet)[which(t(dcei) != 0)], 2)
-efreqi <- round(t(dcei)[which(t(dcei) != 0)], 2)
-efreqibs <- round(t(dceibs)[which(t(dceibs) != 0)], 2)
-efreqr <- round(t(dcer)[which(t(dcei) != 0)], 2)
-## even though the gtn does not allow for dce > 2, noise can pass that limit (just for the colors)
-efreq[abs(efreq) > 2] <- 2
-efreqi[abs(efreqi) > 2] <- 2
-efreqibs[abs(efreqibs) > 2] <- 2
-efreqr[abs(efreqr) > 2] <- 2
-
-par(mfrow=c(2,2))
-dnf <- mnem:::adj2dnf(gtc)
-dnf <- dnf[grep("=", dnf)] # this preprocessing will be implemented in plotDnf (bug)
-mnem::plotDnf(dnf, labels = efreq, edgecol = rgb(abs(efreq)/2,0,(2-abs(efreq))/2), main = "ground truth")
-mnem::plotDnf(dnf, labels = efreqr, edgecol = rgb(abs(efreqr)/2,0,(2-abs(efreqr))/2), main = "random guess")
-mnem::plotDnf(dnf, labels = efreqi, edgecol = rgb(abs(efreqi)/2,0,(2-abs(efreqi))/2), main = "full data")
-mnem::plotDnf(dnf, labels = efreqibs, edgecol = rgb(abs(efreqibs)/2,0,(2-abs(efreqibs))/2), main = "data sampling")
-```
-
-# Session information
-
-```{r}
-sessionInfo()
-```
-
-# References:
-
-Taruttis et al
-
-Matthuis et al
-
-...

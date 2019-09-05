@@ -59,7 +59,7 @@ compute_causal_effects <- function(graph, df.expr) {
 #' or a vector of two for different fractions for control and tumor,
 #' respectively
 #' populations
-#' @author Kim Jablonski
+#' @author Kim Jablonski & Martin Pirkl
 #' @return vector of causal effects
 #' @export
 #' @importFrom purrr map_dfc
@@ -67,47 +67,118 @@ compute_causal_effects <- function(graph, df.expr) {
 #' @importFrom assertthat are_equal
 #' @import graph tidyverse
 #' @examples
-#' dag <- matrix(c(0,0,0,1,0,0,0,1,0), 3)
-#' colnames(dag) <- rownames(dag) <- seq_len(3)
-#' dag <- as(dag, "graphNEL")
-#' d <- matrix(rnorm(100*3), 100)
-#' colnames(d) <- seq_len(3)
-#' compute_causal_effects(dag, d)
 compute_differential_causal_effects <- function(graph.ctrl, df.expr.ctrl,
                                                 graph.mut, df.expr.mut,
                                                 bootstrap = FALSE, runs = 100,
-                                                replace = FALSE, frac = 0.5) {
+                                                replace = FALSE, frac = 0.5,
+                                                strap = 0) {
     if (bootstrap) {
         if (length(frac) == 1) { frac <- c(frac, frac) }
-        ce.ctrl <- ce.mut <- 0
-        for (b in seq_len(runs)) {
-            df.expr.ctrl.sub <- df.expr.ctrl[
-                sample(seq_len(nrow(df.expr.ctrl)),
-                       ceiling(nrow(df.expr.ctrl)*frac[1]),
-                       replace = replace), ]
-            df.expr.mut.sub <- df.expr.mut[
-                sample(seq_len(nrow(df.expr.mut)),
-                       ceiling(nrow(df.expr.mut)*frac[2]),
-                       replace = replace), ]
-            ce.ctrl <- ce.ctrl+compute_causal_effects(graph.ctrl,
-                                                      df.expr.ctrl.sub)
-            ce.mut <- ce.mut+compute_causal_effects(graph.mut,
-                                                    df.expr.mut.sub)
+        if (strap) {
+            dces <- 0
+            for (b in seq_len(runs)) {
+                df.expr.ctrl.sub <- df.expr.ctrl[
+                    sample(seq_len(nrow(df.expr.ctrl)),
+                           ceiling(nrow(df.expr.ctrl)*frac[1]),
+                           replace = replace), ]
+                df.expr.mut.sub <- df.expr.mut[
+                    sample(seq_len(nrow(df.expr.mut)),
+                           ceiling(nrow(df.expr.mut)*frac[2]),
+                           replace = replace), ]
+                dces <- dces +
+                    compute_differential_causal_effects(graph.ctrl,
+                                                        df.expr.ctrl.sub,
+                                                        graph.mut,
+                                                        df.expr.mut.sub)
+            }
+            res <- dces/runs
+        } else {
+            ce.ctrl <- ce.mut <- 0
+            for (b in seq_len(runs)) {
+                df.expr.ctrl.sub <- df.expr.ctrl[
+                    sample(seq_len(nrow(df.expr.ctrl)),
+                           ceiling(nrow(df.expr.ctrl)*frac[1]),
+                           replace = replace), ]
+                df.expr.mut.sub <- df.expr.mut[
+                    sample(seq_len(nrow(df.expr.mut)),
+                           ceiling(nrow(df.expr.mut)*frac[2]),
+                           replace = replace), ]
+                ce.ctrl <- ce.ctrl+compute_causal_effects(graph.ctrl,
+                                                          df.expr.ctrl.sub)
+                ce.mut <- ce.mut+compute_causal_effects(graph.mut,
+                                                        df.expr.mut.sub)
+            }
+            ce.ctrl <- ce.ctrl/runs
+            ce.mut <- ce.mut/runs
+            res <- t(as.matrix(ce.ctrl - ce.mut))
         }
-        ce.ctrl <- ce.ctrl/runs
-        ce.mut <- ce.mut/runs
     } else {
         ce.ctrl <- compute_causal_effects(graph.ctrl, df.expr.ctrl)
         ce.mut <- compute_causal_effects(graph.mut, df.expr.mut)
+        res <- t(as.matrix(ce.ctrl - ce.mut))
     }
-    res <- t(as.matrix(ce.ctrl - ce.mut))
     class(res) <- "dce"
     return(res)
 }
-
+#' Plot dce object
+#'
+#' This function takes a differential causal effects object and plots
+#' the dag with the dces
+#' @param x dce object
+#' @param dec rounding to dec decimals
+#' @author Martin Pirkl
+#' @method plot dce
+#' @return plot of dag and dces
+#' @export
+#' @examples
 plot.dce <- function(x, dec=3, ...) {
     efreq <- efreqscale <- round(t(x)[which(t(x) != 0)], dec)
     efreqscale[abs(efreqscale) > 2] <- 2
     mnem::plotDnf(dnf, labels = efreq,
                   edgecol = rgb(abs(efreqscale)/2,0,(2-abs(efreqscale))/2))
 }
+fulllin <- function(g1, d1, g2, d2, ...) {
+    mat1 <- as(g1, "matrix")
+    mat2 <- as(g2, "matrix")
+    mat1[which(mat1 != 0)] <- 1
+    mat2[which(mat2 != 0)] <- 1
+    dagtc <- mnem:::mytc(mat1)
+    df <- rbind(d1, d2)
+    colnames(df) <- paste0("X", seq_len(ncol(df)))
+    df <- as.data.frame(cbind(df,
+                              N = c(rep(1, nrow(d1)),
+                                    rep(0, nrow(d2))),
+                              T = c(rep(0, nrow(d1)),
+                                    rep(1, nrow(d2)))))
+    dce <- mat1*0
+    for (i in seq_len(n)) {
+        for (j in seq_len(n)) {
+            if (dagtc[i, j] == 1 & i != j) {
+                Z <- pcalg::backdoor(mat1, i, j, type = "dag")
+                Z <- colnames(df)[Z]
+                X <- colnames(df)[i]
+                Y <- colnames(df)[j]
+                if (length(Z) > 0) {
+                    Lfit <- lm(paste0(Y, " ~ ",
+                                      X, "*N - ",
+                                      X, "*T + ",
+                                      Z, "*N - ",
+                                      Z, "*T"
+                                      ),
+                               df)
+                } else {
+                    Lfit <- lm(paste0(Y, " ~ ",
+                                      X, "*N - ",
+                                      X, "*T"
+                                      ),
+                               df)
+                }
+                dce[i, j] <- Lfit$coefficients[3]
+            }
+        }
+    }
+    class(dce) <- "dce"
+    return(dce)
+}
+
+
