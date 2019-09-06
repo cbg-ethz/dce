@@ -84,6 +84,9 @@ for (i in 1:runs) {
 
     ## ground truth:
     dcet <- (cn - ct)*gtc # gtn for differential causal effects
+    dcegtn <- list(dce = dcet, graph = normal, dcefull = dcet)
+    class(dcegtn) <- "dce"
+
     dcetb <- dcet
     dcetb[which(abs(dcet) > 0.5)] <- 1
     dcetb[which(abs(dcet) <= 0.5)] <- 0
@@ -97,13 +100,15 @@ for (i in 1:runs) {
         bootstrap = TRUE, runs = bsruns, replace = 0, frac = 0.5,
         strap = 1
     )
+    dceibs2 <- dcei
 
-    dcei <- dceibs <- dcei*gtc
-    dceib <- dcei
-    dceib[which(abs(dcei) > 0.5)] <- 1
-    dceib[which(abs(dcei) <= 0.5)] <- 0
+    dceib <- dcei$dce
+    dceib[which(abs(dceib) > 0.5)] <- 1
+    dceib[which(abs(dceib) <= 0.5)] <- 0
 
-    acc[i, 6, 1] <- cor(as.vector(dcet), as.vector(dcei), method = "s")
+    dcei <- dcei$dce
+    coridx <- which(dcet != 0 | dcei != 0)
+    acc[i, 6, 1] <- cor(as.vector(dcet[coridx]), as.vector(dcei[coridx]), method = "p")
     acc[i, 6, 2] <- dist(rbind(as.vector(dcet), as.vector(dcei)))
     tp <- sum(dcetb == 1 & dceib == 1)
     fp <- sum(dcetb == 0 & dceib == 1)
@@ -119,13 +124,15 @@ for (i in 1:runs) {
         tumor, dt,
         bootstrap = TRUE, runs = bsruns, replace = 0, frac = 0.5
     )
+    dceibs <- dcei
 
-    dcei <- dceibs <- dcei*gtc
-    dceib <- dcei
-    dceib[which(abs(dcei) > 0.5)] <- 1
-    dceib[which(abs(dcei) <= 0.5)] <- 0
+    dceib <- dcei$dce
+    dceib[which(abs(dceib) > 0.5)] <- 1
+    dceib[which(abs(dceib) <= 0.5)] <- 0
 
-    acc[i, 3, 1] <- cor(as.vector(dcet), as.vector(dcei), method = "s")
+    dcei <- dcei$dce
+    coridx <- which(dcet != 0 | dcei != 0)
+    acc[i, 3, 1] <- cor(as.vector(dcet[coridx]), as.vector(dcei[coridx]), method = "p")
     acc[i, 3, 2] <- dist(rbind(as.vector(dcet), as.vector(dcei)))
     tp <- sum(dcetb == 1 & dceib == 1)
     fp <- sum(dcetb == 0 & dceib == 1)
@@ -141,13 +148,15 @@ for (i in 1:runs) {
         tumor, dt,
         bootstrap = TRUE, runs = bsruns, replace = 1, frac = 1
     )
+    dceiss <- dcei
 
-    dcei <- dceibs <- dcei*gtc
-    dceib <- dcei
-    dceib[which(abs(dcei) > 0.5)] <- 1
-    dceib[which(abs(dcei) <= 0.5)] <- 0
+    dceib <- dcei$dce
+    dceib[which(abs(dceib) > 0.5)] <- 1
+    dceib[which(abs(dceib) <= 0.5)] <- 0
 
-    acc[i, 4, 1] <- cor(as.vector(dcet), as.vector(dcei), method = "s")
+    dcei <- dcei$dce
+    coridx <- which(dcet != 0 | dcei != 0)
+    acc[i, 4, 1] <- cor(as.vector(dcet[coridx]), as.vector(dcei[coridx]), method = "p")
     acc[i, 4, 2] <- dist(rbind(as.vector(dcet), as.vector(dcei)))
     tp <- sum(dcetb == 1 & dceib == 1)
     fp <- sum(dcetb == 0 & dceib == 1)
@@ -162,13 +171,15 @@ for (i in 1:runs) {
         normal, dn,
         tumor, dt
     )
+    dceifl <- dcei
 
-    dcei <- dceibs <- dcei*gtc
-    dceib <- dcei
-    dceib[which(abs(dcei) > 0.5)] <- 1
-    dceib[which(abs(dcei) <= 0.5)] <- 0
+    dceib <- dcei$dce
+    dceib[which(abs(dceib) > 0.5)] <- 1
+    dceib[which(abs(dceib) <= 0.5)] <- 0
 
-    acc[i, 5, 1] <- cor(as.vector(dcet), as.vector(dcei), method = "s")
+    dcei <- dcei$dce
+    coridx <- which(dcet != 0 | dcei != 0)
+    acc[i, 5, 1] <- cor(as.vector(dcet[coridx]), as.vector(dcei[coridx]), method = "p")
     acc[i, 5, 2] <- dist(rbind(as.vector(dcet), as.vector(dcei)))
     tp <- sum(dcetb == 1 & dceib == 1)
     fp <- sum(dcetb == 0 & dceib == 1)
@@ -183,13 +194,15 @@ for (i in 1:runs) {
         normal, dn,
         tumor, dt
     )
+    dcein <- dcei
 
-    dcei <- dcei*gtc
-    dceib <- dcei
-    dceib[which(abs(dcei) > 0.5)] <- 1
-    dceib[which(abs(dcei) <= 0.5)] <- 0
+    dceib <- dcei$dce
+    dceib[which(abs(dceib) > 0.5)] <- 1
+    dceib[which(abs(dceib) <= 0.5)] <- 0
 
-    acc[i, 1, 1] <- cor(as.vector(dcet), as.vector(dcei), method = "s")
+    dcei <- dcei$dce
+    coridx <- which(dcet != 0 | dcei != 0)
+    acc[i, 1, 1] <- cor(as.vector(dcet[coridx]), as.vector(dcei[coridx]), method = "p")
     acc[i, 1, 2] <- dist(rbind(as.vector(dcet), as.vector(dcei)))
     tp <- sum(dcetb == 1 & dceib == 1)
     fp <- sum(dcetb == 0 & dceib == 1)
@@ -200,13 +213,19 @@ for (i in 1:runs) {
     acc[i, 1, 5] <- (tp+tn)/(tn+fp+tp+fn)
 
     ## random base line:
-    dcer <- dcet
-    dcer[which(dcei != 0)] <- runif(sum(dcei != 0), lB, uB)
-    dcerb <- dcer
-    dcerb[which(abs(dcer) > 0.5)] <- 1
-    dcerb[which(abs(dcer) <= 0.5)] <- 0
+    dcei <- dcet
+    dcei[which(gtc != 0)] <- runif(sum(gtc != 0), lB, uB)
+    dcer <- list(dce = dcei, graph = as(gtc, "graphNEL"), dcefull = dcei)
+    dceir <- dcer
+    class(dceir) <- "dce"
 
-    acc[i, 2, 1] <- cor(as.vector(dcet), as.vector(dcer), method = "s")
+    dcerb <- dcer$dce
+    dcerb[which(abs(dcerb) > 0.5)] <- 1
+    dcerb[which(abs(dcerb) <= 0.5)] <- 0
+
+    dcer <- dcer$dce
+    coridx <- which(dcet != 0 | dcer != 0)
+    acc[i, 2, 1] <- cor(as.vector(dcet[coridx]), as.vector(dcer[coridx]), method = "p")
     acc[i, 2, 2] <- dist(rbind(as.vector(dcet), as.vector(dcer)))
     tp <- sum(dcetb == 1 & dcerb == 1)
     fp <- sum(dcetb == 0 & dcerb == 1)
@@ -216,7 +235,7 @@ for (i in 1:runs) {
     acc[i, 2, 4] <- tn/(tn+fp)
     acc[i, 2, 5] <- (tp+tn)/(tn+fp+tp+fn)
 
-                                        #if (acc[i, 1, 1] < 0.1) { break() }
+                                        #if (acc[i, 1, 1] > 0.9) { break() }
                                         #}
 
     ## acc[i, , ]
@@ -248,15 +267,15 @@ rm .RData
 queue=4
 
 ## parameters: n, m[1], m[2], sd
-bsub -M ${ram} -q normal.${queue}h -n 1 -e error.txt -o output.txt -R "rusage[mem=${ram}]" "R/bin/R --silent --no-save --args '10' '1000' '100' '2' < dce_sim.r"
+bsub -M ${ram} -q normal.${queue}h -n 1 -e error.txt -o output.txt -R "rusage[mem=${ram}]" "R/bin/R --silent --no-save --args '10' '1000' '100' '1' < dce_sim.r"
 
 ## results:
 
 path <- "~/Mount/Euler/"
 
 n <- 10
-m <- c(100, 100)
-sd <- 0.1
+m <- c(1000, 100)
+sd <- 1
 
 load(paste0(path, paste("dce/dce", n, paste(m, collapse = "_"), sd, ".rda", sep = "_")))
 
@@ -266,3 +285,10 @@ boxplot(acc[seq_len(runs), 1:6, 2], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,
 boxplot(acc[seq_len(runs), 1:6, 3], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,1,0), rgb(0,0,1)), main="Sensitivity")
 boxplot(acc[seq_len(runs), 1:6, 4], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,1,0), rgb(0,0,1)), main="Specificity")
 boxplot(acc[seq_len(runs), 1:6, 5], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,1,0), rgb(0,0,1)), main="Accuracy")
+
+par(mfrow=c(1,3))
+for (i in c(0.1,1,2)) {
+    load(paste0(path, paste("dce/dce", n, paste(m, collapse = "_"), i, ".rda", sep = "_")))
+    boxplot(acc[seq_len(runs), 1:6, 1], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,1,0), rgb(0,0,1)), main="Correlation", ylim = c(-1,1))
+}
+dev.print("temp.pdf", device = pdf)

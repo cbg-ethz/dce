@@ -89,7 +89,7 @@ compute_differential_causal_effects <- function(graph.ctrl, df.expr.ctrl,
                     compute_differential_causal_effects(graph.ctrl,
                                                         df.expr.ctrl.sub,
                                                         graph.mut,
-                                                        df.expr.mut.sub)
+                                                        df.expr.mut.sub)$dce
             }
             res <- dces/runs
         } else {
@@ -117,6 +117,11 @@ compute_differential_causal_effects <- function(graph.ctrl, df.expr.ctrl,
         ce.mut <- compute_causal_effects(graph.mut, df.expr.mut)
         res <- t(as.matrix(ce.ctrl - ce.mut))
     }
+    gtc <- as(graph.ctrl, "matrix")
+    gtc[which(gtc != 0)] <- 1
+    gtc <- mnem:::mytc(gtc)
+    diag(gtc) <- 0
+    res <- list(dce = res*gtc, graph = graph.ctrl, dcefull = res)
     class(res) <- "dce"
     return(res)
 }
@@ -132,6 +137,7 @@ compute_differential_causal_effects <- function(graph.ctrl, df.expr.ctrl,
 #' @export
 #' @examples
 plot.dce <- function(x, dec=3, ...) {
+    x <- x$dce
     if(is.null(colnames(x))) {
         colnames(x) <- rownames(x) <- seq_len(ncol(x))
     }
@@ -169,25 +175,30 @@ fulllin <- function(g1, d1, g2, d2, ...) {
                 Y <- colnames(df)[j]
                 if (length(Z) > 0) {
                     Lfit <- lm(paste0(Y, " ~ ",
-                                      X, "*N - ",
+                                      X, "*N + ",
                                       X, "*T + ",
-                                      Z, "*N - ",
+                                      Z, "*N + ",
                                       Z, "*T"
                                       ),
                                df)
                 } else {
                     Lfit <- lm(paste0(Y, " ~ ",
-                                      X, "*N - ",
+                                      X, "*N + ",
                                       X, "*T"
                                       ),
                                df)
                 }
-                dce[i, j] <- Lfit$coefficients[3]
+                dce[i, j] <- Lfit$coefficients[grep(paste0(X, ":N"), names(Lfit$coefficients))]
             }
         }
     }
-    class(dce) <- "dce"
-    return(dce)
+    gtc <- as(g1, "matrix")
+    gtc[which(gtc != 0)] <- 1
+    gtc <- mnem:::mytc(gtc)
+    diag(gtc) <- 0
+    res <- list(dce = dce*gtc, graph = g1, dcefull = dce)
+    class(res) <- "dce"
+    return(res)
 }
 
 
