@@ -242,7 +242,13 @@ for (i in 1:runs) {
 
 }
 
-save(acc, gtnfeat, file = paste("dce/dce", n, paste(m, collapse = "_"), sd, ".rda", sep = "_"))
+for (filen in 1:100) {
+    if (!file.exists(paste("dce/dce", n, paste(m, collapse = "_"), sd, filen, ".rda", sep = "_"))) {
+        break()
+    }
+}
+
+save(acc, gtnfeat, file = paste("dce/dce", n, paste(m, collapse = "_"), sd, filen, ".rda", sep = "_"))
 
 stop()
 
@@ -267,18 +273,31 @@ rm .RData
 queue=4
 
 ## parameters: n, m[1], m[2], sd
-bsub -M ${ram} -q normal.${queue}h -n 1 -e error.txt -o output.txt -R "rusage[mem=${ram}]" "R/bin/R --silent --no-save --args '10' '1000' '100' '1' < dce_sim.r"
+bsub -M ${ram} -q normal.${queue}h -n 1 -e error.txt -o output.txt -R "rusage[mem=${ram}]" "R/bin/R --silent --no-save --args '50' '1000' '100' '1' < dce_sim.r"
 
 ## results:
 
 path <- "~/Mount/Euler/"
 
-n <- 10
+n <- 50
 m <- c(1000, 100)
 sd <- 1
 
-load(paste0(path, paste("dce/dce", n, paste(m, collapse = "_"), sd, ".rda", sep = "_")))
+## combine several into one matrix:
 
+library(abind)
+acc2 <- NULL
+for (filen in 1:100) {
+    if (file.exists(paste0(path, paste("dce/dce", n, paste(m, collapse = "_"), sd, filen, ".rda", sep = "_")))) {
+        load(paste0(path, paste("dce/dce", n, paste(m, collapse = "_"), sd, filen, ".rda", sep = "_")))
+        acc2 <- abind(acc2, acc, along = 1)
+    }
+}
+acc <- acc2
+
+## load(paste0(path, paste("dce/dce", n, paste(m, collapse = "_"), sd, ".rda", sep = "_")))
+
+runs <- dim(acc)[1]
 par(mfrow=c(2,3))
 boxplot(acc[seq_len(runs), 1:6, 1], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,1,0), rgb(0,0,1)), main="Correlation")
 boxplot(acc[seq_len(runs), 1:6, 2], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,1,0), rgb(0,0,1)), main="Distance")
@@ -287,8 +306,8 @@ boxplot(acc[seq_len(runs), 1:6, 4], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,
 boxplot(acc[seq_len(runs), 1:6, 5], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,1,0), rgb(0,0,1)), main="Accuracy")
 
 par(mfrow=c(1,3))
-for (i in c(0.1,1,2)) {
-    load(paste0(path, paste("dce/dce", n, paste(m, collapse = "_"), i, ".rda", sep = "_")))
+for (i in c(10,50)) {
+    load(paste0(path, paste("dce/dce", i, paste(m, collapse = "_"), 1, ".rda", sep = "_")))
     boxplot(acc[seq_len(runs), 1:6, 1], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,1,0), rgb(0,0,1)), main="Correlation", ylim = c(-1,1))
 }
 dev.print("temp.pdf", device = pdf)

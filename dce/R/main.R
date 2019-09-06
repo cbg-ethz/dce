@@ -71,25 +71,49 @@ compute_differential_causal_effects <- function(graph.ctrl, df.expr.ctrl,
                                                 graph.mut, df.expr.mut,
                                                 bootstrap = FALSE, runs = 100,
                                                 replace = FALSE, frac = 0.5,
-                                                strap = 0) {
+                                                strap = 0,
+                                                method = "", ...) {
     if (bootstrap) {
+        if (method %in% "full") {
+            strap <- 1
+        }
         if (length(frac) == 1) { frac <- c(frac, frac) }
+        if (ceiling(nrow(df.expr.ctrl)*frac[1]) < ncol(df.expr.ctrl)) {
+            frac[1] <- ncol(df.expr.ctrl)/nrow(df.expr.ctrl)
+            print("too few control samples for subsampling at this fraction; reset to:")
+            print(frac[1])
+        }
+        if (ceiling(nrow(df.expr.mut)*frac[2]) < ncol(df.expr.mut)) {
+            frac[2] <- ncol(df.expr.mut)/nrow(df.expr.mut)
+            print("too few tumor samples for subsampling at this fraction; reset to:")
+            print(frac[2])
+        }
+        if (ncol(df.expr.mut) == nrow(df.expr.mut)) {
+            print("too few samples for sampling with replacement")
+            replace <- FALSE
+        }
         if (strap) {
             dces <- 0
             for (b in seq_len(runs)) {
-                df.expr.ctrl.sub <- df.expr.ctrl[
-                    sample(seq_len(nrow(df.expr.ctrl)),
-                           ceiling(nrow(df.expr.ctrl)*frac[1]),
-                           replace = replace), ]
-                df.expr.mut.sub <- df.expr.mut[
-                    sample(seq_len(nrow(df.expr.mut)),
-                           ceiling(nrow(df.expr.mut)*frac[2]),
-                           replace = replace), ]
-                dces <- dces +
-                    compute_differential_causal_effects(graph.ctrl,
-                                                        df.expr.ctrl.sub,
-                                                        graph.mut,
-                                                        df.expr.mut.sub)$dce
+                if (!(method %in% "full")) {
+                    df.expr.ctrl.sub <- df.expr.ctrl[
+                        sample(seq_len(nrow(df.expr.ctrl)),
+                               ceiling(nrow(df.expr.ctrl)*frac[1]),
+                               replace = replace), ]
+                    df.expr.mut.sub <- df.expr.mut[
+                        sample(seq_len(nrow(df.expr.mut)),
+                               ceiling(nrow(df.expr.mut)*frac[2]),
+                               replace = replace), ]
+                    dces <- dces +
+                        compute_differential_causal_effects(graph.ctrl,
+                                                            df.expr.ctrl.sub,
+                                                            graph.mut,
+                                                            df.expr.mut.sub)$dce
+                } else {
+                    dces <- dces + fulllin(graph.ctrl, df.expr.ctrl,
+                                    graph.mut, df.expr.mut,
+                                    ...)$dce
+                }
             }
             res <- dces/runs
         } else {
@@ -113,9 +137,15 @@ compute_differential_causal_effects <- function(graph.ctrl, df.expr.ctrl,
             res <- t(as.matrix(ce.ctrl - ce.mut))
         }
     } else {
-        ce.ctrl <- compute_causal_effects(graph.ctrl, df.expr.ctrl)
-        ce.mut <- compute_causal_effects(graph.mut, df.expr.mut)
-        res <- t(as.matrix(ce.ctrl - ce.mut))
+        if (!(method %in% "full")) {
+            ce.ctrl <- compute_causal_effects(graph.ctrl, df.expr.ctrl)
+            ce.mut <- compute_causal_effects(graph.mut, df.expr.mut)
+            res <- t(as.matrix(ce.ctrl - ce.mut))
+        } else {
+            res <- fulllin(graph.ctrl, df.expr.ctrl,
+                                    graph.mut, df.expr.mut,
+                                    ...)$dce
+        }
     }
     gtc <- as(graph.ctrl, "matrix")
     gtc[which(gtc != 0)] <- 1
@@ -188,7 +218,8 @@ fulllin <- function(g1, d1, g2, d2, ...) {
                                       ),
                                df)
                 }
-                dce[i, j] <- Lfit$coefficients[grep(paste0(X, ":N"), names(Lfit$coefficients))]
+                dce[i, j] <- Lfit$coefficients[grep(paste0(X, ":N"),
+                                                    names(Lfit$coefficients))]
             }
         }
     }

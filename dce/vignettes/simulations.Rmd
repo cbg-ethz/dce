@@ -68,8 +68,8 @@ lB <- -1
 uB <- 1
 ## others:
 n <- 10 # number of nodes
-m <- c(1000,100) # number of samples tumor and normal
-sd <- 10 # standard deviation for variable distributions
+m <- c(200,20) # number of samples tumor and normal
+sd <- 1 # standard deviation for variable distributions
 ## the fraction of true pos (causal effects that are differential)
 truepos <- 0.9
 bsruns <- 100
@@ -84,10 +84,10 @@ After simulation we use a boxplot to compare the accuracies of the
 respective methods.
 
 ```{r, fig.height=6, fig.width=10, fig.cap=fig.cap0}
-acc <- array(0, c(runs,6,5),
+acc <- array(0, c(runs,7,5),
              dimnames = list(runs = paste0("run_", seq_len(runs)),
                              methods = c("dce", "random", "bootstrap",
-                                         "subsample", "full linear", "subsample2"),
+                                         "subsample", "full linear", "subsample2", "full boot"),
                              metrics = c("correlation", "distance", "metric3",
                                          "metric4", "metric5")))
 gtnfeat <- array(0, c(runs, 6, 2),
@@ -246,6 +246,31 @@ for (i in 1:runs) {
     acc[i, 5, 3] <- tp/(tp+fn)
     acc[i, 5, 4] <- tn/(tn+fp)
     acc[i, 5, 5] <- (tp+tn)/(tn+fp+tp+fn)
+
+    ## full linear model bootstrapped:
+    dcei <- compute_differential_causal_effects(
+        normal, dn,
+        tumor, dt,
+        method = "full",
+        bootstrap = TRUE, runs = bsruns, replace = 0, frac = 0.5
+    )
+    dceiflbs <- dcei
+    
+    dceib <- dcei$dce
+    dceib[which(abs(dceib) > 0.5)] <- 1
+    dceib[which(abs(dceib) <= 0.5)] <- 0
+
+    dcei <- dcei$dce
+    coridx <- which(dcet != 0 | dcei != 0)
+    acc[i, 7, 1] <- cor(as.vector(dcet[coridx]), as.vector(dcei[coridx]), method = "p")
+    acc[i, 7, 2] <- dist(rbind(as.vector(dcet), as.vector(dcei)))
+    tp <- sum(dcetb == 1 & dceib == 1)
+    fp <- sum(dcetb == 0 & dceib == 1)
+    fn <- sum(dcetb == 1 & dceib == 0)
+    tn <- sum(dcetb == 0 & dceib == 0)
+    acc[i, 7, 3] <- tp/(tp+fn)
+    acc[i, 7, 4] <- tn/(tn+fp)
+    acc[i, 7, 5] <- (tp+tn)/(tn+fp+tp+fn)
     
     ## normal
     dcei <- compute_differential_causal_effects(
@@ -301,11 +326,11 @@ for (i in 1:runs) {
 }
 
 par(mfrow=c(2,3))
-boxplot(acc[seq_len(runs), 1:6, 1], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,1,0), rgb(0,0,1)), main="Correlation")
-boxplot(acc[seq_len(runs), 1:6, 2], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,1,0), rgb(0,0,1)), main="Distance")
-boxplot(acc[seq_len(runs), 1:6, 3], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,1,0), rgb(0,0,1)), main="Sensitivity")
-boxplot(acc[seq_len(runs), 1:6, 4], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,1,0), rgb(0,0,1)), main="Specificity")
-boxplot(acc[seq_len(runs), 1:6, 5], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,1,0), rgb(0,0,1)), main="Accuracy")
+boxplot(acc[seq_len(runs), 1:7, 1], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,1,0), rgb(0,0,1)), main="Correlation")
+boxplot(acc[seq_len(runs), 1:7, 2], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,1,0), rgb(0,0,1)), main="Distance")
+boxplot(acc[seq_len(runs), 1:7, 3], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,1,0), rgb(0,0,1)), main="Sensitivity")
+boxplot(acc[seq_len(runs), 1:7, 4], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,1,0), rgb(0,0,1)), main="Specificity")
+boxplot(acc[seq_len(runs), 1:7, 5], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,1,0), rgb(0,0,1)), main="Accuracy")
 
 ```
 
@@ -330,66 +355,24 @@ for (i in seq_len(2)) {
 
 ```{r, fig.height=6, fig.width=10, fig.cap=fig.cap0}
 
-par(mfrow=c(3,3))
+par(mfrow=c(2,4))
 class(dcet) <- class(dcer) <- "dce"
 plot(dcegtn)
 plot(dceir)
 plot(dcein)
 plot(dceibs)
-plot(dceib2)
+plot(dceibs2)
 plot(dceiss)
 plot(dceifl)
+plot(dceiflbs)
 
 ```
 
 # Session information
 
 ```{r}
+
 sessionInfo()
-
-
-
-
-
- mat1 <- as(g1, "matrix")
-    mat2 <- as(g2, "matrix")
-    mat1[which(mat1 != 0)] <- 1
-    mat2[which(mat2 != 0)] <- 1
-    dagtc <- mnem:::mytc(mat1)
-    df <- rbind(d1, d2)
-    colnames(df) <- paste0("X", seq_len(ncol(df)))
-    df <- as.data.frame(cbind(df,
-                              N = c(rep(1, nrow(d1)),
-                                    rep(0, nrow(d2))),
-                              T = c(rep(0, nrow(d1)),
-                                    rep(1, nrow(d2)))))
-    dce <- mat1*0
-    for (i in seq_len(n)) {
-        for (j in seq_len(n)) {
-            if (dagtc[i, j] == 1 & i != j) {
-                Z <- pcalg::backdoor(mat1, i, j, type = "dag")
-                Z <- colnames(df)[Z]
-                X <- colnames(df)[i]
-                Y <- colnames(df)[j]
-                if (length(Z) > 0) {
-                    Lfit <- lm(paste0(Y, " ~ ",
-                                      X, "*N - ",
-                                      X, "*T + ",
-                                      Z, "*N - ",
-                                      Z, "*T"
-                                      ),
-                               df)
-                } else {
-                    Lfit <- lm(paste0(Y, " ~ ",
-                                      X, "*N - ",
-                                      X, "*T"
-                                      ),
-                               df)
-                }
-                dce[i, j] <- Lfit$coefficients[3]
-            }
-        }
-    }
 
 ```
 
