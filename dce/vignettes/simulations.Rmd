@@ -68,11 +68,12 @@ lB <- -1
 uB <- 1
 ## others:
 n <- 10 # number of nodes
-m <- c(200,20) # number of samples tumor and normal
+m <- c(1000,100) # number of samples tumor and normal
 sd <- 1 # standard deviation for variable distributions
 ## the fraction of true pos (causal effects that are differential)
 truepos <- 0.9
-bsruns <- 100
+bsruns <- 100 # bootstrap runs
+perturb <- -0.1 # negative fraction: remove edges for inference, positive: add edges, 0: no perturbation
 ```
 
 ## Simulation loop
@@ -148,6 +149,19 @@ for (i in 1:runs) {
     dcetb <- dcet
     dcetb[which(abs(dcet) > 0.5)] <- 1
     dcetb[which(abs(dcet) <= 0.5)] <- 0
+
+    ## perturb network:
+
+    if (perturb < 0) {
+        adjn <- as(normal, "matrix")
+        remedge <- sample(which(adjn != 0), floor(sum(adjn != 0)*abs(perturb)))
+        adjn[remedge] <- 0
+    }
+    if (perturb > 0) {
+        adjn <- as(normal, "matrix")
+        addedge <- sample(which(adjn == 0 & upper.tri(adjn)), floor(sum(adjn != 0)*perturb))
+        adjn[addedge] <- 1
+    }
 
     ## our inference:
   

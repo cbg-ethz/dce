@@ -12,8 +12,15 @@ n <- as.numeric(commandArgs(TRUE)[1])
 m[1] <- as.numeric(commandArgs(TRUE)[2])
 m[2] <- as.numeric(commandArgs(TRUE)[3])
 sd <- as.numeric(commandArgs(TRUE)[4])
+runs <- as.numeric(commandArgs(TRUE)[5])
+perturb <- as.numeric(commandArgs(TRUE)[6])
 
-runs <- 100 # simulation runs
+if (is.na(runs)) {
+    runs <- 100 # simulation runs
+}
+if (is.na(perturb)) {
+    perturb <- 0
+}
 p <- 0.2 # edge prob of the dag
 ## uniform limits:
 lB <- -1
@@ -30,6 +37,19 @@ acc <- array(0, c(runs,6,5),
              dimnames = list(runs = paste0("run_", seq_len(runs)),
                              methods = c("dce", "random", "bootstrap",
                                          "subsample", "full linear", "subsample2"),
+                             metrics = c("correlation", "distance", "metric3",
+                                         "metric4", "metric5")))
+gtnfeat <- array(0, c(runs, 6, 2),
+                 dimnames = list(runs = paste0("run_", seq_len(runs)),
+                                 features = c("avg children", "avg parents",
+                                              "childless", "parentless",
+                                              "maxpathlength", "density"),
+                                 gtn = c("originial", "transitive closure")))
+
+acc <- array(0, c(runs,7,5),
+             dimnames = list(runs = paste0("run_", seq_len(runs)),
+                             methods = c("dce", "random", "bootstrap",
+                                         "subsample", "full linear", "subsample2", "full boot"),
                              metrics = c("correlation", "distance", "metric3",
                                          "metric4", "metric5")))
 gtnfeat <- array(0, c(runs, 6, 2),
@@ -90,6 +110,19 @@ for (i in 1:runs) {
     dcetb <- dcet
     dcetb[which(abs(dcet) > 0.5)] <- 1
     dcetb[which(abs(dcet) <= 0.5)] <- 0
+
+    ## perturb network:
+
+    if (perturb < 0) {
+        adjn <- as(normal, "matrix")
+        remedge <- sample(which(adjn != 0), floor(sum(adjn != 0)*abs(perturb)))
+        adjn[remedge] <- 0
+    }
+    if (perturb > 0) {
+        adjn <- as(normal, "matrix")
+        addedge <- sample(which(adjn == 0 & upper.tri(adjn)), floor(sum(adjn != 0)*perturb))
+        adjn[addedge] <- 1
+    }
 
     ## our inference:
 
@@ -189,6 +222,31 @@ for (i in 1:runs) {
     acc[i, 5, 4] <- tn/(tn+fp)
     acc[i, 5, 5] <- (tp+tn)/(tn+fp+tp+fn)
 
+    ## full linear model bootstrapped:
+    dcei <- compute_differential_causal_effects(
+        normal, dn,
+        tumor, dt,
+        method = "full",
+        bootstrap = TRUE, runs = bsruns, replace = 0, frac = 0.5
+    )
+    dceiflbs <- dcei
+
+    dceib <- dcei$dce
+    dceib[which(abs(dceib) > 0.5)] <- 1
+    dceib[which(abs(dceib) <= 0.5)] <- 0
+
+    dcei <- dcei$dce
+    coridx <- which(dcet != 0 | dcei != 0)
+    acc[i, 7, 1] <- cor(as.vector(dcet[coridx]), as.vector(dcei[coridx]), method = "p")
+    acc[i, 7, 2] <- dist(rbind(as.vector(dcet), as.vector(dcei)))
+    tp <- sum(dcetb == 1 & dceib == 1)
+    fp <- sum(dcetb == 0 & dceib == 1)
+    fn <- sum(dcetb == 1 & dceib == 0)
+    tn <- sum(dcetb == 0 & dceib == 0)
+    acc[i, 7, 3] <- tp/(tp+fn)
+    acc[i, 7, 4] <- tn/(tn+fp)
+    acc[i, 7, 5] <- (tp+tn)/(tn+fp+tp+fn)
+
     ## normal
     dcei <- compute_differential_causal_effects(
         normal, dn,
@@ -243,12 +301,12 @@ for (i in 1:runs) {
 }
 
 for (filen in 1:100) {
-    if (!file.exists(paste("dce/dce", n, paste(m, collapse = "_"), sd, filen, ".rda", sep = "_"))) {
+    if (!file.exists(paste("dce/dce", n, paste(m, collapse = "_"), sd, perturb, filen, ".rda", sep = "_"))) {
         break()
     }
 }
 
-save(acc, gtnfeat, file = paste("dce/dce", n, paste(m, collapse = "_"), sd, filen, ".rda", sep = "_"))
+save(acc, gtnfeat, file = paste("dce/dce", n, paste(m, collapse = "_"), sd, perturb, filen, ".rda", sep = "_"))
 
 stop()
 
@@ -273,23 +331,24 @@ rm .RData
 queue=4
 
 ## parameters: n, m[1], m[2], sd
-bsub -M ${ram} -q normal.${queue}h -n 1 -e error.txt -o output.txt -R "rusage[mem=${ram}]" "R/bin/R --silent --no-save --args '50' '1000' '100' '1' < dce_sim.r"
+bsub -M ${ram} -q normal.${queue}h -n 1 -e error.txt -o output.txt -R "rusage[mem=${ram}]" "R/bin/R --silent --no-save --args '10' '1000' '100' '1' '100' '-0.1' < dce_sim.r"
 
 ## results:
 
 path <- "~/Mount/Euler/"
 
-n <- 50
+n <- 10
 m <- c(1000, 100)
 sd <- 1
+perturb <- -0.1
 
 ## combine several into one matrix:
 
 library(abind)
 acc2 <- NULL
 for (filen in 1:100) {
-    if (file.exists(paste0(path, paste("dce/dce", n, paste(m, collapse = "_"), sd, filen, ".rda", sep = "_")))) {
-        load(paste0(path, paste("dce/dce", n, paste(m, collapse = "_"), sd, filen, ".rda", sep = "_")))
+    if (file.exists(paste0(path, paste("dce/dce", n, paste(m, collapse = "_"), sd, perturb, filen, ".rda", sep = "_")))) {
+        load(paste0(path, paste("dce/dce", n, paste(m, collapse = "_"), sd, perturb, filen, ".rda", sep = "_")))
         acc2 <- abind(acc2, acc, along = 1)
     }
 }
@@ -299,11 +358,11 @@ acc <- acc2
 
 runs <- dim(acc)[1]
 par(mfrow=c(2,3))
-boxplot(acc[seq_len(runs), 1:6, 1], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,1,0), rgb(0,0,1)), main="Correlation")
-boxplot(acc[seq_len(runs), 1:6, 2], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,1,0), rgb(0,0,1)), main="Distance")
-boxplot(acc[seq_len(runs), 1:6, 3], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,1,0), rgb(0,0,1)), main="Sensitivity")
-boxplot(acc[seq_len(runs), 1:6, 4], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,1,0), rgb(0,0,1)), main="Specificity")
-boxplot(acc[seq_len(runs), 1:6, 5], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,1,0), rgb(0,0,1)), main="Accuracy")
+boxplot(acc[seq_len(runs), 1:7, 1], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,1,0), rgb(0,0,1)), main="Correlation")
+boxplot(acc[seq_len(runs), 1:7, 2], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,1,0), rgb(0,0,1)), main="Distance")
+boxplot(acc[seq_len(runs), 1:7, 3], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,1,0), rgb(0,0,1)), main="Sensitivity")
+boxplot(acc[seq_len(runs), 1:7, 4], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,1,0), rgb(0,0,1)), main="Specificity")
+boxplot(acc[seq_len(runs), 1:7, 5], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,1,0), rgb(0,0,1)), main="Accuracy")
 
 par(mfrow=c(1,3))
 for (i in c(10,50)) {
