@@ -182,7 +182,7 @@ plot.dce <- function(x, dec=3, ...) {
     mnem::plotDnf(dnf, labels = efreq,
                   edgecol = rgb(abs(efreqscale)/2,0,(2-abs(efreqscale))/2))
 }
-fulllin <- function(g1, d1, g2, d2, ...) {
+fulllin <- function(g1, d1, g2, d2, conf = TRUE, ...) {
     mat1 <- as(g1, "matrix")
     mat2 <- as(g2, "matrix")
     mat1[which(mat1 != 0)] <- 1
@@ -203,18 +203,15 @@ fulllin <- function(g1, d1, g2, d2, ...) {
                 Z <- colnames(df)[Z]
                 X <- colnames(df)[i]
                 Y <- colnames(df)[j]
-                if (length(Z) > 0) {
+                if (length(Z) > 0 & conf) {
                     Lfit <- lm(paste0(Y, " ~ ",
                                       X, "*N + ",
-                                      X, "*T + ",
-                                      Z, "*N + ",
-                                      Z, "*T"
+                                      Z, "*N"
                                       ),
                                df)
                 } else {
                     Lfit <- lm(paste0(Y, " ~ ",
-                                      X, "*N + ",
-                                      X, "*T"
+                                      X, "*N"
                                       ),
                                df)
                 }
