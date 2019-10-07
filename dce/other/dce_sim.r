@@ -18,7 +18,7 @@ p <- as.numeric(commandArgs(TRUE)[7])
 cormeth <- commandArgs(TRUE)[8]
 dmeth <- commandArgs(TRUE)[9]
 
-## n <- 10; m <- c(1000, 100); sd <- 1; runs <- 10; perturb <- 0; dmeth <- "euclidean"; cormeth <- "p"
+## n <- 10; m <- c(1000, 100); sd <- 1; runs <- 10; perturb <- 0; dmeth <- "euclidean"; cormeth <- "p"; p <- 0.2
 
 if (is.na(runs)) {
     runs <- 100 # simulation runs
