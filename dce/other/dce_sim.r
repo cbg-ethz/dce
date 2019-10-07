@@ -18,7 +18,7 @@ p <- as.numeric(commandArgs(TRUE)[7])
 cormeth <- commandArgs(TRUE)[8]
 dmeth <- commandArgs(TRUE)[9]
 
-## n <- 100; m <- c(1000, 100); sd <- 1; runs <- 1; perturb <- 0;
+## n <- 10; m <- c(1000, 100); sd <- 1; runs <- 10; perturb <- 0; dmeth <- "euclidean"; cormeth <- "p"
 
 if (is.na(runs)) {
     runs <- 100 # simulation runs
@@ -30,14 +30,14 @@ if (is.na(p)) {
     p <- 0.2 # edge prob of the dag
 }
 ## uniform limits:
-lB <- -1
+lB <- 0
 uB <- 1
 ## others:
 #n <- 10 # number of nodes
 #m <- c(100,100) # number of samples tumor and normal
 #sd <- 0.1 # standard deviation for variable distributions
 ## the fraction of true pos (causal effects that are differential)
-truepos <- 0.9
+truepos <- 1#0.9 # if we sample -1 to 1 this is not necessary # aida samples only pos effects
 bsruns <- 100
 
 acc <- array(0, c(runs,5,2),
@@ -275,9 +275,10 @@ acc <- acc2
 
 show <- 1:5
 runs <- dim(acc)[1]
-par(mfrow=c(1,2))
+par(mfrow=c(1,3))
 boxplot(acc[seq_len(runs), show, 1], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,1,0), rgb(0,0,1)), main="Correlation")
 boxplot(acc[seq_len(runs), show, 2], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,1,0), rgb(0,0,1)), main="Distance")
+boxplot(acc[seq_len(runs), show, 2]/acc[seq_len(runs), 2, 2], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,1,0), rgb(0,0,1)), main="Distance normalized")
 
 ## combine:
 
