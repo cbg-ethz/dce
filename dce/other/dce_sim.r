@@ -1,5 +1,5 @@
-source("dce/main.R")
-source("dce/utils.R")
+source("dce/R/main.R")
+source("dce/R/utils.R")
 
 library(tidyverse)
 library(purrr)
