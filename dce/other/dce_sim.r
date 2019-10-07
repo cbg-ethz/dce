@@ -68,6 +68,13 @@ for (i in 1:runs) {
     gm <- as(normal, "matrix")
     gm[which(gm != 0)] <- 1
 
+    # no confounding
+    # gm[upper.tri(gm)] <- 0
+    # gm[(1:(n-1)+c(0,(1:(n-2)*n))+n)] <- 1
+
+    # all confounding
+    # gm[upper.tri(gm)] <- 1
+
     gtc <- mnem:::mytc(gm) # transitively closed graph as matrix
 
     ## save features of gtn, which might correlate with accuracy:
