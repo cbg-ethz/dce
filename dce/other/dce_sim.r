@@ -18,7 +18,7 @@ p <- as.numeric(commandArgs(TRUE)[7])
 cormeth <- commandArgs(TRUE)[8]
 dmeth <- commandArgs(TRUE)[9]
 
-## n <- 10; m <- c(1000, 100); sd <- 1; runs <- 10; perturb <- 0; dmeth <- "euclidean"; cormeth <- "p"; p <- 0.2
+## n <- 10; m <- c(1000, 100); mu <- 100; sd <- 0.01; runs <- 100; perturb <- 0; dmeth <- "euclidean"; cormeth <- "p"; p <- 0.2
 
 if (is.na(runs)) {
     runs <- 100 # simulation runs
@@ -30,8 +30,8 @@ if (is.na(p)) {
     p <- 0.2 # edge prob of the dag
 }
 ## uniform limits:
-lB <- 0
-uB <- 1
+lB <- c(-1,-0.5)
+uB <- c(0.5,1)
 ## others:
 #n <- 10 # number of nodes
 #m <- c(100,100) # number of samples tumor and normal
@@ -40,11 +40,19 @@ uB <- 1
 truepos <- 1#0.9 # if we sample -1 to 1 this is not necessary # aida samples only pos effects
 bsruns <- 100
 
-acc <- array(0, c(runs,5,2),
+acc <- array(0, c(runs,5,6),
              dimnames = list(runs = paste0("run_", seq_len(runs)),
                              methods = c("dce", "random", "full linear", "simple correlation", "test"),
-                             metrics = c("correlation", "metric2")))
+                             metrics = c("correlation", "distance",
+                                         "causal effects normal cor.", "causal effects tumor cor.",
+                                         "causal effects normal dist.", "causal effects tumor dist.")))
 gtnfeat <- array(0, c(runs, 6, 2),
+                 dimnames = list(runs = paste0("run_", seq_len(runs)),
+                                 features = c("avg children", "avg parents",
+                                              "childless", "parentless",
+                                              "maxpathlength", "density"),
+                                 gtn = c("originial", "transitive closure")))
+dcefeat <- array(0, c(runs, 6, 2),
                  dimnames = list(runs = paste0("run_", seq_len(runs)),
                                  features = c("avg children", "avg parents",
                                               "childless", "parentless",
@@ -56,11 +64,11 @@ for (i in 1:runs) {
     cat(i)
                                         #for (j in 1:1000) {
                                         #   set.seed(j)
-    normal <- randomDAG(n, p, lB, uB)
+    normal <- randomDAG_2(n, p, lB, uB)
     tumor <- newWeights(normal, lB, uB, truepos) # resample edge weights
 
-    dn <- rmvDAG_2(m[2], normal, normpars = c(0,sd))
-    dt <- rmvDAG_2(m[1], tumor, normpars = c(0,sd))
+    dn <- rmvDAG_2(m[2], normal, normpars = c(mu,sd))
+    dt <- rmvDAG_2(m[1], tumor, normpars = c(mu,sd))
 
     cn <- trueCov(normal)
     ct <- trueCov(tumor)
@@ -68,12 +76,12 @@ for (i in 1:runs) {
     gm <- as(normal, "matrix")
     gm[which(gm != 0)] <- 1
 
-    # no confounding
-    # gm[upper.tri(gm)] <- 0
-    # gm[(1:(n-1)+c(0,(1:(n-2)*n))+n)] <- 1
+    ## no confounding
+    gm[upper.tri(gm)] <- 0
+    gm[(1:(n-1)+c(0,(1:(n-2)*n))+n)] <- 1
 
-    # all confounding
-    # gm[upper.tri(gm)] <- 1
+    ## all confounding
+    gm[upper.tri(gm)] <- 1
 
     gtc <- mnem:::mytc(gm) # transitively closed graph as matrix
 
@@ -106,10 +114,6 @@ for (i in 1:runs) {
     dcegtn <- list(dce = dcet, graph = normal, dcefull = dcet)
     class(dcegtn) <- "dce"
 
-    dcetb <- dcet
-    dcetb[which(abs(dcet) > 0.5)] <- 1
-    dcetb[which(abs(dcet) <= 0.5)] <- 0
-
     ## perturb network:
 
     if (perturb < 0) {
@@ -135,7 +139,7 @@ for (i in 1:runs) {
     ## test method::
     dcei <- fulllin(
         normal, dn,
-        tumor, dt, conf = 0
+        tumor, dt, conf = 0,
     )
     dceitest <- dcei
 
@@ -143,6 +147,16 @@ for (i in 1:runs) {
     coridx <- which(dcet != 0 | dcei != 0)
     acc[i, 5, 1] <- cor(as.vector(dcet[coridx]), as.vector(dcei[coridx]), method = cormeth)
     acc[i, 5, 2] <- accfun(dcet[coridx], dcei[coridx])
+    dcei <- fulllin(
+        normal, dn,
+        tumor, dt, conf = 0, diff = 0
+    )
+    coridxn <- which(cn*gtc != 0 | dcei$cen != 0)
+    acc[i, 5, 3] <- cor(as.vector((cn*gtc)[coridxn]), as.vector(dcei$cen[coridxn]), method = cormeth)
+    acc[i, 5, 5] <- accfun((cn*gtc)[coridxn], dcei$cen[coridxn])
+    coridxt <- which(ct*gtc != 0 | dcei$cet != 0)
+    acc[i, 5, 4] <- cor(as.vector((ct*gtc)[coridxt]), as.vector(dcei$cet[coridxt]), method = cormeth)
+    acc[i, 5, 6] <- accfun((ct*gtc)[coridxt], dcei$cet[coridxt])
 
     ## full linear model:
     dcei <- fulllin(
@@ -159,7 +173,7 @@ for (i in 1:runs) {
     ## normal
     dcei <- compute_differential_causal_effects(
         normal, dn,
-        tumor, dt
+        tumor, dt,
     )
     dcein <- dcei
 
@@ -167,10 +181,18 @@ for (i in 1:runs) {
     coridx <- which(dcet != 0 | dcei != 0)
     acc[i, 1, 1] <- cor(as.vector(dcet[coridx]), as.vector(dcei[coridx]), method = cormeth)
     acc[i, 1, 2] <- accfun(dcet[coridx], dcei[coridx])
+    dcei <- dcein
+    coridxn <- which(cn*gtc != 0 | dcei$cen != 0)
+    acc[i, 1, 3] <- cor(as.vector((cn*gtc)[coridxn]), as.vector(dcei$cen[coridxn]), method = cormeth)
+    acc[i, 1, 5] <- accfun((cn*gtc)[coridxn], dcei$cen[coridxn])
+    coridxt <- which(ct*gtc != 0 | dcei$cet != 0)
+    acc[i, 1, 4] <- cor(as.vector((ct*gtc)[coridxt]), as.vector(dcei$cet[coridxt]), method = cormeth)
+    acc[i, 1, 6] <- accfun((ct*gtc)[coridxt], dcei$cet[coridxt])
 
     ## simple correlation:
     dcei <- (cor(dn) - cor(dt))*gtc
-    dcec <- list(dce = dcei, graph = as(gtc, "graphNEL"), dcefull = dcei)
+    dcec <- list(dce = dcei, graph = as(gtc, "graphNEL"), dcefull = dcei,
+                 cen = cor(dt)*gtc, cet = cor(dt)*gtc)
     dceic <- dcec
     class(dceic) <- "dce"
 
@@ -178,11 +200,21 @@ for (i in 1:runs) {
     coridx <- which(dcet != 0 | dcec != 0)
     acc[i, 4, 1] <- cor(as.vector(dcet[coridx]), as.vector(dcec[coridx]), method = cormeth)
     acc[i, 4, 2] <- accfun(dcet[coridx], dcei[coridx])
+    dcei <- dceic
+    coridxn <- which(cn*gtc != 0 | (cor(dn)*gtc) != 0)
+    acc[i, 4, 3] <- cor(as.vector((cn*gtc)[coridxn]), as.vector((cor(dn)*gtc)[coridxn]), method = cormeth)
+    acc[i, 4, 5] <- accfun((cn*gtc)[coridxn], dcei$cen[coridxn])
+    coridxt <- which(ct*gtc != 0 | (cor(dt)*gtc) != 0)
+    acc[i, 4, 4] <- cor(as.vector((ct*gtc)[coridxt]), as.vector((cor(dt)*gtc)[coridxt]), method = cormeth)
+    acc[i, 4, 6] <- accfun((ct*gtc)[coridxt], (cor(dn)*gtc)[coridxt])
 
     ## random base line:
-    dcei <- dcet
-    dcei[which(gtc != 0)] <- runif(sum(gtc != 0), lB, uB)
-    dcer <- list(dce = dcei, graph = as(gtc, "graphNEL"), dcefull = dcei)
+    dcei <- dceicn <- dceict <- dcet
+    dcei[which(gtc != 0)] <- runif(sum(gtc != 0), lB[1], uB[2])
+    dceicn[which(gtc != 0)] <- runif(sum(gtc != 0), lB[1], uB[2])
+    dceict[which(gtc != 0)] <- runif(sum(gtc != 0), lB[1], uB[2])
+    dcer <- list(dce = dcei, graph = as(gtc, "graphNEL"), dcefull = dcei,
+                 cen = dceicn, cet = dceict)
     dceir <- dcer
     class(dceir) <- "dce"
 
@@ -190,6 +222,13 @@ for (i in 1:runs) {
     coridx <- which(dcet != 0 | dcer != 0)
     acc[i, 2, 1] <- cor(as.vector(dcet[coridx]), as.vector(dcer[coridx]), method = cormeth)
     acc[i, 2, 2] <- accfun(dcet[coridx], dcei[coridx])
+    dcei <- dceir
+    coridxn <- which(cn*gtc != 0 | dcei$cen != 0)
+    acc[i, 2, 3] <- cor(as.vector((cn*gtc)[coridxn]), as.vector(dcei$cen[coridxn]), method = cormeth)
+    acc[i, 2, 5] <- accfun((cn*gtc)[coridxn], dcei$cen[coridxn])
+    coridxt <- which(ct*gtc != 0 | dcei$cet != 0)
+    acc[i, 2, 4] <- cor(as.vector((ct*gtc)[coridxt]), as.vector(dcei$cet[coridxt]), method = cormeth)
+    acc[i, 2, 6] <- accfun((ct*gtc)[coridxt], dcei$cet[coridxt])
 
     ## ## full linear model bootstrapped:
     ## dcei <- compute_differential_causal_effects(
@@ -280,12 +319,25 @@ acc <- acc2
 
 ## load(paste0(path, paste("dce/dce", n, paste(m, collapse = "_"), sd, ".rda", sep = "_")))
 
+## differential causal effects:
 show <- 1:5
 runs <- dim(acc)[1]
 par(mfrow=c(1,3))
 boxplot(acc[seq_len(runs), show, 1], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,1,0), rgb(0,0,1)), main="Correlation")
 boxplot(acc[seq_len(runs), show, 2], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,1,0), rgb(0,0,1)), main="Distance")
 boxplot(acc[seq_len(runs), show, 2]/acc[seq_len(runs), 2, 2], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,1,0), rgb(0,0,1)), main="Distance normalized")
+
+## causal effects:
+show <- c(1,2,4,5)
+runs <- dim(acc)[1]
+par(mfrow=c(1,4))
+boxplot(acc[seq_len(runs), show, 3], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,1,0), rgb(0,0,1)), main="Normal Effects Correlation")
+boxplot(acc[seq_len(runs), show, 4], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,1,0), rgb(0,0,1)), main="Tumor Effects Correlation")
+boxplot(acc[seq_len(runs), show, 5], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,1,0), rgb(0,0,1)), main="Normal Effects Distance")
+boxplot(acc[seq_len(runs), show, 6], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,1,0), rgb(0,0,1)), main="Tumor Effects Distance")
+
+## correlated with network features:
+print(cor(acc[,,2], gtnfeat[,,1]))
 
 ## combine:
 

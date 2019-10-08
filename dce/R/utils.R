@@ -50,14 +50,63 @@ rmvDAG_2 <- function (n, dag, errDist = c("normal", "cauchy", "t4", "mix",
     else errMat
 }
 
+## stronger effects
+randomDAG_2 <- function (n, prob, lB = 0.1, uB = 1, V = as.character(1:n))
+{
+    stopifnot(n >= 2, is.numeric(prob), length(prob) == 1, 0 <=
+        prob, prob <= 1, is.numeric(lB), is.numeric(uB), lB <=
+                                                         uB)
+    if (length(uB) == 1) { uB <- c(0, uB) }
+    if (length(lB) == 1) { lB <- c(lB, 0) }
+    edL <- vector("list", n)
+    nmbEdges <- 0L
+    for (i in seq_len(n - 2)) {
+        listSize <- rbinom(1, n - i, prob)
+        nmbEdges <- nmbEdges + listSize
+        edgeList <- sample(seq(i + 1, n), size = listSize)
+        posedges <- sample(seq_len(length(edgeList)), ceiling(length(edgeList)/2))
+        negedges <- seq_len(length(edgeList))[-posedges]
+        weightList <- numeric(length(edgeList))
+        weightList[posedges] <- runif(length(posedges), min = uB[1], max = uB[2])
+        if (length(negedges) > 0) {
+            weightList[negedges] <- runif(length(negedges), min = lB[1], max = lB[2])
+        }
+        edL[[i]] <- list(edges = edgeList, weights = weightList)
+    }
+    listSize <- rbinom(1, 1, prob)
+    if (listSize > 0) {
+        nmbEdges <- nmbEdges + 1
+        edgeList <- n
+        weightList <- runif(1, min = lB, max = uB)
+    }
+    else {
+        edgeList <- integer(0)
+        weightList <- numeric(0)
+    }
+    edL[[n - 1]] <- list(edges = edgeList, weights = weightList)
+    if (nmbEdges > 0) {
+        edL[[n]] <- list(edges = integer(0), weights = numeric(0))
+        names(edL) <- V
+        new("graphNEL", nodes = V, edgeL = edL, edgemode = "directed")
+    }
+    else new("graphNEL", nodes = V, edgemode = "directed")
+}
+
 ## put noise (here resample) on the weights of a dag (for tumor samples):
 
 newWeights <- function(g, lB = -1, uB = 1, tp = 0.5) {
+    if (length(uB) == 1) { uB <- c(0, uB) }
+    if (length(lB) == 1) { lB <- c(lB, 0) }
     n <- length(g@nodes)
     w <- g@edgeData@data
     arediff <- sample(seq_len(length(w)), floor(tp*length(w)))
     for (i in arediff) {
-        w[[i]]$weight <- runif(1, lB, uB)
+        die <- sample(c(0,1), 1)
+        if (die) {
+            w[[i]]$weight <- runif(1, lB[1], lB[2])
+        } else {
+            w[[i]]$weight <- runif(1, uB[1], uB[2])
+        }
     }
     g@edgeData@data <- w
     return(g)
