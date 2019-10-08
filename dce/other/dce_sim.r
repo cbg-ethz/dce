@@ -18,7 +18,7 @@ p <- as.numeric(commandArgs(TRUE)[7])
 cormeth <- commandArgs(TRUE)[8]
 dmeth <- commandArgs(TRUE)[9]
 
-## n <- 10; m <- c(1000, 100); mu <- 100; sd <- 0.01; runs <- 100; perturb <- 0; dmeth <- "euclidean"; cormeth <- "p"; p <- 0.2
+## n <- 10; m <- c(1000, 100); mu <- 0; sd <- 1; runs <- 100; perturb <- 0; dmeth <- "manhattan"; cormeth <- "s"; p <- 0.5
 
 if (is.na(runs)) {
     runs <- 100 # simulation runs
@@ -30,8 +30,8 @@ if (is.na(p)) {
     p <- 0.2 # edge prob of the dag
 }
 ## uniform limits:
-lB <- c(-1,-0.5)
-uB <- c(0.5,1)
+lB <- c(-1,-0.25)
+uB <- c(0.25,1)
 ## others:
 #n <- 10 # number of nodes
 #m <- c(100,100) # number of samples tumor and normal
@@ -77,11 +77,11 @@ for (i in 1:runs) {
     gm[which(gm != 0)] <- 1
 
     ## no confounding
-    gm[upper.tri(gm)] <- 0
-    gm[(1:(n-1)+c(0,(1:(n-2)*n))+n)] <- 1
+    ## gm[upper.tri(gm)] <- 0
+    ## gm[(1:(n-1)+c(0,(1:(n-2)*n))+n)] <- 1
 
     ## all confounding
-    gm[upper.tri(gm)] <- 1
+    ## gm[upper.tri(gm)] <- 1
 
     gtc <- mnem:::mytc(gm) # transitively closed graph as matrix
 
@@ -338,6 +338,11 @@ boxplot(acc[seq_len(runs), show, 6], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0
 
 ## correlated with network features:
 print(cor(acc[,,2], gtnfeat[,,1]))
+
+## conversion between data.frame and array
+acc.df <- as.data.frame.table(acc)
+
+acc.arr <- xtabs(Freq ~ runs + methods + metrics, acc.df)
 
 ## combine:
 
