@@ -5,6 +5,34 @@ library(graph)
 library(pcalg)
 library(assertthat)
 
+#' Compute the true casual effects of a dag
+#'
+#' This function takes a DAG with edgeweights as input and computes
+#' the causal effects of all nodes on all direct and indirect children in the
+#' DAG. Alternatively see pcalg::causalEffect for pairwise computation.
+#' @param graph DAG as a graphNEL object
+#' @param df.expr genes expression profiles with rows as observations and
+#' columns as variables (nodes)
+#' @author Kim Jablonski
+#' @return vector of causal effects
+#' @export
+#' @importFrom purrr map_dfc
+#' @importFrom pcalg idaFast
+#' @importFrom assertthat are_equal
+#' @import graph tidyverse
+#' @examples
+trueEffects <- function(g) {
+    wm <- t(wgtMatrix(g))
+    te <- wm
+    wmExp <- wm
+    while (any(wmExp != 0)) {
+        wmExp <- wmExp%*%wm
+        te[which(wmExp != 0)] <- wmExp[which(wmExp != 0)]
+    }
+    te[which(te == 0)] <- NA
+    return(te)
+}
+
 #' Compute the causal effects
 #'
 #' This function takes a DAG and gene expression data as input and computes
