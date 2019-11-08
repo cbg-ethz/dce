@@ -270,7 +270,7 @@ fulllin <- function(g1, d1, g2, d2, conf = TRUE, diff = 1, ...) {
                     X <- colnames(df)[i]
                     Y <- colnames(df)[j]
                     if (length(Z) > 0 & conf) {
-                        Lfit1 <- lm(paste0(Y, " ~ ",
+                        Lfit <- lm(paste0(Y, " ~ ",
                                           X, " + ",
                                           Z
                                           ),
@@ -284,7 +284,7 @@ fulllin <- function(g1, d1, g2, d2, conf = TRUE, diff = 1, ...) {
                     cen[i, j] <- Lfit$coefficients[grep(X,
                                                         names(Lfit$coefficients))]
                     if (length(Z) > 0 & conf) {
-                        Lfit1 <- lm(paste0(Y, " ~ ",
+                        Lfit <- lm(paste0(Y, " ~ ",
                                           X, " + ",
                                           Z
                                           ),

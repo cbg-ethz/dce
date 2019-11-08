@@ -1,5 +1,5 @@
-source("dce/R/main.R")
-source("dce/R/utils.R")
+source("dce/R/main.r")
+source("dce/R/utils.r")
 
 library(tidyverse)
 library(purrr)
@@ -18,7 +18,7 @@ p <- as.numeric(commandArgs(TRUE)[7])
 cormeth <- commandArgs(TRUE)[8]
 dmeth <- commandArgs(TRUE)[9]
 
-## n <- 10; m <- c(1000, 100); mu <- 0; sd <- 1; runs <- 100; perturb <- 0; dmeth <- "manhattan"; cormeth <- "s"; p <- 0.5
+## n <- 10; m <- c(1000, 100); mu <- 0; sd <- 1; runs <- 100; perturb <- 0; dmeth <- "manhattan"; cormeth <- "p"; p <- 1
 
 if (is.na(runs)) {
     runs <- 100 # simulation runs
@@ -30,15 +30,28 @@ if (is.na(p)) {
     p <- 0.2 # edge prob of the dag
 }
 ## uniform limits:
-lB <- c(-1,-0.25)
-uB <- c(0.25,1)
+lB <- c(-10,0)
+uB <- c(0,10)
 ## others:
 #n <- 10 # number of nodes
 #m <- c(100,100) # number of samples tumor and normal
 #sd <- 0.1 # standard deviation for variable distributions
 ## the fraction of true pos (causal effects that are differential)
-truepos <- 1#0.9 # if we sample -1 to 1 this is not necessary # aida samples only pos effects
+truepos <- 0.9 # if we sample -1 to 1 this is not necessary # aida samples only pos effects
 bsruns <- 100
+mu <- 0
+
+trueEffects <- function(g) {
+    wm <- t(wgtMatrix(g))
+    te <- wm
+    wmExp <- wm
+    while (any(wmExp != 0)) {
+        wmExp <- wmExp%*%wm
+        te[which(wmExp != 0)] <- wmExp[which(wmExp != 0)]
+    }
+    te[which(te == 0)] <- NA
+    return(te)
+}
 
 acc <- array(0, c(runs,5,6),
              dimnames = list(runs = paste0("run_", seq_len(runs)),
@@ -59,7 +72,6 @@ dcefeat <- array(0, c(runs, 6, 2),
                                               "maxpathlength", "density"),
                                  gtn = c("originial", "transitive closure")))
 
-
 for (i in 1:runs) {
     cat(i)
                                         #for (j in 1:1000) {
@@ -70,18 +82,30 @@ for (i in 1:runs) {
     dn <- rmvDAG_2(m[2], normal, normpars = c(mu,sd))
     dt <- rmvDAG_2(m[1], tumor, normpars = c(mu,sd))
 
-    cn <- trueCov(normal)
-    ct <- trueCov(tumor)
-
     gm <- as(normal, "matrix")
     gm[which(gm != 0)] <- 1
 
     ## no confounding
-    ## gm[upper.tri(gm)] <- 0
-    ## gm[(1:(n-1)+c(0,(1:(n-2)*n))+n)] <- 1
+    ## blanket <- gm
+    ## blanket[upper.tri(blanket)] <- 0
+    ## blanket[(1:(n-1)+c(0,(1:(n-2)*n))+n)] <- 1
+    ## normalAdj <- as(normal, "matrix")*blanket
+    ## normalVec <- normalAdj[which(normalAdj != 0)]
+    ## normal <- as(blanket, "graphNEL")
+    ## for (j in 1:(n-1)) {
+    ##     normal@edgeData@data[[j]]$weight <- normalVec[j]
+    ## }
+    ## tumorAdj <- as(tumor, "matrix")*blanket
+    ## tumorVec <- tumorAdj[which(tumorAdj != 0)]
+    ## tumor <- as(blanket, "graphNEL")
+    ## for (j in 1:(n-1)) {
+    ##     tumor@edgeData@data[[j]]$weight <- tumorVec[j]
+    ## }
 
-    ## all confounding
-    ## gm[upper.tri(gm)] <- 1
+    ## for all confounding set p <- 1 (compute_differential_causal_effects gives singularity error)
+
+    cn <- trueEffects(normal)
+    ct <- trueEffects(tumor)
 
     gtc <- mnem:::mytc(gm) # transitively closed graph as matrix
 
@@ -139,7 +163,7 @@ for (i in 1:runs) {
     ## test method::
     dcei <- fulllin(
         normal, dn,
-        tumor, dt, conf = 0,
+        tumor, dt, conf = 0
     )
     dceitest <- dcei
 
@@ -169,11 +193,21 @@ for (i in 1:runs) {
     coridx <- which(dcet != 0 | dcei != 0)
     acc[i, 3, 1] <- cor(as.vector(dcet[coridx]), as.vector(dcei[coridx]), method = cormeth)
     acc[i, 3, 2] <- accfun(dcet[coridx], dcei[coridx])
+    dcei <- fulllin(
+        normal, dn,
+        tumor, dt, diff = 0
+    )
+    coridxn <- which(cn*gtc != 0 | dcei$cen != 0)
+    acc[i, 3, 3] <- cor(as.vector((cn*gtc)[coridxn]), as.vector(dcei$cen[coridxn]), method = cormeth)
+    acc[i, 3, 5] <- accfun((cn*gtc)[coridxn], dcei$cen[coridxn])
+    coridxt <- which(ct*gtc != 0 | dcei$cet != 0)
+    acc[i, 3, 4] <- cor(as.vector((ct*gtc)[coridxt]), as.vector(dcei$cet[coridxt]), method = cormeth)
+    acc[i, 3, 6] <- accfun((ct*gtc)[coridxt], dcei$cet[coridxt])
 
     ## normal
     dcei <- compute_differential_causal_effects(
         normal, dn,
-        tumor, dt,
+        tumor, dt
     )
     dcein <- dcei
 
@@ -264,11 +298,25 @@ stop()
 
 ## euler commands (using local R version):
 
+module add /cluster/apps/modules/modulefiles/new
+
+module load python/3.7.1
+
 module load bioconductor/3.6
 
 module load curl/7.49.1
 
 module load gmp/5.1.3
+
+module load star/2.5.3a
+
+module load samtools/1.2
+
+##
+
+system("scp dce/other/dce_sim.r euler.ethz.ch:dce_sim.r")
+system("scp dce/R/main.r euler.ethz.ch:dce/R/main.r")
+system("scp dce/R/utils.r euler.ethz.ch:dce/R/utils.r")
 
 ##
 
@@ -282,9 +330,9 @@ rm .RData
 
 queue=4
 
-genes=100
+genes=50
 perturb=0
-runs=10
+runs=100
 prob=0.05
 cormeth=p
 dmeth=euclidean
@@ -299,7 +347,7 @@ done
 
 path <- "~/Mount/Euler/"
 
-n <- 100
+n <- 50
 m <- c(1000, 100)
 sd <- 1
 perturb <- 0
@@ -308,27 +356,33 @@ p <- 0.2
 ## combine several into one matrix:
 
 library(abind)
-acc2 <- NULL
+acc2 <- gtnfeat2 <- NULL
 for (filen in 1:100) {
     if (file.exists(paste0(path, paste("dce/dce", n, paste(m, collapse = "_"), sd, perturb, p, filen, ".rda", sep = "_")))) {
         load(paste0(path, paste("dce/dce", n, paste(m, collapse = "_"), sd, perturb, p, filen, ".rda", sep = "_")))
         acc2 <- abind(acc2, acc, along = 1)
+        gtnfeat2 <- abind(gtnfeat2, gtnfeat, along = 1)
+        cat(paste0(filen, "."))
     }
 }
 acc <- acc2
+gtnfeat <- gtnfeat2
 
 ## load(paste0(path, paste("dce/dce", n, paste(m, collapse = "_"), sd, ".rda", sep = "_")))
 
 ## differential causal effects:
 show <- 1:5
 runs <- dim(acc)[1]
-par(mfrow=c(1,3))
+par(mfrow=c(1,2))
 boxplot(acc[seq_len(runs), show, 1], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,1,0), rgb(0,0,1)), main="Correlation")
-boxplot(acc[seq_len(runs), show, 2], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,1,0), rgb(0,0,1)), main="Distance")
-boxplot(acc[seq_len(runs), show, 2]/acc[seq_len(runs), 2, 2], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,1,0), rgb(0,0,1)), main="Distance normalized")
+
+## gtn features:
+show <- 1:6
+runs <- dim(acc)[1]
+boxplot(gtnfeat[seq_len(runs), show, 1], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,1,0), rgb(0,0,1)), main="Ground truth Features")
 
 ## causal effects:
-show <- c(1,2,4,5)
+show <- 1:5
 runs <- dim(acc)[1]
 par(mfrow=c(1,4))
 boxplot(acc[seq_len(runs), show, 3], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,1,0), rgb(0,0,1)), main="Normal Effects Correlation")
