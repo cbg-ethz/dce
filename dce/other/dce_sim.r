@@ -18,7 +18,7 @@ perturb <- as.numeric(commandArgs(TRUE)[6])
 p <- as.numeric(commandArgs(TRUE)[7])
 cormeth <- commandArgs(TRUE)[8]
 
-## n <- 10; m <- c(100, 10); mu <- 0; sd <- 1; runs <- 100; perturb <- 0; cormeth <- "s"; p <- 0.5
+## n <- 10; m <- c(100, 10); mu <- 0; sd <- 1; runs <- 100; perturb <- 0; cormeth <- "p"; p <- 0.5
 
 if (is.na(runs)) {
     runs <- 100 # simulation runs
@@ -221,25 +221,27 @@ queue=4
 
 genes=100
 perturb=0
-runs=100
+runs=1
 prob=0.5
 cormeth=p
+tumor=100
+normal=10
 
-bsub -M ${ram} -q normal.${queue}h -n 1 -e error.txt -o output.txt -R "rusage[mem=${ram}]" "R/bin/R --silent --no-save --args '${genes}' '1000' '100' '1' '${runs}' '${perturb}' '${prob}' '${cormeth}' < dce_sim.r"
+bsub -M ${ram} -q normal.${queue}h -n 1 -e error.txt -o output.txt -R "rusage[mem=${ram}]" "R/bin/R --silent --no-save --args '${genes}' '${tumor}' '${normal}' '1' '${runs}' '${perturb}' '${prob}' '${cormeth}' < dce_sim.r"
 
 for i in {2..100}; do
-bsub -M ${ram} -q normal.${queue}h -n 1 -e error.txt -o output.txt -R "rusage[mem=${ram}]" "R/bin/R --silent --no-save --args '${genes}' '1000' '100' '1' '${runs}' '${perturb}' '${prob}' '${cormeth}' < dce_sim.r"
+bsub -M ${ram} -q normal.${queue}h -n 1 -e error.txt -o output.txt -R "rusage[mem=${ram}]" "R/bin/R --silent --no-save --args '${genes}' '${tumor}' '${normal}' '1' '${runs}' '${perturb}' '${prob}' '${cormeth}' < dce_sim.r"
 done
 
 ## results:
 
 path <- "~/Mount/Euler/"
 
-n <- 100
+n <- 50
 m <- c(1000, 100)
 sd <- 1
 perturb <- 0
-p <- 0.01
+p <- 0.5
 
 ## combine several into one matrix:
 
@@ -302,3 +304,21 @@ for (i in show) {
 }
 
 dev.print("temp.pdf", device = pdf)
+
+## figures:
+
+Ga <- c("A=B", "B=C", "C=D", "A=E", "E=F", "A=F", "A=D")
+
+Ew <- round(runif(length(Ga), -1, 1), 2)
+Ew2 <- round(runif(length(Ga), -1, 1), 2)
+Dw <- Ew-Ew2
+
+edgecol <- rgb(abs(Dw)/max(abs(Dw)), 0, 0)
+
+pdf("temp.pdf", width = 15, height = 5)
+par(mfrow=c(1,3))
+plotDnf(Ga, edgelabel = Ew, main = "Causal effects under condition A")
+plotDnf(Ga, edgelabel = Ew2, main = "Causal effects under condition B")
+plotDnf(Ga, edgelabel = Dw, edgecol = edgecol, main = "Differential causal effects")
+dev.off()
+
