@@ -22,14 +22,13 @@ library(assertthat)
 #' @import graph tidyverse
 #' @examples
 trueEffects <- function(g) {
-    wm <- t(wgtMatrix(g))
-    te <- wm
-    wmExp <- wm
-    while (any(wmExp != 0)) {
-        wmExp <- wmExp%*%wm
-        te[which(wmExp != 0)] <- wmExp[which(wmExp != 0)]
+    n <- ncol(as(g, "matrix"))
+    te <- matrix(0, n, n)
+    for (i in seq_len(n-1)) {
+        for (j in i:n) {
+            te[i, j] <- causalEffect(g, j, i)
+        }
     }
-    te[which(te == 0)] <- NA
     return(te)
 }
 
@@ -226,87 +225,34 @@ fulllin <- function(g1, d1, g2, d2, conf = TRUE, diff = 1, ...) {
     colnames(df) <- paste0("X", seq_len(ncol(df)))
     df <- as.data.frame(cbind(df,
                               N = c(rep(1, nrow(d1)),
-                                    rep(0, nrow(d2))),
-                              T = c(rep(0, nrow(d1)),
-                                    rep(1, nrow(d2)))))
+                                    rep(0, nrow(d2)))))
     if (diff) {
         dce <- mat1*0
         for (i in seq_len(n)) {
             for (j in seq_len(n)) {
                 if (dagtc[i, j] == 1 & i != j) {
                     Z <- pcalg::backdoor(mat1, i, j, type = "dag")
-                    Z <- colnames(df)[Z]
-                    X <- colnames(df)[i]
-                    Y <- colnames(df)[j]
+                    NX <- df[, i] * df$N
+                    NZ <- df[, Z] * df$N
+                    X <- df[, i]
+                    Y <- df[, j]
+                    Z <- df[, Z]
                     if (length(Z) > 0 & conf) {
-                        Lfit <- lm(paste0(Y, " ~ ",
-                                          X, "*N + ",
-                                          Z, "*N"
-                                          ),
-                                   df)
+                        C <- cov(cbind(Y, NX, NZ, X, Z))
                     } else {
-                        Lfit <- lm(paste0(Y, " ~ ",
-                                          X, "*N"
-                                          ),
-                                   df)
+                        C <- cov(cbind(Y, NX, X))
                     }
-                    dce[i, j] <- Lfit$coefficients[grep(paste0(X, ":N"),
-                                                        names(Lfit$coefficients))]
+                    betas <- solve(C[2:nrow(C), 2:ncol(C)], C[2:nrow(C), 1])
+                    dce[i, j] <- betas[1]
                 }
             }
         }
-        cen <- cet <- NULL
-    } else {
-        cen <- cet <- mat1*0
-        colnames(d1) <- paste0("X", seq_len(ncol(d1)))
-        colnames(d2) <- paste0("X", seq_len(ncol(d2)))
-        d1 <- as.data.frame(d1)
-        d2 <- as.data.frame(d2)
-        for (i in seq_len(n)) {
-            for (j in seq_len(n)) {
-                if (dagtc[i, j] == 1 & i != j) {
-                    Z <- pcalg::backdoor(mat1, i, j, type = "dag")
-                    Z <- colnames(df)[Z]
-                    X <- colnames(df)[i]
-                    Y <- colnames(df)[j]
-                    if (length(Z) > 0 & conf) {
-                        Lfit <- lm(paste0(Y, " ~ ",
-                                          X, " + ",
-                                          Z
-                                          ),
-                                   d1)
-                    } else {
-                        Lfit <- lm(paste0(Y, " ~ ",
-                                          X
-                                          ),
-                                   d1)
-                    }
-                    cen[i, j] <- Lfit$coefficients[grep(X,
-                                                        names(Lfit$coefficients))]
-                    if (length(Z) > 0 & conf) {
-                        Lfit <- lm(paste0(Y, " ~ ",
-                                          X, " + ",
-                                          Z
-                                          ),
-                                   d2)
-                    } else {
-                        Lfit <- lm(paste0(Y, " ~ ",
-                                          X
-                                          ),
-                                   d2)
-                    }
-                    cet[i, j] <- Lfit$coefficients[grep(X,
-                                                        names(Lfit$coefficients))]
-                }
-            }
-        }
-        dce <- NULL
     }
     gtc <- as(g1, "matrix")
     gtc[which(gtc != 0)] <- 1
     gtc <- mnem:::mytc(gtc)
     diag(gtc) <- 0
-    res <- list(dce = dce*gtc, graph = g1, dcefull = dce, cen = cen, cet = cet)
+    res <- list(dce = dce*gtc, graph = g1, dcefull = dce)
     class(res) <- "dce"
     return(res)
 }
