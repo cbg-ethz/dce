@@ -2,8 +2,12 @@ library(pcalg)
 library(mnem)
 library(graph)
 
-## add noise options to the pcalg data generating function:
+Gsolve <- function(a, b, ...) {
+    x <- t(solve(diag(1, nrow(a)), Ginv(a)%*%b))
+    return(x)
+}
 
+## add noise options to the pcalg data generating function:
 rmvDAG_2 <- function (n, dag, errDist = c("normal", "cauchy", "t4", "mix",
     "mixt3", "mixN100"), normpars = c(0,1), mix = 0.1, errMat = NULL, back.compatible = FALSE,
     use.node.names = !back.compatible) {
