@@ -215,6 +215,7 @@ plot.dce <- function(x, dec=3, ...) {
     mnem::plotDnf(dnf, labels = efreq,
                   edgecol = rgb(abs(efreqscale)/2,0,(2-abs(efreqscale))/2))
 }
+#' @importFrom matlib Ginv
 fulllin <- function(g1, d1, g2, d2, conf = TRUE, diff = 1, ...) {
     mat1 <- as(g1, "matrix")
     mat2 <- as(g2, "matrix")
@@ -242,7 +243,7 @@ fulllin <- function(g1, d1, g2, d2, conf = TRUE, diff = 1, ...) {
                     } else {
                         C <- cov(cbind(Y, NX, X))
                     }
-                    betas <- solve(C[2:nrow(C), 2:ncol(C)], C[2:nrow(C), 1])
+                    betas <- Gsolve(C[2:nrow(C), 2:ncol(C)], C[2:nrow(C), 1])
                     dce[i, j] <- betas[1]
                 }
             }

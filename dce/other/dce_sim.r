@@ -1,5 +1,5 @@
-source("dce/R/main.r")
-source("dce/R/utils.r")
+source("dce/R/main.R")
+source("dce/R/utils.R")
 
 library(tidyverse)
 library(purrr)
@@ -7,6 +7,7 @@ library(graph)
 library(pcalg)
 library(assertthat)
 library(igraph)
+library(matlib)
 
 m <- numeric(2)
 n <- as.numeric(commandArgs(TRUE)[1])
@@ -18,7 +19,7 @@ perturb <- as.numeric(commandArgs(TRUE)[6])
 p <- as.numeric(commandArgs(TRUE)[7])
 cormeth <- commandArgs(TRUE)[8]
 
-## n <- 10; m <- c(100, 10); mu <- 0; sd <- 1; runs <- 100; perturb <- 0; cormeth <- "p"; p <- 0.5
+## n <- 10; m <- c(100, 10); mu <- 0; sd <- 1; runs <- 100; perturb <- 0; cormeth <- "p"; p <- "rand"
 
 if (is.na(runs)) {
     runs <- 100 # simulation runs
@@ -27,8 +28,11 @@ if (is.na(perturb)) {
     perturb <- 0
 }
 if (is.na(p)) {
-    p <- 0.2 # edge prob of the dag
+    p <- "rand" # edge prob of the dag
 }
+
+print(p)
+
 ## uniform limits:
 lB <- c(-1,0)
 uB <- c(0,1)
@@ -53,7 +57,13 @@ gtnfeat <- array(0, c(runs, 6),
 for (i in 1:runs) {
                                         #for (j in 1:1000) {
                                         #   set.seed(j)
-    normal <- randomDAG_2(n, p, lB, uB)
+    if (p %in% "rand") {
+        p2 <- runif(1, 0, 1)
+    } else {
+        p2 <- p
+    }
+    
+    normal <- randomDAG_2(n, p2, lB, uB)
     tumor <- newWeights(normal, lB, uB, truepos) # resample edge weights
 
     dn <- rmvDAG_2(m[2], normal, normpars = c(mu,sd))
@@ -126,7 +136,6 @@ for (i in 1:runs) {
     acc[i, 5, 1] <- cor(as.vector(dcet), as.vector(dcei), method = cormeth, use = "complete.obs")
 
     ## full linear model:
-    source("dce/R/main.r")
     dcei <- fulllin(
         normal, dn,
         tumor, dt
@@ -137,14 +146,16 @@ for (i in 1:runs) {
     acc[i, 3, 1] <- cor(as.vector(dcet), as.vector(dcei), method = cormeth, use = "complete.obs")
 
     ## normal
-    dcei <- compute_differential_causal_effects(
-        normal, dn,
-        tumor, dt
-    )
-    dcein <- dcei
-
-    dcei <- dcei$dce
-    acc[i, 1, 1] <- cor(as.vector(dcet), as.vector(dcei), method = cormeth, use = "complete.obs")
+    if (!any(m < n)) [
+           dcei <- compute_differential_causal_effects(
+               normal, dn,
+               tumor, dt
+           )
+           dcein <- dcei
+           
+           dcei <- dcei$dce
+           acc[i, 1, 1] <- cor(as.vector(dcet), as.vector(dcei), method = cormeth, use = "complete.obs")
+    }
 
     ## simple correlation:
     dcei <- (cor(dn) - cor(dt))*gtc
@@ -222,10 +233,10 @@ queue=4
 genes=100
 perturb=0
 runs=1
-prob=0.5
+prob=rand
 cormeth=p
 tumor=100
-normal=10
+normal=100
 
 bsub -M ${ram} -q normal.${queue}h -n 1 -e error.txt -o output.txt -R "rusage[mem=${ram}]" "R/bin/R --silent --no-save --args '${genes}' '${tumor}' '${normal}' '1' '${runs}' '${perturb}' '${prob}' '${cormeth}' < dce_sim.r"
 
@@ -237,11 +248,11 @@ done
 
 path <- "~/Mount/Euler/"
 
-n <- 50
-m <- c(1000, 100)
+n <- 100
+m <- c(100,100)
 sd <- 1
 perturb <- 0
-p <- 0.5
+p <- "rand" # rand for random
 
 ## combine several into one matrix:
 
@@ -261,12 +272,23 @@ gtnfeat <- gtnfeat2
 ## load(paste0(path, paste("dce/dce", n, paste(m, collapse = "_"), sd, ".rda", sep = "_")))
 
 ## differential causal effects plus gtn features
+
+col <- 2:6
 show <- 1:5
 runs <- dim(acc)[1]
 par(mfrow=c(1,2))
-boxplot(acc[seq_len(runs), show, 1], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,1,0), rgb(0,0,1)), main="Correlation")
+boxplot(acc[seq_len(runs), show, 1], col = col, main="Correlation")
 show <- 1:6
-boxplot(gtnfeat[seq_len(runs), show], col = c(rgb(1,0,0), rgb(0.5,0.5,0.5), rgb(0,1,0), rgb(0,0,1)), main="Ground truth Features")
+boxplot(gtnfeat[seq_len(runs), show], col = 1:6, main="Ground truth Features", log = "y")
+
+source("https://raw.githubusercontent.com/cbg-ethz/mnem/master/R/mnems_low.r")
+col <- 2:6
+show <- 1:5
+runs <- dim(acc)[1]
+par(mfrow=c(1,2))
+myboxplot(acc[seq_len(runs), show, 1], col = col, main="Correlation")
+show <- 1:6
+myboxplot(gtnfeat[seq_len(runs), show], col = 1:6, main="Ground truth Features", log = "y")
 
 ## correlated with network features:
 print(cor(acc[,,1], gtnfeat[,2]))
