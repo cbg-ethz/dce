@@ -227,6 +227,9 @@ fulllin <- function(g1, d1, g2, d2, conf = TRUE, diff = 1, ...) {
     df <- as.data.frame(cbind(df,
                               N = c(rep(1, nrow(d1)),
                                     rep(0, nrow(d2)))))
+
+    n <- length(nodes(g1))
+
     if (diff) {
         dce <- mat1*0
         for (i in seq_len(n)) {
@@ -257,5 +260,3 @@ fulllin <- function(g1, d1, g2, d2, conf = TRUE, diff = 1, ...) {
     class(res) <- "dce"
     return(res)
 }
-
-

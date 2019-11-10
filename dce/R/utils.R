@@ -3,7 +3,7 @@ library(mnem)
 library(graph)
 
 Gsolve <- function(a, b, ...) {
-    x <- t(solve(diag(1, nrow(a)), Ginv(a)%*%b))
+    x <- t(solve(diag(1, nrow(a)), matlib::Ginv(a)%*%b))
     return(x)
 }
 
