@@ -68,7 +68,10 @@ df.bench <- purrr::map_df(tmp.list, function(x) {
   )
 
   tmp <- as.matrix(ground.truth$dce)
-  tmp[which(as.matrix(ground.truth$dce) != 0)] = runif(sum(as.matrix(ground.truth$dce) != 0), negweight.range[1], posweight.range[2])
+  tmp[which(as.matrix(ground.truth$dce) != 0)] = (
+    runif(sum(as.matrix(ground.truth$dce) != 0), negweight.range[1], posweight.range[2]) -
+    runif(sum(as.matrix(ground.truth$dce) != 0), negweight.range[1], posweight.range[2])
+  )
   res.rand <- list(dce=tmp)
 
   df.res <- data.frame(
