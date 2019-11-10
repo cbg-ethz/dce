@@ -37,7 +37,7 @@ mt.adj <- t(as(mt.graph, "matrix"))
 
 
 # do benchmarking
-parameter.list <- c(0.001, 0.05, 0.1, 0.5, 1, 2, 50)
+parameter.list <- c(10, 100, 1000)
 repetition.num <- 20
 
 tmp.list <- rep(parameter.list, each=repetition.num)
@@ -46,8 +46,8 @@ df.bench <- purrr::map_df(tmp.list, function(x) {
   pb$tick()$print()
 
   # generate data
-  wt.X <- simulate(wt.graph, noise.sd=x)
-  mt.X <- simulate(mt.graph, noise.sd=x)
+  wt.X <- simulate(wt.graph, sample.num=x)
+  mt.X <- simulate(mt.graph, sample.num=x)
 
 
   # run models
