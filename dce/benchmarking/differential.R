@@ -53,26 +53,34 @@ df.bench <- purrr::map_df(tmp.list, function(x) {
   # run models
   ground.truth <- list(dce=trueEffects(wt.graph) - trueEffects(mt.graph))
 
+  time.tmp <- Sys.time()
   res.cor <- list(dce=cor(wt.X) - cor(mt.X))
+  time.cor <- Sys.time() - time.tmp
 
+  time.tmp <- Sys.time()
   res.basic <- compute_differential_causal_effects(
     wt.graph, wt.X,
     mt.graph, mt.X,
     method="basic"
   )
+  time.basic <- Sys.time() - time.tmp
 
+  time.tmp <- Sys.time()
   res.full <- compute_differential_causal_effects(
     wt.graph, wt.X,
     mt.graph, mt.X,
     method="full"
   )
+  time.full <- Sys.time() - time.tmp
 
+  time.tmp <- Sys.time()
   tmp <- as.matrix(ground.truth$dce)
   tmp[which(as.matrix(ground.truth$dce) != 0)] = (
     runif(sum(as.matrix(ground.truth$dce) != 0), negweight.range[1], posweight.range[2]) -
     runif(sum(as.matrix(ground.truth$dce) != 0), negweight.range[1], posweight.range[2])
   )
   res.rand <- list(dce=tmp)
+  time.rand <- Sys.time() - time.tmp
 
   df.res <- data.frame(
     truth=as.vector(ground.truth$dce),
@@ -89,18 +97,44 @@ df.bench <- purrr::map_df(tmp.list, function(x) {
   )
 
   # return result
-  df.perf$parameter <- as.factor(x)
-  df.perf["truth", -1] # extract relations to "truth"
+  df.perf %>%
+    rownames_to_column() %>%
+    filter(rowname == "truth") %>%
+    select(-rowname, -truth) %>%
+    mutate(type="performance") %>%
+    bind_rows(
+      data.frame(
+        cor=time.cor,
+        basic=time.basic,
+        full=time.full,
+        rand=time.rand
+      ) %>%
+        mutate(type="runtime")
+    ) %>%
+    mutate(parameter=as.factor(x))
 })
+
 
 df.bench %>%
   head
 
+
+# plotting
 df.bench %>%
-  gather("variable", "value", -parameter) %>%
+  filter(type == "performance") %>%
+  gather("variable", "value", -parameter, -type) %>%
 ggplot(aes(x=parameter, y=value, fill=variable)) +
   geom_boxplot() +
   ylim(-1, 1) +
-  theme_minimal()
+  theme_minimal() +
+  ggsave("benchmarking.pdf")
 
-ggsave("benchmarking.pdf")
+df.bench %>%
+  filter(type == "runtime") %>%
+  gather("variable", "value", -parameter, -type) %>%
+  mutate(value=lubridate::as.duration(value)) %>%
+ggplot(aes(x=parameter, y=value, fill=variable)) +
+  geom_boxplot() +
+  scale_y_time() +
+  theme_minimal() +
+  ggsave("runtime.pdf")
