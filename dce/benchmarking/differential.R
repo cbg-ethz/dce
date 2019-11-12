@@ -4,6 +4,8 @@ devtools::load_all("..")
 source("../R/utils.R")
 
 
+set.seed(42)
+
 # helper functions
 simulate <- function(graph, noise.sd=1, sample.num=100) {
   p <- length(nodes(graph))
