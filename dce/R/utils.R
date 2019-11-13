@@ -144,7 +144,11 @@ fulllin <- function(g1, d1, g2, d2, conf = TRUE, diff = 1, ...) {
                     } else {
                         C <- cov(cbind(Y, NX, X))
                     }
-                    betas <- Gsolve(C[2:nrow(C), 2:ncol(C)], C[2:nrow(C), 1])
+                    if (Matrix::rankMatrix(C) < nrow(C)) {
+                        betas <- Gsolve(C[2:nrow(C), 2:ncol(C)], C[2:nrow(C), 1])
+                    } else {
+                        betas <- solve(C[2:nrow(C), 2:ncol(C)], C[2:nrow(C), 1])
+                    }
                     dce[i, j] <- betas[1]
                 }
             }

@@ -21,7 +21,7 @@ perturb <- as.numeric(commandArgs(TRUE)[6])
 p <- as.numeric(commandArgs(TRUE)[7])
 cormeth <- commandArgs(TRUE)[8]
 
-## n <- 10; m <- c(100, 10); mu <- 0; sd <- 1; runs <- 10; perturb <- 0; cormeth <- "p"; p <- "runif"
+## n <- 10; m <- c(1000, 100); mu <- 0; sd <- 1; runs <- 10; perturb <- 0; cormeth <- "p"; p <- "runif"
 
 if (is.na(runs)) {
     runs <- 100 # simulation runs
@@ -47,8 +47,6 @@ truepos <- 0.9 # if we sample -1 to 1 this is not necessary # aida samples only 
 mu <- 0
 
 simRes <- simDce(n,m,runs,mu,sd,c(lB,uB),truepos,perturb,cormeth,p,TRUE)
-acc <- simRes$acc
-gtnfeat <- simRes$gtnFeat
 
 for (filen in 1:100) {
     if (!file.exists(paste("dce/dce", n, paste(m, collapse = "_"), sd, perturb, p, filen, ".rda", sep = "_"))) {
@@ -56,9 +54,9 @@ for (filen in 1:100) {
     }
 }
 
-save(acc, gtnfeat, file = paste("dce/dce", n, paste(m, collapse = "_"), sd, perturb, p, filen, ".rda", sep = "_"))
+save(simRes, file = paste("dce/dce", n, paste(m, collapse = "_"), sd, perturb, p, filen, ".rda", sep = "_"))
 
-stop()
+stop("success")
 
 ## euler commands (using local R version):
 
@@ -79,12 +77,12 @@ module load samtools/1.2
 ##
 
 system("scp dce/other/dce_sim.r euler.ethz.ch:dce_sim.r")
-system("scp dce/R/main.r euler.ethz.ch:dce/R/main.r")
-system("scp dce/R/utils.r euler.ethz.ch:dce/R/utils.r")
+system("scp dce/R/main.r euler.ethz.ch:dce/R/main.R")
+system("scp dce/R/utils.r euler.ethz.ch:dce/R/utils.R")
 
 ##
 
-ram=1000
+ram=10000
 
 rm error.txt
 
@@ -94,13 +92,13 @@ rm .RData
 
 queue=4
 
-genes=10 # 10, 50, 100
+genes=100 # 10, 50, 100
 perturb=0 # 0, 0.5, -0.5
-runs=10
+runs=1
 prob=runif
 cormeth=p
-tumor=$(expr ${genes} \* 10) # depends on genes... 10*genes, 0.5*genes
-normal=$(expr ${genes} \* 2) # see above? 2*genes, 0.25*genes
+tumor=1000 # depends on genes... 10*genes, 0.5*genes
+normal=100 # see above? 2*genes, 0.25*genes
 
 bsub -M ${ram} -q normal.${queue}h -n 1 -e error.txt -o output.txt -R "rusage[mem=${ram}]" "R/bin/R --silent --no-save --args '${genes}' '${tumor}' '${normal}' '1' '${runs}' '${perturb}' '${prob}' '${cormeth}' < dce_sim.r"
 
@@ -113,25 +111,25 @@ done
 path <- "~/Mount/Euler/"
 
 n <- 100
-m <- c(100,100)
+m <- c(1000,100)
 sd <- 1
 perturb <- 0
-p <- "rand" # rand for random
+p <- "runif" # rand for random
 
 ## combine several into one matrix:
 
 library(abind)
-acc2 <- gtnfeat2 <- NULL
+simRes2 <- NULL
 for (filen in 1:100) {
     if (file.exists(paste0(path, paste("dce/dce", n, paste(m, collapse = "_"), sd, perturb, p, filen, ".rda", sep = "_")))) {
         load(paste0(path, paste("dce/dce", n, paste(m, collapse = "_"), sd, perturb, p, filen, ".rda", sep = "_")))
-        acc2 <- abind(acc2, acc, along = 1)
-        gtnfeat2 <- abind(gtnfeat2, gtnfeat, along = 1)
+        simRes2$acc <- abind(simRes2$acc, simRes$acc, along = 1)
+        simRes2$gtnFeat <- abind(simRes2$gtnFeat, simRes$gtnFeat, along = 1)
         cat(paste0(filen, "."))
     }
 }
-acc <- acc2
-gtnfeat <- gtnfeat2
+simRes <- simRes2
+class(simRes) <- "dceSim"
 
 ## load(paste0(path, paste("dce/dce", n, paste(m, collapse = "_"), sd, ".rda", sep = "_")))
 
@@ -139,8 +137,8 @@ gtnfeat <- gtnfeat2
 
 source("https://raw.githubusercontent.com/cbg-ethz/mnem/master/R/mnems_low.r")
 source("dce/R/main.R")
-col <- rgb(c(0.1,1,0),c(0.1,0,0),c(0.1,0,1),0.75)
-plot.dceSim(simres, dens = 0, showMeth = c(2,3,4), col = col, border = col)
+col <- rgb(c(0.5,1,0,0.1),c(0.5,0,0,0.1),c(0.5,0,1,0.1),0.75)
+plot.dceSim(simRes, dens = 0, col = col, border = col, showMeth = c(2,3,1,4), methNames = c("random", "integrate", "separate", "correlation"), showFeat = c(1,2))
 
 ## correlated with network features:
 print(cor(acc[,,1], gtnfeat[,2]))

@@ -307,7 +307,9 @@ simDce <- function(nodes=5, samples=c(10,10),runs=10,mu=0,sd=1,
         dcei <- dcei$dce
         acc[run, 3, 1] <- cor(as.vector(dcet), as.vector(dcei), method = cormeth, use = "complete.obs")
         ## normal
-        if (!any(m < n)) {
+        Cn <- cov(dn)
+        Ct <- cov(dt)
+        if (Matrix::rankMatrix(Cn) == nrow(Cn) & Matrix::rankMatrix(Ct) == nrow(Ct)) {
             start <- as.numeric(Sys.time())
             dcei <- compute_differential_causal_effects(
                 normal, dn,
@@ -360,24 +362,25 @@ simDce <- function(nodes=5, samples=c(10,10),runs=10,mu=0,sd=1,
 #' @examples
 plot.dceSim <- function(x, col = 1:4, showMeth = seq_len(4),
                         showFeat = 1, methNames = NULL, ...) {
+    runs <- dim(x$acc)[1]
     if (is.null(methNames)) {
-        methNames <- dimnames(acc)[[2]][showMeth]
+        methNames <- dimnames(x$acc)[[2]][showMeth]
     }
     par(mfrow=c(1,length(showFeat)))
     if (1 %in% showFeat) {
-        myboxplot(acc[seq_len(runs), showMeth, 1], col = col,
+        myboxplot(x$acc[seq_len(runs), showMeth, 1], col = col,
                   main="Correlation", , xaxt = "n", ...)
         axis(1, seq_len(length(showMeth)), labels = methNames)
     }
     if (2 %in% showFeat) {
-        myboxplot(acc[seq_len(runs), showMeth, 2], col = col,
+        myboxplot(x$acc[seq_len(runs), showMeth, 2], col = col,
                   main="Time", , xaxt = "n", ...)
         axis(1, seq_len(length(showMeth)), labels = methNames)
     }
     if (3 %in% showFeat) {
-        myboxplot(gtnfeat[seq_len(runs), seq_len(4)], col = col,
+        myboxplot(x$gtnFeat[seq_len(runs), seq_len(4)], col = col,
                   main="Ground truth Features", , xaxt = "n", ...)
         axis(1, seq_len(length(showMeth)),
-             labels = dimnames(gtnfeat)[[2]][seq_len(4)])
+             labels = dimnames(x$gtnFeat)[[2]][seq_len(4)])
     }
 }
