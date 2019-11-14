@@ -95,7 +95,7 @@ for (i in 1:runs) {
     gm <- as(normal, "matrix")
     gm[which(gm != 0)] <- 1
 
-    gtc <- mnem:::mytc(gm) # transitively closed graph as matrix
+    gtc <- nem::transitive.closure(gm, mat=TRUE) # transitively closed graph as matrix
 
     diag(gtc) <- 0
 
@@ -170,7 +170,7 @@ for (i in 1:runs) {
     gm <- as(normal, "matrix")
     gm[which(gm != 0)] <- 1
 
-    gtc <- mnem:::mytc(gm) # transitively closed graph as matrix
+    gtc <- nem::transitive.closure(gm, mat=TRUE) # transitively closed graph as matrix
 
     ## save features of gtn, which might correlate with accuracy:
     gtr <- nem::transitive.reduction(gm)

@@ -167,16 +167,12 @@ compute_differential_causal_effects <- function(graph.ctrl, df.expr.ctrl,
                                     ...)$dce
         }
     }
-    gtc <- as(graph.ctrl, "matrix")
-    gtc[which(gtc != 0)] <- 1
-    gtc <- mnem:::mytc(gtc)
-    diag(gtc) <- 0
     if (!(method %in% "full")) {
-        res <- list(dce = res*gtc, graph = graph.ctrl, dcefull = res,
-                    cen = t(as(ce.ctrl, "matrix"))*gtc,
-                    cet = t(as(ce.mut, "matrix"))*gtc)
+        res <- list(dce = res, graph = graph.ctrl,
+                    cen = t(as(ce.ctrl, "matrix")),
+                    cet = t(as(ce.mut, "matrix")))
     } else {
-        res <- list(dce = res*gtc, graph = graph.ctrl, dcefull = res)
+        res <- list(dce = res, graph = graph.ctrl)
     }
     class(res) <- "dce"
     return(res)
@@ -199,7 +195,7 @@ plot.dce <- function(x, dec=3, ...) {
     }
     adj <- x
     adj[which(adj != 0)] <- 1
-    adj <- mnem:::mytc(adj)
+    adj <- nem::transitive.closure(adj, mat=TRUE)
     diag(adj) <- 0
     dnf <- mnem:::adj2dnf(adj)
     dnf <- dnf[grep("=", dnf)]
@@ -232,7 +228,6 @@ plot.dce <- function(x, dec=3, ...) {
 #' for the ground truth as a list of two arrays
 #' @export
 #' @importFrom nem transitive.reduction
-#' @importFrom mnem mytc
 #' @examples
 simDce <- function(nodes=5, samples=c(10,10),runs=10,mu=0,sd=1,
                    effRange=c(-1,0,0,1),truePos=1,perturb=0,corMeth="p",
@@ -269,7 +264,7 @@ simDce <- function(nodes=5, samples=c(10,10),runs=10,mu=0,sd=1,
         gm[which(gm != 0)] <- 1
         cn <- trueEffects(normal)
         ct <- trueEffects(tumor)
-        gtc <- mnem:::mytc(gm)
+        gtc <- nem::transitive.closure(gm, mat=TRUE)
         ## save features of gtn, which might correlate with accuracy:
         gtnfeat[run, 1] <- mean(apply(gm, 1, sum))
         gtnfeat[run, 2] <- max(apply(gm, 1, sum))

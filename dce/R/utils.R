@@ -119,7 +119,7 @@ fulllin <- function(g1, d1, g2, d2, conf = TRUE, diff = 1, ...) {
     mat2 <- as(g2, "matrix")
     mat1[which(mat1 != 0)] <- 1
     mat2[which(mat2 != 0)] <- 1
-    dagtc <- mnem:::mytc(mat1)
+    dagtc <- nem::transitive.closure(mat1, mat=TRUE)
     df <- rbind(d1, d2)
     colnames(df) <- paste0("X", seq_len(ncol(df)))
     df <- as.data.frame(cbind(df,
@@ -154,11 +154,7 @@ fulllin <- function(g1, d1, g2, d2, conf = TRUE, diff = 1, ...) {
             }
         }
     }
-    gtc <- as(g1, "matrix")
-    gtc[which(gtc != 0)] <- 1
-    gtc <- mnem:::mytc(gtc)
-    diag(gtc) <- 0
-    res <- list(dce = dce*gtc, graph = g1, dcefull = dce)
+    res <- list(dce = dce, graph = g1)
     class(res) <- "dce"
     return(res)
 }
