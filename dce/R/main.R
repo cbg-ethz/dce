@@ -174,6 +174,10 @@ compute_differential_causal_effects <- function(graph.ctrl, df.expr.ctrl,
     } else {
         res <- list(dce = res, graph = graph.ctrl)
     }
+
+    rownames(res$dce) <- nodes(graph.ctrl)
+    colnames(res$dce) <- nodes(graph.ctrl)
+
     class(res) <- "dce"
     return(res)
 }
@@ -189,20 +193,21 @@ compute_differential_causal_effects <- function(graph.ctrl, df.expr.ctrl,
 #' @export
 #' @examples
 plot.dce <- function(x, dec=3, ...) {
-    x <- x$dce
-    if(is.null(colnames(x))) {
-        colnames(x) <- rownames(x) <- seq_len(ncol(x))
-    }
-    adj <- x
-    adj[which(adj != 0)] <- 1
-    adj <- nem::transitive.closure(adj, mat=TRUE)
-    diag(adj) <- 0
-    dnf <- mnem:::adj2dnf(adj)
-    dnf <- dnf[grep("=", dnf)]
-    efreq <- efreqscale <- round(t(x)[which(t(x) != 0)], dec)
-    efreqscale[abs(efreqscale) > 2] <- 2
-    mnem::plotDnf(dnf, labels = efreq,
-                  edgecol = rgb(abs(efreqscale)/2,0,(2-abs(efreqscale))/2))
+    adj <- as(x$graph, "matrix")
+    edge.weights <- x$dce[which(adj!=0)]
+
+    e.max <- max(abs(edge.weights))
+    color.mat <- colorRamp(c("red", "blue"))(scales::rescale(edge.weights, from=c(-e.max,e.max))) / 255
+
+    # TODO: try using `mnem::plotDnf` to reduce "hairballing" of network
+    GGally::ggnet2(
+      adj,
+      label=TRUE,
+      edge.label=edge.weights %>% round(2) %>% as.character,
+      edge.size=scales::rescale(abs(edge.weights), c(1, 3)),
+      edge.color=apply(color.mat, 1, function(x) { rgb(x[1], x[2], x[3]) }),
+      arrow.size=12, arrow.gap=0.025
+    )
 }
 #' Simulation study
 #'
