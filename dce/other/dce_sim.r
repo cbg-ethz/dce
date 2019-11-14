@@ -76,9 +76,9 @@ module load samtools/1.2
 
 ##
 
-system("scp dce/other/dce_sim.r euler.ethz.ch:dce_sim.r")
-system("scp dce/R/main.r euler.ethz.ch:dce/R/main.R")
-system("scp dce/R/utils.r euler.ethz.ch:dce/R/utils.R")
+system2("scp dce/other/dce_sim.r euler.ethz.ch:dce_sim.r")
+system2("scp dce/R/main.r euler.ethz.ch:dce/R/main.R")
+system2("scp dce/R/utils.r euler.ethz.ch:dce/R/utils.R")
 
 ##
 
@@ -189,4 +189,3 @@ plotDnf(Ga, edgelabel = Ew, main = "Causal effects under condition A")
 plotDnf(Ga, edgelabel = Ew2, main = "Causal effects under condition B")
 plotDnf(Ga, edgelabel = Dw, edgecol = edgecol, main = "Differential causal effects")
 dev.off()
-

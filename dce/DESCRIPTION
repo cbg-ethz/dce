@@ -2,10 +2,17 @@ Package: dce
 Type: Package
 Title: Pathway Enrichment Based on Differential Causal Effects
 Version: 0.99.0
-Author: Kim Jablonski & Martin Pirkl
+Author: Kim Philipp Jablonski & Martin Pirkl
 Maintainer: The package maintainer <yourself@somewhere.net>
 Description: More about what it does (maybe more than one line)
     Use four spaces when indenting paragraphs within the Description.
+biocViews:
+    Software,
+    StatisticalMethod,
+    GraphAndNetwork,
+    Regression,
+    GeneExpression,
+    DifferentialExpression
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
@@ -15,6 +22,9 @@ Suggests:
 VignetteBuilder: knitr
 RoxygenNote: 6.1.1
 Imports:
+    stats,
+    grDevices,
+    graphics,
     methods,
     assertthat,
     graph,

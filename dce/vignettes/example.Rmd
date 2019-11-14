@@ -13,14 +13,13 @@ vignette: >
 
 # Introduction
 
-
-
 # Installation and loading
 ```{r global_options, include=FALSE}
-knitr::opts_chunk$set(message=FALSE, out.width="\\textwidth", fig.align="center",
-                      strip.white=TRUE, warning=FALSE, tidy=TRUE,
-                      #out.extra='style="display:block; margin:auto;"',
-                      fig.height = 4, fig.width = 8, error=FALSE)
+knitr::opts_chunk$set(
+    message=FALSE, out.width="\\textwidth", fig.align="center",
+    strip.white=TRUE, warning=FALSE, tidy=TRUE,
+    fig.height = 4, fig.width = 8, error=FALSE
+)
 ```
 
 Install the package with the Bioconductor manager package.
@@ -50,7 +49,8 @@ set.seed(42)
 
 # Simple example
 
-First we generate a random wild type network and then resample its edge weights to generate the mutant network.
+First we generate a random wild type network and then resample
+its edge weights to generate the mutant network.
 
 ```{r}
 node.num <- 30

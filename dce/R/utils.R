@@ -11,12 +11,17 @@ Gsolve <- function(a, b=NULL, ...) {
 #' @noRd
 #' @importFrom methods is
 #' @importFrom pcalg wgtMatrix
-rmvDAG_2 <- function (n, dag, errDist = c("normal", "cauchy", "t4", "mix",
-    "mixt3", "mixN100"), normpars = c(0,1), mix = 0.1, errMat = NULL, back.compatible = FALSE,
-    use.node.names = !back.compatible) {
-    stopifnot(is(dag, "graph"), (p <- length(nodes(dag))) >=
-        2)
-    weightMatrix <- pcalg::wgtMatrix(dag)  # TODO: if(back.compatible) wgtMatrix.0(dag)
+rmvDAG_2 <- function (
+    n, dag,
+    errDist = c("normal", "cauchy", "t4", "mix",
+    "mixt3", "mixN100"), normpars = c(0,1),
+    mix = 0.1,
+    errMat = NULL, back.compatible = FALSE,
+    use.node.names = !back.compatible
+) {
+    stopifnot(is(dag, "graph"), (p <- length(nodes(dag))) >= 2)
+    # TODO: if(back.compatible) wgtMatrix.0(dag)
+    weightMatrix <- pcalg::wgtMatrix(dag)
     nonZeros <- which(weightMatrix != 0, arr.ind = TRUE)
     if (nrow(nonZeros) > 0) {
         if (any(nonZeros[, 1] - nonZeros[, 2] < 0) || any(diag(weightMatrix) !=
@@ -30,23 +35,25 @@ rmvDAG_2 <- function (n, dag, errDist = c("normal", "cauchy", "t4", "mix",
             matrix(sample(X), nrow = n)
         }
     if (is.null(errMat)) {
-        errMat <- switch(errDist, normal = matrix(rnorm(n * p, normpars[1], normpars[2]),
-            nrow = n), cauchy = matrix(rcauchy(n * p), nrow = n),
-            t4 = matrix(rt(n * p, df = 4), nrow = n), mix = eMat(rcauchy(round(mix *
-                n * p))), mixt3 = eMat(rt(round(mix * n * p),
-                df = 3)), mixN100 = eMat(rnorm(round(mix * n *
-                p), sd = 10)))
+        errMat <- switch(
+            errDist,
+            normal = matrix(rnorm(n * p, normpars[1], normpars[2]), nrow = n),
+            cauchy = matrix(rcauchy(n * p), nrow = n),
+            t4 = matrix(rt(n * p, df = 4), nrow = n),
+            mix = eMat(rcauchy(round(mix * n * p))),
+            mixt3 = eMat(rt(round(mix * n * p), df = 3)),
+            mixN100 = eMat(rnorm(round(mix * n * p), sd = 10))
+        )
     }
     else {
         stopifnot(!is.null(dim.eM <- dim(errMat)), dim.eM ==
             c(n, p), is.numeric(errMat))
     }
-    if (use.node.names)
-        colnames(errMat) <- nodes(dag)
+    if (use.node.names) colnames(errMat) <- nodes(dag)
     if (sum(weightMatrix) > 0) {
         X <- errMat
         for (j in 2:p) {
-            ij <- 1:(j - 1)
+            ij <- seq_len(j - 1)
             X[, j] <- X[, j] + X[, ij, drop = FALSE] %*% weightMatrix[j,
                 ij]
         }
@@ -56,11 +63,15 @@ rmvDAG_2 <- function (n, dag, errDist = c("normal", "cauchy", "t4", "mix",
 }
 #' @noRd
 #' @importFrom methods new
-randomDAG_2 <- function (n, prob, lB = 0.1, uB = 1, V = as.character(1:n))
-{
-    stopifnot(n >= 2, is.numeric(prob), length(prob) == 1, 0 <=
-        prob, prob <= 1, is.numeric(lB), is.numeric(uB), lB <=
-                                                         uB)
+randomDAG_2 <- function (
+    n, prob,
+    lB = 0.1, uB = 1,
+    V = as.character(seq_len(n))
+) {
+    stopifnot(
+        n >= 2, is.numeric(prob), length(prob) == 1, 0 <= prob, prob <= 1,
+        is.numeric(lB), is.numeric(uB), lB <= uB
+    )
     if (length(uB) == 1) { uB <- c(0, uB) }
     if (length(lB) == 1) { lB <- c(lB, 0) }
     edL <- vector("list", n)
@@ -69,12 +80,18 @@ randomDAG_2 <- function (n, prob, lB = 0.1, uB = 1, V = as.character(1:n))
         listSize <- rbinom(1, n - i, prob)
         nmbEdges <- nmbEdges + listSize
         edgeList <- sample(seq(i + 1, n), size = listSize)
-        posedges <- sample(seq_len(length(edgeList)), ceiling(length(edgeList)/2))
+        posedges <- sample(
+            seq_len(length(edgeList)), ceiling(length(edgeList)/2)
+        )
         negedges <- seq_len(length(edgeList))[-posedges]
         weightList <- numeric(length(edgeList))
-        weightList[posedges] <- runif(length(posedges), min = uB[1], max = uB[2])
+        weightList[posedges] <- runif(
+            length(posedges), min = uB[1], max = uB[2]
+        )
         if (length(negedges) > 0) {
-            weightList[negedges] <- runif(length(negedges), min = lB[1], max = lB[2])
+            weightList[negedges] <- runif(
+                length(negedges), min = lB[1], max = lB[2]
+            )
         }
         edL[[i]] <- list(edges = edgeList, weights = weightList)
     }
@@ -106,6 +123,9 @@ randomDAG_2 <- function (n, prob, lB = 0.1, uB = 1, V = as.character(1:n))
 #' @author Martin Pirkl
 #' @return graph with new edge weights
 #' @export
+#' @examples
+#' graph.wt <- as(matrix(c(0,0,0,1,0,0,0,1,0), 3), "graphNEL")
+#' graph.mt <- newWeights(graph.wt)
 newWeights <- function(g, lB = -1, uB = 1, tp = 1) {
     if (length(uB) == 1) { uB <- c(0, uB) }
     if (length(lB) == 1) { lB <- c(lB, 0) }
@@ -133,9 +153,7 @@ fulllin <- function(g1, d1, g2, d2, conf = TRUE, diff = 1, ...) {
     dagtc <- nem::transitive.closure(mat1, mat=TRUE)
     df <- rbind(d1, d2)
     colnames(df) <- paste0("X", seq_len(ncol(df)))
-    df <- as.data.frame(cbind(df,
-                              N = c(rep(1, nrow(d1)),
-                                    rep(0, nrow(d2)))))
+    df <- as.data.frame(cbind(df, N = c(rep(1, nrow(d1)), rep(0, nrow(d2)))))
 
     n <- length(nodes(g1))
 
@@ -156,9 +174,13 @@ fulllin <- function(g1, d1, g2, d2, conf = TRUE, diff = 1, ...) {
                         C <- cov(cbind(Y, NX, X))
                     }
                     if (Matrix::rankMatrix(C) < nrow(C)) {
-                        betas <- Gsolve(C[2:nrow(C), 2:ncol(C)], C[2:nrow(C), 1])
+                        betas <- Gsolve(
+                            C[2:nrow(C), 2:ncol(C)], C[2:nrow(C), 1]
+                        )
                     } else {
-                        betas <- solve(C[2:nrow(C), 2:ncol(C)], C[2:nrow(C), 1])
+                        betas <- solve(
+                            C[2:nrow(C), 2:ncol(C)], C[2:nrow(C), 1]
+                        )
                     }
                     dce[i, j] <- betas[1]
                 }
