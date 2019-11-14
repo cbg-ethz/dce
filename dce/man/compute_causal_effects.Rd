@@ -2,7 +2,7 @@
 % Please edit documentation in R/main.R
 \name{compute_causal_effects}
 \alias{compute_causal_effects}
-\title{Compute the causal effect of all nodes on al other nodes of a given DAG}
+\title{Compute the causal effects}
 \usage{
 compute_causal_effects(graph, df.expr)
 }
@@ -17,7 +17,7 @@ vector of causal effects
 }
 \description{
 This function takes a DAG and gene expression data as input and computes
-the causal effect of all nodes on all other nodes in the DAG.
+the causal effects of all nodes on all other nodes in the DAG.
 }
 \examples{
 dag <- matrix(c(0,0,0,1,0,0,0,1,0), 3)

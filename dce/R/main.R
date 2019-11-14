@@ -9,7 +9,6 @@
 #' @export
 #' @importFrom pcalg causalEffect
 #' @import graph tidyverse
-#' @examples
 trueEffects <- function(g) {
     n <- ncol(as(g, "matrix"))
     te <- matrix(0, n, n)
@@ -34,7 +33,7 @@ trueEffects <- function(g) {
 #' @importFrom purrr map_dfc
 #' @importFrom pcalg idaFast
 #' @importFrom assertthat are_equal
-#' @import graph tidyverse
+#' @import graph tidyverse stats
 #' @examples
 #' dag <- matrix(c(0,0,0,1,0,0,0,1,0), 3)
 #' colnames(dag) <- rownames(dag) <- seq_len(3)
@@ -65,7 +64,7 @@ compute_causal_effects <- function(graph, df.expr) {
 #' @param graph.mut DAG as a graphNEL object of the tumor population
 #' @param df.expr.mut genes expression profiles with rows as observations and
 #' columns as variables (nodes) of the tumor population
-#' @param either "full" for the full linear model using all sampels together to
+#' @param method either "full" for the full linear model using all sampels together to
 #' directly compute the differential causal effect or "part" for two lienar
 #' models on both conditions to first compute the causal effect and then the
 #' difference
@@ -79,14 +78,15 @@ compute_causal_effects <- function(graph, df.expr) {
 #' respectively populations
 #' @param bootMethod if "diff" (default) bottstraps the differential causal
 #' effects, if "cause", bootstraps on the causal effects
+#' @param ... further arguments passed to `fulllin`
 #' @author Kim Jablonski & Martin Pirkl
 #' @return vector of causal effects
 #' @export
 #' @importFrom purrr map_dfc
 #' @importFrom pcalg idaFast
 #' @importFrom assertthat are_equal
+#' @importFrom methods as
 #' @import graph tidyverse
-#' @examples
 compute_differential_causal_effects <- function(graph.ctrl, df.expr.ctrl,
                                                 graph.mut, df.expr.mut,
                                                 method = "full",
@@ -187,11 +187,16 @@ compute_differential_causal_effects <- function(graph.ctrl, df.expr.ctrl,
 #' the dag with the dces
 #' @param x dce object
 #' @param dec rounding to dec decimals
+#' @param ... additional parameters
 #' @author Martin Pirkl
 #' @method plot dce
 #' @return plot of dag and dces
 #' @export
-#' @examples
+#' @importFrom methods as
+#' @importFrom grDevices colorRamp rgb
+#' @importFrom scales rescale
+#' @importFrom GGally ggnet2
+#' @importFrom dplyr %>%
 plot.dce <- function(x, dec=3, ...) {
     adj <- as(x$graph, "matrix")
     edge.weights <- x$dce[which(adj!=0)]
@@ -224,7 +229,7 @@ plot.dce <- function(x, dec=3, ...) {
 #' differential effects are set to 0.
 #' @param perturb positive or negative frantion of edges to be added or
 #' removed, respectively
-#' @param corMeth method for the correlation accuracy (see ?cor)
+#' @param cormeth method for the correlation accuracy (see ?cor)
 #' @param prob edge probability; either probability or "runif" to draw a
 #' probability in each run
 #' @param verbose verbose output, if TRUE
@@ -233,9 +238,9 @@ plot.dce <- function(x, dec=3, ...) {
 #' for the ground truth as a list of two arrays
 #' @export
 #' @importFrom nem transitive.reduction
-#' @examples
+#' @importFrom Matrix rankMatrix
 simDce <- function(nodes=5, samples=c(10,10),runs=10,mu=0,sd=1,
-                   effRange=c(-1,0,0,1),truePos=1,perturb=0,corMeth="p",
+                   effRange=c(-1,0,0,1),truePos=1,perturb=0,cormeth="p",
                    prob="runif",verbose=FALSE) {
     acc <- array(0, c(runs,5,2),
                  dimnames = list(runs = paste0("run_", seq_len(runs)),
@@ -352,14 +357,17 @@ simDce <- function(nodes=5, samples=c(10,10),runs=10,mu=0,sd=1,
 #'
 #' Takes a dceSim object and produces a figure.
 #' @param x dceSim object
-#' @param ... additional arguments for mnem::mnemBox
+#' @param col `col` argument passed to `boxplot`
+#' @param showMeth which method results to plot
+#' @param showFeat which features to plot
+#' @param methNames method plot labels
+#' @param ... additional arguments for boxplot
 #' @author Martin Pirkl
 #' @method plot dceSim
 #' @return plot
 #' @export
 #' @importFrom nem transitive.reduction
-#' @importFrom mnem mnemBox
-#' @examples
+#' @importFrom graphics par boxplot axis
 plot.dceSim <- function(x, col = 1:4, showMeth = seq_len(4),
                         showFeat = 1, methNames = NULL, ...) {
     runs <- dim(x$acc)[1]
@@ -368,17 +376,17 @@ plot.dceSim <- function(x, col = 1:4, showMeth = seq_len(4),
     }
     par(mfrow=c(1,length(showFeat)))
     if (1 %in% showFeat) {
-        myboxplot(x$acc[seq_len(runs), showMeth, 1], col = col,
+        boxplot(x$acc[seq_len(runs), showMeth, 1], col = col,
                   main="Correlation", , xaxt = "n", ...)
         axis(1, seq_len(length(showMeth)), labels = methNames)
     }
     if (2 %in% showFeat) {
-        myboxplot(x$acc[seq_len(runs), showMeth, 2], col = col,
+        boxplot(x$acc[seq_len(runs), showMeth, 2], col = col,
                   main="Time", , xaxt = "n", ...)
         axis(1, seq_len(length(showMeth)), labels = methNames)
     }
     if (3 %in% showFeat) {
-        myboxplot(x$gtnFeat[seq_len(runs), seq_len(4)], col = col,
+        boxplot(x$gtnFeat[seq_len(runs), seq_len(4)], col = col,
                   main="Ground truth Features", , xaxt = "n", ...)
         axis(1, seq_len(length(showMeth)),
              labels = dimnames(x$gtnFeat)[[2]][seq_len(4)])

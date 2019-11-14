@@ -9,14 +9,14 @@ Gsolve <- function(a, b=NULL, ...) {
     return(x)
 }
 #' @noRd
+#' @importFrom methods is
+#' @importFrom pcalg wgtMatrix
 rmvDAG_2 <- function (n, dag, errDist = c("normal", "cauchy", "t4", "mix",
     "mixt3", "mixN100"), normpars = c(0,1), mix = 0.1, errMat = NULL, back.compatible = FALSE,
     use.node.names = !back.compatible) {
     stopifnot(is(dag, "graph"), (p <- length(nodes(dag))) >=
         2)
-    weightMatrix <- if (back.compatible)
-        wgtMatrix.0(dag)
-    else wgtMatrix(dag)
+    weightMatrix <- pcalg::wgtMatrix(dag)  # TODO: if(back.compatible) wgtMatrix.0(dag)
     nonZeros <- which(weightMatrix != 0, arr.ind = TRUE)
     if (nrow(nonZeros) > 0) {
         if (any(nonZeros[, 1] - nonZeros[, 2] < 0) || any(diag(weightMatrix) !=
@@ -55,6 +55,7 @@ rmvDAG_2 <- function (n, dag, errDist = c("normal", "cauchy", "t4", "mix",
     else errMat
 }
 #' @noRd
+#' @importFrom methods new
 randomDAG_2 <- function (n, prob, lB = 0.1, uB = 1, V = as.character(1:n))
 {
     stopifnot(n >= 2, is.numeric(prob), length(prob) == 1, 0 <=
@@ -95,8 +96,17 @@ randomDAG_2 <- function (n, prob, lB = 0.1, uB = 1, V = as.character(1:n))
     }
     else new("graphNEL", nodes = V, edgemode = "directed")
 }
-#' @noRd
-newWeights <- function(g, lB = -1, uB = 1, tp = 0.5) {
+#' Resample network edge weights
+#'
+#' Takes a graph and modifies edge weights.
+#' @param g original graph
+#' @param lB lower bound for new edge weights
+#' @param uB upper bound for new edge weights
+#' @param tp fraction of edge weights which will be modified
+#' @author Martin Pirkl
+#' @return graph with new edge weights
+#' @export
+newWeights <- function(g, lB = -1, uB = 1, tp = 1) {
     if (length(uB) == 1) { uB <- c(0, uB) }
     if (length(lB) == 1) { lB <- c(lB, 0) }
     n <- length(g@nodes)
@@ -114,6 +124,7 @@ newWeights <- function(g, lB = -1, uB = 1, tp = 0.5) {
     return(g)
 }
 #' @noRd
+#' @importFrom methods as
 fulllin <- function(g1, d1, g2, d2, conf = TRUE, diff = 1, ...) {
     mat1 <- as(g1, "matrix")
     mat2 <- as(g2, "matrix")

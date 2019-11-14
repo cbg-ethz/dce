@@ -2,5 +2,8 @@
 ^\.Rprofile$
 ^.*\.Rproj$
 ^\.Rproj\.user$
+
 other
 benchmarking
+^doc$
+^Meta$

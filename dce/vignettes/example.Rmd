@@ -1,0 +1,100 @@
+---
+title: "Simulations: Differential causal effects for pathway enrichment \n
+Simulations of differential causal effects between two groups."
+author: "Kim Jablonski, Martin Pirkl"
+date: "`r Sys.Date()`"
+graphics: yes
+output: BiocStyle::pdf_document
+vignette: >
+    %\VignetteIndexEntry{dce}
+    %\VignetteEngine{knitr::knitr}
+    %\VignetteEncoding{UTF-8}
+---
+
+# Introduction
+
+
+
+# Installation and loading
+```{r global_options, include=FALSE}
+knitr::opts_chunk$set(message=FALSE, out.width="\\textwidth", fig.align="center",
+                      strip.white=TRUE, warning=FALSE, tidy=TRUE,
+                      #out.extra='style="display:block; margin:auto;"',
+                      fig.height = 4, fig.width = 8, error=FALSE)
+```
+
+Install the package with the Bioconductor manager package.
+
+```{r, eval=FALSE}
+if (!requireNamespace("BiocManager", quietly = TRUE)) {
+    install.packages("BiocManager")
+}
+BiocManager::install("dce")
+```
+
+Load the package with the library function.
+
+```{r}
+library(dce)
+
+library(tidyverse)
+library(purrr)
+
+library(graph)
+library(pcalg)
+library(assertthat)
+
+
+set.seed(42)
+```
+
+# Simple example
+
+First we generate a random wild type network and then resample its edge weights to generate the mutant network.
+
+```{r}
+node.num <- 30
+edge.prob <- .2
+
+negweight.range <- c(-1,-.1)
+posweight.range <- c(.1, 1)
+
+graph.wt <- randomDAG(node.num, edge.prob, negweight.range, posweight.range)
+graph.mt <- newWeights(graph.wt, negweight.range, posweight.range)
+```
+
+We can then simulate data on these two networks.
+
+```{r}
+X.wt <- rmvDAG(100, graph.wt)
+X.mt <- rmvDAG(100, graph.mt)
+```
+
+Finally, it is possible to compute differential causal effects.
+
+```{r}
+res <- compute_differential_causal_effects(
+    graph.wt, X.wt,
+    graph.mt, X.mt
+)
+
+print(res)
+```
+
+The result can be visualized.
+
+```{r}
+plot(res)
+```
+
+# Session information
+
+```{r}
+sessionInfo()
+```
+
+# References:
+
+* Taruttis et al
+* Matthuis et al
+* ...
