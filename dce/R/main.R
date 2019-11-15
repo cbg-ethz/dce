@@ -256,6 +256,7 @@ plot.dce <- function(x, dec=3, ...) {
         edge.label=edge.weights %>% round(2) %>% as.character,
         edge.size=scales::rescale(abs(edge.weights), c(1, 3)),
         edge.color=apply(color.mat, 1, function(x) { rgb(x[1], x[2], x[3]) }),
-        arrow.size=12, arrow.gap=0.025
+        arrow.size=12, arrow.gap=0.025,
+        ...
     )
 }
