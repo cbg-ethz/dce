@@ -154,7 +154,8 @@ df.bench <- purrr::map_df(graph.list, function(graph.pair) {
       ) %>%
       mutate(parameter=as.factor(x), graph.idx=graph.pair$graph.idx)
   })
-})
+}) %>%
+  write_csv("benchmark_results.csv")
 
 
 df.bench %>%
