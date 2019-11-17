@@ -87,12 +87,28 @@ df.bench <- purrr::map_df(graph.list, function(graph.pair) {
     time.basic <- Sys.time() - time.tmp
 
     time.tmp <- Sys.time()
+    res.basic.bootstrap <- compute_differential_causal_effects(
+      graph.pair$wt.graph, wt.X,
+      graph.pair$mt.graph, mt.X,
+      method="basic", bootstrap=TRUE
+    )
+    time.basic.bootstrap <- Sys.time() - time.tmp
+
+    time.tmp <- Sys.time()
     res.full <- compute_differential_causal_effects(
       graph.pair$wt.graph, wt.X,
       graph.pair$mt.graph, mt.X,
       method="full"
     )
     time.full <- Sys.time() - time.tmp
+
+    time.tmp <- Sys.time()
+    res.full.bootstrap <- compute_differential_causal_effects(
+      graph.pair$wt.graph, wt.X,
+      graph.pair$mt.graph, mt.X,
+      method="full", bootstrap=TRUE
+    )
+    time.full.bootstrap <- Sys.time() - time.tmp
 
     time.tmp <- Sys.time()
     tmp <- as.matrix(ground.truth$dce)
@@ -107,7 +123,9 @@ df.bench <- purrr::map_df(graph.list, function(graph.pair) {
       truth=as.vector(ground.truth$dce),
       cor=as.vector(res.cor$dce),
       basic=as.vector(res.basic$dce),
+      basic.bootstrap=as.vector(res.basic.bootstrap$dce),
       full=as.vector(res.full$dce),
+      full.bootstrap=as.vector(res.full.bootstrap$dce),
       rand=as.vector(res.rand$dce)
     )
 
@@ -127,7 +145,9 @@ df.bench <- purrr::map_df(graph.list, function(graph.pair) {
         data.frame(
           cor=time.cor,
           basic=time.basic,
+          basic.bootstrap=time.basic.bootstrap,
           full=time.full,
+          full.bootstrap=time.full.bootstrap,
           rand=time.rand
         ) %>%
           mutate(type="runtime")
