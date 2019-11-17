@@ -170,7 +170,7 @@ ggplot(aes(x=parameter, y=value, fill=variable)) +
   geom_boxplot() +
   ylim(-1, 1) +
   theme_minimal() +
-  ggsave("benchmarking.pdf")
+  ggsave("benchmark.pdf")
 
 df.bench %>%
   dplyr::filter(type == "runtime") %>%
