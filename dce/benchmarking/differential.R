@@ -57,7 +57,7 @@ graph.features %>% head(1)
 
 
 # do benchmarking
-parameter.list <- c(10, 100, 1000)
+parameter.list <- c(50, 100, 1000)
 repetition.num <- 20
 
 tmp.list <- rep(parameter.list, each=repetition.num)
