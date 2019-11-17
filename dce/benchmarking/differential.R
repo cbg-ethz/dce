@@ -1,7 +1,6 @@
 library(tidyverse)
 
 devtools::load_all("..")
-source("../R/utils.R")
 
 
 set.seed(42)
@@ -115,13 +114,13 @@ df.bench <- purrr::map_df(graph.list, function(graph.pair) {
 
     # compute performance
     df.perf <- as.data.frame(
-      cor(df.res, method="spearman") #  %>% filter(truth != 0)
+      cor(df.res, method="spearman") #  %>% dplyr::filter(truth != 0)
     )
 
     # return result
     df.perf %>%
       rownames_to_column() %>%
-      filter(rowname == "truth") %>%
+      dplyr::filter(rowname == "truth") %>%
       select(-rowname, -truth) %>%
       mutate(type="performance") %>%
       bind_rows(
@@ -144,7 +143,7 @@ df.bench %>%
 
 # plotting
 df.bench %>%
-  filter(type == "performance") %>%
+  dplyr::filter(type == "performance") %>%
   gather("variable", "value", -parameter, -type, -graph.idx) %>%
 ggplot(aes(x=parameter, y=value, fill=variable)) +
   geom_boxplot() +
@@ -153,7 +152,7 @@ ggplot(aes(x=parameter, y=value, fill=variable)) +
   ggsave("benchmarking.pdf")
 
 df.bench %>%
-  filter(type == "runtime") %>%
+  dplyr::filter(type == "runtime") %>%
   gather("variable", "value", -parameter, -type, -graph.idx) %>%
   mutate(value=lubridate::as.duration(value)) %>%
 ggplot(aes(x=parameter, y=value, fill=variable)) +
