@@ -51,7 +51,8 @@ graph.features <- purrr::map_df(graph.list, function (graph.pair) {
     graph.idx=graph.pair$graph.idx,
     density=sum(tmp) / length(tmp)
   )
-})
+}) %>%
+  write_csv("graph_features.csv")
 
 graph.features %>% head(1)
 
