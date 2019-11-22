@@ -81,6 +81,7 @@ compute_causal_effects <- function(graph, df.expr) {
 #' respectively populations
 #' @param bootMethod if "diff" (default) bootstraps the differential causal
 #' effects, if "cause", bootstraps on the causal effects
+#' (not possible for "full")
 #' @param ... further arguments passed to `fulllin`
 #' @author Kim Jablonski & Martin Pirkl
 #' @return vector of causal effects
@@ -132,7 +133,6 @@ compute_differential_causal_effects <- function(
         if (bootMethod %in% "diff") {
             dces <- 0
             for (b in seq_len(runs)) {
-                if (!(method %in% "full")) {
                     df.expr.ctrl.sub <- df.expr.ctrl[
                         sample(
                             seq_len(nrow(df.expr.ctrl)),
@@ -147,6 +147,7 @@ compute_differential_causal_effects <- function(
                             replace = replace
                         ),
                     ]
+                if (!(method %in% "full")) {
                     dces <- dces +
                         compute_differential_causal_effects(
                             graph.ctrl,
@@ -156,8 +157,8 @@ compute_differential_causal_effects <- function(
                         )$dce
                 } else {
                     dces <- dces + fulllin(
-                        graph.ctrl, df.expr.ctrl,
-                        graph.mut, df.expr.mut,
+                        graph.ctrl, df.expr.ctrl.sub,
+                        graph.mut, df.expr.mut.sub,
                         ...
                     )$dce
                 }
@@ -206,15 +207,7 @@ compute_differential_causal_effects <- function(
             )$dce
         }
     }
-    if (!(method %in% "full")) {
-        res <- list(
-            dce = res, graph = graph.ctrl,
-            cen = t(as(ce.ctrl, "matrix")),
-            cet = t(as(ce.mut, "matrix"))
-        )
-    } else {
-        res <- list(dce = res, graph = graph.ctrl)
-    }
+    res <- list(dce = res, graph = graph.ctrl)
 
     rownames(res$dce) <- nodes(graph.ctrl)
     colnames(res$dce) <- nodes(graph.ctrl)

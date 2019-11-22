@@ -16,6 +16,8 @@
 #' @param cormeth method for the correlation accuracy (see ?cor)
 #' @param prob edge probability; either probability or "runif" to draw a
 #' probability in each run
+#' @param bootstrap can be either "none" (default) or include one or more
+#' of the following: "basic", "full"
 #' @param verbose verbose output, if TRUE
 #' @author Martin Pirkl
 #' @return accuracy for several different methods and statistics
@@ -28,17 +30,19 @@
 simDce <- function(
     nodes=5, samples=c(10,10),runs=10,mu=0,sd=1,
     effRange=c(-1,0,0,1),truePos=1,perturb=0,cormeth="p",
-    prob="runif",verbose=FALSE
+    prob="runif",bootstrap="none",verbose=FALSE
 ) {
     acc <- array(
-        0, c(runs,5,2),
+        0, c(runs,6,2),
         dimnames = list(
             runs = paste0("run_", seq_len(runs)),
             methods = c(
-                "dce", "random",
-                "full linear",
+                "random",
+                "basic",
+                "full",
                 "simple correlation",
-                "test"
+                "basic bootstrap",
+                "full boostrap"
             ),
             metrics = c("correlation", "time")
         )
@@ -118,6 +122,21 @@ simDce <- function(
             as.vector(dcet), as.vector(dcei),
             method = cormeth, use = "complete.obs"
         )
+        if ("full" %in% bootstrap) {
+            start <- as.numeric(Sys.time())
+            dcei <- compute_differential_causal_effects(
+                normal, dn,
+                tumor, dt, method = "full",
+                bootstrap = TRUE
+            )
+            acc[run, 6, 2] <- as.numeric(Sys.time()) - start
+            dceifl <- dcei
+            dcei <- dcei$dce
+            acc[run, 6, 1] <- cor(
+                as.vector(dcet), as.vector(dcei),
+                method = cormeth, use = "complete.obs"
+            )
+        }
         ## normal
         Cn <- cov(dn)
         Ct <- cov(dt)
@@ -130,13 +149,28 @@ simDce <- function(
                 normal, dn,
                 tumor, dt, method = "normal"
             )
-            acc[run, 1, 2] <- as.numeric(Sys.time()) - start
+            acc[run, 2, 2] <- as.numeric(Sys.time()) - start
             dcein <- dcei
             dcei <- dcei$dce
-            acc[run, 1, 1] <- cor(
+            acc[run, 2, 1] <- cor(
                 as.vector(dcet), as.vector(dcei),
                 method = cormeth, use = "complete.obs"
             )
+            if ("basic" %in% bootstrap) {
+                start <- as.numeric(Sys.time())
+                dcei <- compute_differential_causal_effects(
+                    normal, dn,
+                    tumor, dt, method = "normal",
+                    bootstrap = TRUE
+                )
+                acc[run, 5, 2] <- as.numeric(Sys.time()) - start
+                dcein <- dcei
+                dcei <- dcei$dce
+                acc[run, 5, 1] <- cor(
+                    as.vector(dcet), as.vector(dcei),
+                    method = cormeth, use = "complete.obs"
+                )
+            }
         }
         ## simple correlation:
         start <- as.numeric(Sys.time())
@@ -156,13 +190,13 @@ simDce <- function(
         dcei[which(gtc != 0)] <-
             runif(sum(gtc != 0), lB[1], uB[2]) -
             runif(sum(gtc != 0), lB[1], uB[2])
-        acc[run, 2, 2] <- as.numeric(Sys.time()) - start
+        acc[run, 1, 2] <- as.numeric(Sys.time()) - start
         dcer <- list(dce = dcei, graph = as(gtc, "graphNEL"), dcefull = dcei)
         dceir <- dcer
         class(dceir) <- "dce"
         dcer <- dcer$dce
         coridx <- which(dcet != 0 | dcer != 0)
-        acc[run, 2, 1] <- cor(
+        acc[run, 1, 1] <- cor(
             as.vector(dcet), as.vector(dcer),
             method = cormeth, use = "complete.obs"
         )
