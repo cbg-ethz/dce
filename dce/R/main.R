@@ -113,16 +113,16 @@ compute_differential_causal_effects <- function(
         if (ceiling(nrow(df.expr.ctrl)*frac[1]) < ncol(df.expr.ctrl)) {
             frac[1] <- ncol(df.expr.ctrl)/nrow(df.expr.ctrl)
             print(
-                "too few control samples for subsampling
-                at this fraction; reset to:"
+                paste0("too few control samples for subsampling ",
+                "at this fraction; reset to:")
             )
             print(frac[1])
         }
         if (ceiling(nrow(df.expr.mut)*frac[2]) < ncol(df.expr.mut)) {
             frac[2] <- ncol(df.expr.mut)/nrow(df.expr.mut)
             print(
-                "too few tumor samples for subsampling
-                at this fraction; reset to:"
+                paste0("too few tumor samples for subsampling ",
+                "at this fraction; reset to:")
             )
             print(frac[2])
         }

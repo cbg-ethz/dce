@@ -76,9 +76,9 @@ module load samtools/1.2
 
 ##
 
-system2("scp dce/other/dce_sim.r euler.ethz.ch:dce_sim.r")
-system2("scp dce/R/main.r euler.ethz.ch:dce/R/main.R")
-system2("scp dce/R/utils.r euler.ethz.ch:dce/R/utils.R")
+system("scp CausalPathways/dce/other/dce_sim.r euler.ethz.ch:dce_sim.r")
+system("scp CausalPathways/dce/R/main.r euler.ethz.ch:dce/R/main.R")
+system("scp CausalPathways/dce/R/utils.r euler.ethz.ch:dce/R/utils.R")
 
 ##
 
