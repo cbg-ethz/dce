@@ -79,7 +79,7 @@ compute_causal_effects <- function(graph, df.expr) {
 #' @param frac the fraction of the data to sample, can either be one value
 #' or a vector of two for different fractions for control and tumor,
 #' respectively populations
-#' @param bootMethod if "diff" (default) bottstraps the differential causal
+#' @param bootMethod if "diff" (default) bootstraps the differential causal
 #' effects, if "cause", bootstraps on the causal effects
 #' @param ... further arguments passed to `fulllin`
 #' @author Kim Jablonski & Martin Pirkl
@@ -102,11 +102,11 @@ compute_differential_causal_effects <- function(
     method = "full",
     bootstrap = FALSE, runs = 100,
     replace = FALSE, frac = 0.5,
-    bootMethod = 0, ...
+    bootMethod = "diff", ...
 ) {
     if (bootstrap) {
         if (method %in% "full") {
-            strap <- 1
+            bootMethod <- "diff"
         }
         if (length(frac) == 1) { frac <- c(frac, frac) }
         if (ceiling(nrow(df.expr.ctrl)*frac[1]) < ncol(df.expr.ctrl)) {
