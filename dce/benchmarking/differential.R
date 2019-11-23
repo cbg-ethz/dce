@@ -36,7 +36,7 @@ graph.list <- purrr::imap(1:graph.num, function (x, i) {
   wt.graph <- randomDAG_2(node.num, edge.prob, negweight.range, posweight.range)
   mt.graph <- newWeights(wt.graph, negweight.range, posweight.range)
 
-  list(graph.idx=as.factor(i), wt.graph=wt.graph, mt.graph=mt.graph)
+  list(graph.idx=i, wt.graph=wt.graph, mt.graph=mt.graph)
 })
 
 graph.list %>% head(1)
@@ -153,12 +153,14 @@ df.bench <- purrr::map_df(graph.list, function(graph.pair) {
         ) %>%
           mutate(type="runtime")
       ) %>%
-      mutate(parameter=as.factor(x), graph.idx=graph.pair$graph.idx)
+      mutate(parameter=x, graph.idx=graph.pair$graph.idx)
   })
 }) %>%
   write_csv("benchmark_results.csv")
 
 
+
+df.bench$parameter <- fct_inseq(df.bench$parameter)
 df.bench %>%
   head
 
