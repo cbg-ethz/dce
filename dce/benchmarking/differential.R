@@ -36,7 +36,7 @@ negweight.range <- c(-1,-.1)
 posweight.range <- c(.1, 1)
 
 graph.list <- purrr::imap(1:graph.num, function (x, i) {
-  wt.graph <- randomDAG_2(node.num, edge.prob, negweight.range, posweight.range)
+  wt.graph <- pcalg::randomDAG(node.num, edge.prob, negweight.range, posweight.range)
   mt.graph <- newWeights(wt.graph, negweight.range, posweight.range)
 
   list(graph.idx=i, wt.graph=wt.graph, mt.graph=mt.graph)
