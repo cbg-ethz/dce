@@ -2,6 +2,7 @@ library(tidyverse)
 library(furrr)
 
 devtools::install("..", upgrade="never")
+library(dce)
 
 
 future::plan(multiprocess)
