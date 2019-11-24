@@ -61,15 +61,13 @@ graph.features %>% head(1)
 parameter.list <- c(50, 100, 1000)
 repetition.num <- 20
 
-tmp.list <- rep(parameter.list, each=repetition.num)
-pb <- progress_estimated(length(graph.list) * length(tmp.list))
-df.bench <- purrr::map_df(graph.list, function(graph.pair) {
-  purrr::map_df(tmp.list, function(x) {
-    pb$tick()$print()
+input.list <- purrr::cross_df(list(graph.pair=graph.list, parameter=parameter.list))
 
+purrr::pmap_dfr(input.list, function(graph.pair, parameter) {
+  purrr::map_df(seq_len(repetition.num), function(x) {
     # generate data
-    wt.X <- simulate(graph.pair$wt.graph, sample.num=x)
-    mt.X <- simulate(graph.pair$mt.graph, sample.num=x)
+    wt.X <- simulate(graph.pair$wt.graph, sample.num=parameter)
+    mt.X <- simulate(graph.pair$mt.graph, sample.num=parameter)
 
 
     # run models
@@ -153,7 +151,7 @@ df.bench <- purrr::map_df(graph.list, function(graph.pair) {
         ) %>%
           mutate(type="runtime")
       ) %>%
-      mutate(parameter=x, graph.idx=graph.pair$graph.idx)
+      mutate(parameter=parameter, graph.idx=graph.pair$graph.idx)
   })
 }) %>%
   write_csv("benchmark_results.csv")
