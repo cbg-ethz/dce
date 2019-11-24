@@ -1,5 +1,6 @@
 library(tidyverse)
 library(furrr)
+library(graph)
 
 devtools::install("..", upgrade="never")
 library(dce)
