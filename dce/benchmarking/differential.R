@@ -1,8 +1,10 @@
 library(tidyverse)
+library(furrr)
 
-devtools::load_all("..")
+devtools::install("..", upgrade="default")
 
 
+future::plan(multiprocess)
 set.seed(42)
 
 # helper functions
@@ -63,7 +65,7 @@ repetition.num <- 20
 
 input.list <- purrr::cross_df(list(graph.pair=graph.list, parameter=parameter.list))
 
-purrr::pmap_dfr(input.list, function(graph.pair, parameter) {
+furrr::future_pmap_dfr(input.list, function(graph.pair, parameter) {
   purrr::map_df(seq_len(repetition.num), function(x) {
     # generate data
     wt.X <- simulate(graph.pair$wt.graph, sample.num=parameter)
@@ -153,7 +155,7 @@ purrr::pmap_dfr(input.list, function(graph.pair, parameter) {
       ) %>%
       mutate(parameter=parameter, graph.idx=graph.pair$graph.idx)
   })
-}) %>%
+}, .progress=TRUE) %>%
   write_csv("benchmark_results.csv")
 
 
