@@ -163,8 +163,7 @@ df.bench <- furrr::future_pmap_dfr(input.list, function(graph.pair, parameter) {
   write_csv("benchmark_results.csv")
 
 
-
-df.bench$parameter <- fct_inseq(df.bench$parameter)
+df.bench$parameter <- fct_inseq(as_factor(df.bench$parameter))
 df.bench %>%
   head
 
