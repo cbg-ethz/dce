@@ -220,36 +220,44 @@ compute_differential_causal_effects <- function(
 #' This function takes a differential causal effects object and plots
 #' the dag with the dces
 #' @param x dce object
-#' @param dec rounding to dec decimals
 #' @param ... additional parameters
-#' @author Martin Pirkl
+#' @author Martin Pirkl, Kim Philipp Jablonski
 #' @method plot dce
 #' @return plot of dag and dces
 #' @export
-#' @importFrom methods as
-#' @importFrom grDevices colorRamp rgb
-#' @importFrom scales rescale
-#' @importFrom GGally ggnet2
-#' @importFrom dplyr %>%
-plot.dce <- function(x, dec=3, ...) {
-    adj <- as(x$graph, "matrix")
-    edge.weights <- x$dce[which(adj!=0)]
-
-    e.max <- max(abs(edge.weights))
-    color.mat <- colorRamp(
-        c("red", "blue")
-    )(
-        scales::rescale(edge.weights, from=c(-e.max,e.max))
-    ) / 255
-
-    # TODO: try using `mnem::plotDnf` to reduce "hairballing" of network
-    GGally::ggnet2(
-        adj,
-        label=TRUE,
-        edge.label=edge.weights %>% round(2) %>% as.character,
-        edge.size=scales::rescale(abs(edge.weights), c(1, 3)),
-        edge.color=apply(color.mat, 1, function(x) { rgb(x[1], x[2], x[3]) }),
-        arrow.size=12, arrow.gap=0.025,
-        ...
-    )
+#' @import tidyverse ggraph purrr
+#' @importFrom ggplot2 aes theme element_rect arrow unit
+#' @importFrom tidygraph as_tbl_graph activate mutate
+#' @importFrom rlang .data
+plot.dce <- function(x, ...) {
+    as_tbl_graph(x$graph) %>%
+        activate(edges) %>%
+        mutate(
+            dce=pmap_dbl(
+                list(.data$from, .data$to),
+                function (f, t) { x$dce[f, t] }
+            ),
+            label=.data$dce %>% round(2) %>% as.character
+        ) %>%
+    ggraph(layout="sugiyama") +
+        geom_edge_diagonal(
+            aes(
+                label=.data$label, width=abs(.data$dce), color=.data$dce,
+                start_cap=label_rect(.data$node1.name),
+                end_cap=label_rect(.data$node2.name)
+            ),
+            strength=0.5,
+            arrow=arrow(length=unit(3, "mm"))
+        ) +
+        geom_node_point(color="grey", size=8) +
+        geom_node_text(aes(label=.data$name)) +
+        scale_edge_color_gradient2(
+            low="red", mid="grey", high="blue",
+            midpoint=0
+        ) +
+        scale_edge_width(range=c(1, 3)) +
+        theme(
+            panel.background=element_rect(fill="white"),
+            legend.position="none"
+        )
 }
