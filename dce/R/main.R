@@ -51,9 +51,11 @@ compute_causal_effects <- function(graph, df.expr) {
     assertthat::are_equal(dim(cov.mat)[[1]], length(node.list))
 
     n <- length(node.list)
-    purrr::map_dfc(seq_len(n), function(x) {
+    ce.t <- purrr::map_dfc(seq_len(n), function(x) {
         pcalg::idaFast(x, seq_len(n), cov.mat, graph)
     })
+
+    t(ce.t)
 }
 #' Compute the differential causal effects
 #'
@@ -192,13 +194,13 @@ compute_differential_causal_effects <- function(
             }
             ce.ctrl <- ce.ctrl/runs
             ce.mut <- ce.mut/runs
-            res <- t(as.matrix(ce.ctrl - ce.mut))
+            res <- as.matrix(ce.ctrl - ce.mut)
         }
     } else {
         if (!(method %in% "full")) {
             ce.ctrl <- compute_causal_effects(graph.ctrl, df.expr.ctrl)
             ce.mut <- compute_causal_effects(graph.mut, df.expr.mut)
-            res <- t(as.matrix(ce.ctrl - ce.mut))
+            res <- as.matrix(ce.ctrl - ce.mut)
         } else {
             res <- fulllin(
                 graph.ctrl, df.expr.ctrl,
