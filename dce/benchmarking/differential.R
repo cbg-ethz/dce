@@ -31,13 +31,15 @@ simulate <- function(graph, noise.sd=1, sample.num=100) {
 graph.num <- 10
 
 node.num <- 30
-edge.prob <- .2
+avg.degree <- 5
 
-negweight.range <- c(-1,-.1)
-posweight.range <- c(.1, 1)
+weight.range <- c(-1, 1)
 
 graph.list <- purrr::imap(1:graph.num, function (x, i) {
-  wt.graph <- pcalg::randomDAG(node.num, edge.prob, negweight.range, posweight.range)
+  wt.graph <- pcalg::randDAG(
+    node.num, avg.degree,
+    method="er", wFUN=list(runif, min=weight.range[1], max=weight.range[2])
+  )
   mt.graph <- newWeights(wt.graph, negweight.range, posweight.range)
 
   list(graph.idx=i, wt.graph=wt.graph, mt.graph=mt.graph)

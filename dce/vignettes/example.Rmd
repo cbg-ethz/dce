@@ -54,12 +54,14 @@ its edge weights to generate the mutant network.
 
 ```{r}
 node.num <- 30
-edge.prob <- .2
+avg.degree <- 5
 
-negweight.range <- c(-1,-.1)
-posweight.range <- c(.1, 1)
+weight.range <- c(-1, 1)
 
-graph.wt <- randomDAG(node.num, edge.prob, negweight.range, posweight.range)
+graph.wt <- randDAG(
+    node.num, avg.degree,
+    method="er", wFUN=list(runif, min=weight.range[1], max=weight.range[2])
+)
 graph.mt <- newWeights(graph.wt, negweight.range, posweight.range)
 ```
 
