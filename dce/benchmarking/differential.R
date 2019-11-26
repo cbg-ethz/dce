@@ -40,7 +40,7 @@ graph.list <- purrr::imap(1:graph.num, function (x, i) {
     node.num, avg.degree,
     method="er", wFUN=list(runif, min=weight.range[1], max=weight.range[2])
   )
-  mt.graph <- newWeights(wt.graph, negweight.range, posweight.range)
+  mt.graph <- newWeights(wt.graph, weight.range[1], weight.range[2])
 
   list(graph.idx=i, wt.graph=wt.graph, mt.graph=mt.graph)
 })

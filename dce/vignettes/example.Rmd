@@ -62,7 +62,7 @@ graph.wt <- randDAG(
     node.num, avg.degree,
     method="er", wFUN=list(runif, min=weight.range[1], max=weight.range[2])
 )
-graph.mt <- newWeights(graph.wt, negweight.range, posweight.range)
+graph.mt <- newWeights(graph.wt, weight.range[1], weight.range[2])
 ```
 
 We can then simulate data on these two networks.
