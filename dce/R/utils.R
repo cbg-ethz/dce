@@ -162,7 +162,7 @@ fulllin <- function(g1, d1, g2, d2, conf = TRUE, diff = 1, ...) {
         for (i in seq_len(n)) {
             for (j in seq_len(n)) {
                 if (dagtc[i, j] == 1 & i != j) {
-                    Z <- pcalg::backdoor(mat1, i, j, type = "dag")
+                    Z <- which(mat1[, i] == 1) # pcalg::backdoor(mat1, i, j, type = "dag")
                     NX <- df[, i] * df$N
                     NZ <- df[, Z] * df$N
                     X <- df[, i]
