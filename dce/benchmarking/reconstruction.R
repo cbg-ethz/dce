@@ -17,7 +17,7 @@ source("../R/utils.R")
 # }
 # graph@edgeData@data <- w
 
-graph <- randomDAG_2(30, .2, c(-1,-.1), c(.1, 1))
+graph <- create_random_DAG(30, .2, c(-1,-.1), c(.1, 1))
 
 adj <- t(as(graph, "matrix"))
 

@@ -36,4 +36,5 @@ Imports:
     ggraph,
     tidygraph,
     ggplot2,
-    rlang
+    rlang,
+    expm

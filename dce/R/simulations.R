@@ -70,10 +70,10 @@ simDce <- function(
         } else {
             p2 <- prob
         }
-        normal <- randomDAG_2(n, p2, lB, uB)
-        tumor <- newWeights(normal, lB, uB, truepos) # resample edge weights
-        dn <- rmvDAG_2(m[2], normal, normpars = c(mu,sd))
-        dt <- rmvDAG_2(m[1], tumor, normpars = c(mu,sd))
+        normal <- create_random_DAG(n, p2, lB, uB)
+        tumor <- resample_edge_weights(normal, lB, uB, truepos)
+        dn <- simulate_data(normal, m[2], normpars = c(mu,sd))
+        dt <- simulate_data(tumor, m[1], normpars = c(mu,sd))
         gm <- as(normal, "matrix")
         gm[which(gm != 0)] <- 1
         cn <- trueEffects(normal)

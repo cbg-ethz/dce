@@ -8,11 +8,27 @@ Gsolve <- function(a, b=NULL, ...) {
     }
     return(x)
 }
-#' @noRd
+#' Simulate data
+#'
+#' Generate data for given DAG.
+#' @param dag Graph to simulate on
+#' @param n Number of samples
+#' @param errDist Noise distribution
+#' @param normpars Noise parameters
+#' @param mix Another noise parameter
+#' @param errMat Initial error matrix
+#' @param back.compatible Legacy compatibility
+#' @param use.node.names Keep node names
+#' @author Martin Pirkl
+#' @return graph
+#' @export
 #' @importFrom methods is
 #' @importFrom pcalg wgtMatrix
-rmvDAG_2 <- function (
-    n, dag,
+#' @examples
+#' dag <- create_random_DAG(30, 0.2)
+#' X <- simulate_data(dag)
+simulate_data <- function (
+    dag, n = 100,
     errDist = c("normal", "cauchy", "t4", "mix",
     "mixt3", "mixN100"), normpars = c(0,1),
     mix = 0.1,
@@ -61,12 +77,24 @@ rmvDAG_2 <- function (
     }
     else errMat
 }
-#' @noRd
+#' Create random DAG (topologically ordered)
+#'
+#' Creates a DAG according to given parameters.
+#' @param n Number of nodes
+#' @param prob Probability of creating an edge
+#' @param lB Lower bound for edge weights
+#' @param uB Upper bound for edge weights
+#' @param node.labels Node labels
+#' @author Martin Pirkl
+#' @return graph
+#' @export
 #' @importFrom methods new
-randomDAG_2 <- function (
+#' @examples
+#' dag <- create_random_DAG(30, 0.2)
+create_random_DAG <- function (
     n, prob,
-    lB = 0.1, uB = 1,
-    V = as.character(seq_len(n))
+    lB = -1, uB = 1,
+    node.labels = as.character(seq_len(n))
 ) {
     stopifnot(
         n >= 2, is.numeric(prob), length(prob) == 1, 0 <= prob, prob <= 1,
@@ -108,10 +136,10 @@ randomDAG_2 <- function (
     edL[[n - 1]] <- list(edges = edgeList, weights = weightList)
     if (nmbEdges > 0) {
         edL[[n]] <- list(edges = integer(0), weights = numeric(0))
-        names(edL) <- V
-        new("graphNEL", nodes = V, edgeL = edL, edgemode = "directed")
+        names(edL) <- node.labels
+        new("graphNEL", nodes = node.labels, edgeL = edL, edgemode = "directed")
     }
-    else new("graphNEL", nodes = V, edgemode = "directed")
+    else new("graphNEL", nodes = node.labels, edgemode = "directed")
 }
 #' Resample network edge weights
 #'
@@ -125,8 +153,8 @@ randomDAG_2 <- function (
 #' @export
 #' @examples
 #' graph.wt <- as(matrix(c(0,0,0,1,0,0,0,1,0), 3), "graphNEL")
-#' graph.mt <- newWeights(graph.wt)
-newWeights <- function(g, lB = -1, uB = 1, tp = 1) {
+#' graph.mt <- resample_edge_weights(graph.wt)
+resample_edge_weights <- function(g, lB = -1, uB = 1, tp = 1) {
     if (length(uB) == 1) { uB <- c(0, uB) }
     if (length(lB) == 1) { lB <- c(lB, 0) }
     n <- length(g@nodes)

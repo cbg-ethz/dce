@@ -102,9 +102,9 @@ compute_causal_effects <- function(graph, df.expr) {
 #' @import graph tidyverse
 #' @examples
 #' graph.wt <- as(matrix(c(0,0,0,1,0,0,0,1,0), 3), "graphNEL")
-#' graph.mt <- newWeights(graph.wt)
-#' X.wt <- pcalg::rmvDAG(100, graph.wt)
-#' X.mt <- pcalg::rmvDAG(100, graph.mt)
+#' graph.mt <- resample_edge_weights(graph.wt)
+#' X.wt <- simulate_data(graph.wt)
+#' X.mt <- simulate_data(graph.mt)
 #' compute_differential_causal_effects(graph.wt, X.wt, graph.mt, X.mt)
 compute_differential_causal_effects <- function(
     graph.ctrl, df.expr.ctrl,
@@ -142,20 +142,20 @@ compute_differential_causal_effects <- function(
         if (bootMethod %in% "diff") {
             dces <- 0
             for (b in seq_len(runs)) {
-                    df.expr.ctrl.sub <- df.expr.ctrl[
-                        sample(
-                            seq_len(nrow(df.expr.ctrl)),
-                            ceiling(nrow(df.expr.ctrl)*frac[1]),
-                            replace = replace
-                        ),
-                    ]
-                    df.expr.mut.sub <- df.expr.mut[
-                        sample(
-                            seq_len(nrow(df.expr.mut)),
-                            ceiling(nrow(df.expr.mut)*frac[2]),
-                            replace = replace
-                        ),
-                    ]
+                df.expr.ctrl.sub <- df.expr.ctrl[
+                    sample(
+                        seq_len(nrow(df.expr.ctrl)),
+                        ceiling(nrow(df.expr.ctrl)*frac[1]),
+                        replace = replace
+                    ),
+                ]
+                df.expr.mut.sub <- df.expr.mut[
+                    sample(
+                        seq_len(nrow(df.expr.mut)),
+                        ceiling(nrow(df.expr.mut)*frac[2]),
+                        replace = replace
+                    ),
+                ]
                 if (!(method %in% "full")) {
                     dces <- dces +
                         compute_differential_causal_effects(
