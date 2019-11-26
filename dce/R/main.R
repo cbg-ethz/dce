@@ -9,18 +9,25 @@
 #' @export
 #' @importFrom pcalg causalEffect
 #' @import graph tidyverse
+#' @importFrom expm %^%
 #' @examples
 #' graph.wt <- as(matrix(c(0,0,0,1,0,0,0,1,0), 3), "graphNEL")
 #' trueEffects(graph.wt)
 trueEffects <- function(g) {
-    n <- ncol(as(g, "matrix"))
-    te <- matrix(0, n, n)
-    for (i in seq_len(n-1)) {
-        for (j in i:n) {
-            te[i, j] <- causalEffect(g, j, i)
-        }
+    ## n <- ncol(as(g, "matrix"))
+    ## te <- matrix(0, n, n)
+    ## for (i in seq_len(n-1)) {
+    ##     for (j in i:n) {
+    ##         te[i, j] <- causalEffect(g, j, i)
+    ##     }
+    ## }
+    ## return(te)
+    a <- as(g, "matrix")
+    ae <- a
+    for (i in 2:nrow(a)) {
+        ae <- ae + a%^%i
     }
-    return(te)
+    return(ae)
 }
 
 #' Compute the causal effects
