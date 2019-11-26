@@ -33,6 +33,7 @@ simDce <- function(
     effRange=c(-1,0,0,1),truePos=1,perturb=0,cormeth="p",
     prob="runif",bootstrap="none",verbose=FALSE, ...
     ) {
+    cutoff <- 0.5
     getRates <- function(t, i, cutoff = 0.5) { # maybe AUC
         tp <- sum(abs(t) > cutoff & abs(i) > cutoff & sign(t) == sign(i))
         fn <- sum(abs(t) > cutoff & abs(i) <= cutoff)
@@ -251,6 +252,26 @@ plot.dceSim <- function(
         boxplot(
             x$acc[seq_len(runs), showMeth, 1], col = col,
             main="Correlation", , xaxt = "n", ...
+        )
+        axis(1, seq_len(length(showMeth)), labels = methNames)
+    }
+    if (4 %in% showFeat) {
+        tmp <- x$acc[seq_len(runs), showMeth, 3]/
+            (x$acc[seq_len(runs), showMeth, 3]+
+             x$acc[seq_len(runs), showMeth, 4])
+        boxplot(
+            tmp, col = col,
+            main="PPV", , xaxt = "n", ...
+        )
+        axis(1, seq_len(length(showMeth)), labels = methNames)
+    }
+    if (5 %in% showFeat) {
+        tmp <- x$acc[seq_len(runs), showMeth, 5]/
+            (x$acc[seq_len(runs), showMeth, 5]+
+             x$acc[seq_len(runs), showMeth, 6])
+        boxplot(
+            tmp, col = col,
+            main="NPV", , xaxt = "n", ...
         )
         axis(1, seq_len(length(showMeth)), labels = methNames)
     }
