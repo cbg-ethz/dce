@@ -1,5 +1,6 @@
 source("dce/R/main.R")
 source("dce/R/utils.R")
+source("dce/R/simulations.R")
 
 library(tidyverse)
 library(purrr)
@@ -10,21 +11,23 @@ library(igraph)
 library(matlib)
 library(nem)
 library(mnem)
+library(expm)
 
 m <- numeric(2)
 n <- as.numeric(commandArgs(TRUE)[1])
 m[1] <- as.numeric(commandArgs(TRUE)[2])
 m[2] <- as.numeric(commandArgs(TRUE)[3])
 sd <- as.numeric(commandArgs(TRUE)[4])
-runs <- as.numeric(commandArgs(TRUE)[5])
+simruns <- as.numeric(commandArgs(TRUE)[5])
 perturb <- as.numeric(commandArgs(TRUE)[6])
 p <- as.numeric(commandArgs(TRUE)[7])
 cormeth <- commandArgs(TRUE)[8]
+bootstrap <- commandArgs(TRUE)[9]
 
-## n <- 10; m <- c(1000, 100); mu <- 0; sd <- 1; runs <- 10; perturb <- 0; cormeth <- "p"; p <- "runif"
+## n <- 10; m <- c(20, 20); mu <- 0; sd <- 1; simruns <- 1; perturb <- 0; cormeth <- "p"; p <- "runif"; bootstrap <- "1"
 
-if (is.na(runs)) {
-    runs <- 100 # simulation runs
+if (is.na(simruns)) {
+    simruns <- 100 # simulation runs
 }
 if (is.na(perturb)) {
     perturb <- 0
@@ -32,7 +35,11 @@ if (is.na(perturb)) {
 if (is.na(p)) {
     p <- "runif" # edge prob of the dag
 }
-
+if (is.na(bootstrap)) {
+    bootstrap <- "none"
+} else if (bootstrap %in% "1") {
+    bootstrap <- c("basic", "full")
+}
 print(p)
 
 ## uniform limits:
@@ -46,7 +53,9 @@ uB <- c(0,1)
 truepos <- 0.9 # if we sample -1 to 1 this is not necessary # aida samples only pos effects
 mu <- 0
 
-simRes <- simDce(n,m,runs,mu,sd,c(lB,uB),truepos,perturb,cormeth,p,TRUE)
+## Rprof(line.profiling = TRUE)
+simRes <- simDce(n,m,simruns,mu,sd,c(lB,uB),truepos,perturb,cormeth,p,bootstrap=bootstrap,TRUE) # maybe additional bootstrap args: frac,replace,runs
+## summaryRprof()$sampling.time; head(summaryRprof(lines = "show")$by.self)
 
 for (filen in 1:100) {
     if (!file.exists(paste("dce/dce", n, paste(m, collapse = "_"), sd, perturb, p, filen, ".rda", sep = "_"))) {
@@ -57,6 +66,8 @@ for (filen in 1:100) {
 save(simRes, file = paste("dce/dce", n, paste(m, collapse = "_"), sd, perturb, p, filen, ".rda", sep = "_"))
 
 stop("success")
+
+plot.dceSim(simRes, col = col, border = col, showMeth = c(2,5,3,6,1,4), showFeat = c(1,2,3))
 
 ## euler commands (using local R version):
 
@@ -76,13 +87,14 @@ module load samtools/1.2
 
 ##
 
-system("scp CausalPathways/dce/other/dce_sim.r euler.ethz.ch:dce_sim.r")
-system("scp CausalPathways/dce/R/main.r euler.ethz.ch:dce/R/main.R")
-system("scp CausalPathways/dce/R/utils.r euler.ethz.ch:dce/R/utils.R")
+system("scp dce/other/dce_sim.r euler.ethz.ch:dce_sim.r")
+system("scp dce/R/main.r euler.ethz.ch:dce/R/main.R")
+system("scp dce/R/utils.r euler.ethz.ch:dce/R/utils.R")
+system("scp dce/R/simulations.r euler.ethz.ch:dce/R/simulations.R")
 
 ##
 
-ram=10000
+ram=5000
 
 rm error.txt
 
@@ -92,28 +104,29 @@ rm .RData
 
 queue=4
 
-genes=100 # 10, 50, 100
-perturb=0 # 0, 0.5, -0.5
+genes=50 # 10, 50, 100
+perturb=-0.5 # 0, 0.5, -0.5
 runs=1
 prob=runif
 cormeth=p
-tumor=1000 # depends on genes... 10*genes, 0.5*genes
+tumor=100 # depends on genes... 10*genes, 0.5*genes
 normal=100 # see above? 2*genes, 0.25*genes
+bootstrap=1
 
-bsub -M ${ram} -q normal.${queue}h -n 1 -e error.txt -o output.txt -R "rusage[mem=${ram}]" "R/bin/R --silent --no-save --args '${genes}' '${tumor}' '${normal}' '1' '${runs}' '${perturb}' '${prob}' '${cormeth}' < dce_sim.r"
+bsub -M ${ram} -q normal.${queue}h -n 1 -e error.txt -o output.txt -R "rusage[mem=${ram}]" "R/bin/R --silent --no-save --args '${genes}' '${tumor}' '${normal}' '1' '${runs}' '${perturb}' '${prob}' '${cormeth}' '${bootstrap}' < dce_sim.r"
 
-for i in {2..100}; do
-bsub -M ${ram} -q normal.${queue}h -n 1 -e error.txt -o output.txt -R "rusage[mem=${ram}]" "R/bin/R --silent --no-save --args '${genes}' '${tumor}' '${normal}' '1' '${runs}' '${perturb}' '${prob}' '${cormeth}' < dce_sim.r"
+for i in {1..10}; do
+bsub -M ${ram} -q normal.${queue}h -n 1 -e error.txt -o output.txt -R "rusage[mem=${ram}]" "R/bin/R --silent --no-save --args '${genes}' '${tumor}' '${normal}' '1' '${runs}' '${perturb}' '${prob}' '${cormeth}' '${bootstrap}' < dce_sim.r"
 done
 
 ## results:
 
 path <- "~/Mount/Euler/"
 
-n <- 100
-m <- c(1000,100)
+n <- 50
+m <- c(100,100)
 sd <- 1
-perturb <- 0
+perturb <- 0.5
 p <- "runif" # rand for random
 
 ## combine several into one matrix:
@@ -135,10 +148,9 @@ class(simRes) <- "dceSim"
 
 ## differential causal effects plus gtn features
 
-source("https://raw.githubusercontent.com/cbg-ethz/mnem/master/R/mnems_low.r")
 source("dce/R/main.R")
 col <- rgb(c(0.5,1,0,0.1),c(0.5,0,0,0.1),c(0.5,0,1,0.1),0.75)
-plot.dceSim(simRes, dens = 0, col = col, border = col, showMeth = c(2,3,1,4), methNames = c("random", "integrate", "separate", "correlation"), showFeat = c(1,2))
+plot.dceSim(simRes, col = col, border = col, showMeth = c(2,5,3,6,1,4), showFeat = c(1,2,3), methNames = c("basic", "basic\n bootstrap", "full", "full\n bootstrap", "random", "correlation"))
 
 ## correlated with network features:
 print(cor(acc[,,1], gtnfeat[,2]))
