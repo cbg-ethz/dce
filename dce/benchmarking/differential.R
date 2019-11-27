@@ -27,6 +27,38 @@ simulate <- function(graph, noise.sd=1, sample.num=100) {
   X
 }
 
+get_prediction_counts <- function(truth, inferred, cutoff=0.5) {
+  tp <- sum(
+    abs(truth) > cutoff &
+    abs(inferred) > cutoff &
+    sign(truth) == sign(inferred)
+  )
+  fn <- sum(
+    abs(truth) > cutoff &
+    abs(inferred) <= cutoff
+  )
+  fp <- sum(
+    abs(truth) <= cutoff &
+    abs(inferred) > cutoff |
+    (
+      abs(truth) > cutoff &
+      abs(inferred) > cutoff &
+      sign(truth) != sign(inferred)
+    )
+  )
+  tn <- sum(
+    abs(truth) <= cutoff &
+    abs(inferred) <= cutoff
+  )
+
+  return(data.frame(
+    true.positive=tp,
+    false.positive=fp,
+    true.negative=tn,
+    false.negative=fn
+  ))
+}
+
 
 # do benchmarking
 node.num <- 30
@@ -118,6 +150,19 @@ df.bench <- furrr::future_pmap_dfr(list(parameter=parameter.list), function(para
         dplyr::filter(rowname == "truth") %>%
         select(-rowname, -truth) %>%
         mutate(type="correlation"),
+
+      bind_rows(list(
+        cor=get_prediction_counts(df.res$truth, df.res$cor),
+        basic=get_prediction_counts(df.res$truth, df.res$basic),
+        basic.bootstrap=get_prediction_counts(df.res$truth, df.res$basic.bootstrap),
+        full=get_prediction_counts(df.res$truth, df.res$full),
+        full.bootstrap=get_prediction_counts(df.res$truth, df.res$full.bootstrap),
+        rand=get_prediction_counts(df.res$truth, df.res$rand)
+      ), .id="name") %>%
+        column_to_rownames(var="name") %>%
+        t %>%
+        as.data.frame %>%
+        rownames_to_column(var="type"),
 
       data.frame(
         cor=time.cor,
