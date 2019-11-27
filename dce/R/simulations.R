@@ -35,9 +35,12 @@ simDce <- function(
     ) {
     cutoff <- 0.5
     getRates <- function(t, i, cutoff = 0.5) { # maybe AUC
-        tp <- sum(abs(t) > cutoff & abs(i) > cutoff & sign(t) == sign(i))
+        tp <- sum(abs(t) > cutoff & abs(i) > cutoff &
+                  sign(t) == sign(i))
         fn <- sum(abs(t) > cutoff & abs(i) <= cutoff)
-        fp <- sum(abs(t) <= cutoff & abs(i) > cutoff)
+        fp <- sum(abs(t) <= cutoff & abs(i) > cutoff |
+                  (abs(t) > cutoff & abs(i) > cutoff &
+                   sign(t) != sign(i))
         tn <- sum(abs(t) <= cutoff & abs(i) <= cutoff)
         return(c(tp, fp, tn, fn))
     }
