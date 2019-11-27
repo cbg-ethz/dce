@@ -68,8 +68,9 @@ mt.samples <- 200
 parameter.list <- c(20, 50, 100)
 
 replicate.count <- 10
-df.bench <- furrr::future_pmap_dfr(list(parameter=parameter.list), function(parameter) {
-  purrr::map_df(seq_len(replicate.count), function(x) {
+df.bench <- furrr::future_pmap_dfr(
+  list(parameter=rep(parameter.list, each=replicate.count)),
+  function(parameter) {
     # handle parametrization
     node.num <- parameter
 
@@ -183,8 +184,9 @@ df.bench <- furrr::future_pmap_dfr(list(parameter=parameter.list), function(para
 
       ) %>%
       mutate(parameter=parameter)
-  })
-}, .progress=TRUE) %>%
+  },
+  .progress=TRUE
+) %>%
   write_csv("benchmark_results.csv")
 
 
