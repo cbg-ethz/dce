@@ -40,7 +40,7 @@ simDce <- function(
         fn <- sum(abs(t) > cutoff & abs(i) <= cutoff)
         fp <- sum(abs(t) <= cutoff & abs(i) > cutoff |
                   (abs(t) > cutoff & abs(i) > cutoff &
-                   sign(t) != sign(i))
+                   sign(t) != sign(i)))
         tn <- sum(abs(t) <= cutoff & abs(i) <= cutoff)
         return(c(tp, fp, tn, fn))
     }
