@@ -55,14 +55,11 @@ its edge weights to generate the mutant network.
 node.num <- 30
 edge.prob <- .2
 
-negweight.range <- c(-1, -.1)
-posweight.range <- c(.1, 1)
-
-graph.wt <- create_random_DAG(node.num, edge.prob, negweight.range, posweight.range)
-graph.mt <- resample_edge_weights(graph.wt, negweight.range, posweight.range)
+graph.wt <- create_random_DAG(node.num, edge.prob)
+graph.mt <- resample_edge_weights(graph.wt)
 ```
 
-We can then simulate data on these two networks.
+We can then simulate data for these two networks.
 
 ```{r}
 X.wt <- simulate_data(graph.wt)
