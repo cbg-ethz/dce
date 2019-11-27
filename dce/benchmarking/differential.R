@@ -33,7 +33,7 @@ node.num <- 30
 
 parameter.list <- c(50, 100, 1000)
 
-df.bench <- furrr::future_pmap_dfr(parameter.list, function(parameter) {
+df.bench <- furrr::future_pmap_dfr(list(parameter=parameter.list), function(parameter) {
   # create graphs
   edge.prob <- runif(1, 0, 1)
 
@@ -142,8 +142,8 @@ df.bench %>%
 
 # plotting
 df.bench %>%
-  dplyr::filter(type == "performance") %>%
-  gather("variable", "value", -parameter, -type, -graph.idx) %>%
+  dplyr::filter(type == "correlation") %>%
+  gather("variable", "value", -parameter, -type) %>%
 ggplot(aes(x=parameter, y=value, fill=variable)) +
   geom_boxplot() +
   ylim(-1, 1) +
@@ -152,7 +152,7 @@ ggplot(aes(x=parameter, y=value, fill=variable)) +
 
 df.bench %>%
   dplyr::filter(type == "runtime") %>%
-  gather("variable", "value", -parameter, -type, -graph.idx) %>%
+  gather("variable", "value", -parameter, -type) %>%
   mutate(value=lubridate::as.duration(value)) %>%
 ggplot(aes(x=parameter, y=value, fill=variable)) +
   geom_boxplot() +
