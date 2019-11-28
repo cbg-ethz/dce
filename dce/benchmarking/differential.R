@@ -10,6 +10,18 @@ future::plan(multiprocess)
 set.seed(42)
 
 
+# parse commandline arguments
+"
+Benchmark DCE performance and runtime.
+
+Usage:
+  differential.R
+  differential.R --variable NAME --values VALUES
+" -> doc
+
+arguments <- docopt::docopt(doc)
+
+
 # helper functions
 simulate <- function(graph, noise.sd=1, sample.num=100) {
   p <- length(nodes(graph))
@@ -60,19 +72,34 @@ get_prediction_counts <- function(truth, inferred, cutoff=0.5) {
 }
 
 
-# do benchmarking
+# parse parameters
 node.num <- 100
 wt.samples <- 200
 mt.samples <- 200
 
+varied.parameter <- "node.num"
 parameter.list <- c(20, 50, 100)
 
+if (!is.null(arguments$NAME)) {
+  varied.parameter <- arguments$NAME
+  parameter.list <- unlist(purrr::map(strsplit(arguments$VALUES, ",")[[1]], as.numeric))
+}
+
+
+# do benchmarking
 replicate.count <- 10
+
 df.bench <- furrr::future_pmap_dfr(
   list(parameter=rep(parameter.list, each=replicate.count)),
   function(parameter) {
     # handle parametrization
-    node.num <- parameter
+    switch(
+      varied.parameter,
+      node.num={ node.num <- parameter },
+      wt.samples={ wt.samples <- parameter },
+      mt.samples={ mt.samples <- parameter },
+    )
+
 
     # create graphs
     edge.prob <- runif(1, 0, 1)
@@ -202,7 +229,9 @@ df.bench %>%
 ggplot(aes(x=parameter, y=value, fill=variable)) +
   geom_boxplot() +
   ylim(-1, 1) +
+  ggtitle(paste("Variable:", varied.parameter)) +
   theme_minimal() +
+  theme(plot.title=element_text(hjust=0.5)) +
   ggsave("benchmark.pdf")
 
 df.bench %>%
@@ -212,5 +241,7 @@ df.bench %>%
 ggplot(aes(x=parameter, y=value, fill=variable)) +
   geom_boxplot() +
   scale_y_time() +
+  ggtitle(paste("Variable:", varied.parameter)) +
   theme_minimal() +
+  theme(plot.title=element_text(hjust=0.5)) +
   ggsave("runtime.pdf")
