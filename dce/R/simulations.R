@@ -19,6 +19,8 @@
 #' @param bootstrap can be either "none" (default) or include one or more
 #' of the following: "basic", "full"
 #' @param verbose verbose output, if TRUE
+#' @param test if TRUE, tests the pathway for enrichment
+#' @param testruns number of permutation runs for testing
 #' @param ... additional parameters for compute_differential_causal_effects
 #' @author Martin Pirkl
 #' @return accuracy for several different methods and statistics
@@ -31,7 +33,8 @@
 simDce <- function(
     nodes=5, samples=c(10,10),simruns=10,mu=0,sd=1,
     effRange=c(-1,0,0,1),truePos=1,perturb=0,cormeth="p",
-    prob="runif",bootstrap="none",verbose=FALSE, ...
+    prob="runif",bootstrap="none",verbose=FALSE,test=FALSE,
+    testruns=10,...
     ) {
     cutoff <- 0.5
     getRates <- function(t, i, cutoff = 0.5) { # maybe AUC
@@ -45,7 +48,7 @@ simDce <- function(
         return(c(tp, fp, tn, fn))
     }
     acc <- array(
-        0, c(simruns,6,6),
+        0, c(simruns,6,7),
         dimnames = list(
             runs = paste0("run_", seq_len(simruns)),
             methods = c(
@@ -56,7 +59,9 @@ simDce <- function(
                 "basic bootstrap",
                 "full boostrap"
             ),
-            metrics = c("correlation", "time", "tp", "fp", "tn", "fn")
+            metrics = c("correlation", "time",
+                        "tp", "fp", "tn", "fn",
+                        "p-value (perm)")
         )
     )
     gtnfeat <- array(
@@ -135,6 +140,13 @@ simDce <- function(
             method = cormeth, use = "complete.obs"
         )
         acc[run, 3, 3:6] <- getRates(dcet, dcei, cutoff = cutoff)
+        if (test) {
+            statsi <- sum(abs(dcei))
+            statsp <- compute_permutations(normal, dn,
+                                           tumor, dt, testruns,
+                                           method = "full", ...)
+            acc[run, 3, 7] <- sum(statsp >= statsi)/testruns
+        }
         if ("full" %in% bootstrap) {
             start <- as.numeric(Sys.time())
             dcei <- compute_differential_causal_effects(
@@ -201,6 +213,21 @@ simDce <- function(
             method = cormeth, use = "complete.obs"
         )
         acc[run, 4, 3:6] <- getRates(dcet, dcei, cutoff = cutoff)
+        if (test) {
+            corperm <- numeric(testruns)
+            for (i in seq_len(testruns)) {
+                dnp <- dn
+                colnames(dnp) <- sample(colnames(dn), ncol(dn))
+                dtp <- dt
+                colnames(dtp) <- sample(colnames(dt), ncol(dt))
+                dnp <- dnp[, order(colnames(dnp))]
+                dtp <- dtp[, order(colnames(dtp))]
+                cortmp <- (cor(dnp) - cor(dtp))*gtc
+                corperm[i] <- sum(abs(cortmp))
+            }
+            statsi <- sum(abs(dcec))
+            acc[run, 4, 7] <- sum(corperm >= statsi)/testruns
+        }
         ## random base line:
         dcei <- dceicn <- dceict <- dcet
         start <- as.numeric(Sys.time())
@@ -231,6 +258,7 @@ simDce <- function(
 #' Takes a dceSim object and produces a figure.
 #' @param x dceSim object
 #' @param col `col` argument passed to `boxplot`
+#' @param border `border` argument passed to `boxplot`
 #' @param showMeth which method results to plot
 #' @param showFeat which features to plot
 #' @param methNames method plot labels
@@ -242,10 +270,14 @@ simDce <- function(
 #' @importFrom nem transitive.reduction
 #' @importFrom graphics par boxplot axis
 plot.dceSim <- function(
-    x, col = seq_len(4),
+    x, col = seq_len(4), border = col,
     showMeth = seq_len(4), showFeat = 1, methNames = NULL,
     ...
-) {
+    ) {
+    if (length(col) < length(showMeth)) {
+        col <- c(col, col)
+        border <- c(border, border)
+    }
     runs <- dim(x$acc)[1]
     if (is.null(methNames)) {
         methNames <- dimnames(x$acc)[[2]][showMeth]
@@ -253,8 +285,8 @@ plot.dceSim <- function(
     par(mfrow=c(1,length(showFeat)))
     if (1 %in% showFeat) {
         boxplot(
-            x$acc[seq_len(runs), showMeth, 1], col = col,
-            main="Correlation", , xaxt = "n", ...
+            x$acc[seq_len(runs), showMeth, 1], col = col, border = border,
+            main="Correlation", xaxt = "n", ...
         )
         axis(1, seq_len(length(showMeth)), labels = methNames)
     }
@@ -263,8 +295,8 @@ plot.dceSim <- function(
             (x$acc[seq_len(runs), showMeth, 3]+
              x$acc[seq_len(runs), showMeth, 4])
         boxplot(
-            tmp, col = col,
-            main="PPV", , xaxt = "n", ...
+            tmp, col = col, border = border,
+            main="PPV", xaxt = "n", ...
         )
         axis(1, seq_len(length(showMeth)), labels = methNames)
     }
@@ -273,26 +305,39 @@ plot.dceSim <- function(
             (x$acc[seq_len(runs), showMeth, 5]+
              x$acc[seq_len(runs), showMeth, 6])
         boxplot(
-            tmp, col = col,
-            main="NPV", , xaxt = "n", ...
+            tmp, col = col, border = border,
+            main="NPV", xaxt = "n", ...
         )
         axis(1, seq_len(length(showMeth)), labels = methNames)
     }
     if (2 %in% showFeat) {
         boxplot(
-            x$acc[seq_len(runs), showMeth, 2], col = col,
-            main="Time", , xaxt = "n", ...
+            x$acc[seq_len(runs), showMeth, 2], col = col, border = border,
+            main="Time", xaxt = "n", ...
         )
         axis(1, seq_len(length(showMeth)), labels = methNames)
     }
     if (3 %in% showFeat) {
         boxplot(
-            x$gtnFeat[seq_len(runs), seq_len(4)], col = col,
-            main="Ground truth Features", , xaxt = "n", ...
+            x$gtnFeat[seq_len(runs), seq_len(4)], col = col, border = border,
+            main="Ground truth Features", xaxt = "n", ...
         )
         axis(
             1, seq_len(4),
             labels = dimnames(x$gtnFeat)[[2]][seq_len(4)]
         )
     }
+    if (6 %in% showFeat) {
+        showMeth2 <- showMeth[which(showMeth %in% c(3,4))]
+        boxplot(
+            x$acc[seq_len(runs), showMeth2, 7],
+            col = col[which(showMeth %in% c(3,4))],
+            border = border[which(showMeth %in% c(3,4))],
+            main="empirical p-value", xaxt = "n", ylim = c(0,1), ...
+        )
+        abline(h=c(0.1,0.05,0.01), col = rgb(0.5,0.5,0.5,0.75), lty = 2)
+        axis(1, seq_len(length(showMeth2)),
+             labels = methNames[which(showMeth %in% c(3,4))])
+    }
+
 }

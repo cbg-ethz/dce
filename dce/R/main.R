@@ -1,3 +1,42 @@
+#' Compute statistic for permutation test
+#'
+#' This function takes the same parameters as
+#' compute_differential_effects in addition to
+#' control parameters for the permutations.
+#' @param graph.ctrl DAG as a graphNEL object of the control population
+#' @param df.expr.ctrl Gene expression profiles with rows as observations and
+#' columns as variables (nodes) of the control population
+#' @param graph.mut DAG as a graphNEL object of the tumor population
+#' @param df.expr.mut genes expression profiles with rows as observations and
+#' columns as variables (nodes) of the tumor population
+#' @param runs number of permutations
+#' @param statistic function, which computes a single valued
+#' statistic for each run
+#' @param ... additional parameters for compute_differential_effects
+#' @author Martin Pirkl
+#' @return numeric vector with permutation statistics of length runs
+#' @export
+#' @examples
+#' 1
+compute_permutations <- function(normal, dn, tumor, dt, runs=10,
+                                 statistic = function(x)
+                                     return(sum(abs(x))),
+                                 ...) {
+    statistics <- numeric(runs)
+    for (i in seq_len(runs)) {
+        dnp <- dn
+        colnames(dnp) <- sample(colnames(dn), ncol(dn))
+        dtp <- dt
+        colnames(dtp) <- sample(colnames(dt), ncol(dt))
+        dnp <- dnp[, order(colnames(dnp))]
+        dtp <- dtp[, order(colnames(dtp))]
+        dceip <- compute_differential_causal_effects(normal, dnp,
+                                                     tumor, dtp, ...
+                                                     )
+        statistics[i] <- statistic(dceip$dce)
+    }
+    return(statistics)
+}
 #' Compute the true casual effects of a simulated dag
 #'
 #' This function takes a DAG with edgeweights as input and computes
