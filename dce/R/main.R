@@ -31,7 +31,7 @@ compute_permutations <- function(normal, dn, tumor, dt, runs=10,
         dnp <- dnp[, order(colnames(dnp))]
         dtp <- dtp[, order(colnames(dtp))]
         dceip <- compute_differential_causal_effects(normal, dnp,
-                                                     tumor, dtp, method = "full", ...
+                                                     tumor, dtp, ...
                                                      )
         statistics[i] <- statistic(dceip$dce)
     }
