@@ -99,6 +99,7 @@ df.bench <- furrr::future_pmap_dfr(
       wt.samples={ wt.samples <- parameter },
       mt.samples={ mt.samples <- parameter },
     )
+    print(paste("Setting", varied.parameter, "to", parameter))
 
 
     # create graphs
