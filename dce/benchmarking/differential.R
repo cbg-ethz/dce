@@ -96,6 +96,12 @@ df.bench <- furrr::future_pmap_dfr(
     mt.graph <- resample_edge_weights(wt.graph, negweight.range, posweight.range)
 
 
+    # compute graph features
+    tmp <- as(wt.graph, "matrix")
+    tmp[which(tmp != 0)] <- 1
+    graph.density <- sum(tmp) / length(tmp)
+
+
     # generate data
     wt.X <- simulate_data(wt.graph, n=wt.samples)
     mt.X <- simulate_data(mt.graph, n=mt.samples)
@@ -194,6 +200,15 @@ df.bench <- furrr::future_pmap_dfr(
         ) %>%
           mutate(type="runtime"),
 
+        data.frame(
+          cor=graph.density,
+          basic=graph.density,
+          basic.bootstrap=graph.density,
+          full=graph.density,
+          full.bootstrap=graph.density,
+          rand=graph.density
+        ) %>%
+          mutate(type="graph.density"),
       ) %>%
       mutate(parameter=parameter)
   },
@@ -232,3 +247,14 @@ ggplot(aes(x=parameter, y=value, fill=variable)) +
   theme_minimal() +
   theme(plot.title=element_text(hjust=0.5)) +
   ggsave("runtime.pdf")
+
+df.bench %>%
+  dplyr::filter(grepl("^graph.", type)) %>%
+  select(full, type, parameter) %>%
+ggplot(aes(x=parameter, y=full, fill=type)) +
+  geom_boxplot() +
+  ggtitle(paste("Variable:", varied.parameter)) +
+  ylab("value") +
+  theme_minimal() +
+  theme(plot.title=element_text(hjust=0.5)) +
+  ggsave("graph_features.pdf")
