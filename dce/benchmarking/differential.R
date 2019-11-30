@@ -215,6 +215,7 @@ ggplot(aes(x=parameter, y=value, fill=variable)) +
   geom_boxplot() +
   ylim(-1, 1) +
   ggtitle(paste("Variable:", varied.parameter)) +
+  ylab("performance") +
   theme_minimal() +
   theme(plot.title=element_text(hjust=0.5)) +
   ggsave("benchmark.pdf")
@@ -227,6 +228,7 @@ ggplot(aes(x=parameter, y=value, fill=variable)) +
   geom_boxplot() +
   scale_y_time() +
   ggtitle(paste("Variable:", varied.parameter)) +
+  ylab("runtime") +
   theme_minimal() +
   theme(plot.title=element_text(hjust=0.5)) +
   ggsave("runtime.pdf")
