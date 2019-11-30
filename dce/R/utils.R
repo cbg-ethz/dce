@@ -8,6 +8,41 @@ Gsolve <- function(a, b=NULL, ...) {
     }
     return(x)
 }
+#' @noRd
+get_prediction_counts <- function(truth, inferred, cutoff = 0.5) {
+    tp <- sum(
+        abs(truth) > cutoff &
+        abs(inferred) > cutoff &
+        sign(truth) == sign(inferred) & inferred != 0
+    )
+    fn <- sum(
+        abs(truth) > cutoff &
+        abs(inferred) <= cutoff &
+        inferred != 0
+    )
+    fp <- sum(
+        abs(truth) <= cutoff &
+        abs(inferred) > cutoff |
+        (
+            abs(truth) > cutoff &
+            abs(inferred) > cutoff &
+            sign(truth) != sign(inferred)
+        ) &
+        inferred != 0
+    )
+    tn <- sum(
+        abs(truth) <= cutoff &
+        abs(inferred) <= cutoff &
+        inferred != 0
+    )
+
+    return(data.frame(
+        true.positive=tp,
+        false.positive=fp,
+        true.negative=tn,
+        false.negative=fn
+    ))
+}
 #' Simulate data
 #'
 #' Generate data for given DAG.

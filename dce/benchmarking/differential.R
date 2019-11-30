@@ -22,40 +22,6 @@ Usage:
 arguments <- docopt::docopt(doc)
 
 
-# helper functions
-get_prediction_counts <- function(truth, inferred, cutoff=0.5) {
-  tp <- sum(
-    abs(truth) > cutoff &
-    abs(inferred) > cutoff &
-    sign(truth) == sign(inferred)
-  )
-  fn <- sum(
-    abs(truth) > cutoff &
-    abs(inferred) <= cutoff
-  )
-  fp <- sum(
-    abs(truth) <= cutoff &
-    abs(inferred) > cutoff |
-    (
-      abs(truth) > cutoff &
-      abs(inferred) > cutoff &
-      sign(truth) != sign(inferred)
-    )
-  )
-  tn <- sum(
-    abs(truth) <= cutoff &
-    abs(inferred) <= cutoff
-  )
-
-  return(data.frame(
-    true.positive=tp,
-    false.positive=fp,
-    true.negative=tn,
-    false.negative=fn
-  ))
-}
-
-
 # parse parameters
 node.num <- 100
 wt.samples <- 200
