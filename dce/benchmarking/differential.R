@@ -23,22 +23,6 @@ arguments <- docopt::docopt(doc)
 
 
 # helper functions
-simulate <- function(graph, noise.sd=1, sample.num=100) {
-  p <- length(nodes(graph))
-  adj <- t(as(graph, "matrix"))
-
-  X <- matrix(0, nrow=sample.num, ncol=p)
-  colnames(X) <- nodes(graph)
-  X[, 1] <- 1 + rnorm(sample.num, mean=0, sd=noise.sd) # activate root node
-
-  for (j in 2:p) {
-    ij <- 1:(j - 1)
-    X[, j] <- X[, j] + X[, ij, drop=FALSE] %*% adj[j, ij] + rnorm(sample.num, mean=0, sd=noise.sd)
-  }
-
-  X
-}
-
 get_prediction_counts <- function(truth, inferred, cutoff=0.5) {
   tp <- sum(
     abs(truth) > cutoff &
@@ -113,8 +97,8 @@ df.bench <- furrr::future_pmap_dfr(
 
 
     # generate data
-    wt.X <- simulate(wt.graph, sample.num=wt.samples)
-    mt.X <- simulate(mt.graph, sample.num=mt.samples)
+    wt.X <- simulate_data(wt.graph, n=wt.samples)
+    mt.X <- simulate_data(mt.graph, n=mt.samples)
 
 
     # run models
