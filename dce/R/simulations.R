@@ -129,7 +129,7 @@ simDce <- function(
             as.vector(dcet), as.vector(dcei),
             method = cormeth, use = "complete.obs"
         )
-        acc[run, 3, 3:6] <- get_prediction_counts(dcet, dcei, cutoff = cutoff)
+        acc[run, 3, 3:6] <- as.numeric(get_prediction_counts(dcet, dcei, cutoff = cutoff))
         if (test) {
             statsi <- sum(abs(dcei))
             statsp <- compute_permutations(normal, dn,
@@ -151,7 +151,7 @@ simDce <- function(
                 as.vector(dcet), as.vector(dcei),
                 method = cormeth, use = "complete.obs"
             )
-            acc[run, 6, 3:6] <- get_prediction_counts(dcet, dcei, cutoff = cutoff)
+            acc[run, 6, 3:6] <- as.numeric(get_prediction_counts(dcet, dcei, cutoff = cutoff))
         }
         ## normal
         Cn <- cov(dn)
@@ -172,7 +172,7 @@ simDce <- function(
                 as.vector(dcet), as.vector(dcei),
                 method = cormeth, use = "complete.obs"
             )
-            acc[run, 2, 3:6] <- get_prediction_counts(dcet, dcei, cutoff = cutoff)
+            acc[run, 2, 3:6] <- as.numeric(get_prediction_counts(dcet, dcei, cutoff = cutoff))
             if ("basic" %in% bootstrap) {
                 start <- as.numeric(Sys.time())
                 dcei <- compute_differential_causal_effects(
@@ -187,7 +187,7 @@ simDce <- function(
                     as.vector(dcet), as.vector(dcei),
                     method = cormeth, use = "complete.obs"
                 )
-                acc[run, 5, 3:6] <- get_prediction_counts(dcet, dcei, cutoff = cutoff)
+                acc[run, 5, 3:6] <- as.numeric(get_prediction_counts(dcet, dcei, cutoff = cutoff))
             }
         }
         ## simple correlation:
@@ -202,7 +202,7 @@ simDce <- function(
             as.vector(dcet), as.vector(dcec),
             method = cormeth, use = "complete.obs"
         )
-        acc[run, 4, 3:6] <- get_prediction_counts(dcet, dcei, cutoff = cutoff)
+        acc[run, 4, 3:6] <- as.numeric(get_prediction_counts(dcet, dcei, cutoff = cutoff))
         if (test) {
             corperm <- numeric(testruns)
             for (i in seq_len(testruns)) {
@@ -234,7 +234,7 @@ simDce <- function(
             as.vector(dcet), as.vector(dcer),
             method = cormeth, use = "complete.obs"
         )
-        acc[run, 1, 3:6] <- get_prediction_counts(dcet, dcei, cutoff = cutoff)
+        acc[run, 1, 3:6] <- as.numeric(get_prediction_counts(dcet, dcei, cutoff = cutoff))
         if (verbose) {
             cat(paste0(run, "."))
         }
