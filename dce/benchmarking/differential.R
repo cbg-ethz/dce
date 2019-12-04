@@ -65,7 +65,7 @@ df.bench <- furrr::future_pmap_dfr(
     # compute graph features
     tmp <- as(wt.graph, "matrix")
     tmp[which(tmp != 0)] <- 1
-    graph.density <- sum(tmp) / length(tmp)
+    graph.density <- sum(tmp) / ((dim(tmp)[1] * (dim(tmp)[1] - 1)) / 2)
 
 
     # generate data
