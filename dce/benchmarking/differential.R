@@ -78,7 +78,7 @@ df.bench <- furrr::future_pmap_dfr(
 
     time.tmp <- Sys.time()
     res.cor <- list(dce=cor(wt.X) - cor(mt.X))
-    time.cor <- Sys.time() - time.tmp
+    time.cor <- as.integer(difftime(Sys.time(), time.tmp, units="secs"))
 
     time.tmp <- Sys.time()
     res.basic <- compute_differential_causal_effects(
@@ -86,7 +86,7 @@ df.bench <- furrr::future_pmap_dfr(
       mt.graph, mt.X,
       method="basic"
     )
-    time.basic <- Sys.time() - time.tmp
+    time.basic <- as.integer(difftime(Sys.time(), time.tmp, units="secs"))
 
     time.tmp <- Sys.time()
     res.basic.bootstrap <- compute_differential_causal_effects(
@@ -94,7 +94,7 @@ df.bench <- furrr::future_pmap_dfr(
       mt.graph, mt.X,
       method="basic", bootstrap=TRUE
     )
-    time.basic.bootstrap <- Sys.time() - time.tmp
+    time.basic.bootstrap <- as.integer(difftime(Sys.time(), time.tmp, units="secs"))
 
     time.tmp <- Sys.time()
     res.full <- compute_differential_causal_effects(
@@ -102,7 +102,7 @@ df.bench <- furrr::future_pmap_dfr(
       mt.graph, mt.X,
       method="full"
     )
-    time.full <- Sys.time() - time.tmp
+    time.full <- as.integer(difftime(Sys.time(), time.tmp, units="secs"))
 
     time.tmp <- Sys.time()
     res.full.bootstrap <- compute_differential_causal_effects(
@@ -110,7 +110,7 @@ df.bench <- furrr::future_pmap_dfr(
       mt.graph, mt.X,
       method="full", bootstrap=TRUE
     )
-    time.full.bootstrap <- Sys.time() - time.tmp
+    time.full.bootstrap <- as.integer(difftime(Sys.time(), time.tmp, units="secs"))
 
     time.tmp <- Sys.time()
     tmp <- as.matrix(ground.truth$dce)
@@ -119,7 +119,7 @@ df.bench <- furrr::future_pmap_dfr(
       runif(sum(as.matrix(ground.truth$dce) != 0), negweight.range[1], posweight.range[2])
     )
     res.rand <- list(dce=tmp)
-    time.rand <- Sys.time() - time.tmp
+    time.rand <- as.integer(difftime(Sys.time(), time.tmp, units="secs"))
 
     df.res <- data.frame(
       truth=as.vector(ground.truth$dce),
