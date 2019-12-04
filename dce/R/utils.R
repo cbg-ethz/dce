@@ -8,7 +8,17 @@ Gsolve <- function(a, b=NULL, ...) {
     }
     return(x)
 }
-#' @noRd
+#' Compute true positive/... counts
+#'
+#' Useful for performance evaluations
+#' @param truth Ground truth
+#' @param inferred Computed results
+#' @param cutoff Threshold for classification
+#' @author Hans Wurst
+#' @return data.frame
+#' @export
+#' @examples
+#' get_prediction_counts(c(1,0), c(1,1))
 get_prediction_counts <- function(truth, inferred, cutoff = 0.5) {
     tp <- sum(
         abs(truth) > cutoff &
