@@ -37,7 +37,7 @@ if (!is.null(arguments$NAME)) {
 
 
 # do benchmarking
-replicate.count <- 100
+replicate.count <- 10
 
 df.bench <- furrr::future_pmap_dfr(
   list(parameter=rep(parameter.list, each=replicate.count)),
