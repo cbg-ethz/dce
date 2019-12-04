@@ -205,9 +205,10 @@ df.bench %>%
   dplyr::filter(type == "runtime") %>%
   gather("variable", "value", -parameter, -type) %>%
   mutate(value=lubridate::as.duration(value)) %>%
-ggplot(aes(x=parameter, y=value, fill=variable)) +
+ggplot(aes(x=parameter, y=value, fill=parameter)) +
   geom_boxplot() +
   scale_y_time() +
+  facet_wrap(~ variable, scales="free") +
   ggtitle(paste("Variable:", varied.parameter)) +
   ylab("runtime") +
   theme_minimal() +
