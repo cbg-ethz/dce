@@ -16,11 +16,12 @@
 #' @param cormeth method for the correlation accuracy (see ?cor)
 #' @param prob edge probability; either probability or "runif" to draw a
 #' probability in each run
-#' @param bootstrap can be either "none" (default) or include one or more
+#' @param bootstrap can be either 0 (default) or have the first argument as
+#' the number of runs and include one or more
 #' of the following: "basic", "full"
 #' @param verbose verbose output, if TRUE
-#' @param test if TRUE, tests the pathway for enrichment
-#' @param testruns number of permutation runs for testing
+#' @param test if greater than 0, tests the pathway for enrichment with
+#' test permutation runs
 #' @param ... additional parameters for compute_differential_causal_effects
 #' @author Martin Pirkl
 #' @return accuracy for several different methods and statistics
@@ -33,9 +34,9 @@
 simDce <- function(
     nodes=5, samples=c(10,10),simruns=10,mu=0,sd=1,
     effRange=c(-1,0,0,1),truePos=1,perturb=0,cormeth="p",
-    prob="runif",bootstrap="none",verbose=FALSE,test=FALSE,
-    testruns=10,...
+    prob="runif",bootstrap=0,verbose=FALSE,test=0,...
     ) {
+    bootruns <- as.numeric(bootstrap[1])
     cutoff <- 0.5
     acc <- array(
         0, c(simruns,6,7),
@@ -130,19 +131,19 @@ simDce <- function(
             method = cormeth, use = "complete.obs"
         )
         acc[run, 3, 3:6] <- as.numeric(get_prediction_counts(dcet, dcei, cutoff = cutoff))
-        if (test) {
+        if (test > 0) {
             statsi <- sum(abs(dcei))
             statsp <- compute_permutations(normal, dn,
-                                           tumor, dt, testruns,
+                                           tumor, dt, test,
                                            method = "full", ...)
-            acc[run, 3, 7] <- sum(statsp >= statsi)/testruns
+            acc[run, 3, 7] <- sum(statsp >= statsi)/test
         }
         if ("full" %in% bootstrap) {
             start <- as.numeric(Sys.time())
             dcei <- compute_differential_causal_effects(
                 normal, dn,
                 tumor, dt, method = "full",
-                bootstrap = TRUE, ...
+                bootstrap = TRUE, runs = bootruns, ...
             )
             acc[run, 6, 2] <- as.numeric(Sys.time()) - start
             dceifl <- dcei
@@ -178,7 +179,7 @@ simDce <- function(
                 dcei <- compute_differential_causal_effects(
                     normal, dn,
                     tumor, dt, method = "normal",
-                    bootstrap = TRUE, ...
+                    bootstrap = TRUE, runs = bootruns, ...
                 )
                 acc[run, 5, 2] <- as.numeric(Sys.time()) - start
                 dcein <- dcei
@@ -203,9 +204,9 @@ simDce <- function(
             method = cormeth, use = "complete.obs"
         )
         acc[run, 4, 3:6] <- as.numeric(get_prediction_counts(dcet, dcei, cutoff = cutoff))
-        if (test) {
-            corperm <- numeric(testruns)
-            for (i in seq_len(testruns)) {
+        if (test > 0) {
+            corperm <- numeric(test)
+            for (i in seq_len(test)) {
                 dnp <- dn
                 colnames(dnp) <- sample(colnames(dn), ncol(dn))
                 dtp <- dt
@@ -216,7 +217,7 @@ simDce <- function(
                 corperm[i] <- sum(abs(cortmp))
             }
             statsi <- sum(abs(dcec))
-            acc[run, 4, 7] <- sum(corperm >= statsi)/testruns
+            acc[run, 4, 7] <- sum(corperm >= statsi)/test
         }
         ## random base line:
         dcei <- dceicn <- dceict <- dcet
