@@ -151,7 +151,7 @@ compute_differential_causal_effects <- function(
     method = "full",
     bootstrap = FALSE, runs = 100,
     replace = FALSE, frac = 0.5,
-    bootMethod = "diff", ...
+    bootMethod = "diff", errDist = "normal", ...
 ) {
     if (bootstrap) {
         if (method %in% "full") {
@@ -207,7 +207,7 @@ compute_differential_causal_effects <- function(
                     dces <- dces + fulllin(
                         graph.ctrl, df.expr.ctrl.sub,
                         graph.mut, df.expr.mut.sub,
-                        ...
+                        errDist = errDist, ...
                     )$dce
                 }
             }
@@ -251,7 +251,7 @@ compute_differential_causal_effects <- function(
             res <- fulllin(
                 graph.ctrl, df.expr.ctrl,
                 graph.mut, df.expr.mut,
-                ...
+                errDist = errDist, ...
             )$dce
         }
     }
