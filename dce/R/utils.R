@@ -160,6 +160,12 @@ create_random_DAG <- function (
     )
     if (length(uB) == 1) { uB <- c(0, uB) }
     if (length(lB) == 1) { lB <- c(lB, 0) }
+    if (lB[1] - lB[2] == 0) {
+        lB <- uB
+    }
+    if (uB[1] - uB[2] == 0) {
+        uB <- lB
+    }
     edL <- vector("list", n)
     nmbEdges <- 0L
     for (i in seq_len(n - 2)) {
