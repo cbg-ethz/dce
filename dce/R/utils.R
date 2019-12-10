@@ -215,6 +215,12 @@ create_random_DAG <- function (
 resample_edge_weights <- function(g, lB = -1, uB = 1, tp = 1) {
     if (length(uB) == 1) { uB <- c(0, uB) }
     if (length(lB) == 1) { lB <- c(lB, 0) }
+    if (lB[1] - lB[2] == 0) {
+        lB <- uB
+    }
+    if (uB[1] - uB[2] == 0) {
+        uB <- lB
+    }
     n <- length(g@nodes)
     w <- g@edgeData@data
     arediff <- sample(seq_len(length(w)), floor(tp*length(w)))
@@ -256,18 +262,6 @@ fulllin <- function(g1, d1, g2, d2, conf = TRUE, diff = 1,
                     X <- df[, i]
                     Y <- df[, j]
                     Z <- df[, Z]
-                    Xglob <<- X
-                    Yglob <<- Y
-                    Zglob <<- Z
-                    NXglob <<- NX
-                    NZglob <<- NZ
-                    Nglob <<- df$N
-                    ## print("X")
-                    ## print(summary(X))
-                    ## print("Y")
-                    ## print(summary(Y))
-                    ## print("Z")
-                    ## print(summary(Z))
                     if (errDist %in% "normal") {
                         if (length(Z) > 0 & conf) {
                             C <- cov(cbind(Y, NX, NZ, X, Z))
@@ -289,7 +283,7 @@ fulllin <- function(g1, d1, g2, d2, conf = TRUE, diff = 1,
                         if (length(Z) > 0 & conf) {
                             NZ <- as(NZ, "matrix")
                             Z <- as(Z, "matrix")
-                            betas <- glm.nb(Y ~ NX + NZ + df$N + X + Z, link = "identity")
+                            betas <- glm.nb(Y ~ NX + df$N + X + NZ + Z, link = "identity")
                         } else {
                             betas <- glm.nb(Y ~ NX + df$N + X, link = "identity")
                         }
