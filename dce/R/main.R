@@ -255,6 +255,8 @@ compute_differential_causal_effects <- function(
             )$dce
         }
     }
+    mat <- as(graph.ctrl, "matrix")
+    mat[which(mat != 0)] <- 1
     dagtc <- nem::transitive.closure(mat1, mat=TRUE)
     dce <- dce*daggtc
     res <- list(dce = res, graph = graph.ctrl)
