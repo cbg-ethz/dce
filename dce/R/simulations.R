@@ -38,6 +38,9 @@ simDce <- function(
     errDist="normal",...
     ) {
     bootruns <- as.numeric(bootstrap[1])
+    if (bootruns == 0) {
+        bootstrap <- 0
+    }
     cutoff <- 0.5
     acc <- array(
         0, c(simruns,6,7),
@@ -49,7 +52,7 @@ simDce <- function(
                 "full",
                 "simple correlation",
                 "basic bootstrap",
-                "full boostrap"
+                "full bootstrap"
             ),
             metrics = c("correlation", "time",
                         "tp", "fp", "tn", "fn",

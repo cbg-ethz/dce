@@ -245,7 +245,7 @@ resample_edge_weights <- function(g, lB = -1, uB = 1, tp = 1) {
 #' @importFrom methods as
 #' @importFrom MASS glm.nb
 fulllin <- function(g1, d1, g2, d2, conf = TRUE, diff = 1,
-                    errDist = normal, ...) {
+                    errDist = "normal", ...) {
     mat1 <- as(g1, "matrix")
     mat2 <- as(g2, "matrix")
     mat1[which(mat1 != 0)] <- 1
