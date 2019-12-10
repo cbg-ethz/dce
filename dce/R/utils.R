@@ -191,7 +191,7 @@ create_random_DAG <- function (
     if (listSize > 0) {
         nmbEdges <- nmbEdges + 1
         edgeList <- n
-        weightList <- runif(1, min = lB, max = uB)
+        weightList <- runif(1, min = lB[1], max = uB[2])
     }
     else {
         edgeList <- integer(0)
