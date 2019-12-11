@@ -254,9 +254,7 @@ fulllin <- function(g1, d1, g2, d2, conf = TRUE, diff = 1,
     df <- rbind(d1, d2)
     colnames(df) <- paste0("X", seq_len(ncol(df)))
     df <- as.data.frame(cbind(df, N = c(rep(1, nrow(d1)), rep(0, nrow(d2)))))
-
     n <- length(nodes(g1))
-
     if (diff) {
         dce <- mat1*0
         for (i in seq_len(n)) {
@@ -264,15 +262,16 @@ fulllin <- function(g1, d1, g2, d2, conf = TRUE, diff = 1,
                 if (dagtc[i, j] == 1 & i != j) {
                     Z <- which(mat1[, i] == 1)
                     NX <- df[, i] * df$N
-                    NZ <- df[, Z] * df$N
+                    NZ <- as(df[, Z] * df$N, "matrix")
+                    N <- df$N
                     X <- df[, i]
                     Y <- df[, j]
-                    Z <- df[, Z]
+                    Z <- as(df[, Z], "matrix")
                     if (errDist %in% "normal") {
                         if (length(Z) > 0 & conf) {
-                            C <- cov(cbind(Y, NX, NZ, X, Z))
+                            C <- cov(cbind(Y, NX, NZ, N, X, Z))
                         } else {
-                            C <- cov(cbind(Y, NX, X))
+                            C <- cov(cbind(Y, NX, N, X))
                         }
                         if (Matrix::rankMatrix(C[2:nrow(C), 2:ncol(C)]) <
                             nrow(C[2:nrow(C), 2:ncol(C)])) {
@@ -285,13 +284,19 @@ fulllin <- function(g1, d1, g2, d2, conf = TRUE, diff = 1,
                             )
                         }
                         dce[i, j] <- betas[1]
+                        ## We still don't know what the function "lm"
+                        ## does in case of n > p (also a bit slower):
+                        ## if (length(Z) > 0 & conf) {
+                        ##     betas <- lm(Y ~ NX + N + X + NZ + Z)$coefficients
+                        ## } else {
+                        ##     betas <- lm(Y ~ NX + N + X)$coefficients
+                        ## }
+                        ## dce[i, j] <- betas[2]
                     } else if (errDist %in% "nbinom") {
                         if (length(Z) > 0 & conf) {
-                            NZ <- as(NZ, "matrix")
-                            Z <- as(Z, "matrix")
-                            betas <- glm.nb(Y ~ NX + df$N + X + NZ + Z, link = "identity")
+                            betas <- glm.nb(Y ~ NX + N + X + NZ + Z, link = "identity")
                         } else {
-                            betas <- glm.nb(Y ~ NX + df$N + X, link = "identity")
+                            betas <- glm.nb(Y ~ NX + N + X, link = "identity")
                         }
                         dce[i, j] <- betas$coefficients[2]
                     }
@@ -303,3 +308,4 @@ fulllin <- function(g1, d1, g2, d2, conf = TRUE, diff = 1,
     class(res) <- "dce"
     return(res)
 }
+
