@@ -119,8 +119,12 @@ simulate_data <- function (
         for (j in 2:p) {
             ij <- seq_len(j - 1)
             if (errDist %in% "nbinom") {
-                mu <- X[, j] + X[, ij, drop = FALSE] %*% weightMatrix[j,
-                    ij]
+                betas <- weightMatrix[j, ij]
+                betas[betas < 0] <- 0
+                mu <- X[, ij, drop = FALSE] %*% betas
+                if (any(mu == 0)) {
+                    mu <- rep(normpars[1], length(mu))
+                }
                 X[, j] <- rnegbin(n, mu = mu, theta = normpars[2])
                 X[is.na(X[, j]), j] <- 0
             } else {

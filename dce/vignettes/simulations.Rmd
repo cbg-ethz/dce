@@ -28,57 +28,35 @@ source("~/CausalPathways/dce/R/main.R"); source("~/CausalPathways/dce/R/utils.R"
 
 ```{r}
 ## local test parameters:
-## genes <- 10; tumor <- 200; normal <- 200; runs <- 100; perturb <- 0; prob <- "runif"; bootstrap <- c(0, "full", "basic"); truepos <- 1; test <- 0
-
-if (!exists("genes")) {
-    n <- 10
-} else {
-    n <- genes
-}
-if (!exists("tumor")) {
-    tumor <- 25
-}
-if (!exists("normal")) {
-    normal <- 25
-}
-m <- c(tumor, normal)
-if (!exists("test")) {
-    test <- 1
-}
-if (!exists("runs")) {
-    runs <- 10 # simulation runs
-}
-if (!exists("perturb")) {
-    perturb <- 0
-}
-if (!exists("prob")) {
-    p <- "runif" # edge prob of the dag
-} else {
-    p <- prob
-}
-if (!exists("bootstrap")) {
-    bootstrap <- 1
-}
-if (!exists("truepos")) {
-    truepos <- 1
-}
-if (!exists("dosave")) {
-    dosave <- 0
-}
+n <- 10; # genes
+m <- c(200, 200); # samples: wt and mut
+runs <- 10;
+perturb <- 0; # add (positive fraction) or remove (negative) edges
+p <- "runif"; # edge probability
+bootstrap <- c(0, "NB", "Gaussian"); # number of bootstrap runs for the methods 
+truepos <- 1; # fraction of true positive effects
+test <- 10 # number of permutations for empirical p-value
 
 ## fixed parameters:
-mu <- 0
-sd <- 0.1
-lB <- c(-1,0)
-uB <- c(0,1)
-method <- "p"
-errDist <- "normal"
+method <- "p" # correlation accuracy
+errDist <- "nbinom" # error model
+if (errDist %in% "normal") {
+    mu <- 0 # mean
+    sd <- 1 # standard deviation
+    lB <- c(-1,0) # negative effects intervall
+    uB <- c(0,1) # positive effects intervall
+} else {
+    mu <- 1000 # mean
+    sd <- 10 # standard deviation
+    lB <- c(0.5,1) # negative effects intervall
+    uB <- c(1,2) # positive effects intervall
+}
 
 source("/Users/mpirkl/Documents/CausalPathways/dce/R/main.R"); source("/Users/mpirkl/Documents/CausalPathways/dce/R/utils.R"); source("/Users/mpirkl/Documents/CausalPathways/dce/R/simulations.R"); 
 simRes <- simDce(n,m,runs,mu=mu,sd,c(lB,uB),truepos,perturb,method,p,bootstrap=bootstrap,verbose=TRUE,test=test,errDist=errDist)
 
 col <- rgb(c(0.5,1,0,0.1),c(0.5,0,0,0.1),c(0.5,0,1,0.1),0.75)
-plot.dceSim(simRes, col = col, border = col, showMeth = c(2,5,3,6,1,4), showFeat = c(2,1,4,5,6,3), methNames = c("basic", "basic\n bootstrap", "full", "full\n bootstrap", "random", "correlation"))
+plot.dceSim(simRes, col = col, border = col, showMeth = c(2,5,3,6,1,4), showFeat = c(2,1,4,5,6,3), methNames = c("Gaussian", "Gaussian\n bootstrap", "Neg. Binomial", "NB\n bootstrap", "random", "correlation"))
 
 if (dosave) {
     for (filen in 1:100) {
@@ -93,9 +71,7 @@ if (dosave) {
 }
 ```
 
-# Running the study on an hpc cluster (LSF system)
-
-load necessary modules
+# Stuff to be deleted pre-publication
 
 ```{bash, eval=FALSE}
 module add /cluster/apps/modules/modulefiles/new
@@ -104,21 +80,12 @@ module load bioconductor/3.6
 module load curl/7.49.1
 module load gmp/5.1.3
 module load texlive
-```
 
-Copy the updated files to the cluster environment. Set the folders accordingly (e.g. CausalPathways as the working directory).
-
-```{bash, eval=FALSE}
-## adjust paths
 scp CausalPathways/dce/R/main.r euler.ethz.ch:CausalPathways/dce/R/main.R
 scp CausalPathways/dce/R/utils.r euler.ethz.ch:CausalPathways/dce/R/utils.R
 scp CausalPathways/dce/R/simulations.r euler.ethz.ch:CausalPathways/dce/R/simulations.R
 scp CausalPathways/dce/vignettes/simulations.Rmd euler.ethz.ch:CausalPathways/dce/vignettes/simulations.Rmd
-```
 
-Setup the parameters and commands.
-
-```{bash, eval=FALSE}
 ram=1000
 
 rm error.txt
@@ -154,7 +121,6 @@ bsub -M ${ram} -q normal.${queue}h -n 1 -e error.txt -o output.txt \
 
 ```
 
-Read and combine results from one or several runs.
 
 ```{r}
 if (dosave) {

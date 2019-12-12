@@ -121,7 +121,14 @@ simDce <- function(
             adjn[which(adjn != 0)] <- 1
             normal <- tumor <- as(adjn, "graphNEL")
         }
-        ## full linear model:
+        ## negative binomial:
+        coracc <- function(x, y, method = cormeth) {
+            x <- as.vector(x)
+            y <- as.vector(y)
+            idx <- which(x != 0 & y != 0)
+            a <- cor(x[idx], y[idx], method = cormeth)
+            return(a)
+        }
         start <- as.numeric(Sys.time())
         dcei <- compute_differential_causal_effects(
             normal, dn,
@@ -131,17 +138,10 @@ simDce <- function(
         acc[run, 3, 2] <- as.numeric(Sys.time()) - start
         dceifl <- dcei
         dcei <- dcei$dce
-        acc[run, 3, 1] <- cor(
-            as.vector(dcet), as.vector(dcei),
-            method = cormeth, use = "complete.obs"
-        )
+        acc[run, 3, 1] <- coracc(dcet, dcei)
         acc[run, 3, 3:6] <- as.numeric(get_prediction_counts(dcet, dcei, cutoff = cutoff))
         if (test > 0) {
-            statsi <- sum(abs(dcei))
-            statsp <- compute_permutations(normal, dn,
-                                           tumor, dt, test,
-                                           method = "full", ...)
-            acc[run, 3, 7] <- sum(statsp >= statsi)/test
+            acc[run, 3, 7] <- compute_enrichment(normal, dn, dt, permutation_count = test)
         }
         if ("full" %in% bootstrap) {
             start <- as.numeric(Sys.time())
@@ -154,68 +154,58 @@ simDce <- function(
             acc[run, 6, 2] <- as.numeric(Sys.time()) - start
             dceifl <- dcei
             dcei <- dcei$dce
-            acc[run, 6, 1] <- cor(
-                as.vector(dcet), as.vector(dcei),
-                method = cormeth, use = "complete.obs"
-            )
+            acc[run, 6, 1] <- coracc(dcet, dcei)
             acc[run, 6, 3:6] <- as.numeric(get_prediction_counts(dcet, dcei, cutoff = cutoff))
         }
         ## normal
-        Cn <- cov(dn)
-        Ct <- cov(dt)
+        dnl <- dn # log(dn + 1)
+        dtl <- dt # log(dt + 1)
+        Cn <- cov(dnl)
+        Ct <- cov(dtl)
         if (
             Matrix::rankMatrix(Cn) == nrow(Cn) &
             Matrix::rankMatrix(Ct) == nrow(Ct)
         ) {
             start <- as.numeric(Sys.time())
             dcei <- compute_differential_causal_effects(
-                normal, dn,
-                tumor, dt, method = "normal", ...
+                normal, dnl,
+                tumor, dtl, method = "normal", ...
             )
             acc[run, 2, 2] <- as.numeric(Sys.time()) - start
             dcein <- dcei
             dcei <- dcei$dce
-            acc[run, 2, 1] <- cor(
-                as.vector(dcet), as.vector(dcei),
-                method = cormeth, use = "complete.obs"
-            )
+            acc[run, 2, 1] <- coracc(dcet, dcei)
             acc[run, 2, 3:6] <- as.numeric(get_prediction_counts(dcet, dcei, cutoff = cutoff))
             if ("basic" %in% bootstrap) {
                 start <- as.numeric(Sys.time())
                 dcei <- compute_differential_causal_effects(
-                    normal, dn,
-                    tumor, dt, method = "normal",
+                    normal, dnl,
+                    tumor, dtl, method = "normal",
                     bootstrap = TRUE, runs = bootruns, ...
                 )
                 acc[run, 5, 2] <- as.numeric(Sys.time()) - start
                 dcein <- dcei
                 dcei <- dcei$dce
-                acc[run, 5, 1] <- cor(
-                    as.vector(dcet), as.vector(dcei),
-                    method = cormeth, use = "complete.obs"
-                )
+                acc[run, 5, 1] <- coracc(dcet, dcei)
                 acc[run, 5, 3:6] <- as.numeric(get_prediction_counts(dcet, dcei, cutoff = cutoff))
             }
         }
         ## simple correlation:
         start <- as.numeric(Sys.time())
-        dcei <- (cor(dn) - cor(dt))*gtc
+        dcei <- (cor(dnl) - cor(dtl))*gtc
         acc[run, 4, 2] <- as.numeric(Sys.time()) - start
         dcec <- list(dce = dcei, graph = as(gtc, "graphNEL"), dcefull = dcei)
         dceic <- dcec
         class(dceic) <- "dce"
         dcec <- dcec$dce
-        acc[run, 4, 1] <- cor(
-            as.vector(dcet), as.vector(dcec),
-            method = cormeth, use = "complete.obs"
-        )
+        acc[run, 4, 1] <- coracc(dcet, dcec)
         acc[run, 4, 3:6] <- as.numeric(get_prediction_counts(dcet, dcei, cutoff = cutoff))
         if (test > 0) {
             corperm <- numeric(test)
             for (i in seq_len(test)) {
-                dnp <- dn
+                dnp <- dnl
                 colnames(dnp) <- sample(colnames(dn), ncol(dn))
-                dtp <- dt
+                dtp <- dtl
                 colnames(dtp) <- sample(colnames(dt), ncol(dt))
                 dnp <- dnp[, order(colnames(dnp))]
                 dtp <- dtp[, order(colnames(dtp))]
@@ -237,10 +227,7 @@ simDce <- function(
         class(dceir) <- "dce"
         dcer <- dcer$dce
         coridx <- which(dcet != 0 | dcer != 0)
-        acc[run, 1, 1] <- cor(
-            as.vector(dcet), as.vector(dcer),
-            method = cormeth, use = "complete.obs"
-        )
+        acc[run, 1, 1] <- coracc(dcet, dcei)
         acc[run, 1, 3:6] <- as.numeric(get_prediction_counts(dcet, dcei, cutoff = cutoff))
         if (verbose) {
             cat(paste0(run, "."))
