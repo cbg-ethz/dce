@@ -308,4 +308,3 @@ fulllin <- function(g1, d1, g2, d2, conf = TRUE, diff = 1,
     class(res) <- "dce"
     return(res)
 }
-

@@ -311,3 +311,44 @@ plot.dce <- function(x, ...) {
             legend.position="none"
         )
 }
+#' Compute pathway enrichment
+#'
+#' This function computes a p-value.
+#' @param graph DAG as a graphNEL object
+#' @param X.wt Expression values of wild type
+#' @param X.mt Expression values of mutant
+#' @param statistic Statistic to compute
+#' @param permutation_count How many permutations to do
+#' @author Hinz und Kunz
+#' @return Enrichment p-value
+#' @export
+#' @examples
+#' graph.wt <- as(matrix(c(0,0,0,1,0,0,0,1,0), 3), "graphNEL")
+#' graph.mt <- resample_edge_weights(graph.wt)
+#' X.wt <- simulate_data(graph.wt)
+#' X.mt <- simulate_data(graph.mt)
+#' compute_enrichment(graph.wt, X.wt, X.mt)
+compute_enrichment <- function(
+    graph, X.wt, X.mt,
+    statistic = function(x) { sum(abs(x)) },
+    permutation_count = 100,
+    ...
+) {
+    # compute observed statistic
+    dce.inferred <- compute_differential_causal_effects(
+        graph, X.wt, graph, X.mt, ...
+    )$dce
+    stats.inferred <- statistic(dce.inferred)
+
+    # compute permuted statistics
+    stats.permuted <- compute_permutations(
+        graph, X.wt, graph, X.mt,
+        runs = permutation_count,
+        statistic = statistic,
+        ...
+    )
+
+    # compute empirical p-value
+    p.value <- sum(stats.permuted >= stats.inferred) / permutation_count
+    return(p.value)
+}
