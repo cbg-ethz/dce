@@ -300,7 +300,7 @@ plot.dce <- function(x, ...) {
         geom_node_point(color="grey", size=8) +
         geom_node_text(aes(label=.data$name)) +
         scale_edge_color_gradient2(
-            low="red", mid="grey", high="blue",
+            low="red", mid="violet", high="blue",
             midpoint=0
         ) +
         scale_edge_width(range=c(1, 3)) +
