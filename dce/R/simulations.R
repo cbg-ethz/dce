@@ -34,9 +34,13 @@
 simDce <- function(
     nodes=5, samples=c(10,10),simruns=10,mu=0,sd=1,
     effRange=c(-1,0,0,1),truePos=1,perturb=0,cormeth="p",
-    prob="runif",bootstrap=0,verbose=FALSE,test=0,...
+    prob="runif",bootstrap=0,verbose=FALSE,test=0,
+    errDist="normal",...
     ) {
     bootruns <- as.numeric(bootstrap[1])
+    if (bootruns == 0) {
+        bootstrap <- 0
+    }
     cutoff <- 0.5
     acc <- array(
         0, c(simruns,6,7),
@@ -48,7 +52,7 @@ simDce <- function(
                 "full",
                 "simple correlation",
                 "basic bootstrap",
-                "full boostrap"
+                "full bootstrap"
             ),
             metrics = c("correlation", "time",
                         "tp", "fp", "tn", "fn",
@@ -80,8 +84,8 @@ simDce <- function(
         }
         normal <- create_random_DAG(n, p2, lB, uB)
         tumor <- resample_edge_weights(normal, lB, uB, truepos)
-        dn <- simulate_data(normal, m[2], normpars = c(mu,sd))
-        dt <- simulate_data(tumor, m[1], normpars = c(mu,sd))
+        dn <- simulate_data(normal, m[2], normpars = c(mu,sd), errDist=errDist)
+        dt <- simulate_data(tumor, m[1], normpars = c(mu,sd), errDist=errDist)
         gm <- as(normal, "matrix")
         gm[which(gm != 0)] <- 1
         cn <- trueEffects(normal)
@@ -121,7 +125,8 @@ simDce <- function(
         start <- as.numeric(Sys.time())
         dcei <- compute_differential_causal_effects(
             normal, dn,
-            tumor, dt, method = "full", ...
+            tumor, dt, method = "full",
+            errDist = errDist, ...
         )
         acc[run, 3, 2] <- as.numeric(Sys.time()) - start
         dceifl <- dcei
@@ -143,7 +148,8 @@ simDce <- function(
             dcei <- compute_differential_causal_effects(
                 normal, dn,
                 tumor, dt, method = "full",
-                bootstrap = TRUE, runs = bootruns, ...
+                bootstrap = TRUE, runs = bootruns,
+                errDist = errDist, ...
             )
             acc[run, 6, 2] <- as.numeric(Sys.time()) - start
             dceifl <- dcei

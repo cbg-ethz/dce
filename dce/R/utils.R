@@ -69,13 +69,14 @@ get_prediction_counts <- function(truth, inferred, cutoff = 0.5) {
 #' @export
 #' @importFrom methods is
 #' @importFrom pcalg wgtMatrix
+#' @importFrom MASS rnegbin
 #' @examples
 #' dag <- create_random_DAG(30, 0.2)
 #' X <- simulate_data(dag)
 simulate_data <- function (
     dag, n = 100,
     errDist = c("normal", "cauchy", "t4", "mix",
-    "mixt3", "mixN100"), normpars = c(0,1),
+    "mixt3", "mixN100", "nbinom"), normpars = c(0,1),
     mix = 0.1,
     errMat = NULL, back.compatible = FALSE,
     use.node.names = !back.compatible
@@ -99,6 +100,8 @@ simulate_data <- function (
         errMat <- switch(
             errDist,
             normal = matrix(rnorm(n * p, normpars[1], normpars[2]), nrow = n),
+            nbinom = matrix(rnegbin(n * p, mu = normpars[1],
+                                    theta = normpars[2]), nrow = n),
             cauchy = matrix(rcauchy(n * p), nrow = n),
             t4 = matrix(rt(n * p, df = 4), nrow = n),
             mix = eMat(rcauchy(round(mix * n * p))),
@@ -115,10 +118,20 @@ simulate_data <- function (
         X <- errMat
         for (j in 2:p) {
             ij <- seq_len(j - 1)
-            X[, j] <- X[, j] + X[, ij, drop = FALSE] %*% weightMatrix[j,
-                ij]
+            if (errDist %in% "nbinom") {
+                mu <- X[, j] + X[, ij, drop = FALSE] %*% weightMatrix[j,
+                    ij]
+                X[, j] <- rnegbin(n, mu = mu, theta = normpars[2])
+                X[is.na(X[, j]), j] <- 0
+            } else {
+                X[, j] <- X[, j] + X[, ij, drop = FALSE] %*% weightMatrix[j,
+                    ij]
+            }
         }
-        X
+        ## add drop ins (should only affect nbinom)
+        Genes0 <- which(apply(X, 2, sum) == 0)
+        X[, Genes0] <- rnegbin(length(Genes0), mu = 1, theta = normpars[2])
+        return(X)
     }
     else errMat
 }
@@ -147,6 +160,12 @@ create_random_DAG <- function (
     )
     if (length(uB) == 1) { uB <- c(0, uB) }
     if (length(lB) == 1) { lB <- c(lB, 0) }
+    if (lB[1] - lB[2] == 0) {
+        lB <- uB
+    }
+    if (uB[1] - uB[2] == 0) {
+        uB <- lB
+    }
     edL <- vector("list", n)
     nmbEdges <- 0L
     for (i in seq_len(n - 2)) {
@@ -172,7 +191,7 @@ create_random_DAG <- function (
     if (listSize > 0) {
         nmbEdges <- nmbEdges + 1
         edgeList <- n
-        weightList <- runif(1, min = lB, max = uB)
+        weightList <- runif(1, min = lB[1], max = uB[2])
     }
     else {
         edgeList <- integer(0)
@@ -202,6 +221,12 @@ create_random_DAG <- function (
 resample_edge_weights <- function(g, lB = -1, uB = 1, tp = 1) {
     if (length(uB) == 1) { uB <- c(0, uB) }
     if (length(lB) == 1) { lB <- c(lB, 0) }
+    if (lB[1] - lB[2] == 0) {
+        lB <- uB
+    }
+    if (uB[1] - uB[2] == 0) {
+        uB <- lB
+    }
     n <- length(g@nodes)
     w <- g@edgeData@data
     arediff <- sample(seq_len(length(w)), floor(tp*length(w)))
@@ -218,7 +243,9 @@ resample_edge_weights <- function(g, lB = -1, uB = 1, tp = 1) {
 }
 #' @noRd
 #' @importFrom methods as
-fulllin <- function(g1, d1, g2, d2, conf = TRUE, diff = 1, ...) {
+#' @importFrom MASS glm.nb
+fulllin <- function(g1, d1, g2, d2, conf = TRUE, diff = 1,
+                    errDist = "normal", ...) {
     mat1 <- as(g1, "matrix")
     mat2 <- as(g2, "matrix")
     mat1[which(mat1 != 0)] <- 1
@@ -227,36 +254,52 @@ fulllin <- function(g1, d1, g2, d2, conf = TRUE, diff = 1, ...) {
     df <- rbind(d1, d2)
     colnames(df) <- paste0("X", seq_len(ncol(df)))
     df <- as.data.frame(cbind(df, N = c(rep(1, nrow(d1)), rep(0, nrow(d2)))))
-
     n <- length(nodes(g1))
-
     if (diff) {
         dce <- mat1*0
         for (i in seq_len(n)) {
             for (j in seq_len(n)) {
                 if (dagtc[i, j] == 1 & i != j) {
-                    Z <- which(mat1[, i] == 1) # pcalg::backdoor(mat1, i, j, type = "dag")
+                    Z <- which(mat1[, i] == 1)
                     NX <- df[, i] * df$N
-                    NZ <- df[, Z] * df$N
+                    NZ <- as(df[, Z] * df$N, "matrix")
+                    N <- df$N
                     X <- df[, i]
                     Y <- df[, j]
-                    Z <- df[, Z]
-                    if (length(Z) > 0 & conf) {
-                        C <- cov(cbind(Y, NX, NZ, X, Z))
-                    } else {
-                        C <- cov(cbind(Y, NX, X))
+                    Z <- as(df[, Z], "matrix")
+                    if (errDist %in% "normal") {
+                        if (length(Z) > 0 & conf) {
+                            C <- cov(cbind(Y, NX, NZ, N, X, Z))
+                        } else {
+                            C <- cov(cbind(Y, NX, N, X))
+                        }
+                        if (Matrix::rankMatrix(C[2:nrow(C), 2:ncol(C)]) <
+                            nrow(C[2:nrow(C), 2:ncol(C)])) {
+                            betas <- Gsolve(
+                                C[2:nrow(C), 2:ncol(C)], C[2:nrow(C), 1]
+                            )
+                        } else {
+                            betas <- solve(
+                                C[2:nrow(C), 2:ncol(C)], C[2:nrow(C), 1]
+                            )
+                        }
+                        dce[i, j] <- betas[1]
+                        ## We still don't know what the function "lm"
+                        ## does in case of n > p (also a bit slower):
+                        ## if (length(Z) > 0 & conf) {
+                        ##     betas <- lm(Y ~ NX + N + X + NZ + Z)$coefficients
+                        ## } else {
+                        ##     betas <- lm(Y ~ NX + N + X)$coefficients
+                        ## }
+                        ## dce[i, j] <- betas[2]
+                    } else if (errDist %in% "nbinom") {
+                        if (length(Z) > 0 & conf) {
+                            betas <- glm.nb(Y ~ NX + N + X + NZ + Z, link = "identity")
+                        } else {
+                            betas <- glm.nb(Y ~ NX + N + X, link = "identity")
+                        }
+                        dce[i, j] <- betas$coefficients[2]
                     }
-                    if (Matrix::rankMatrix(C[2:nrow(C), 2:ncol(C)]) <
-                        nrow(C[2:nrow(C), 2:ncol(C)])) {
-                        betas <- Gsolve(
-                            C[2:nrow(C), 2:ncol(C)], C[2:nrow(C), 1]
-                        )
-                    } else {
-                        betas <- solve(
-                            C[2:nrow(C), 2:ncol(C)], C[2:nrow(C), 1]
-                        )
-                    }
-                    dce[i, j] <- betas[1]
                 }
             }
         }
@@ -265,3 +308,4 @@ fulllin <- function(g1, d1, g2, d2, conf = TRUE, diff = 1, ...) {
     class(res) <- "dce"
     return(res)
 }
+

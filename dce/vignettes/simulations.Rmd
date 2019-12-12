@@ -10,31 +10,25 @@ vignette: >
     %\VignetteEncoding{UTF-8}
 ---
 
+```{r global_options, include=FALSE}
+knitr::opts_chunk$set(message=FALSE, out.width="125%", fig.align="center",
+                      strip.white=TRUE, warning=FALSE, tidy=TRUE,
+                      fig.height = 4, fig.width = 8, error=FALSE)
+fig.cap0 <- "Boxplots of simulation results."
+```
+
 # Introduction
 
 In this vignette we conduct a simulation study. This study shows that we can recover differential causal effects with high accuracy compared to other methods. First, we install and load the package. Make sure to adjust the paths through the vignette.
 
 ```{r}
-library(dce)
-# source("~/CausalPathways/dce/R/main.R")
-# source("~/CausalPathways/dce/R/utils.R")
-# source("~/CausalPathways/dce/R/simulations.R")
-# library(tidyverse)
-# library(purrr)
-# library(graph)
-# library(pcalg)
-# library(assertthat)
-# library(igraph)
-# library(matlib)
-# library(nem)
-# library(mnem)
-# library(expm)
-# library(Linnorm)
+## library(dce)
+source("~/CausalPathways/dce/R/main.R"); source("~/CausalPathways/dce/R/utils.R"); source("~/CausalPathways/dce/R/simulations.R"); library(tidyverse); library(purrr); library(graph); library(pcalg); library(assertthat); library(igraph); library(matlib); library(nem); library(mnem); library(expm); library(Linnorm); library(MASS)
 ```
 
 ```{r}
 ## local test parameters:
-## n <- 10; m <- c(200, 200); runs <- 1; perturb <- 0; p <- "runif"; bootstrap <- 0; truepos <- 1; test <- 10
+## genes <- 10; tumor <- 200; normal <- 200; runs <- 100; perturb <- 0; prob <- "runif"; bootstrap <- c(0, "full", "basic"); truepos <- 1; test <- 0
 
 if (!exists("genes")) {
     n <- 10
@@ -62,7 +56,7 @@ if (!exists("prob")) {
 } else {
     p <- prob
 }
-if (!exists("bstrap")) {
+if (!exists("bootstrap")) {
     bootstrap <- 1
 }
 if (!exists("truepos")) {
@@ -74,17 +68,17 @@ if (!exists("dosave")) {
 
 ## fixed parameters:
 mu <- 0
-sd <- 1
-lB <- c(0,-0)
+sd <- 0.1
+lB <- c(-1,0)
 uB <- c(0,1)
 method <- "p"
+errDist <- "normal"
 
-simRes <- simDce(n,m,runs,mu,sd,c(lB,uB),truepos,perturb,method,p,bootstrap=bootstrap,TRUE,test=test)
-# 
-# pdf("temp.pdf", width = 15, height = 3)
-# col <- rgb(c(0.5,1,0,0.1),c(0.5,0,0,0.1),c(0.5,0,1,0.1),0.75)
-# plot.dceSim(simRes, col = col, border = col, showMeth = c(2,5,3,6,1,4), showFeat = c(1,4,5,6,3), methNames = c("basic", "basic\n bootstrap", "full", "full\n bootstrap", "random", "correlation"))
-# dev.off()
+source("/Users/mpirkl/Documents/CausalPathways/dce/R/main.R"); source("/Users/mpirkl/Documents/CausalPathways/dce/R/utils.R"); source("/Users/mpirkl/Documents/CausalPathways/dce/R/simulations.R"); 
+simRes <- simDce(n,m,runs,mu=mu,sd,c(lB,uB),truepos,perturb,method,p,bootstrap=bootstrap,verbose=TRUE,test=test,errDist=errDist)
+
+col <- rgb(c(0.5,1,0,0.1),c(0.5,0,0,0.1),c(0.5,0,1,0.1),0.75)
+plot.dceSim(simRes, col = col, border = col, showMeth = c(2,5,3,6,1,4), showFeat = c(2,1,4,5,6,3), methNames = c("basic", "basic\n bootstrap", "full", "full\n bootstrap", "random", "correlation"))
 
 if (dosave) {
     for (filen in 1:100) {
@@ -95,7 +89,6 @@ if (dosave) {
             break()
         }
     }
-    
     save(simRes, file = filename)
 }
 ```
@@ -113,7 +106,7 @@ module load gmp/5.1.3
 module load texlive
 ```
 
-Copy the files to the cluster environment. Set the folders accordingly (e.g. CausalPathways as the working directory).
+Copy the updated files to the cluster environment. Set the folders accordingly (e.g. CausalPathways as the working directory).
 
 ```{bash, eval=FALSE}
 ## adjust paths
@@ -136,14 +129,14 @@ rm .RData
 
 queue=4
 
-genes=10
+genes=100
 perturb=0 # negative or positive fraction of edges to delete or add
 runs=1
 tumor=200 # samples
 normal=200
-bstrap=1 # if > 0 runs bootstrapping on the data
+bstrap=0 # if > 0 runs bootstrapping on the data
 truepos=1 # if < 1, sets some causal effects equal between the tumor and normal
-test=1 # number of permutations for empricial p-value
+test=0 # number of permutations for empricial p-value
 dosave=1; # save the run(s)
 
 ## knit several times to accumulate several runs
@@ -185,7 +178,7 @@ if (dosave) {
 
 Plot the results.
 
-```{r, fig.height = 5, fig.width = 20, fig.cap = "boxplots of the simulations results"}
+```{r, fig.cap=fig.cap0}
 col <- rgb(c(0.5,1,0,0.1),c(0.5,0,0,0.1),c(0.5,0,1,0.1),0.75)
 plot.dceSim(simRes, col = col, border = col, showMeth = c(2,5,3,6,1,4),
             showFeat = c(1,4,5,6,3),
