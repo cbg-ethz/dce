@@ -43,143 +43,148 @@ replicate.count <- 100
 
 df.bench <- purrr::pmap_dfr(
   list(parameter=rep(parameter.list, each=replicate.count)),
-  function(parameter) {
-    # handle parametrization
-    switch(
-      varied.parameter,
-      node.num={ node.num <- parameter },
-      wt.samples={ wt.samples <- parameter },
-      mt.samples={ mt.samples <- parameter },
-    )
-    print(glue::glue("node.num={node.num} wt.samples={wt.samples} mt.samples={mt.samples}"))
+  purrr::possibly(
+    function(parameter) {
+      # handle parametrization
+      switch(
+        varied.parameter,
+        node.num={ node.num <- parameter },
+        wt.samples={ wt.samples <- parameter },
+        mt.samples={ mt.samples <- parameter },
+      )
+      print(glue::glue("node.num={node.num} wt.samples={wt.samples} mt.samples={mt.samples}"))
+
+      if (node.num==100) {error}
+
+      # create graphs
+      edge.prob <- runif(1, 0, 1)
+
+      negweight.range <- c(-1, 0)
+      posweight.range <- c(0, 1)
+
+      wt.graph <- create_random_DAG(node.num, edge.prob, negweight.range, posweight.range)
+      mt.graph <- resample_edge_weights(wt.graph, negweight.range, posweight.range)
 
 
-    # create graphs
-    edge.prob <- runif(1, 0, 1)
-
-    negweight.range <- c(-1, 0)
-    posweight.range <- c(0, 1)
-
-    wt.graph <- create_random_DAG(node.num, edge.prob, negweight.range, posweight.range)
-    mt.graph <- resample_edge_weights(wt.graph, negweight.range, posweight.range)
+      # compute graph features
+      tmp <- as(wt.graph, "matrix")
+      tmp[which(tmp != 0)] <- 1
+      graph.density <- sum(tmp) / ((dim(tmp)[1] * (dim(tmp)[1] - 1)) / 2)
 
 
-    # compute graph features
-    tmp <- as(wt.graph, "matrix")
-    tmp[which(tmp != 0)] <- 1
-    graph.density <- sum(tmp) / ((dim(tmp)[1] * (dim(tmp)[1] - 1)) / 2)
+      # generate data
+      wt.X <- simulate_data(wt.graph, n=wt.samples)
+      mt.X <- simulate_data(mt.graph, n=mt.samples)
 
 
-    # generate data
-    wt.X <- simulate_data(wt.graph, n=wt.samples)
-    mt.X <- simulate_data(mt.graph, n=mt.samples)
+      # run models
+      ground.truth <- list(dce=trueEffects(wt.graph) - trueEffects(mt.graph))
+
+      time.tmp <- Sys.time()
+      res.cor <- list(dce=cor(wt.X) - cor(mt.X))
+      time.cor <- as.integer(difftime(Sys.time(), time.tmp, units="secs"))
+
+      time.tmp <- Sys.time()
+      res.basic <- compute_differential_causal_effects(
+        wt.graph, wt.X,
+        mt.graph, mt.X,
+        method="basic"
+      )
+      time.basic <- as.integer(difftime(Sys.time(), time.tmp, units="secs"))
+
+      # time.tmp <- Sys.time()
+      # res.basic.bootstrap <- compute_differential_causal_effects(
+      #   wt.graph, wt.X,
+      #   mt.graph, mt.X,
+      #   method="basic", bootstrap=TRUE
+      # )
+      # time.basic.bootstrap <- as.integer(difftime(Sys.time(), time.tmp, units="secs"))
+
+      time.tmp <- Sys.time()
+      res.full <- compute_differential_causal_effects(
+        wt.graph, wt.X,
+        mt.graph, mt.X,
+        method="full"
+      )
+      time.full <- as.integer(difftime(Sys.time(), time.tmp, units="secs"))
+
+      # time.tmp <- Sys.time()
+      # res.full.bootstrap <- compute_differential_causal_effects(
+      #   wt.graph, wt.X,
+      #   mt.graph, mt.X,
+      #   method="full", bootstrap=TRUE
+      # )
+      # time.full.bootstrap <- as.integer(difftime(Sys.time(), time.tmp, units="secs"))
+
+      time.tmp <- Sys.time()
+      tmp <- as.matrix(ground.truth$dce)
+      tmp[which(as.matrix(ground.truth$dce) != 0)] = (
+        runif(sum(as.matrix(ground.truth$dce) != 0), negweight.range[1], posweight.range[2]) -
+        runif(sum(as.matrix(ground.truth$dce) != 0), negweight.range[1], posweight.range[2])
+      )
+      res.rand <- list(dce=tmp)
+      time.rand <- as.integer(difftime(Sys.time(), time.tmp, units="secs"))
+
+      df.res <- data.frame(
+        truth=as.vector(ground.truth$dce),
+        cor=as.vector(res.cor$dce),
+        basic=as.vector(res.basic$dce),
+        # basic.bootstrap=as.vector(res.basic.bootstrap$dce),
+        full=as.vector(res.full$dce),
+        # full.bootstrap=as.vector(res.full.bootstrap$dce),
+        rand=as.vector(res.rand$dce)
+      )
 
 
-    # run models
-    ground.truth <- list(dce=trueEffects(wt.graph) - trueEffects(mt.graph))
+      # return performance computation
+      data.frame() %>%
+        bind_rows(
+          as.data.frame(
+            cor(df.res, method="spearman")
+          ) %>%
+            rownames_to_column() %>%
+            dplyr::filter(rowname == "truth") %>%
+            select(-rowname, -truth) %>%
+            mutate(type="correlation"),
 
-    time.tmp <- Sys.time()
-    res.cor <- list(dce=cor(wt.X) - cor(mt.X))
-    time.cor <- as.integer(difftime(Sys.time(), time.tmp, units="secs"))
+          bind_rows(list(
+            cor=get_prediction_counts(df.res$truth, df.res$cor),
+            basic=get_prediction_counts(df.res$truth, df.res$basic),
+            # basic.bootstrap=get_prediction_counts(df.res$truth, df.res$basic.bootstrap),
+            full=get_prediction_counts(df.res$truth, df.res$full),
+            # full.bootstrap=get_prediction_counts(df.res$truth, df.res$full.bootstrap),
+            rand=get_prediction_counts(df.res$truth, df.res$rand)
+          ), .id="name") %>%
+            column_to_rownames(var="name") %>%
+            t %>%
+            as.data.frame %>%
+            rownames_to_column(var="type"),
 
-    time.tmp <- Sys.time()
-    res.basic <- compute_differential_causal_effects(
-      wt.graph, wt.X,
-      mt.graph, mt.X,
-      method="basic"
-    )
-    time.basic <- as.integer(difftime(Sys.time(), time.tmp, units="secs"))
+          data.frame(
+            cor=time.cor,
+            basic=time.basic,
+            # basic.bootstrap=time.basic.bootstrap,
+            full=time.full,
+            # full.bootstrap=time.full.bootstrap,
+            rand=time.rand
+          ) %>%
+            mutate(type="runtime"),
 
-    # time.tmp <- Sys.time()
-    # res.basic.bootstrap <- compute_differential_causal_effects(
-    #   wt.graph, wt.X,
-    #   mt.graph, mt.X,
-    #   method="basic", bootstrap=TRUE
-    # )
-    # time.basic.bootstrap <- as.integer(difftime(Sys.time(), time.tmp, units="secs"))
-
-    time.tmp <- Sys.time()
-    res.full <- compute_differential_causal_effects(
-      wt.graph, wt.X,
-      mt.graph, mt.X,
-      method="full"
-    )
-    time.full <- as.integer(difftime(Sys.time(), time.tmp, units="secs"))
-
-    # time.tmp <- Sys.time()
-    # res.full.bootstrap <- compute_differential_causal_effects(
-    #   wt.graph, wt.X,
-    #   mt.graph, mt.X,
-    #   method="full", bootstrap=TRUE
-    # )
-    # time.full.bootstrap <- as.integer(difftime(Sys.time(), time.tmp, units="secs"))
-
-    time.tmp <- Sys.time()
-    tmp <- as.matrix(ground.truth$dce)
-    tmp[which(as.matrix(ground.truth$dce) != 0)] = (
-      runif(sum(as.matrix(ground.truth$dce) != 0), negweight.range[1], posweight.range[2]) -
-      runif(sum(as.matrix(ground.truth$dce) != 0), negweight.range[1], posweight.range[2])
-    )
-    res.rand <- list(dce=tmp)
-    time.rand <- as.integer(difftime(Sys.time(), time.tmp, units="secs"))
-
-    df.res <- data.frame(
-      truth=as.vector(ground.truth$dce),
-      cor=as.vector(res.cor$dce),
-      basic=as.vector(res.basic$dce),
-      # basic.bootstrap=as.vector(res.basic.bootstrap$dce),
-      full=as.vector(res.full$dce),
-      # full.bootstrap=as.vector(res.full.bootstrap$dce),
-      rand=as.vector(res.rand$dce)
-    )
-
-
-    # return performance computation
-    data.frame() %>%
-      bind_rows(
-        as.data.frame(
-          cor(df.res, method="spearman")
+          data.frame(
+            cor=graph.density,
+            basic=graph.density,
+            # basic.bootstrap=graph.density,
+            full=graph.density,
+            # full.bootstrap=graph.density,
+            rand=graph.density
+          ) %>%
+            mutate(type="graph.density"),
         ) %>%
-          rownames_to_column() %>%
-          dplyr::filter(rowname == "truth") %>%
-          select(-rowname, -truth) %>%
-          mutate(type="correlation"),
-
-        bind_rows(list(
-          cor=get_prediction_counts(df.res$truth, df.res$cor),
-          basic=get_prediction_counts(df.res$truth, df.res$basic),
-          # basic.bootstrap=get_prediction_counts(df.res$truth, df.res$basic.bootstrap),
-          full=get_prediction_counts(df.res$truth, df.res$full),
-          # full.bootstrap=get_prediction_counts(df.res$truth, df.res$full.bootstrap),
-          rand=get_prediction_counts(df.res$truth, df.res$rand)
-        ), .id="name") %>%
-          column_to_rownames(var="name") %>%
-          t %>%
-          as.data.frame %>%
-          rownames_to_column(var="type"),
-
-        data.frame(
-          cor=time.cor,
-          basic=time.basic,
-          # basic.bootstrap=time.basic.bootstrap,
-          full=time.full,
-          # full.bootstrap=time.full.bootstrap,
-          rand=time.rand
-        ) %>%
-          mutate(type="runtime"),
-
-        data.frame(
-          cor=graph.density,
-          basic=graph.density,
-          # basic.bootstrap=graph.density,
-          full=graph.density,
-          # full.bootstrap=graph.density,
-          rand=graph.density
-        ) %>%
-          mutate(type="graph.density"),
-      ) %>%
-      mutate(parameter=parameter)
-  }
+        mutate(parameter=parameter)
+    },
+    otherwise=NULL,
+    quiet=FALSE
+  )
 ) %>%
   write_csv("benchmark_results.csv")
 
