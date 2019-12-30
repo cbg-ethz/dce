@@ -1,12 +1,8 @@
 library(tidyverse)
-library(furrr)
 library(graph)
 
-devtools::install("..", upgrade="never")
-library(dce)
+devtools::load_all("..")
 
-
-future::plan(multiprocess)
 set.seed(42)
 
 
@@ -45,7 +41,7 @@ print(glue::glue("  Parameter: {parameter.list}"))
 # do benchmarking
 replicate.count <- 10
 
-df.bench <- furrr::future_pmap_dfr(
+df.bench <- purrr::pmap_dfr(
   list(parameter=rep(parameter.list, each=replicate.count)),
   function(parameter) {
     # handle parametrization
@@ -55,7 +51,7 @@ df.bench <- furrr::future_pmap_dfr(
       wt.samples={ wt.samples <- parameter },
       mt.samples={ mt.samples <- parameter },
     )
-    print(paste("Setting", varied.parameter, "to", parameter))
+    print(glue::glue("node.num={node.num} wt.samples={wt.samples} mt.samples={mt.samples}"))
 
 
     # create graphs
@@ -183,8 +179,7 @@ df.bench <- furrr::future_pmap_dfr(
           mutate(type="graph.density"),
       ) %>%
       mutate(parameter=parameter)
-  },
-  .progress=TRUE
+  }
 ) %>%
   write_csv("benchmark_results.csv")
 
