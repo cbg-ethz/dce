@@ -54,7 +54,6 @@ df.bench <- purrr::pmap_dfr(
       )
       print(glue::glue("node.num={node.num} wt.samples={wt.samples} mt.samples={mt.samples}"))
 
-      if (node.num==100) {error}
 
       # create graphs
       edge.prob <- runif(1, 0, 1)
