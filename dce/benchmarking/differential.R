@@ -17,6 +17,11 @@ Benchmark DCE performance and runtime.
 Usage:
   differential.R
   differential.R --variable NAME --values VALUES
+
+Options:
+  -h --help        Show this screen.
+  --variable NAME  Which property to vary [default: node.num].
+  --values VALUES  What values to assign to varied property [default: 20,50,100].
 " -> doc
 
 arguments <- docopt::docopt(doc)
@@ -27,13 +32,14 @@ node.num <- 100
 wt.samples <- 200
 mt.samples <- 200
 
-varied.parameter <- "node.num"
-parameter.list <- c(20, 50, 100)
+varied.parameter <- arguments$variable
+parameter.list <- unlist(
+  purrr::map(strsplit(arguments$values, ",")[[1]], as.numeric)
+)
 
-if (!is.null(arguments$NAME)) {
-  varied.parameter <- arguments$NAME
-  parameter.list <- unlist(purrr::map(strsplit(arguments$VALUES, ",")[[1]], as.numeric))
-}
+print(glue::glue("Benchmark parameters:"))
+print(glue::glue("  Varied parameter: {varied.parameter}"))
+print(glue::glue("  Parameter: {parameter.list}"))
 
 
 # do benchmarking
