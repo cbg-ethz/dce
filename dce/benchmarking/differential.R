@@ -39,7 +39,7 @@ print(glue::glue("  Parameter: {parameter.list}"))
 
 
 # do benchmarking
-replicate.count <- 10
+replicate.count <- 100
 
 df.bench <- purrr::pmap_dfr(
   list(parameter=rep(parameter.list, each=replicate.count)),
