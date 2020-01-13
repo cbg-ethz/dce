@@ -41,22 +41,22 @@ simDce <- function(
     if (bootruns == 0) {
         bootstrap <- 0
     }
-    cutoff <- 0.5
+    cutoff <- 0.75
     acc <- array(
-        0, c(simruns,6,7),
+        0, c(simruns,6,8),
         dimnames = list(
             runs = paste0("run_", seq_len(simruns)),
             methods = c(
                 "random",
-                "basic",
-                "full",
+                "Gaus",
+                "NB",
                 "simple correlation",
-                "basic bootstrap",
-                "full bootstrap"
+                "Gaus bootstrap",
+                "NB bootstrap"
             ),
             metrics = c("correlation", "time",
                         "tp", "fp", "tn", "fn",
-                        "p-value (perm)")
+                        "p-value (perm)", "AUC")
         )
     )
     gtnfeat <- array(
@@ -129,6 +129,31 @@ simDce <- function(
             a <- cor(x[idx], y[idx], method = cormeth)
             return(a)
         }
+        computeAUC <- function(x, y, errDist = errDist) {
+            x <- abs(x)
+            y <- abs(y)
+            cl <- 100
+            ppv <- rec <- numeric(cl)
+            cs <- seq(max(max(x), max(y)), 0, length.out = cl)
+            for (c in seq_len(cl)) {
+                tp <- sum(y > cs[c] & x > cs[c])
+                fp <- sum(y > cs[c] & x <= cs[c])
+                fn <- sum(y <= cs[c] & x > cs[c])
+                ppv[c] <- tp/(tp+fp)
+                rec[c] <- tp/(tp+fn)
+            }
+            ppv[is.na(ppv)] <- 0
+            rec[is.na(rec)] <- 0
+            ppv <- ppv[order(rec)]
+            rec <- rec[order(rec)]
+            auc <- function(a,b) {
+                n <- length(a)
+                c <- sum((a-c(0,a[-n]))*(b+c(0,b[-n]))/c(1,rep(2,n-1)))
+                return(c)
+            }
+            AUC <- auc(rec, ppv)
+            return(AUC)
+        }
         start <- as.numeric(Sys.time())
         dcei <- compute_differential_causal_effects(
             normal, dn,
@@ -139,11 +164,12 @@ simDce <- function(
         dceifl <- dcei
         dcei <- dcei$dce
         acc[run, 3, 1] <- coracc(dcet, dcei)
+        acc[run, 3, 8] <- computeAUC(dcet, dcei)
         acc[run, 3, 3:6] <- as.numeric(get_prediction_counts(dcet, dcei, cutoff = cutoff))
         if (test > 0) {
             acc[run, 3, 7] <- compute_enrichment(normal, dn, dt, permutation_count = test)
         }
-        if ("full" %in% bootstrap) {
+        if ("NB" %in% bootstrap) {
             start <- as.numeric(Sys.time())
             dcei <- compute_differential_causal_effects(
                 normal, dn,
@@ -155,6 +181,7 @@ simDce <- function(
             dceifl <- dcei
             dcei <- dcei$dce
             acc[run, 6, 1] <- coracc(dcet, dcei)
+            acc[run, 6, 8] <- computeAUC(dcet, dcei)
             acc[run, 6, 3:6] <- as.numeric(get_prediction_counts(dcet, dcei, cutoff = cutoff))
         }
         ## normal
@@ -175,8 +202,9 @@ simDce <- function(
             dcein <- dcei
             dcei <- dcei$dce
             acc[run, 2, 1] <- coracc(dcet, dcei)
+            acc[run, 2, 8] <- computeAUC(dcet, dcei)
             acc[run, 2, 3:6] <- as.numeric(get_prediction_counts(dcet, dcei, cutoff = cutoff))
-            if ("basic" %in% bootstrap) {
+            if ("Gaus" %in% bootstrap) {
                 start <- as.numeric(Sys.time())
                 dcei <- compute_differential_causal_effects(
                     normal, dnl,
@@ -187,6 +215,7 @@ simDce <- function(
                 dcein <- dcei
                 dcei <- dcei$dce
                 acc[run, 5, 1] <- coracc(dcet, dcei)
+                acc[run, 5, 8] <- computeAUC(dcet, dcei)
                 acc[run, 5, 3:6] <- as.numeric(get_prediction_counts(dcet, dcei, cutoff = cutoff))
             }
         }
@@ -199,6 +228,7 @@ simDce <- function(
         class(dceic) <- "dce"
         dcec <- dcec$dce
         acc[run, 4, 1] <- coracc(dcet, dcec)
+        acc[run, 4, 8] <- computeAUC(dcet, dcec)
         acc[run, 4, 3:6] <- as.numeric(get_prediction_counts(dcet, dcei, cutoff = cutoff))
         if (test > 0) {
             corperm <- numeric(test)
@@ -228,6 +258,7 @@ simDce <- function(
         dcer <- dcer$dce
         coridx <- which(dcet != 0 | dcer != 0)
         acc[run, 1, 1] <- coracc(dcet, dcei)
+        acc[run, 1, 8] <- computeAUC(dcet, dcei)
         acc[run, 1, 3:6] <- as.numeric(get_prediction_counts(dcet, dcei, cutoff = cutoff))
         if (verbose) {
             cat(paste0(run, "."))
@@ -323,5 +354,11 @@ plot.dceSim <- function(
         axis(1, seq_len(length(showMeth2)),
              labels = methNames[which(showMeth %in% c(3,4))])
     }
-
+    if (7 %in% showFeat) {
+        boxplot(
+            x$acc[seq_len(runs), showMeth, 8], col = col, border = border,
+            main="AUC", xaxt = "n", ...
+        )
+        axis(1, seq_len(length(showMeth)), labels = methNames)
+    }
 }

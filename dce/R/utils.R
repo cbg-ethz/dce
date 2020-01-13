@@ -126,15 +126,11 @@ simulate_data <- function (
                     mu <- rep(normpars[1], length(mu))
                 }
                 X[, j] <- rnegbin(n, mu = mu, theta = normpars[2])
-                X[is.na(X[, j]), j] <- 0
             } else {
                 X[, j] <- X[, j] + X[, ij, drop = FALSE] %*% weightMatrix[j,
                     ij]
             }
         }
-        ## add drop ins (should only affect nbinom)
-        Genes0 <- which(apply(X, 2, sum) == 0)
-        X[, Genes0] <- rnegbin(length(Genes0), mu = 1, theta = normpars[2])
         return(X)
     }
     else errMat

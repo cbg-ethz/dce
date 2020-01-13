@@ -23,17 +23,18 @@ In this vignette we conduct a simulation study. This study shows that we can rec
 
 ```{r}
 ## library(dce)
-source("~/CausalPathways/dce/R/main.R"); source("~/CausalPathways/dce/R/utils.R"); source("~/CausalPathways/dce/R/simulations.R"); library(tidyverse); library(purrr); library(graph); library(pcalg); library(assertthat); library(igraph); library(matlib); library(nem); library(mnem); library(expm); library(Linnorm); library(MASS)
+source("~/Documents/CausalPathways/dce/R/main.R"); source("~/Documents/CausalPathways/dce/R/utils.R"); source("~/Documents/CausalPathways/dce/R/simulations.R")
+library(tidyverse); library(purrr); library(graph); library(pcalg); library(assertthat); library(igraph); library(matlib); library(nem); library(mnem); library(expm); library(Linnorm); library(MASS)
 ```
 
-```{r}
+```{r, fig.height = 4, fig.width = 14}
 ## local test parameters:
 n <- 10; # genes
 m <- c(200, 200); # samples: wt and mut
 runs <- 10;
 perturb <- 0; # add (positive fraction) or remove (negative) edges
 p <- "runif"; # edge probability
-bootstrap <- c(0, "NB", "Gaussian"); # number of bootstrap runs for the methods 
+bootstrap <- c(1, "NB", "Gaus"); # number of bootstrap runs for the methods 
 truepos <- 1; # fraction of true positive effects
 test <- 10 # number of permutations for empirical p-value
 
@@ -47,7 +48,7 @@ if (errDist %in% "normal") {
     uB <- c(0,1) # positive effects intervall
 } else {
     mu <- 1000 # mean
-    sd <- 10 # standard deviation
+    sd <- 100 # standard deviation
     lB <- c(0.5,1) # negative effects intervall
     uB <- c(1,2) # positive effects intervall
 }
@@ -56,7 +57,7 @@ source("/Users/mpirkl/Documents/CausalPathways/dce/R/main.R"); source("/Users/mp
 simRes <- simDce(n,m,runs,mu=mu,sd,c(lB,uB),truepos,perturb,method,p,bootstrap=bootstrap,verbose=TRUE,test=test,errDist=errDist)
 
 col <- rgb(c(0.5,1,0,0.1),c(0.5,0,0,0.1),c(0.5,0,1,0.1),0.75)
-plot.dceSim(simRes, col = col, border = col, showMeth = c(2,5,3,6,1,4), showFeat = c(2,1,4,5,6,3), methNames = c("Gaussian", "Gaussian\n bootstrap", "Neg. Binomial", "NB\n bootstrap", "random", "correlation"))
+plot.dceSim(simRes, col = col, border = col, showMeth = c(2,5,3,6,1,4), showFeat = c(2,1,7,6,3), methNames = c("Gaussian", "Gaussian\n bootstrap", "Neg. Binomial", "NB\n bootstrap", "random", "correlation"))
 
 if (dosave) {
     for (filen in 1:100) {
@@ -69,6 +70,14 @@ if (dosave) {
     }
     save(simRes, file = filename)
 }
+
+p2 <- 0.1
+normal <- create_random_DAG(n, p2, lB, uB)
+tumor <- resample_edge_weights(normal, lB, uB, truepos)
+dn <- simulate_data(normal, m[2], normpars = c(mu,sd), errDist=errDist)
+dt <- simulate_data(tumor, m[1], normpars = c(mu,sd), errDist=errDist)
+dcei <- compute_differential_causal_effects(normal, dn,tumor, dt, method = "full",errDist = errDist)
+
 ```
 
 # Stuff to be deleted pre-publication
