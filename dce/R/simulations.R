@@ -84,8 +84,8 @@ simDce <- function(
         }
         normal <- create_random_DAG(n, p2, lB, uB)
         tumor <- resample_edge_weights(normal, lB, uB, truepos)
-        dn <- simulate_data(normal, m[2], normpars = c(mu,sd), errDist=errDist)
-        dt <- simulate_data(tumor, m[1], normpars = c(mu,sd), errDist=errDist)
+        dn <- simulate_data_old(normal, m[2], normpars = c(mu,sd), errDist=errDist)
+        dt <- simulate_data_old(tumor, m[1], normpars = c(mu,sd), errDist=errDist)
         gm <- as(normal, "matrix")
         gm[which(gm != 0)] <- 1
         cn <- trueEffects(normal)
