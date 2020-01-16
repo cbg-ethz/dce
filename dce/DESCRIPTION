@@ -20,7 +20,7 @@ Suggests:
     knitr,
     testthat (>= 2.1.0)
 VignetteBuilder: knitr
-RoxygenNote: 6.1.1
+RoxygenNote: 7.0.2
 Imports:
     stats,
     graphics,
@@ -37,4 +37,5 @@ Imports:
     tidygraph,
     ggplot2,
     rlang,
-    expm
+    expm,
+    MASS

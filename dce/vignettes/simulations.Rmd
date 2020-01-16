@@ -22,20 +22,19 @@ fig.cap0 <- "Boxplots of simulation results."
 In this vignette we conduct a simulation study. This study shows that we can recover differential causal effects with high accuracy compared to other methods. First, we install and load the package. Make sure to adjust the paths through the vignette.
 
 ```{r}
-## library(dce)
-source("~/Documents/CausalPathways/dce/R/main.R"); source("~/Documents/CausalPathways/dce/R/utils.R"); source("~/Documents/CausalPathways/dce/R/simulations.R")
+library(dce)
 library(tidyverse); library(purrr); library(graph); library(pcalg); library(assertthat); library(igraph); library(matlib); library(nem); library(mnem); library(expm); library(Linnorm); library(MASS)
 ```
 
 ```{r, fig.height = 4, fig.width = 14}
 ## local test parameters:
-n <- 10; # genes
-m <- c(200, 200); # samples: wt and mut
-runs <- 10;
-perturb <- 0; # add (positive fraction) or remove (negative) edges
-p <- "runif"; # edge probability
-bootstrap <- c(1, "NB", "Gaus"); # number of bootstrap runs for the methods 
-truepos <- 1; # fraction of true positive effects
+n <- 10 # genes
+m <- c(200, 200) # samples: wt and mut
+runs <- 10
+perturb <- 0 # add (positive fraction) or remove (negative) edges
+p <- "runif" # edge probability
+bootstrap <- c(1, "NB", "Gaus") # number of bootstrap runs for the methods
+truepos <- 1 # fraction of true positive effects
 test <- 10 # number of permutations for empirical p-value
 
 ## fixed parameters:
@@ -53,15 +52,16 @@ if (errDist %in% "normal") {
     uB <- c(1,2) # positive effects intervall
 }
 
-source("/Users/mpirkl/Documents/CausalPathways/dce/R/main.R"); source("/Users/mpirkl/Documents/CausalPathways/dce/R/utils.R"); source("/Users/mpirkl/Documents/CausalPathways/dce/R/simulations.R"); 
 simRes <- simDce(n,m,runs,mu=mu,sd,c(lB,uB),truepos,perturb,method,p,bootstrap=bootstrap,verbose=TRUE,test=test,errDist=errDist)
 
 col <- rgb(c(0.5,1,0,0.1),c(0.5,0,0,0.1),c(0.5,0,1,0.1),0.75)
 plot.dceSim(simRes, col = col, border = col, showMeth = c(2,5,3,6,1,4), showFeat = c(2,1,7,6,3), methNames = c("Gaussian", "Gaussian\n bootstrap", "Neg. Binomial", "NB\n bootstrap", "random", "correlation"))
 
+dosave <- 0 # adjust this as needed
 if (dosave) {
     for (filen in 1:100) {
-        filename <- paste("~/CausalPathways/simulations/dce", n, # adjust path
+        # adjust path
+        filename <- paste("~/CausalPathways/simulations/dce", n,
                           paste(m, collapse = "_"), sd, perturb,
                           p, lB[1], uB[2], filen, ".rda", sep = "_")
         if (!file.exists(filename)) {
@@ -132,6 +132,7 @@ bsub -M ${ram} -q normal.${queue}h -n 1 -e error.txt -o output.txt \
 
 
 ```{r}
+dosave <- 0 # adjust this as needed
 if (dosave) {
     library(abind)
     simRes2 <- NULL

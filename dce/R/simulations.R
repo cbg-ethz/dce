@@ -282,7 +282,6 @@ simDce <- function(
 #' @method plot dceSim
 #' @return plot
 #' @export
-#' @importFrom nem transitive.reduction
 #' @importFrom graphics par boxplot axis
 plot.dceSim <- function(
     x, col = seq_len(4), border = col,
