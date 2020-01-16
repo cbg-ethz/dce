@@ -70,7 +70,7 @@ get_prediction_counts <- function(truth, inferred, cutoff = 0.5) {
 create_random_DAG <- function (
     n, prob,
     lB = -1, uB = 1,
-    node.labels = as.character(seq_len(n))
+    node.labels = paste0("n", as.character(seq_len(n)))
 ) {
     stopifnot(
         n >= 2, is.numeric(prob), length(prob) == 1, 0 <= prob, prob <= 1,
