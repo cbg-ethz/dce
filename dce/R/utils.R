@@ -1,3 +1,71 @@
+#' Graph to DAG
+#'
+#' Converts a general graph to a dag with minimum distance to the
+#' original graph. The general idea is to transitively close the graph
+#' to detect cycles and remove them based on the rule "the more outgoing
+#' edges a node has, the more likely it is that incoming edges from a
+#' cycle will be deleted, and vice versa. However, this is too rigorous
+#' and deletes too many edges, which do not lead to a cycle. These
+#' edges are added back in the final step.
+#' @param g graph as adjacency matrix
+#' @param tc if TRUE computes the transitive closure
+#' @author Ken Adams
+#' @return dag as adjacency matrix
+#' @export
+#' @examples
+#' g <- matrix(c(1,0,1,0, 1,1,0,0, 0,1,1,0, 1,1,0,1), 4, 4)
+#' rownames(g) <- colnames(g) <- LETTERS[1:4]
+#' dag <- g2dag(g)
+g2dag <- function(g, tc = FALSE) {
+    ord <- order(apply(g, 1, sum) - apply(g, 2, sum), decreasing = 1)
+    g <- g[ord, ord]
+    cyc <- intersect(which(g+t(g) > 1), which(lower.tri(g) == TRUE))
+    g[cyc] <- 0
+    diag(g) <- 1
+    g2 <- g
+    g0 <- g*0
+    epiNEM::HeatmapOP(g, Colv = 0, Rowv = 0)
+    for (i in seq_len(nrow(g))) {
+        g2 <- g2%*%g
+        g2[which(g2 > 0)] <- 1
+        ord <- order(apply(g2, 1, sum) - apply(g2, 2, sum), decreasing = 1)
+        g2 <- g2[ord, ord]
+        g <- g[ord, ord]
+        cyc <- intersect(which(g2+t(g2) > 1), which(lower.tri(g2) == TRUE))
+        g2[cyc] <- 0
+        if (all(g0 == g2)) { break() }
+        g0 <- g2
+        epiNEM::HeatmapOP(g2, Colv = 0, Rowv = 0)
+    }
+    if (!tc) {
+        print(g)
+        g3 <- g2*0
+        g3[which(g2 == 1 & g == 1)] <- 1
+        for (e in which(g == 1 & g3 == 0)) {
+            for (a in 1:ncol(g)) {
+                b <- e - a*nrow(g)
+                if (b < 0) {
+                    b <- e - (a-1)*nrow(g)
+                    break()
+                }
+            }
+            print(e)
+            print(b)
+            print(a)
+            if (sum(g[b, ]) >= sum(g[a, ])) {
+                g3[b, a] <- 1
+            }
+            g4 <- mytc(g3)
+            ord <- order(apply(g4, 1, sum) - apply(g4, 2, sum), decreasing = 1)
+            g4 <- g4[ord, ord]
+            if (any(g2+t(g2) > 1)) {
+                g3[a, b] <- 0
+            }
+        }
+        g2 <- g3
+    }
+    return(g2)
+}
 #' @importFrom matlib Ginv
 #' @noRd
 Gsolve <- function(a, b=NULL, ...) {
