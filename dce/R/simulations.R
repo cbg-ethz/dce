@@ -167,7 +167,9 @@ simDce <- function(
         acc[run, 3, 8] <- computeAUC(dcet, dcei)
         acc[run, 3, 3:6] <- as.numeric(get_prediction_counts(dcet, dcei, cutoff = cutoff))
         if (test > 0) {
-            acc[run, 3, 7] <- compute_enrichment(normal, dn, dt, permutation_count = test)
+            p.tmp <- compute_enrichment(normal, dn, dt, permutation_count = test)
+            acc[run, 3, 7] <- p.tmp[[1]]
+            print(p.tmp)
         }
         if ("NB" %in% bootstrap) {
             start <- as.numeric(Sys.time())

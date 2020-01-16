@@ -23,6 +23,7 @@ compute_permutations <- function(normal, dn, tumor, dt, runs=10,
                                      return(sum(abs(x))),
                                  ...) {
     statistics <- numeric(runs)
+    stats_edges <- list()
     for (i in seq_len(runs)) {
         dnp <- dn
         colnames(dnp) <- sample(colnames(dn), ncol(dn))
@@ -34,8 +35,9 @@ compute_permutations <- function(normal, dn, tumor, dt, runs=10,
                                                      tumor, dtp, ...
                                                      )
         statistics[i] <- statistic(dceip$dce)
+        stats_edges[[i]] <- as.vector(dceip$dce)
     }
-    return(statistics)
+    return(list(statistics = statistics, stats_edges = stats_edges))
 }
 #' Compute the true casual effects of a simulated dag
 #'
@@ -347,8 +349,21 @@ compute_enrichment <- function(
         statistic = statistic,
         ...
     )
-
+    
     # compute empirical p-value
-    p.value <- sum(stats.permuted >= stats.inferred) / permutation_count
-    return(p.value)
+    p.value <- sum(stats.permuted[[1]] >= stats.inferred) / permutation_count
+
+    ## for edges
+    g.vec <- as.vector(as(graph, "matrix"))
+    stats_mat <- rbind(as.vector(dce.inferred),
+                       do.call("rbind", stats.permuted[[2]]))
+    stats_mat <- stats_mat[, which(g.vec != 0)]
+    p.edges <- apply(stats_mat, 2, function(x) {
+        x <- abs(x)
+        y <- sum(x[-1] >= x[1])/(length(x)-1)
+        return(y)
+    })
+    g.vec[which(g.vec != 0)] <- p.edges
+    g.vec[which(g.vec == 0)] <- NA
+    return(list(p.value = p.value, p.edges = g.vec))
 }

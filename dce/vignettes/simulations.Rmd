@@ -35,7 +35,7 @@ perturb <- 0 # add (positive fraction) or remove (negative) edges
 p <- "runif" # edge probability
 bootstrap <- c(1, "NB", "Gaus") # number of bootstrap runs for the methods
 truepos <- 1 # fraction of true positive effects
-test <- 10 # number of permutations for empirical p-value
+test <- 100 # number of permutations for empirical p-value
 
 ## fixed parameters:
 method <- "p" # correlation accuracy
@@ -51,6 +51,8 @@ if (errDist %in% "normal") {
     lB <- c(0.5,1) # negative effects intervall
     uB <- c(1,2) # positive effects intervall
 }
+
+## source("CausalPathways/dce/R/simulations.R"); source("CausalPathways/dce/R/main.R")
 
 simRes <- simDce(n,m,runs,mu=mu,sd,c(lB,uB),truepos,perturb,method,p,bootstrap=bootstrap,verbose=TRUE,test=test,errDist=errDist)
 
