@@ -153,7 +153,7 @@ compute_differential_causal_effects <- function(
     method = "full",
     bootstrap = FALSE, runs = 100,
     replace = FALSE, frac = 0.5,
-    bootMethod = "diff", errDist = "normal", ...
+    bootMethod = "diff", errDist = "nbinom", ...
 ) {
     if (bootstrap) {
         if (method %in% "full") {
@@ -341,7 +341,7 @@ compute_enrichment <- function(
     graph, X.wt, X.mt,
     statistic = function(x) { sum(abs(x)) },
     permutation_count = 100,
-    pvalue.method = c("hmp", "perm"),
+    pvalue.method = "hmp",  # "perm"
     ...
 ) {
     # compute observed statistic
@@ -349,13 +349,14 @@ compute_enrichment <- function(
         graph, X.wt, graph, X.mt, ...
     )
 
-    if (pvalue.method %in% "hmp") {
+    if (pvalue.method == "hmp") {
         # aggregate p-values
-        tmp <- res$dce.p[which(res$dce != 0)]
+        adj.mat <- as(graph, "matrix")
+        tmp <- res$dce.p[which(adj.mat != 0)]
         p.val <- as.numeric(harmonicmeanp::p.hmp(tmp))
 
-        return(list(p.value = p.val, p.edges = g.vec))
-    } else if (pvalue.method %in% "perm") {
+        return(list(p.value = p.val, p.edges = res$dce.p))
+    } else if (pvalue.method == "perm") {
         # compute empirical p-value
         dce.inferred <- res$dce
         stats.inferred <- statistic(dce.inferred)
