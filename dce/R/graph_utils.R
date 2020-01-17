@@ -25,19 +25,23 @@ graph_union <- function(graph1, graph2) {
     igraph::igraph.from.graphNEL(graph2)
   )
 
-  # merge edge weight attributes
-  attr1 <- igraph::get.edge.attribute(graph.m, "weight_1")
-  attr2 <- igraph::get.edge.attribute(graph.m, "weight_2")
-  gm <- igraph::set.edge.attribute(
-    graph.m, "weight",
-    value = ifelse(is.na(attr1), attr2, attr1)
-  )
+  # merge edge weight attributes (if needed)
+  if (is.null(igraph::get.edge.attribute(graph.m, "weight"))) {
+    attr1 <- igraph::get.edge.attribute(graph.m, "weight_1")
+    attr2 <- igraph::get.edge.attribute(graph.m, "weight_2")
+    tmp <- igraph::set.edge.attribute(
+      graph.m, "weight",
+      value = ifelse(is.na(attr1), attr2, attr1)
+    )
 
-  # remove superfluous weight attributes (may cause errors on later conversions)
-  gm <- igraph::remove.edge.attribute(gm, "weight_1")
-  gm <- igraph::remove.edge.attribute(gm, "weight_2")
+    # remove superfluous weight attributes (may cause errors on later conversions)
+    tmp <- igraph::remove.edge.attribute(tmp, "weight_1")
+    tmp <- igraph::remove.edge.attribute(tmp, "weight_2")
+  } else {
+    tmp <- graph.m
+  }
 
   # return result
-  gn <- igraph::igraph.to.graphNEL(gm)
+  gn <- igraph::igraph.to.graphNEL(tmp)
   return(gn)
 }
