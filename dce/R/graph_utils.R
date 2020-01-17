@@ -33,6 +33,10 @@ graph_union <- function(graph1, graph2) {
     value = ifelse(is.na(attr1), attr2, attr1)
   )
 
+  # remove superfluous weight attributes (may cause errors on later conversions)
+  gm <- igraph::remove.edge.attribute(gm, "weight_1")
+  gm <- igraph::remove.edge.attribute(gm, "weight_2")
+
   # return result
   gn <- igraph::igraph.to.graphNEL(gm)
   return(gn)
