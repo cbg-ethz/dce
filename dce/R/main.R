@@ -353,7 +353,7 @@ compute_enrichment <- function(
         # aggregate p-values
         adj.mat <- as(graph, "matrix")
         tmp <- res$dce.p[which(adj.mat != 0)]
-        p.val <- as.numeric(harmonicmeanp::p.hmp(tmp))
+        p.val <- as.numeric(harmonicmeanp::p.hmp(tmp, L = length(tmp)))
 
         return(list(p.value = p.val, p.edges = res$dce.p))
     } else if (pvalue.method == "perm") {
