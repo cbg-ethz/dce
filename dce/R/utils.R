@@ -175,6 +175,7 @@ fulllin <- function(g1, d1, g2, d2, conf = TRUE, diff = 1,
     n <- length(nodes(g1))
     if (diff) {
         dce <- mat1*0
+        dce.p <- mat1*0
         for (i in seq_len(n)) {
             for (j in seq_len(n)) {
                 if (dagtc[i, j] == 1 & i != j) {
@@ -212,17 +213,20 @@ fulllin <- function(g1, d1, g2, d2, conf = TRUE, diff = 1,
                         ## dce[i, j] <- betas[2]
                     } else if (errDist %in% "nbinom") {
                         if (length(Z) > 0 & conf) {
-                            betas <- glm.nb(Y ~ NX + N + X + NZ + Z, link = "identity")
+                            fit <- glm.nb(Y ~ NX + N + X + NZ + Z, link = "identity")
                         } else {
-                            betas <- glm.nb(Y ~ NX + N + X, link = "identity")
+                            fit <- glm.nb(Y ~ NX + N + X, link = "identity")
                         }
-                        dce[i, j] <- betas$coefficients[2]
+                        coef.mat <- summary(fit)$coefficients
+
+                        dce[i, j] <- coef.mat[2, 1]
+                        dce.p[i, j] <- coef.mat[2, 4]
                     }
                 }
             }
         }
     }
-    res <- list(dce = dce, graph = g1)
+    res <- list(dce = dce, dce.p = dce.p, graph = g1)
     class(res) <- "dce"
     return(res)
 }

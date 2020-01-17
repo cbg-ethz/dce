@@ -212,6 +212,7 @@ compute_differential_causal_effects <- function(
                 }
             }
             res <- dces/runs
+            res.p <- NULL
         } else {
             ce.ctrl <- ce.mut <- 0
             for (b in seq_len(runs)) {
@@ -241,29 +242,35 @@ compute_differential_causal_effects <- function(
             ce.ctrl <- ce.ctrl/runs
             ce.mut <- ce.mut/runs
             res <- as.matrix(ce.ctrl - ce.mut)
+            res.p <- NULL
         }
     } else {
         if (!(method %in% "full")) {
             ce.ctrl <- compute_causal_effects(graph.ctrl, df.expr.ctrl)
             ce.mut <- compute_causal_effects(graph.mut, df.expr.mut)
             res <- as.matrix(ce.ctrl - ce.mut)
+            res.p <- NULL
         } else {
-            res <- fulllin(
+            tmp <- fulllin(
                 graph.ctrl, df.expr.ctrl,
                 graph.mut, df.expr.mut,
                 errDist = errDist, ...
-            )$dce
+            )
+
+            res <- tmp$dce
+            res.p <- tmp$dce.p
         }
     }
     mat <- as(graph.ctrl, "matrix")
     mat[which(mat != 0)] <- 1
     dagtc <- nem::transitive.closure(mat, mat=TRUE)
     res <- res*dagtc
-    res <- list(dce = res, graph = graph.ctrl)
-    rownames(res$dce) <- nodes(graph.ctrl)
-    colnames(res$dce) <- nodes(graph.ctrl)
-    class(res) <- "dce"
-    return(res)
+    res.p <- res.p*dagtc
+    out <- list(dce = res, dce.p = res.p, graph = graph.ctrl)
+    rownames(out$dce) <- nodes(graph.ctrl)
+    colnames(out$dce) <- nodes(graph.ctrl)
+    class(out) <- "dce"
+    return(out)
 }
 #' Plot dce object
 #'
@@ -335,20 +342,12 @@ compute_enrichment <- function(
     ...
 ) {
     # compute observed statistic
-    dce.inferred <- compute_differential_causal_effects(
+    res <- compute_differential_causal_effects(
         graph, X.wt, graph, X.mt, ...
-    )$dce
-    stats.inferred <- statistic(dce.inferred)
-
-    # compute permuted statistics
-    stats.permuted <- compute_permutations(
-        graph, X.wt, graph, X.mt,
-        runs = permutation_count,
-        statistic = statistic,
-        ...
     )
 
-    # compute empirical p-value
-    p.value <- sum(stats.permuted >= stats.inferred) / permutation_count
-    return(p.value)
+    # aggregate p-values
+    tmp <- res$dce.p[which(res$dce != 0)]
+    p.val <- as.numeric(harmonicmeanp::p.hmp(tmp))
+    return(p.val)
 }
