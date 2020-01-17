@@ -341,7 +341,7 @@ compute_enrichment <- function(
     graph, X.wt, X.mt,
     statistic = function(x) { sum(abs(x)) },
     permutation_count = 100,
-    pvalue.method = c("hmp", "perm")
+    pvalue.method = c("hmp", "perm"),
     ...
 ) {
     # compute observed statistic
@@ -359,6 +359,13 @@ compute_enrichment <- function(
         # compute empirical p-value
         dce.inferred <- res$dce
         stats.inferred <- statistic(dce.inferred)
+
+        stats.permuted <- compute_permutations(
+            graph, X.wt, graph, X.mt,
+            runs = permutation_count,
+            statistic = statistic,
+            ...
+        )
 
         p.value <- sum(stats.permuted[[1]] >= stats.inferred) / permutation_count
 
