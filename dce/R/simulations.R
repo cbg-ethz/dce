@@ -22,6 +22,7 @@
 #' @param verbose verbose output, if TRUE
 #' @param test if greater than 0, tests the pathway for enrichment with
 #' test permutation runs
+#' @param enriched fraction of runs with enriched pathways
 #' @param ... additional parameters for compute_differential_causal_effects
 #' @author Martin Pirkl
 #' @return accuracy for several different methods and statistics
@@ -35,7 +36,7 @@ simDce <- function(
     nodes=5, samples=c(10,10),simruns=10,mu=0,sd=1,
     effRange=c(-1,0,0,1),truePos=1,perturb=0,cormeth="p",
     prob="runif",bootstrap=0,verbose=FALSE,test=0,
-    errDist="normal",...
+    errDist="normal",enriched=1,...
     ) {
     bootruns <- as.numeric(bootstrap[1])
     if (bootruns == 0) {
@@ -83,6 +84,11 @@ simDce <- function(
             p2 <- prob
         }
         normal <- create_random_DAG(n, p2, lB, uB)
+        if (run <= floor(simruns*enriched)) {
+            truepos <- 1
+        } else {
+            truepos <- 0
+        }
         tumor <- resample_edge_weights(normal, lB, uB, truepos)
         dn <- simulate_data_old(normal, m[2], normpars = c(mu,sd), errDist=errDist)
         dt <- simulate_data_old(tumor, m[1], normpars = c(mu,sd), errDist=errDist)
@@ -154,6 +160,7 @@ simDce <- function(
             AUC <- auc(rec, ppv)
             return(AUC)
         }
+        ## nbinom:
         start <- as.numeric(Sys.time())
         dcei <- compute_differential_causal_effects(
             normal, dn,
@@ -169,7 +176,6 @@ simDce <- function(
         if (test > 0) {
             p.tmp <- compute_enrichment(normal, dn, dt, permutation_count = test)
             acc[run, 3, 7] <- p.tmp[[1]]
-            print(p.tmp)
         }
         if ("NB" %in% bootstrap) {
             start <- as.numeric(Sys.time())
