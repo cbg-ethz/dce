@@ -3,6 +3,8 @@ library(tidyverse)
 library(KEGGgraph) # else: "data set ‘KEGGEdgeSubtype’ not found"
 library(Rgraphviz) # for `layoutGraph`
 
+library(org.Hs.eg.db)
+
 
 # load KEGG pathway
 pw.id <- snakemake@wildcards$pathway
