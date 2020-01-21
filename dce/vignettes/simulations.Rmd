@@ -28,14 +28,14 @@ library(tidyverse); library(purrr); library(graph); library(pcalg); library(asse
 
 ```{r, fig.height = 4, fig.width = 14}
 ## local test parameters:
-n <- 10 # genes
-m <- c(200, 200) # samples: wt and mut
+n <- 15 # genes
+m <- c(100, 100) # samples: wt and mut
 runs <- 10
 perturb <- 0 # add (positive fraction) or remove (negative) edges
 p <- "runif" # edge probability
-bootstrap <- c(1, "NB", "Gaus") # number of bootstrap runs for the methods
+bootstrap <- c(0, "NB", "Gaus") # number of bootstrap runs for the methods
 truepos <- 1 # fraction of true positive effects
-test <- 100 # number of permutations for empirical p-value
+test <- 1 # number of permutations for empirical p-value
 
 ## fixed parameters:
 method <- "p" # correlation accuracy
@@ -46,18 +46,18 @@ if (errDist %in% "normal") {
     lB <- c(-1,0) # negative effects intervall
     uB <- c(0,1) # positive effects intervall
 } else {
-    mu <- 1000 # mean
+    mu <- 100 # mean
     sd <- 100 # standard deviation
     lB <- c(0.5,1) # negative effects intervall
     uB <- c(1,2) # positive effects intervall
 }
 
-## source("CausalPathways/dce/R/simulations.R"); source("CausalPathways/dce/R/main.R")
+## source("~/Documents/CausalPathways/dce/R/simulations.R"); source("~/Documents/CausalPathways/dce/R/main.R"); source("~/Documents/CausalPathways/dce/R/utils.R"); source("~/Documents/CausalPathways/dce/R/data_simulation.R")
 
-simRes <- simDce(n,m,runs,mu=mu,sd,c(lB,uB),truepos,perturb,method,p,bootstrap=bootstrap,verbose=TRUE,test=test,errDist=errDist)
+simRes <- simDce(n,m,runs,mu=mu,sd,c(lB,uB),truepos,perturb,method,p,bootstrap=bootstrap,verbose=TRUE,test=test,errDist=errDist,enriched=0.5)
 
 col <- rgb(c(0.5,1,0,0.1),c(0.5,0,0,0.1),c(0.5,0,1,0.1),0.75)
-plot.dceSim(simRes, col = col, border = col, showMeth = c(2,5,3,6,1,4), showFeat = c(2,1,7,6,3), methNames = c("Gaussian", "Gaussian\n bootstrap", "Neg. Binomial", "NB\n bootstrap", "random", "correlation"))
+plot.dceSim(simRes, col = col, border = col, showMeth = c(2,3,1,4), showFeat = c(2,1,7,6,3), methNames = c("Gaussian", "Neg. Binomial", "random", "correlation"))
 
 dosave <- 0 # adjust this as needed
 if (dosave) {
