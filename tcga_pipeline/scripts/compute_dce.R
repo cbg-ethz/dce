@@ -2,11 +2,8 @@ library(tidyverse)
 library(magrittr)
 
 
-# read data
-df.expr <- read_csv("../expr.csv.gz") %>% column_to_rownames("gene")
-df.classi <- read_csv("../info.csv.gz")
-df.graph <- read_csv("../netw.edgelist.csv.gz")
 
+# read data
 df.expr <- read_csv(snakemake@input$expression_fname) %>% column_to_rownames("gene")
 df.classi <- read_csv(snakemake@input$classification_fname)
 df.graph <- read_csv(snakemake@input$network_fname)
