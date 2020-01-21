@@ -1,6 +1,6 @@
 library(tidyverse)
 
-library(KEGGgraph) # else: "data set ‘KEGGEdgeSubtype’ not found"
+library(KEGGgraph) # else: "data set `KEGGEdgeSubtype` not found"
 library(Rgraphviz) # for `layoutGraph`
 
 library(org.Hs.eg.db)
