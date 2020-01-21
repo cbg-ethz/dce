@@ -1,0 +1,7 @@
+projects:
+    - TCGA-BRCA
+
+pathways:
+    - hsa05224 # breast cancer
+
+working_directory: pipeline_run
