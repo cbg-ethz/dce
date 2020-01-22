@@ -4,7 +4,12 @@ simulate_data <- function(
   dist.mean = 100, dist.dispersion = 10
 ) {
   p <- length(nodes(dag))
-  adj.mat <- t(as(dag, "matrix"))
+  adj.mat <- igraph::as_adjacency_matrix(
+    igraph::igraph.from.graphNEL(dag),
+    attr="weight"
+  ) %>%
+    as.matrix %>%
+    t
 
   # sanity checks
   stopifnot(is(dag, "graph"), p >= 2)
