@@ -43,7 +43,9 @@ res <- purrr::map(tumor_stage_list, function (selected_tumor_stage) {
   graph <- as(m[ord, ord], "graphNEL")
 
   X.wt <- dce::simulate_data(graph) %>% as.data.frame
-  X.mt <- dce::simulate_data(graph) %>% as.data.frame
+
+  resample.range <- list(`stage i`=c(0.5, 1.5), `stage ii`=c(1.5, 2), `stage iii`=c(2, 3))[[selected_tumor_stage]]
+  X.mt <- dce::simulate_data(dce::resample_edge_weights(graph, lB=resample.range, uB=resample.range)) %>% as.data.frame
   # uh oh end
 
 
