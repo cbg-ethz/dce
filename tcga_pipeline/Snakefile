@@ -46,14 +46,14 @@ rule compute_differential_causal_effects:
         classification_fname = 'tcga_data/{project}/case_classifications.csv',
         network_fname = 'kegg_data/{pathway}.edgelist.csv.gz'
     output:
-        dce_fname = 'results/{project}/{project}.{pathway}.dce.RData',
+        dce_fname = 'results/{project}/{project}.{pathway}.dce.rds',
     script:
         'scripts/compute_dce.R'
 
 
 rule visualize:
     input:
-        dce_fname = 'results/{project}/{project}.{pathway}.dce.RData'
+        dce_fname = 'results/{project}/{project}.{pathway}.dce.rds'
     output:
         plot_fname = 'plots/{project}/{project}.{pathway}.dce.pdf'
     script:

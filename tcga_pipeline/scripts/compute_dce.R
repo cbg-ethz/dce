@@ -68,4 +68,4 @@ res <- purrr::map(tumor_stage_list, function (selected_tumor_stage) {
 
 
 # store result
-save(res, file=snakemake@output$dce_fname)
+saveRDS(res, file=snakemake@output$dce_fname)

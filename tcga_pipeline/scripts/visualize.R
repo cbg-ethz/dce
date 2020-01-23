@@ -2,7 +2,7 @@ library(tidyverse)
 
 
 # load data
-load(file=snakemake@input$dce_fname)
+res <- readRDS(file=snakemake@input$dce_fname)
 
 # plot
 p.list <- lapply(res, dce::plot.dce)
