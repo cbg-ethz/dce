@@ -47,7 +47,7 @@ if (errDist %in% "normal") {
     uB <- c(0,1) # positive effects intervall
 } else {
     mu <- 100 # mean
-    sd <- 1 # standard deviation
+    sd <- 10 # standard deviation
     lB <- c(0.5,1) # negative effects intervall
     uB <- c(1,2) # positive effects intervall
 }
