@@ -28,7 +28,7 @@ library(tidyverse); library(purrr); library(graph); library(pcalg); library(asse
 
 ```{r, fig.height = 4, fig.width = 14}
 ## local test parameters:
-n <- 15 # genes
+n <- 10 # genes
 m <- c(100, 100) # samples: wt and mut
 runs <- 10
 perturb <- 0 # add (positive fraction) or remove (negative) edges
@@ -47,17 +47,89 @@ if (errDist %in% "normal") {
     uB <- c(0,1) # positive effects intervall
 } else {
     mu <- 100 # mean
-    sd <- 100 # standard deviation
+    sd <- 1 # standard deviation
     lB <- c(0.5,1) # negative effects intervall
     uB <- c(1,2) # positive effects intervall
 }
 
-## source("~/Documents/CausalPathways/dce/R/simulations.R"); source("~/Documents/CausalPathways/dce/R/main.R"); source("~/Documents/CausalPathways/dce/R/utils.R"); source("~/Documents/CausalPathways/dce/R/data_simulation.R")
+source("~/Documents/CausalPathways/dce/R/simulations.R"); source("~/Documents/CausalPathways/dce/R/main.R"); source("~/Documents/CausalPathways/dce/R/utils.R"); source("~/Documents/CausalPathways/dce/R/data_simulation.R")
 
+set.seed(9427)
 simRes <- simDce(n,m,runs,mu=mu,sd,c(lB,uB),truepos,perturb,method,p,bootstrap=bootstrap,verbose=TRUE,test=test,errDist=errDist,enriched=0.5)
 
 col <- rgb(c(0.5,1,0,0.1),c(0.5,0,0,0.1),c(0.5,0,1,0.1),0.75)
 plot.dceSim(simRes, col = col, border = col, showMeth = c(2,3,1,4), showFeat = c(2,1,7,6,3), methNames = c("Gaussian", "Neg. Binomial", "random", "correlation"))
+
+
+A <- rnbinom(100, size=100, mu=1000)
+B <- rnbinom(100, size=100, mu=0.1*A)
+
+# value flip
+A[1] <- 20
+B[1] <- 2000
+
+glm.nb(B ~ A, link="identity")
+zetadiv::glm.cons(B ~ A, family = MASS::negative.binomial(theta=100, link="identity"), cons = -1, cons.inter = -1)
+
+glm2::glm2(B ~ A,  family = MASS::negative.binomial(theta=100, link="identity"))
+
+test <- matrix(rnbinom(1000*10, size=100, mu=1000), 1000, 10)
+y <- DGEList(counts=test)
+y <- calcNormFactors(y)
+y <- estimateDisp(y)
+
+set.seed(9247)
+runs <- 100
+coefs <- matrix(runs*4, runs, 12)*NA
+for (i in 1:runs) {
+    size <- 1
+    a <- rnbinom(100, mu=100, size=size)
+    b <- rnbinom(100, mu=100, size=size)
+    c <- rnbinom(100, mu=a*1 + b*0.5, size=size)
+    #if (i == 6) { stop() }
+    res <- try(glm.nb(b ~ 0 + a, link = "identity"), silent = 1)
+    if (!(length(grep("Error", res) > 0))) {
+        coefs[i, 1] <- res$coefficients[1]
+    }
+    res <- try(glm.nb(c ~ 0 + b + a - 1, link = "identity"), silent = 1)
+    if (!(length(grep("Error", res) > 0))) {
+        coefs[i, 5] <- res$coefficients[1]
+        coefs[i, 9] <- res$coefficients[2]
+    }
+    res <- try(lm(b ~ 0 + a), silent = 1)
+    coefs[i, 2] <- res$coefficients[1]
+    res <- try(lm(c ~ 0 + b + a), silent = 1)
+    coefs[i, 6] <- res$coefficients[1]
+    coefs[i, 10] <- res$coefficients[2]
+    mua <- mean(a); mub <- mean(b); muc <- mean(c)
+    sigmaa <- sd(a); sigmab <- sd(b); sigmac <- sd(c)
+    thetaa <- mua^2/(sigmaa^2-mua); thetab <- mub^2/(sigmab^2-mub); thetac <- muc^2/(sigmac^2-muc)
+    theta=mean(c(thetaa,thetab,thetac))
+    res <- try(glm.cons(b ~ a, family = MASS::negative.binomial(theta=theta, link="identity"), cons = 1, cons.inter = 1), silent = 1)
+    if (!(length(grep("Error", res) > 0))) {
+        coefs[i, 3] <- res$coefficients[2]
+    }
+    res <- try(glm.cons(c ~ b + a, family = MASS::negative.binomial(theta=theta, link="identity"), cons = 1, cons.inter = 1), silent = 1)
+    if (!(length(grep("Error", res) > 0))) {
+        coefs[i, 7] <- res$coefficients[2]
+        coefs[i, 11] <- res$coefficients[3]
+    }
+    res <- try(glm2(b ~ a, family = MASS::negative.binomial(theta=theta, link="identity")), silent = 1)
+    if (!(length(grep("Error", res) > 0))) {
+        coefs[i, 4] <- res$coefficients[2]
+    }
+    res <- try(glm2(c ~ b + a, family = MASS::negative.binomial(theta=theta, link="identity")), silent = 1)
+    if (!(length(grep("Error", res) > 0))) {
+        coefs[i, 8] <- res$coefficients[2]
+        coefs[i, 12] <- res$coefficients[3]
+    }
+}
+boxplot(coefs, col = 2:5, ylim = c(-0.5,2)); abline(h=c(0,0.5,1), lty = 2)
+
+summary(coefs)
+```
+
+```{r}
 
 dosave <- 0 # adjust this as needed
 if (dosave) {
