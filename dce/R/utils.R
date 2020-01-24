@@ -277,8 +277,8 @@ fulllin <- function(g1, d1, g2, d2, conf = TRUE,
                     ##                          cons = 1)
                     fit <- glm.nb(Y ~ NX + N + X, link = "identity")
                     coef.mat <- summary(fit)$coefficients
-                    dce[Xidx, i] <- coef.mat[2:(ncol(coef.mat)-2), 1]
-                    dce.p[Xidx, i] <- coef.mat[2:(ncol(coef.mat)-2), 4]
+                    dce[Xidx, i] <- coef.mat[2:(nrow(coef.mat)-length(Xidx)-1), 1]
+                    dce.p[Xidx, i] <- coef.mat[2:(nrow(coef.mat)-length(Xidx)-1), 4]
                 }
             }
         }

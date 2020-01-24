@@ -28,7 +28,7 @@ library(tidyverse); library(purrr); library(graph); library(pcalg); library(asse
 
 ```{r, fig.height = 4, fig.width = 14}
 ## local test parameters:
-n <- 10 # genes
+n <- 15 # genes
 m <- c(100, 100) # samples: wt and mut
 runs <- 10
 perturb <- 0 # add (positive fraction) or remove (negative) edges
@@ -47,7 +47,7 @@ if (errDist %in% "normal") {
     uB <- c(0,1) # positive effects intervall
 } else {
     mu <- 100 # mean
-    sd <- 10 # standard deviation
+    sd <- 100 # standard deviation
     lB <- c(0.5,1) # negative effects intervall
     uB <- c(1,2) # positive effects intervall
 }
@@ -60,14 +60,21 @@ simRes <- simDce(n,m,runs,mu=mu,sd,c(lB,uB),truepos,perturb,method,p,bootstrap=b
 col <- rgb(c(0.5,1,0,0.1),c(0.5,0,0,0.1),c(0.5,0,1,0.1),0.75)
 plot.dceSim(simRes, col = col, border = col, showMeth = c(2,3,1,4), showFeat = c(2,1,7,6,3), methNames = c("Gaussian", "Neg. Binomial", "random", "correlation"))
 
-adj <- matrix(c(0,0,0,0.5,0,0,0.5,2,0), 3, 3)
+adj <- matrix(c(0,0,0,0,
+                0.5,0,0,0,
+                2,0.5,0,0,
+                0,1.5,0,0), 4, 4)
 rownames(adj) <- colnames(adj) <- 1:3
 g1 <- as(adj, "graphNEL")
-d1 <- simulate_data(g1, dist.dispersion = 10)
+d1 <- simulate_data(g1, dist.dispersion = 100)
 g2 <- resample_edge_weights(g1, lB = c(0.5,2), uB = c(0.5,2))
-d2 <- simulate_data(g2, dist.dispersion = 10)
+d2 <- simulate_data(g2, dist.dispersion = 100)
 adj - as(g2, "matrix")
-compute_differential_causal_effects(g1, d1, g2, d2)
+trueEffects(g1, partial = 0) - trueEffects(g2, partial = 0)
+compute_differential_causal_effects(g1, d1, g2, d2, partial = 0)$dce
+adj - as(g2, "matrix")
+compute_differential_causal_effects(g1, d1, g2, d2, partial = 1)$dce
+cor(as.vector(adj - as(g2, "matrix")), as.vector(compute_differential_causal_effects(g1, d1, g2, d2, partial = 1)$dce))
 compute_enrichment(g1, d1, d2)
 
 
