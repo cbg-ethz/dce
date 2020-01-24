@@ -340,6 +340,9 @@ plot.dce <- function(x, ...) {
 #' @param X.mt Expression values of mutant
 #' @param statistic Statistic to compute
 #' @param permutation_count How many permutations to do
+#' @param theta prior estimated theta value
+#' @param partial if TRUE only computes the partial causal effects on
+#' the edges, else computes the total causal effect
 #' @author Hinz und Kunz
 #' @return Enrichment p-value
 #' @export
@@ -353,7 +356,8 @@ compute_enrichment <- function(
     graph, X.wt, X.mt,
     statistic = function(x) { sum(abs(x)) },
     permutation_count = 100,
-    pvalue.method = "hmp",  # "perm"
+    pvalue.method = "hmp", # "perm"
+    theta = NULL, partial = 1,
     ...
 ) {
     # compute observed statistic

@@ -312,17 +312,19 @@ fulllin <- function(g1, d1, g2, d2, conf = TRUE,
                         dce[i, j] <- betas[1]
                     } else if (errDist %in% "nbinom") {
                         if (length(Z) > 0 & conf) {
-                            fit <- zetadiv::glm.cons(Y ~ NX + N + X + NZ + Z,
-                                                     family = MASS::negative.binomial(
-                                                                        theta=theta,
-                                                                        link="identity"),
-                                                     cons = 1)
+                            ## fit <- zetadiv::glm.cons(Y ~ NX + N + X + NZ + Z,
+                            ##                          family = MASS::negative.binomial(
+                            ##                                             theta=theta,
+                            ##                                             link="identity"),
+                            ##                          cons = 1)
+                            fit <- glm.nb(Y ~ NX + N + X + NZ + Z, link = "identity")
                         } else {
-                            fit <- zetadiv::glm.cons(Y ~ NX + N + X,
-                                                     family = MASS::negative.binomial(
-                                                                        theta=theta,
-                                                                        link="identity"),
-                                                     cons = 1)
+                            ## fit <- zetadiv::glm.cons(Y ~ NX + N + X,
+                            ##                          family = MASS::negative.binomial(
+                            ##                                             theta=theta,
+                            ##                                             link="identity"),
+                            ##                          cons = 1)
+                            fit <- glm.nb(Y ~ NX + N + X, link = "identity")
                         }
                         coef.mat <- summary(fit)$coefficients 
                         dce[i, j] <- coef.mat[2, 1]
