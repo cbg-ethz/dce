@@ -23,6 +23,8 @@
 #' @param test if greater than 0, tests the pathway for enrichment with
 #' test permutation runs
 #' @param enriched fraction of runs with enriched pathways
+#' @param theta
+#' @param partial
 #' @param ... additional parameters for compute_differential_causal_effects
 #' @author Martin Pirkl
 #' @return accuracy for several different methods and statistics
@@ -36,7 +38,7 @@ simDce <- function(
     nodes=5, samples=c(10,10),simruns=10,mu=0,sd=1,
     effRange=c(-1,0,0,1),truePos=1,perturb=0,cormeth="p",
     prob="runif",bootstrap=0,verbose=FALSE,test=0,
-    errDist="normal",enriched=1,...
+    enriched=1,theta=NULL,partial=TRUE,...
     ) {
     bootruns <- as.numeric(bootstrap[1])
     if (bootruns == 0) {
@@ -44,15 +46,13 @@ simDce <- function(
     }
     cutoff <- 0.75
     acc <- array(
-        0, c(simruns,6,8),
+        0, c(simruns,4,8),
         dimnames = list(
             runs = paste0("run_", seq_len(simruns)),
             methods = c(
                 "random",
-                "Gaus",
                 "NB",
                 "simple correlation",
-                "Gaus bootstrap",
                 "NB bootstrap"
             ),
             metrics = c("correlation", "time",
@@ -90,12 +90,12 @@ simDce <- function(
             truepos <- 0
         }
         tumor <- resample_edge_weights(normal, lB, uB, truepos)
-        dn <- simulate_data_old(normal, m[2], normpars = c(mu,sd), errDist=errDist)
-        dt <- simulate_data_old(tumor, m[1], normpars = c(mu,sd), errDist=errDist)
+        dn <- simulate_data(normal, m[2], mu, sd)
+        dt <- simulate_data(tumor, m[1], mu, sd)
         gm <- as(normal, "matrix")
         gm[which(gm != 0)] <- 1
-        cn <- trueEffects(normal)
-        ct <- trueEffects(tumor)
+        cn <- trueEffects(normal, partial = partial)
+        ct <- trueEffects(tumor, partial = partial)
         gtc <- nem::transitive.closure(gm, mat=TRUE)
         ## save features of gtn, which might correlate with accuracy:
         gtnfeat[run, 1] <- mean(apply(gm, 1, sum))
@@ -103,7 +103,11 @@ simDce <- function(
         gtnfeat[run, 3] <- max(apply(gm, 2, sum))
         gtnfeat[run, 4] <- sum(gm)
         ## ground truth:
-        dcet <- (cn - ct)*gtc # gtn for differential causal effects
+        if (partial) {
+            dcet <- (cn - ct)*gm
+        } else {
+            dcet <- (cn - ct)*gtc
+        }
         dcegtn <- list(dce = dcet, graph = normal, dcefull = dcet)
         class(dcegtn) <- "dce"
         ## perturb network:
@@ -131,7 +135,7 @@ simDce <- function(
         coracc <- function(x, y, method = cormeth) {
             x <- as.vector(x)
             y <- as.vector(y)
-            idx <- which(x != 0 & y != 0)
+            idx <- which(x != 0 | y != 0)
             a <- cor(x[idx], y[idx], method = cormeth)
             return(a)
         }
@@ -165,17 +169,17 @@ simDce <- function(
         dcei <- compute_differential_causal_effects(
             normal, dn,
             tumor, dt, method = "full",
-            errDist = errDist, ...
+            partial = partial, ...
         )
-        acc[run, 3, 2] <- as.numeric(Sys.time()) - start
+        acc[run, 2, 2] <- as.numeric(Sys.time()) - start
         dceifl <- dcei
         dcei <- dcei$dce
-        acc[run, 3, 1] <- coracc(dcet, dcei)
-        acc[run, 3, 8] <- computeAUC(dcet, dcei)
-        acc[run, 3, 3:6] <- as.numeric(get_prediction_counts(dcet, dcei, cutoff = cutoff))
+        acc[run, 2, 1] <- coracc(dcet, dcei)
+        acc[run, 2, 8] <- computeAUC(dcet, dcei)
+        acc[run, 2, 3:6] <- as.numeric(get_prediction_counts(dcet, dcei, cutoff = cutoff))
         if (test > 0) {
-            p.tmp <- compute_enrichment(normal, dn, dt, permutation_count = test)
-            acc[run, 3, 7] <- p.tmp[[1]]
+            p.tmp <- compute_enrichment(normal, dn, dt, permutation_count = test, partial = partial)
+            acc[run, 2, 7] <- p.tmp[[1]]
         }
         if ("NB" %in% bootstrap) {
             start <- as.numeric(Sys.time())
@@ -183,82 +187,42 @@ simDce <- function(
                 normal, dn,
                 tumor, dt, method = "full",
                 bootstrap = TRUE, runs = bootruns,
-                errDist = errDist, ...
+                errDist = errDist, partial = partial, ...
             )
-            acc[run, 6, 2] <- as.numeric(Sys.time()) - start
+            acc[run, 4, 2] <- as.numeric(Sys.time()) - start
             dceifl <- dcei
             dcei <- dcei$dce
-            acc[run, 6, 1] <- coracc(dcet, dcei)
-            acc[run, 6, 8] <- computeAUC(dcet, dcei)
-            acc[run, 6, 3:6] <- as.numeric(get_prediction_counts(dcet, dcei, cutoff = cutoff))
-        }
-        ## normal
-        dnl <- dn # log(dn + 1)
-        dtl <- dt # log(dt + 1)
-        Cn <- cov(dnl)
-        Ct <- cov(dtl)
-        if (
-            Matrix::rankMatrix(Cn) == nrow(Cn) &
-            Matrix::rankMatrix(Ct) == nrow(Ct)
-        ) {
-            start <- as.numeric(Sys.time())
-            dcei <- compute_differential_causal_effects(
-                normal, dnl,
-                tumor, dtl, method = "normal", ...
-            )
-            acc[run, 2, 2] <- as.numeric(Sys.time()) - start
-            dcein <- dcei
-            dcei <- dcei$dce
-            acc[run, 2, 1] <- coracc(dcet, dcei)
-            acc[run, 2, 8] <- computeAUC(dcet, dcei)
-            acc[run, 2, 3:6] <- as.numeric(get_prediction_counts(dcet, dcei, cutoff = cutoff))
-            if ("Gaus" %in% bootstrap) {
-                start <- as.numeric(Sys.time())
-                dcei <- compute_differential_causal_effects(
-                    normal, dnl,
-                    tumor, dtl, method = "normal",
-                    bootstrap = TRUE, runs = bootruns, ...
-                )
-                acc[run, 5, 2] <- as.numeric(Sys.time()) - start
-                dcein <- dcei
-                dcei <- dcei$dce
-                acc[run, 5, 1] <- coracc(dcet, dcei)
-                acc[run, 5, 8] <- computeAUC(dcet, dcei)
-                acc[run, 5, 3:6] <- as.numeric(get_prediction_counts(dcet, dcei, cutoff = cutoff))
-            }
+            acc[run, 4, 1] <- coracc(dcet, dcei)
+            acc[run, 4, 8] <- computeAUC(dcet, dcei)
+            acc[run, 4, 3:6] <- as.numeric(get_prediction_counts(dcet, dcei, cutoff = cutoff))
         }
         ## simple correlation:
         start <- as.numeric(Sys.time())
-        dcei <- (cor(dnl) - cor(dtl))*gtc
-        acc[run, 4, 2] <- as.numeric(Sys.time()) - start
+        if (partial) {
+            dcei <- (cor(dn) - cor(dt))*gtc
+        } else {
+            dcei <- (cor(dn) - cor(dt))*gtc
+        }
+        acc[run, 3, 2] <- as.numeric(Sys.time()) - start
         dcec <- list(dce = dcei, graph = as(gtc, "graphNEL"), dcefull = dcei)
         dceic <- dcec
         class(dceic) <- "dce"
         dcec <- dcec$dce
-        acc[run, 4, 1] <- coracc(dcet, dcec)
-        acc[run, 4, 8] <- computeAUC(dcet, dcec)
-        acc[run, 4, 3:6] <- as.numeric(get_prediction_counts(dcet, dcei, cutoff = cutoff))
-        if (test > 0) {
-            corperm <- numeric(test)
-            for (i in seq_len(test)) {
-                dnp <- dnl
-                colnames(dnp) <- sample(colnames(dn), ncol(dn))
-                dtp <- dtl
-                colnames(dtp) <- sample(colnames(dt), ncol(dt))
-                dnp <- dnp[, order(colnames(dnp))]
-                dtp <- dtp[, order(colnames(dtp))]
-                cortmp <- (cor(dnp) - cor(dtp))*gtc
-                corperm[i] <- sum(abs(cortmp))
-            }
-            statsi <- sum(abs(dcec))
-            acc[run, 4, 7] <- sum(corperm >= statsi)/test
-        }
+        acc[run, 3, 1] <- coracc(dcet, dcec)
+        acc[run, 3, 8] <- computeAUC(dcet, dcec)
+        acc[run, 3, 3:6] <- as.numeric(get_prediction_counts(dcet, dcei, cutoff = cutoff))
         ## random base line:
         dcei <- dceicn <- dceict <- dcet
         start <- as.numeric(Sys.time())
-        dcei[which(gtc != 0)] <-
-            runif(sum(gtc != 0), lB[1], uB[2]) -
-            runif(sum(gtc != 0), lB[1], uB[2])
+        if (partial) {
+            dcei[which(gm != 0)] <-
+                runif(sum(gm != 0), lB[1], uB[2]) -
+                runif(sum(gm != 0), lB[1], uB[2])
+        } else {
+            dcei[which(gtc != 0)] <-
+                runif(sum(gtc != 0), lB[1], uB[2]) -
+                runif(sum(gtc != 0), lB[1], uB[2])
+        }
         acc[run, 1, 2] <- as.numeric(Sys.time()) - start
         dcer <- list(dce = dcei, graph = as(gtc, "graphNEL"), dcefull = dcei)
         dceir <- dcer

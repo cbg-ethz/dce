@@ -268,7 +268,7 @@ fulllin <- function(g1, d1, g2, d2, conf = TRUE,
                             C[2:nrow(C), 2:ncol(C)], C[2:nrow(C), 1]
                         )
                     }
-                    dce[Xidx, i] <- betas[1:(length(betas)-2)]
+                    dce[Xidx, i] <- betas[1:length(Xidx)]
                 } else if (errDist %in% "nbinom") {
                     ## fit <- zetadiv::glm.cons(Y ~ NX + N + X,
                     ##                          family = MASS::negative.binomial(
@@ -277,8 +277,8 @@ fulllin <- function(g1, d1, g2, d2, conf = TRUE,
                     ##                          cons = 1)
                     fit <- glm.nb(Y ~ NX + N + X, link = "identity")
                     coef.mat <- summary(fit)$coefficients
-                    dce[Xidx, i] <- coef.mat[2:(nrow(coef.mat)-length(Xidx)-1), 1]
-                    dce.p[Xidx, i] <- coef.mat[2:(nrow(coef.mat)-length(Xidx)-1), 4]
+                    dce[Xidx, i] <- coef.mat[2:(length(Xidx)+1), 1]
+                    dce.p[Xidx, i] <- coef.mat[2:(length(Xidx)+1), 4]
                 }
             }
         }
