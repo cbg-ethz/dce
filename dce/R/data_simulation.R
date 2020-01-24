@@ -1,7 +1,7 @@
 #' @export
 simulate_data <- function(
   dag, n = 100,
-  dist.mean = 100, dist.dispersion = 10
+  dist.mean = 1000, dist.dispersion = 100
 ) {
   p <- length(nodes(dag))
   adj.mat <- igraph::as_adjacency_matrix(

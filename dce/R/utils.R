@@ -263,7 +263,7 @@ fulllin <- function(g1, d1, g2, d2, conf = TRUE,
                                                         link="identity"),
                                      cons = 1)
         } else if (fun %in% "test") {
-            
+
         }
         return(fit)
     }
@@ -358,4 +358,3 @@ estimateTheta <- function(data) {
     }
     return(theta)
 }
-

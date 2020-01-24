@@ -362,7 +362,7 @@ compute_enrichment <- function(
 ) {
     # compute observed statistic
     res <- compute_differential_causal_effects(
-        graph, X.wt, graph, X.mt, 
+        graph, X.wt, graph, X.mt,
         theta = theta,
         partial = partial, ...
     )
