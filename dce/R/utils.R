@@ -232,7 +232,7 @@ resample_edge_weights <- function(g, lB = -1, uB = 1, tp = 1) {
 #' @importFrom MASS glm.nb
 #' @importFrom zetadiv glm.cons
 fulllin <- function(g1, d1, g2, d2, conf = TRUE,
-                    errDist = "normal", theta = NULL,
+                    errDist = "nbinom", theta = NULL,
                     partial = TRUE, ...) {
     mat1 <- as(g1, "matrix")
     mat2 <- as(g2, "matrix")
@@ -248,6 +248,25 @@ fulllin <- function(g1, d1, g2, d2, conf = TRUE,
     }
     dce <- mat1*0
     dce.p <- mat1*0
+    glmfun <- function(...) {
+        fun <- "glm2"
+        if (fun %in% "glm.nb") {
+            fit <- MASS::glm.nb(..., link = "identity")
+        } else if (fun %in% "glm2") {
+            fit <- glm2::glm2(..., family = MASS::negative.binomial(
+                                                theta=theta,
+                                                link="identity"))
+        } else if (fun %in% "glm.cons") {
+            fit <- zetadiv::glm.cons(Y ~ NX + N + X,
+                                     family = MASS::negative.binomial(
+                                                        theta=theta,
+                                                        link="identity"),
+                                     cons = 1)
+        } else if (fun %in% "test") {
+            
+        }
+        return(fit)
+    }
     if (partial) {
         for (i in seq_len(n)) {
             Xidx <- which(mat1[, i] == 1)
@@ -270,12 +289,7 @@ fulllin <- function(g1, d1, g2, d2, conf = TRUE,
                     }
                     dce[Xidx, i] <- betas[1:length(Xidx)]
                 } else if (errDist %in% "nbinom") {
-                    ## fit <- zetadiv::glm.cons(Y ~ NX + N + X,
-                    ##                          family = MASS::negative.binomial(
-                    ##                                             theta=theta,
-                    ##                                             link="identity"),
-                    ##                          cons = 1)
-                    fit <- glm.nb(Y ~ NX + N + X, link = "identity")
+                    fit <- glmfun(Y ~ NX + N + X)
                     coef.mat <- summary(fit)$coefficients
                     dce[Xidx, i] <- coef.mat[2:(length(Xidx)+1), 1]
                     dce.p[Xidx, i] <- coef.mat[2:(length(Xidx)+1), 4]
@@ -312,21 +326,11 @@ fulllin <- function(g1, d1, g2, d2, conf = TRUE,
                         dce[i, j] <- betas[1]
                     } else if (errDist %in% "nbinom") {
                         if (length(Z) > 0 & conf) {
-                            ## fit <- zetadiv::glm.cons(Y ~ NX + N + X + NZ + Z,
-                            ##                          family = MASS::negative.binomial(
-                            ##                                             theta=theta,
-                            ##                                             link="identity"),
-                            ##                          cons = 1)
-                            fit <- glm.nb(Y ~ NX + N + X + NZ + Z, link = "identity")
+                            fit <- glmfun(Y ~ NX + N + X + NZ + Z)
                         } else {
-                            ## fit <- zetadiv::glm.cons(Y ~ NX + N + X,
-                            ##                          family = MASS::negative.binomial(
-                            ##                                             theta=theta,
-                            ##                                             link="identity"),
-                            ##                          cons = 1)
-                            fit <- glm.nb(Y ~ NX + N + X, link = "identity")
+                            fit <- glmfun(Y ~ NX + N + X)
                         }
-                        coef.mat <- summary(fit)$coefficients 
+                        coef.mat <- summary(fit)$coefficients
                         dce[i, j] <- coef.mat[2, 1]
                         dce.p[i, j] <- coef.mat[2, 4]
                     }
@@ -338,6 +342,7 @@ fulllin <- function(g1, d1, g2, d2, conf = TRUE,
     class(res) <- "dce"
     return(res)
 }
+#' @importFrom edgeR DGEList calcNormFactors estimateDisp
 #' @noRd
 estimateTheta <- function(data) {
     if (ncol(data) < 100) {
@@ -346,9 +351,9 @@ estimateTheta <- function(data) {
         thetas <- mus^2/(sigmas^2 - mus)
         theta <- median(thetas)
     } else {
-        y <- DGEList(counts=t(data))
-        y <- calcNormFactors(y)
-        y <- estimateDisp(y)
+        y <- edgeR::DGEList(counts=t(data))
+        y <- edgeR::calcNormFactors(y)
+        y <- edgeR::estimateDisp(y)
         theta <- 1/y$common.dispersion
     }
     return(theta)

@@ -28,7 +28,7 @@ library(tidyverse); library(purrr); library(graph); library(pcalg); library(asse
 
 ```{r, fig.height = 4, fig.width = 14}
 ## local test parameters:
-n <- 5 # genes
+n <- 10 # genes
 m <- c(100, 100) # samples: wt and mut
 runs <- 10
 perturb <- 0 # add (positive fraction) or remove (negative) edges
@@ -40,33 +40,40 @@ test <- 1 # number of permutations for empirical p-value
 ## fixed parameters:
 method <- "p" # correlation accuracy
 mu <- 100 # mean
-sd <- 100 # standard deviation
+sd <- 10 # standard deviation
 lB <- c(0.5,2) # negative effects intervall
 uB <- c(0.5,2) # positive effects intervall
 
 source("~/Documents/CausalPathways/dce/R/simulations.R"); source("~/Documents/CausalPathways/dce/R/main.R"); source("~/Documents/CausalPathways/dce/R/utils.R"); source("~/Documents/CausalPathways/dce/R/data_simulation.R")
 
 set.seed(9427)
-simRes <- simDce(n,m,runs,mu=mu,sd,c(lB,uB),truepos,perturb,method,p,bootstrap=bootstrap,verbose=TRUE,test=test,partial=1)
+simRes <- simDce(n,m,runs,mu=mu,sd,c(lB,uB),truepos,perturb,method,p,bootstrap=bootstrap,verbose=TRUE,test=test,partial=0)
 
 col <- rgb(c(0.5,1,0,0.1),c(0.5,0,0,0.1),c(0.5,0,1,0.1),0.75)
-plot.dceSim(simRes, col = col, border = col, showMeth = c(2,3,1), showFeat = c(2,1,7,6,3), methNames = c("Neg. Binomial", "random", "correlation"))
+plot.dceSim(simRes, col = col, border = col, showMeth = c(2,3,1), showFeat = c(2,1,7,6,3), methNames = c("Neg. Binomial", "correlation", "random"))
 
 adj <- matrix(c(0,0,0,0,
                 0.5,0,0,0,
-                2,0.5,0,0,
-                0,1.5,0,0), 4, 4)
+                1.5,0,0,0,
+                1.25,1.2,0.7,0), 4, 4)
 rownames(adj) <- colnames(adj) <- 1:4
 g1 <- as(adj, "graphNEL")
-d1 <- simulate_data(g1, dist.dispersion = 100)
-g2 <- resample_edge_weights(g1, lB = c(0.5,2), uB = c(0.5,2))
-d2 <- simulate_data(g2, dist.dispersion = 100)
-trueEffects(g1, partial = 0) - trueEffects(g2, partial = 0)
-compute_differential_causal_effects(g1, d1, g2, d2, partial = 0)$dce
-adj - as(g2, "matrix")
-compute_differential_causal_effects(g1, d1, g2, d2, partial = 1)$dce
-cor(as.vector(adj - as(g2, "matrix")), as.vector(compute_differential_causal_effects(g1, d1, g2, d2, partial = 1)$dce))
-compute_enrichment(g1, d1, d2)
+g2 <- resample_edge_weights(g1, c(0.5,2), c(0.5, 2))
+d1 <- simulate_data(g1, 100, 100, 100)
+d2 <- simulate_data(g2, 100, 100, 100)
+Pce <- adj - as(g2, "matrix")
+compute_differential_causal_effects(g1, d1, g2, d2, theta = 100, partial = 1)$dce
+Tce <- trueEffects(g1, partial = 0) - trueEffects(g2, partial = 0)
+tmp <- compute_differential_causal_effects(g1, d1, g2, d2, theta = 100, partial = 0)$dce
+tmp
+computeEdgeWeights <- function(g, dce) {
+    mat <- as(g, "matrix")
+    mat[which(mat != 0)] <- 1
+    pdce <- mat*dce
+    for (i in 1:nrow(mat)) {
+        
+    }
+}
 
 ```
 
