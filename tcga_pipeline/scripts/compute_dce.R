@@ -8,7 +8,7 @@ df.classi <- read_csv(snakemake@input$classification_fname)
 df.graph <- read_csv(snakemake@input$network_fname)
 
 graph <- igraph::igraph.to.graphNEL(igraph::as.igraph(tidygraph::as_tbl_graph(df.graph)))
-genes <- intersect(nodes(graph), rownames(df.expr))
+genes <- intersect(graph::nodes(graph), rownames(df.expr))
 
 
 # compute stuff
@@ -32,7 +32,7 @@ res <- purrr::map(tumor_stage_list, function (selected_tumor_stage) {
 
 
   # annoying fix for nodes without data (TODO: improve this)
-  undef.nodes <- setdiff(nodes(graph), rownames(df.expr))
+  undef.nodes <- setdiff(graph::nodes(graph), rownames(df.expr))
   X.wt[, undef.nodes] <- rnbinom(length(undef.nodes), size=1000, mu=100)
   X.mt[, undef.nodes] <- rnbinom(length(undef.nodes), size=1000, mu=100)
 
@@ -52,7 +52,7 @@ res <- purrr::map(tumor_stage_list, function (selected_tumor_stage) {
   # data statistics
   dim(X.wt)
   dim(X.mt)
-  length(nodes(graph))
+  length(graph::nodes(graph))
 
   X.wt %>% summarize_all(list(mean))
   X.mt %>% summarize_all(list(mean))
