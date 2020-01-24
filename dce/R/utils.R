@@ -231,8 +231,9 @@ resample_edge_weights <- function(g, lB = -1, uB = 1, tp = 1) {
 #' @importFrom methods as
 #' @importFrom MASS glm.nb
 #' @importFrom zetadiv glm.cons
-fulllin <- function(g1, d1, g2, d2, conf = TRUE, diff = 1,
-                    errDist = "normal", theta = NULL, ...) {
+fulllin <- function(g1, d1, g2, d2, conf = TRUE,
+                    errDist = "normal", theta = NULL,
+                    partial = TRUE, ...) {
     mat1 <- as(g1, "matrix")
     mat2 <- as(g2, "matrix")
     mat1[which(mat1 != 0)] <- 1
@@ -245,9 +246,9 @@ fulllin <- function(g1, d1, g2, d2, conf = TRUE, diff = 1,
     if (is.null(theta)) {
         theta <- estimateTheta(df)
     }
-    if (diff) {
-        dce <- mat1*0
-        dce.p <- mat1*0
+    dce <- mat1*0
+    dce.p <- mat1*0
+    if (partial) {
         for (i in seq_len(n)) {
             Xidx <- which(mat1[, i] == 1)
             if (length(Xidx) > 0) {
@@ -269,14 +270,64 @@ fulllin <- function(g1, d1, g2, d2, conf = TRUE, diff = 1,
                     }
                     dce[Xidx, i] <- betas[1:(length(betas)-2)]
                 } else if (errDist %in% "nbinom") {
-                    fit <- zetadiv::glm.cons(Y ~ NX + N + X,
-                                    family = MASS::negative.binomial(
-                                                       theta=theta,
-                                                       link="identity"),
-                                    cons = 1)
+                    ## fit <- zetadiv::glm.cons(Y ~ NX + N + X,
+                    ##                          family = MASS::negative.binomial(
+                    ##                                             theta=theta,
+                    ##                                             link="identity"),
+                    ##                          cons = 1)
+                    fit <- glm.nb(Y ~ NX + N + X, link = "identity")
                     coef.mat <- summary(fit)$coefficients
                     dce[Xidx, i] <- coef.mat[2:(ncol(coef.mat)-2), 1]
                     dce.p[Xidx, i] <- coef.mat[2:(ncol(coef.mat)-2), 4]
+                }
+            }
+        }
+    } else {
+        for (i in seq_len(n)) {
+            for (j in seq_len(n)) {
+                if (dagtc[i, j] == 1 & i != j) {
+                    Z <- which(mat1[, i] == 1)
+                    NX <- df[, i] * df$N
+                    NZ <- as(df[, Z] * df$N, "matrix")
+                    N <- df$N
+                    X <- df[, i]
+                    Y <- df[, j]
+                    Z <- as(df[, Z], "matrix")
+                    if (errDist %in% "normal") {
+                        if (length(Z) > 0 & conf) {
+                            C <- cov(cbind(Y, NX, NZ, N, X, Z))
+                        } else {
+                            C <- cov(cbind(Y, NX, N, X))
+                        }
+                        if (Matrix::rankMatrix(C[2:nrow(C), 2:ncol(C)]) <
+                            nrow(C[2:nrow(C), 2:ncol(C)])) {
+                            betas <- Gsolve(
+                                C[2:nrow(C), 2:ncol(C)], C[2:nrow(C), 1]
+                            )
+                        } else {
+                            betas <- solve(
+                                C[2:nrow(C), 2:ncol(C)], C[2:nrow(C), 1]
+                            )
+                        }
+                        dce[i, j] <- betas[1]
+                    } else if (errDist %in% "nbinom") {
+                        if (length(Z) > 0 & conf) {
+                            fit <- zetadiv::glm.cons(Y ~ NX + N + X + NZ + Z,
+                                                     family = MASS::negative.binomial(
+                                                                        theta=theta,
+                                                                        link="identity"),
+                                                     cons = 1)
+                        } else {
+                            fit <- zetadiv::glm.cons(Y ~ NX + N + X,
+                                                     family = MASS::negative.binomial(
+                                                                        theta=theta,
+                                                                        link="identity"),
+                                                     cons = 1)
+                        }
+                        coef.mat <- summary(fit)$coefficients 
+                        dce[i, j] <- coef.mat[2, 1]
+                        dce.p[i, j] <- coef.mat[2, 4]
+                    }
                 }
             }
         }

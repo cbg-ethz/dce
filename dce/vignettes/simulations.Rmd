@@ -60,73 +60,17 @@ simRes <- simDce(n,m,runs,mu=mu,sd,c(lB,uB),truepos,perturb,method,p,bootstrap=b
 col <- rgb(c(0.5,1,0,0.1),c(0.5,0,0,0.1),c(0.5,0,1,0.1),0.75)
 plot.dceSim(simRes, col = col, border = col, showMeth = c(2,3,1,4), showFeat = c(2,1,7,6,3), methNames = c("Gaussian", "Neg. Binomial", "random", "correlation"))
 
+adj <- matrix(c(0,0,0,0.5,0,0,0.5,2,0), 3, 3)
+rownames(adj) <- colnames(adj) <- 1:3
+g1 <- as(adj, "graphNEL")
+d1 <- simulate_data(g1, dist.dispersion = 10)
+g2 <- resample_edge_weights(g1, lB = c(0.5,2), uB = c(0.5,2))
+d2 <- simulate_data(g2, dist.dispersion = 10)
+adj - as(g2, "matrix")
+compute_differential_causal_effects(g1, d1, g2, d2)
+compute_enrichment(g1, d1, d2)
 
-A <- rnbinom(100, size=100, mu=1000)
-B <- rnbinom(100, size=100, mu=0.1*A)
 
-# value flip
-A[1] <- 20
-B[1] <- 2000
-
-glm.nb(B ~ A, link="identity")
-zetadiv::glm.cons(B ~ A, family = MASS::negative.binomial(theta=100, link="identity"), cons = -1, cons.inter = -1)
-
-glm2::glm2(B ~ A,  family = MASS::negative.binomial(theta=100, link="identity"))
-
-test <- matrix(rnbinom(1000*10, size=100, mu=1000), 1000, 10)
-y <- DGEList(counts=test)
-y <- calcNormFactors(y)
-y <- estimateDisp(y)
-
-set.seed(9247)
-runs <- 100
-coefs <- matrix(runs*4, runs, 12)*NA
-for (i in 1:runs) {
-    size <- 1
-    a <- rnbinom(100, mu=100, size=size)
-    b <- rnbinom(100, mu=100, size=size)
-    c <- rnbinom(100, mu=a*1 + b*0.5, size=size)
-    #if (i == 6) { stop() }
-    res <- try(glm.nb(b ~ 0 + a, link = "identity"), silent = 1)
-    if (!(length(grep("Error", res) > 0))) {
-        coefs[i, 1] <- res$coefficients[1]
-    }
-    res <- try(glm.nb(c ~ 0 + b + a - 1, link = "identity"), silent = 1)
-    if (!(length(grep("Error", res) > 0))) {
-        coefs[i, 5] <- res$coefficients[1]
-        coefs[i, 9] <- res$coefficients[2]
-    }
-    res <- try(lm(b ~ 0 + a), silent = 1)
-    coefs[i, 2] <- res$coefficients[1]
-    res <- try(lm(c ~ 0 + b + a), silent = 1)
-    coefs[i, 6] <- res$coefficients[1]
-    coefs[i, 10] <- res$coefficients[2]
-    mua <- mean(a); mub <- mean(b); muc <- mean(c)
-    sigmaa <- sd(a); sigmab <- sd(b); sigmac <- sd(c)
-    thetaa <- mua^2/(sigmaa^2-mua); thetab <- mub^2/(sigmab^2-mub); thetac <- muc^2/(sigmac^2-muc)
-    theta=mean(c(thetaa,thetab,thetac))
-    res <- try(glm.cons(b ~ a, family = MASS::negative.binomial(theta=theta, link="identity"), cons = 1, cons.inter = 1), silent = 1)
-    if (!(length(grep("Error", res) > 0))) {
-        coefs[i, 3] <- res$coefficients[2]
-    }
-    res <- try(glm.cons(c ~ b + a, family = MASS::negative.binomial(theta=theta, link="identity"), cons = 1, cons.inter = 1), silent = 1)
-    if (!(length(grep("Error", res) > 0))) {
-        coefs[i, 7] <- res$coefficients[2]
-        coefs[i, 11] <- res$coefficients[3]
-    }
-    res <- try(glm2(b ~ a, family = MASS::negative.binomial(theta=theta, link="identity")), silent = 1)
-    if (!(length(grep("Error", res) > 0))) {
-        coefs[i, 4] <- res$coefficients[2]
-    }
-    res <- try(glm2(c ~ b + a, family = MASS::negative.binomial(theta=theta, link="identity")), silent = 1)
-    if (!(length(grep("Error", res) > 0))) {
-        coefs[i, 8] <- res$coefficients[2]
-        coefs[i, 12] <- res$coefficients[3]
-    }
-}
-boxplot(coefs, col = 2:5, ylim = c(-0.5,2)); abline(h=c(0,0.5,1), lty = 2)
-
-summary(coefs)
 ```
 
 ```{r}

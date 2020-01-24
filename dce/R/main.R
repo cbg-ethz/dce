@@ -138,7 +138,10 @@ compute_causal_effects <- function(graph, df.expr) {
 #' @param bootMethod if "diff" (default) bootstraps the differential causal
 #' effects, if "cause", bootstraps on the causal effects
 #' (not possible for "full")
-#' @param ... further arguments passed to `fulllin`
+#' @param theta prior estimated theta value
+#' @param partial if TRUE only computes the partial causal effects on
+#' the edges, else computes the total causal effect
+#' @param conf if TRUE accounts for confounders
 #' @author Kim Jablonski & Martin Pirkl
 #' @return vector of causal effects
 #' @export
@@ -159,7 +162,8 @@ compute_differential_causal_effects <- function(
     method = "full",
     bootstrap = FALSE, runs = 100,
     replace = FALSE, frac = 0.5,
-    bootMethod = "diff", errDist = "nbinom", ...
+    bootMethod = "diff", errDist = "nbinom",
+    theta = NULL, partial = TRUE
 ) {
     if (bootstrap) {
         if (method %in% "full") {
@@ -215,7 +219,8 @@ compute_differential_causal_effects <- function(
                     dces <- dces + fulllin(
                         graph.ctrl, df.expr.ctrl.sub,
                         graph.mut, df.expr.mut.sub,
-                        errDist = errDist, ...
+                        errDist = errDist, theta = theta,
+                        partial = partial
                     )$dce
                 }
             }
@@ -262,7 +267,8 @@ compute_differential_causal_effects <- function(
             tmp <- fulllin(
                 graph.ctrl, df.expr.ctrl,
                 graph.mut, df.expr.mut,
-                errDist = errDist, ...
+                errDist = errDist, theta = theta,
+                partial = partial
             )
 
             res <- tmp$dce
