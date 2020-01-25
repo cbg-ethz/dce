@@ -38,6 +38,12 @@ print(glue::glue("  Varied parameter: {varied.parameter}"))
 print(glue::glue("  Parameter: {parameter.list}"))
 
 
+# helper functions
+compute.mse <- function(y_pred, y_true) {
+  return(mean((y_pred - y_true)^2))
+}
+
+
 # do benchmarking
 replicate.count <- 100
 
@@ -166,6 +172,17 @@ df.bench <- purrr::pmap_dfr(
             rownames_to_column(var="type"),
 
           data.frame(
+            cor=compute.mse(df.res$truth, df.res$cor),
+            pcor=compute.mse(df.res$truth, df.res$pcor),
+            basic=compute.mse(df.res$truth, df.res$basic),
+            # basic.bootstrap=compute.mse(df.res$truth, df.res$basic.bootstrap),
+            full=compute.mse(df.res$truth, df.res$full),
+            # full.bootstrap=compute.mse(df.res$truth, df.res$full.bootstrap),
+            rand=compute.mse(df.res$truth, df.res$rand)
+          ) %>%
+            mutate(type="mse"),
+
+          data.frame(
             cor=time.cor,
             pcor=time.pcor,
             basic=time.basic,
@@ -209,10 +226,21 @@ ggplot(aes(x=parameter, y=value, fill=variable)) +
   geom_boxplot() +
   ylim(-1, 1) +
   ggtitle(paste("Variable:", varied.parameter)) +
-  ylab("performance") +
+  ylab("Correlation (truth vs prediction)") +
   theme_minimal() +
   theme(plot.title=element_text(hjust=0.5)) +
-  ggsave("benchmark.pdf")
+  ggsave("benchmark_correlation.pdf")
+
+df.bench %>%
+  dplyr::filter(type == "mse") %>%
+  gather("variable", "value", -parameter, -type) %>%
+  ggplot(aes(x=parameter, y=value, fill=variable)) +
+  geom_boxplot() +
+  ggtitle(paste("Variable:", varied.parameter)) +
+  ylab("Mean squared error") +
+  theme_minimal() +
+  theme(plot.title=element_text(hjust=0.5)) +
+  ggsave("benchmark_mse.pdf")
 
 df.bench %>%
   dplyr::filter(type == "runtime") %>%
