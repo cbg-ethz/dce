@@ -84,6 +84,10 @@ df.bench <- purrr::pmap_dfr(
       time.cor <- as.integer(difftime(Sys.time(), time.tmp, units="secs"))
 
       time.tmp <- Sys.time()
+      res.pcor <- list(dce=ppcor::pcor(wt.X)$estimate - ppcor::pcor(mt.X)$estimate)
+      time.pcor <- as.integer(difftime(Sys.time(), time.tmp, units="secs"))
+
+      time.tmp <- Sys.time()
       res.basic <- compute_differential_causal_effects(
         wt.graph, wt.X,
         mt.graph, mt.X,
@@ -127,6 +131,7 @@ df.bench <- purrr::pmap_dfr(
       df.res <- data.frame(
         truth=as.vector(ground.truth$dce),
         cor=as.vector(res.cor$dce),
+        pcor=as.vector(res.pcor$dce),
         basic=as.vector(res.basic$dce),
         # basic.bootstrap=as.vector(res.basic.bootstrap$dce),
         full=as.vector(res.full$dce),
@@ -148,6 +153,7 @@ df.bench <- purrr::pmap_dfr(
 
           bind_rows(list(
             cor=get_prediction_counts(df.res$truth, df.res$cor),
+            pcor=get_prediction_counts(df.res$truth, df.res$pcor),
             basic=get_prediction_counts(df.res$truth, df.res$basic),
             # basic.bootstrap=get_prediction_counts(df.res$truth, df.res$basic.bootstrap),
             full=get_prediction_counts(df.res$truth, df.res$full),
@@ -161,6 +167,7 @@ df.bench <- purrr::pmap_dfr(
 
           data.frame(
             cor=time.cor,
+            pcor=time.pcor,
             basic=time.basic,
             # basic.bootstrap=time.basic.bootstrap,
             full=time.full,
@@ -171,6 +178,7 @@ df.bench <- purrr::pmap_dfr(
 
           data.frame(
             cor=graph.density,
+            pcor=graph.density,
             basic=graph.density,
             # basic.bootstrap=graph.density,
             full=graph.density,
