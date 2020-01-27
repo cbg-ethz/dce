@@ -14,10 +14,6 @@ simulate_data <- function(
   # sanity checks
   stopifnot(is(dag, "graph"), p >= 2)
 
-  if (any(adj.mat < 0)) {
-    stop("Negative edge weights are not allowed!")
-  }
-
   nonzero.idx <- which(adj.mat != 0, arr.ind = TRUE)
   if (nrow(nonzero.idx) > 0) {
     if (any(nonzero.idx[, 1] - nonzero.idx[, 2] < 0) || any(diag(adj.mat) != 0)) {
@@ -36,7 +32,7 @@ simulate_data <- function(
 
     if (any(betas != 0)) {
       # current node has parents
-      mu <- X[, ij, drop = FALSE] %*% betas
+      mu <- X[, j] + scale(X[, ij, drop = FALSE], scale=FALSE) %*% betas
       X[, j] <- rnbinom(n, size=dist.dispersion, mu=mu)
     }
   }
