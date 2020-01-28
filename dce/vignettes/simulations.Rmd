@@ -28,7 +28,7 @@ library(tidyverse); library(purrr); library(graph); library(pcalg); library(asse
 
 ```{r, fig.height = 4, fig.width = 14}
 ## local test parameters:
-n <- 10 # genes
+n <- 3 # genes
 m <- c(100, 100) # samples: wt and mut
 runs <- 10
 perturb <- 0 # add (positive fraction) or remove (negative) edges
@@ -39,41 +39,115 @@ test <- 1 # number of permutations for empirical p-value
 
 ## fixed parameters:
 method <- "p" # correlation accuracy
-mu <- 100 # mean
+mu <- 10 # mean
 sd <- 10 # standard deviation
-lB <- c(0.5,2) # negative effects intervall
-uB <- c(0.5,2) # positive effects intervall
+lB <- c(-1,0) # negative effects intervall
+uB <- c(0,1) # positive effects intervall
 
 source("~/Documents/CausalPathways/dce/R/simulations.R"); source("~/Documents/CausalPathways/dce/R/main.R"); source("~/Documents/CausalPathways/dce/R/utils.R"); source("~/Documents/CausalPathways/dce/R/data_simulation.R")
 
 set.seed(9427)
-simRes <- simDce(n,m,runs,mu=mu,sd,c(lB,uB),truepos,perturb,method,p,bootstrap=bootstrap,verbose=TRUE,test=test,partial=0)
+simRes <- simDce(n,m,runs,mu=mu,sd,c(lB,uB),truepos,perturb,method,p,bootstrap=bootstrap,verbose=TRUE,test=test,partial=1)
 
 col <- rgb(c(0.5,1,0,0.1),c(0.5,0,0,0.1),c(0.5,0,1,0.1),0.75)
 plot.dceSim(simRes, col = col, border = col, showMeth = c(2,3,1), showFeat = c(2,1,7,6,3), methNames = c("Neg. Binomial", "correlation", "random"))
 
-adj <- matrix(c(0,0,0,0,
-                0.5,0,0,0,
-                1.5,0,0,0,
-                1.25,1.2,0.7,0), 4, 4)
-rownames(adj) <- colnames(adj) <- 1:4
-g1 <- as(adj, "graphNEL")
-g2 <- resample_edge_weights(g1, c(0.5,2), c(0.5, 2))
-d1 <- simulate_data(g1, 100, 100, 100)
-d2 <- simulate_data(g2, 100, 100, 100)
-Pce <- adj - as(g2, "matrix")
-compute_differential_causal_effects(g1, d1, g2, d2, theta = 100, partial = 1)$dce
-Tce <- trueEffects(g1, partial = 0) - trueEffects(g2, partial = 0)
-tmp <- compute_differential_causal_effects(g1, d1, g2, d2, theta = 100, partial = 0)$dce
-tmp
-computeEdgeWeights <- function(g, dce) {
-    mat <- as(g, "matrix")
-    mat[which(mat != 0)] <- 1
-    pdce <- mat*dce
-    for (i in 1:nrow(mat)) {
-        
-    }
+## testing:
+
+beta <- 1.5
+
+set.seed(42)
+size <- 10; mu <- 10
+A.nb <- rnbinom(1000, size=size, mu=mu)
+B.nb <- rnbinom(1000, size=size, mu=exp(log(mu) + beta * (A.nb  - mean(A.nb)))) # link function keeps mu positive, exp can lead to extreme values
+
+B.nb <- rnbinom(1000, size=size, mu=10 + beta * A.nb) # link function keeps mu positive, exp can lead to extreme values
+
+summary(A.nb)
+summary(B.nb)
+
+plot(A.nb, B.nb)
+hist(B.nb)
+
+linkfun <- "log"
+glm2::glm2(B.nb ~ A.nb, family=MASS::negative.binomial(theta=10, link=linkfun))
+
+## real data:
+brca <- read.csv("CausalPathways/tcga_pipeline/pipeline_run/tcga_data/TCGA-BRCA/expression_matrix.csv")
+brca.info <- read.csv("CausalPathways/tcga_pipeline/pipeline_run/tcga_data/TCGA-BRCA/case_classifications.csv")
+brca.kegg <- read.csv("CausalPathways/tcga_pipeline/pipeline_run/kegg_data/hsa05224.edgelist.csv")
+
+brca.mat <- as(brca[, -1], "matrix")
+rownames(brca.mat) <- brca[, 1]
+gene.median <- apply(brca.mat, 1, median)
+brca.mat <- brca.mat[which(gene.median > 10), ]
+theta <- estimateTheta(t(brca.mat))
+
+sum(rownames(brca.mat) %in% brca.kegg$source)
+sum(rownames(brca.mat) %in% brca.kegg$sink)
+
+set.seed(1)
+for (i in 1:10000) {
+    s1 <- sample(1:nrow(brca.mat), 1)
+    s2 <- sample(1:nrow(brca.mat), 1)
+    # theta.pw <- estimateTheta(t(brca.mat[c(s1, s2), ]))
+    theta.pw <- 10
+    glm2::glm2(brca.mat[s1, ] ~ brca.mat[s2, ], family=MASS::negative.binomial(theta=theta.pw, link=linkfun))
+    cat(paste0(".", i))
 }
+plot(brca.mat[s1, ], brca.mat[s2, ])
+
+brca.genes <- unique(c(as.vector(brca.kegg$source), as.vector(brca.kegg$sink)))
+brca.genes <- sort(brca.genes[grep("ENSG", brca.genes)])
+brca.kegg <- brca.kegg[intersect(grep("ENSG", brca.kegg$source), grep("ENSG", brca.kegg$sink)), ]
+n <- length(brca.genes)
+brca.adj <- matrix(0, n, n)
+colnames(brca.adj) <- rownames(brca.adj) <- brca.genes
+
+a <- apply(matrix(brca.kegg$source, 1), 2, function(x) {
+    y <- which(rownames(brca.adj) %in% x)
+    return(y)
+})
+b <- apply(matrix(brca.kegg$sink, 1), 2, function(x) {
+    y <- which(colnames(brca.adj) %in% x)
+    return(y)
+})
+
+brca.adj[cbind(a,b)] <- 1
+normal <- as(brca.adj, "graphNEL")
+tumor <- normal
+dn <- t(brca.mat[, which(brca.info$definition %in% "Solid Tissue Normal")])
+dt <- t(brca.mat[, which(brca.info$definition %in% "Primary solid Tumor")])
+#theta <- estimateTheta(data = 
+dce <- compute_differential_causal_effects(normal, dn, tumor, dt)
+
+dt <- t(brca.mat[, which(brca.info$definition %in% "Primary solid Tumor" & brca.info$tumor_stage %in% "stage i")])
+dceI <- compute_differential_causal_effects(normal, dn, tumor, dt)
+dt <- t(brca.mat[, which(brca.info$definition %in% "Primary solid Tumor" & brca.info$tumor_stage %in% "stage ii")])
+dceII <- compute_differential_causal_effects(normal, dn, tumor, dt)
+dt <- t(brca.mat[, which(brca.info$definition %in% "Primary solid Tumor" & brca.info$tumor_stage %in% "stage iii")])
+dceIII <- compute_differential_causal_effects(normal, dn, tumor, dt)
+dt <- t(brca.mat[, which(brca.info$definition %in% "Primary solid Tumor" & brca.info$tumor_stage %in% "stage iv")])
+dceIV <- compute_differential_causal_effects(normal, dn, tumor, dt)
+dt <- t(brca.mat[, which(brca.info$definition %in% "Primary solid Tumor" & brca.info$tumor_stage %in% "stage x")])
+dceX <- compute_differential_causal_effects(normal, dn, tumor, dt)
+dt <- t(brca.mat[, which(brca.info$definition %in% "Primary solid Tumor" & brca.info$tumor_stage %in% "not reported")])
+dceNR <- compute_differential_causal_effects(normal, dn, tumor, dt)
+
+dceC <- dceNR
+
+dceC$dce[which(tmp < 0.05, arr.ind = TRUE)]
+
+compute_enrichment(normal, dce = dceC)$p.value
+
+brca.dnf <- mnem:::adj2dnf(brca.adj)
+brca.dnf <- brca.dnf[grep("=", brca.dnf)]
+brca.freq <- dceC$dce[which(dceC$dce != 0)]*100
+brca.dnf <- gsub("ENSG00000", "", brca.dnf)
+brca.col <- abs(brca.freq)/max(abs(brca.freq))
+edgecol <- rgb(brca.col, 0, 1*max(brca.col) - brca.col)
+mnem::plotDnf(brca.dnf, edgecol = edgecol, edgelwd = abs(brca.freq)*10, edgelabel = round(brca.freq, 2)*100)
+
 
 ```
 

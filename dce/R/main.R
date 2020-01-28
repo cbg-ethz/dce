@@ -165,6 +165,9 @@ compute_differential_causal_effects <- function(
     bootMethod = "diff", errDist = "nbinom",
     theta = NULL, partial = TRUE
 ) {
+    if (is.null(theta)) {
+        theta <- estimateTheta(rbind(df.expr.ctrl, df.expr.mut))
+    }
     if (bootstrap) {
         if (method %in% "full") {
             bootMethod <- "diff"
@@ -281,7 +284,7 @@ compute_differential_causal_effects <- function(
     res <- res*dagtc
     res.p <- res.p*dagtc
     out <- list(dce = res, dce.p = res.p, graph = graph.ctrl,
-                theta = theta))
+                theta = theta)
     rownames(out$dce) <- nodes(graph.ctrl)
     colnames(out$dce) <- nodes(graph.ctrl)
     class(out) <- "dce"
