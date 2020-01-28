@@ -1,4 +1,9 @@
+from snakemake.remote.HTTP import RemoteProvider as HTTPRemoteProvider
+
+
 # setup
+HTTP = HTTPRemoteProvider()
+
 configfile: 'config.yaml'
 workdir: config['working_directory']
 
@@ -8,7 +13,8 @@ rule all:
     input:
         expand(
             'plots/{project}/{project}.{pathway}.dce.pdf',
-            project=config['projects'], pathway=config['pathways'])
+            project=config['projects'], pathway=config['pathways']),
+        expand('drugs/results_{pathway}.csv', pathway=config['pathways'])
 
 
 rule download_TCGA_data:
@@ -58,3 +64,19 @@ rule visualize:
         plot_fname = 'plots/{project}/{project}.{pathway}.dce.pdf'
     script:
         'scripts/visualize.R'
+
+
+rule discover_drugs:
+    input:
+        hetnet_nodes_fname = HTTP.remote(
+            'https://github.com/hetio/hetionet/raw/master/hetnet/tsv/hetionet-v1.0-nodes.tsv',
+            keep_local=True
+        )[0],
+        hetnet_edges_fname = HTTP.remote(
+            'https://github.com/hetio/hetionet/raw/master/hetnet/tsv/hetionet-v1.0-edges.sif.gz',
+            keep_local=True
+        )[0]
+    output:
+        result_fname = 'drugs/results_{pathway}.csv'
+    script:
+        'scripts/drug_discovery.py'
