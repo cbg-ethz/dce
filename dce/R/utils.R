@@ -241,26 +241,27 @@ fulllin <- function(g1, d1, g2, d2, conf = TRUE,
     dagtc <- nem::transitive.closure(mat1, mat=TRUE)
     df <- rbind(d1, d2)
     colnames(df) <- paste0("X", seq_len(ncol(df)))
-    df <- as.data.frame(cbind(df, N = c(rep(1, nrow(d1)), rep(0, nrow(d2)))))
-    n <- length(nodes(g1))
     if (is.null(theta)) {
         theta <- estimateTheta(df)
     }
+    df <- as.data.frame(cbind(df, N = c(rep(1, nrow(d1)), rep(0, nrow(d2)))))
+    n <- length(nodes(g1))
     dce <- mat1*0
     dce.p <- mat1*0
     glmfun <- function(...) {
         fun <- "glm2"
+        linkfun <- "log"
         if (fun %in% "glm.nb") {
-            fit <- MASS::glm.nb(..., link = "identity")
+            fit <- MASS::glm.nb(..., link = linkfun)
         } else if (fun %in% "glm2") {
             fit <- glm2::glm2(..., family = MASS::negative.binomial(
                                                 theta=theta,
-                                                link="identity"))
+                                                link=linkfun))
         } else if (fun %in% "glm.cons") {
             fit <- zetadiv::glm.cons(Y ~ NX + N + X,
                                      family = MASS::negative.binomial(
                                                         theta=theta,
-                                                        link="identity"),
+                                                        link=linkfun),
                                      cons = 1)
         } else if (fun %in% "test") {
 
