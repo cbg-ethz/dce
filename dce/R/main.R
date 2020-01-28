@@ -336,12 +336,13 @@ plot.dce <- function(x, ...) {
 #'
 #' This function computes a p-value.
 #' @param graph DAG as a graphNEL object
-#' @param X.wt Expression values of wild type
-#' @param X.mt Expression values of mutant
+#' @param X.wt Expression values of wild type (if dce=NULL)
+#' @param X.mt Expression values of mutant (if dce=NULL)
 #' @param statistic Statistic to compute
 #' @param permutation_count How many permutations to do
 #' @param theta prior estimated theta value
 #' @param partial if TRUE only computes the partial causal effects on
+#' @param dce optional dce object
 #' the edges, else computes the total causal effect
 #' @author Hinz und Kunz
 #' @return Enrichment p-value
@@ -358,19 +359,24 @@ compute_enrichment <- function(
     permutation_count = 100,
     pvalue.method = "hmp", # "perm"
     theta = NULL, partial = 1,
-    ...
+    dce = NULL
 ) {
-    # compute observed statistic
-    res <- compute_differential_causal_effects(
-        graph, X.wt, graph, X.mt,
-        theta = theta,
-        partial = partial, ...
-    )
+    if (is.null(dce)) {
+        # compute observed statistic
+        res <- compute_differential_causal_effects(
+            graph, X.wt, graph, X.mt,
+            theta = theta,
+            partial = partial, ...
+        )
+    } else {
+        res <- dce
+    }
 
     if (pvalue.method == "hmp") {
         # aggregate p-values
         adj.mat <- as(graph, "matrix")
-        tmp <- res$dce.p[which(adj.mat != 0)]
+        tmp <- res$dce.p[which(adj.mat != 0)] # look for NA p-values instead?
+        print(round(tmp, 3))
         p.val <- as.numeric(harmonicmeanp::p.hmp(tmp, L = length(tmp)))
 
         return(list(p.value = p.val, p.edges = res$dce.p))
