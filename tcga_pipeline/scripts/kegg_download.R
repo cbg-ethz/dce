@@ -15,7 +15,7 @@ if (!file.exists(fname)) {
   KEGGgraph::retrieveKGML(pathwayid=pw.id, organism=parts[[2]], fname)
 }
 
-graph <- KEGGgraph::parseKGML2Graph(fname, genesOnly=TRUE, expandGenes=FALSE)
+graph <- KEGGgraph::parseKGML2Graph(fname, genesOnly=TRUE, expandGenes=TRUE)
 
 
 # plot pathway
@@ -30,7 +30,7 @@ cowplot::save_plot(
 
 
 # relabel nodes (KEGG_ID -> Ensembl)
-nodes.entrez <- sapply(nodes(graph), KEGGgraph::translateKEGGID2GeneID)
+nodes.entrez <- KEGGgraph::translateKEGGID2GeneID(nodes(graph))
 
 df.tmp <- AnnotationDbi::select(
   org.Hs.eg.db,
@@ -38,6 +38,9 @@ df.tmp <- AnnotationDbi::select(
   columns=c("ENTREZID", "ENSEMBL")
 ) %>%
   distinct(ENTREZID, .keep_all=TRUE)
+
+stopifnot(length(nodes(graph)) == dim(df.tmp)[[1]])
+
 df.tmp$ENSEMBL[is.na(df.tmp$ENSEMBL)] <- paste0("undef_entrez", df.tmp$ENTREZID[is.na(df.tmp$ENSEMBL)])
 nodes.ensembl <- df.tmp %>% pull(ENSEMBL)
 
