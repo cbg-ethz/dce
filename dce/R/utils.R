@@ -240,10 +240,10 @@ fulllin <- function(g1, d1, g2, d2, conf = TRUE,
     mat2[which(mat2 != 0)] <- 1
     dagtc <- nem::transitive.closure(mat1, mat=TRUE)
     df <- rbind(d1, d2)
-    colnames(df) <- paste0("X", seq_len(ncol(df)))
     if (is.null(theta)) {
         theta <- estimateTheta(df)
     }
+    colnames(df) <- paste0("X", seq_len(ncol(df)))
     df <- as.data.frame(cbind(df, N = c(rep(1, nrow(d1)), rep(0, nrow(d2)))))
     n <- length(nodes(g1))
     dce <- mat1*0
@@ -346,11 +346,11 @@ fulllin <- function(g1, d1, g2, d2, conf = TRUE,
 #' @importFrom edgeR DGEList calcNormFactors estimateDisp
 #' @noRd
 estimateTheta <- function(data) {
-    if (ncol(data) < 100) {
+    if (ncol(data) < 5) {
         mus <- apply(data, 2, mean)
         sigmas <- apply(data, 2, sd)
         thetas <- mus^2/(sigmas^2 - mus)
-        theta <- median(thetas)
+        theta <- mean(thetas)
     } else {
         y <- edgeR::DGEList(counts=t(data))
         y <- edgeR::calcNormFactors(y)

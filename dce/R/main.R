@@ -165,6 +165,9 @@ compute_differential_causal_effects <- function(
     bootMethod = "diff", errDist = "nbinom",
     theta = NULL, partial = TRUE
 ) {
+    if (is.null(theta)) {
+        theta <- estimateTheta(rbind(df.expr.ctrl, df.expr.mut))
+    }
     if (bootstrap) {
         if (method %in% "full") {
             bootMethod <- "diff"
@@ -280,7 +283,8 @@ compute_differential_causal_effects <- function(
     dagtc <- nem::transitive.closure(mat, mat=TRUE)
     res <- res*dagtc
     res.p <- res.p*dagtc
-    out <- list(dce = res, dce.p = res.p, graph = graph.ctrl)
+    out <- list(dce = res, dce.p = res.p, graph = graph.ctrl,
+                theta = theta)
     rownames(out$dce) <- nodes(graph.ctrl)
     colnames(out$dce) <- nodes(graph.ctrl)
     class(out) <- "dce"
@@ -375,8 +379,7 @@ compute_enrichment <- function(
     if (pvalue.method == "hmp") {
         # aggregate p-values
         adj.mat <- as(graph, "matrix")
-        tmp <- res$dce.p[which(adj.mat != 0)] # look for NA p-values instead?
-        print(round(tmp, 3))
+        tmp <- res$dce.p[!is.na(res$dce.p)]
         p.val <- as.numeric(harmonicmeanp::p.hmp(tmp, L = length(tmp)))
 
         return(list(p.value = p.val, p.edges = res$dce.p))

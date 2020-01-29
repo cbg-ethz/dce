@@ -84,6 +84,9 @@ simDce <- function(
             p2 <- prob
         }
         normal <- create_random_DAG(n, p2, lB, uB)
+        while(all(as(normal, "matrix") == 0)) {
+            normal <- create_random_DAG(n, p2, lB, uB)
+        }
         if (run <= floor(simruns*enriched)) {
             truepos <- 1
         } else {
@@ -92,6 +95,12 @@ simDce <- function(
         tumor <- resample_edge_weights(normal, lB, uB, truepos)
         dn <- simulate_data(normal, m[2], mu, sd)
         dt <- simulate_data(tumor, m[1], mu, sd)
+        dt[is.na(dt)] <- 0
+        cols.na <- unique(which(dt == 0, arr.ind = TRUE)[, 2])
+        dt[, cols.na] <- dt[, cols.na] + 100
+        dn[is.na(dn)] <- 0
+        cols.na <- unique(which(dn == 0, arr.ind = TRUE)[, 2])
+        dn[, cols.na] <- dn[, cols.na] + 100
         gm <- as(normal, "matrix")
         gm[which(gm != 0)] <- 1
         cn <- trueEffects(normal, partial = partial)
@@ -140,28 +149,29 @@ simDce <- function(
             return(a)
         }
         computeAUC <- function(x, y, errDist = errDist) {
-            x <- abs(x)
-            y <- abs(y)
-            cl <- 100
-            ppv <- rec <- numeric(cl)
-            cs <- seq(max(max(x), max(y)), 0, length.out = cl)
-            for (c in seq_len(cl)) {
-                tp <- sum(y > cs[c] & x > cs[c])
-                fp <- sum(y > cs[c] & x <= cs[c])
-                fn <- sum(y <= cs[c] & x > cs[c])
-                ppv[c] <- tp/(tp+fp)
-                rec[c] <- tp/(tp+fn)
-            }
-            ppv[is.na(ppv)] <- 0
-            rec[is.na(rec)] <- 0
-            ppv <- ppv[order(rec)]
-            rec <- rec[order(rec)]
-            auc <- function(a,b) {
-                n <- length(a)
-                c <- sum((a-c(0,a[-n]))*(b+c(0,b[-n]))/c(1,rep(2,n-1)))
-                return(c)
-            }
-            AUC <- auc(rec, ppv)
+            ## x <- abs(x)
+            ## y <- abs(y)
+            ## cl <- 100
+            ## ppv <- rec <- numeric(cl)
+            ## cs <- seq(max(max(x), max(y)), 0, length.out = cl)
+            ## for (c in seq_len(cl)) {
+            ##     tp <- sum(y > cs[c] & x > cs[c])
+            ##     fp <- sum(y > cs[c] & x <= cs[c])
+            ##     fn <- sum(y <= cs[c] & x > cs[c])
+            ##     ppv[c] <- tp/(tp+fp)
+            ##     rec[c] <- tp/(tp+fn)
+            ## }
+            ## ppv[is.na(ppv)] <- 0
+            ## rec[is.na(rec)] <- 0
+            ## ppv <- ppv[order(rec)]
+            ## rec <- rec[order(rec)]
+            ## auc <- function(a,b) {
+            ##     n <- length(a)
+            ##     c <- sum((a-c(0,a[-n]))*(b+c(0,b[-n]))/c(1,rep(2,n-1)))
+            ##     return(c)
+            ## }
+            ## AUC <- auc(rec, ppv)
+            AUC <- 1
             return(AUC)
         }
         ## nbinom:
@@ -314,16 +324,16 @@ plot.dceSim <- function(
         )
     }
     if (6 %in% showFeat) {
-        showMeth2 <- showMeth[which(showMeth %in% c(3,4))]
+        showMeth2 <- showMeth[which(showMeth %in% c(2,3))]
         boxplot(
             x$acc[seq_len(runs), showMeth2, 7],
-            col = col[which(showMeth %in% c(3,4))],
-            border = border[which(showMeth %in% c(3,4))],
+            col = col[which(showMeth %in% c(2,3))],
+            border = border[which(showMeth %in% c(2,3))],
             main="empirical p-value", xaxt = "n", ylim = c(0,1), ...
         )
         abline(h=c(0.1,0.05,0.01), col = rgb(0.5,0.5,0.5,0.75), lty = 2)
         axis(1, seq_len(length(showMeth2)),
-             labels = methNames[which(showMeth %in% c(3,4))])
+             labels = methNames[which(showMeth %in% c(2,3))])
     }
     if (7 %in% showFeat) {
         boxplot(
