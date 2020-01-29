@@ -258,7 +258,7 @@ fulllin <- function(g1, d1, g2, d2, conf = TRUE,
                                                 theta=theta,
                                                 link=linkfun))
         } else if (fun %in% "glm.cons") {
-            fit <- zetadiv::glm.cons(Y ~ NX + N + X,
+            fit <- zetadiv::glm.cons(...,
                                      family = MASS::negative.binomial(
                                                         theta=theta,
                                                         link=linkfun),
