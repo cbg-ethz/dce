@@ -15,7 +15,13 @@ if (!file.exists(fname)) {
   KEGGgraph::retrieveKGML(pathwayid=pw.id, organism=parts[[2]], fname)
 }
 
-graph <- KEGGgraph::parseKGML2Graph(fname, genesOnly=TRUE, expandGenes=TRUE)
+
+# set genesOnly=FALSE and do propagation and removal manually
+# to keep genes which have only edges to non-genes
+# (e.g. PTEN in BreastCancer pathway)
+graph <- KEGGgraph::parseKGML2Graph(fname, genesOnly=FALSE, expandGenes=TRUE)
+graph <- dce::propagate_gene_edges(graph)
+graph
 
 
 # plot pathway

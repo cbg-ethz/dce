@@ -45,3 +45,37 @@ graph_union <- function(graph1, graph2) {
   gn <- igraph::igraph.to.graphNEL(tmp)
   return(gn)
 }
+
+#' @export
+propagate_gene_edges <- function(graph) {
+  # propagate edges
+  ig <- igraph::igraph.from.graphNEL(graph)
+  vertex.names <- igraph::vertex_attr(ig, "name")
+
+  for (source.idx in igraph::V(ig)) {
+    source <- vertex.names[source.idx]
+
+    for (target.idx in igraph::neighbors(ig, source.idx)) {
+      target <- vertex.names[target.idx]
+
+      if (substr(target, start=0, stop=3) != "hsa") {
+        # source is not connected to gene
+
+        for (bridge.idx in igraph::neighbors(ig, target.idx)) {
+          bridge <- vertex.names[bridge.idx]
+          stopifnot(substr(bridge, start=0, stop=3) == "hsa")
+
+          ig <- igraph::add.edges(ig, c(source.idx, bridge.idx))
+        }
+      }
+    }
+  }
+
+  graph.prop <- igraph::igraph.to.graphNEL(ig)
+
+  # remove non-gene nodes
+  hsa.nodes <- Filter(function(x) { substr(x, 0, 3) == "hsa" }, nodes(graph.prop))
+  graph.filter <- graph::subGraph(hsa.nodes, graph.prop)
+
+  return(graph.filter)
+}
