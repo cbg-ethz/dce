@@ -41,11 +41,12 @@ nodes.entrez <- KEGGgraph::translateKEGGID2GeneID(nodes(graph))
 df.tmp <- AnnotationDbi::select(
   org.Hs.eg.db,
   keys=nodes.entrez, keytype="ENTREZID",
-  columns=c("ENTREZID", "ENSEMBL")
+  columns=c("ENTREZID", "ENSEMBL", "SYMBOL")
 ) %>%
   distinct(ENTREZID, .keep_all=TRUE)
 
 stopifnot(length(nodes(graph)) == dim(df.tmp)[[1]])
+df.tmp %>% write_csv(snakemake@output$geneid_fname)
 
 df.tmp$ENSEMBL[is.na(df.tmp$ENSEMBL)] <- paste0("undef_entrez", df.tmp$ENTREZID[is.na(df.tmp$ENSEMBL)])
 nodes.ensembl <- df.tmp %>% pull(ENSEMBL)

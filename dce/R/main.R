@@ -296,6 +296,7 @@ compute_differential_causal_effects <- function(
 #' This function takes a differential causal effects object and plots
 #' the dag with the dces
 #' @param x dce object
+#' @param nodename.map node names
 #' @param ... additional parameters
 #' @author Martin Pirkl, Kim Philipp Jablonski
 #' @method plot dce
@@ -305,8 +306,12 @@ compute_differential_causal_effects <- function(
 #' @importFrom ggplot2 aes theme element_rect arrow unit
 #' @importFrom tidygraph as_tbl_graph activate mutate
 #' @importFrom rlang .data
-plot.dce <- function(x, ...) {
+plot.dce <- function(x, nodename.map = NULL, ...) {
     as_tbl_graph(x$graph) %>%
+        activate(nodes) %>%
+        mutate(
+            label=if(is.null(nodename.map)) .data$name else nodename.map[.data$name]
+        ) %>%
         activate(edges) %>%
         mutate(
             dce=pmap_dbl(
@@ -326,7 +331,7 @@ plot.dce <- function(x, ...) {
             arrow=arrow(length=unit(3, "mm"))
         ) +
         geom_node_point(color="grey", size=8) +
-        geom_node_text(aes(label=.data$name)) +
+        geom_node_text(aes(label=.data$label)) +
         scale_edge_color_gradient2(
             low="red", mid="violet", high="blue",
             midpoint=0

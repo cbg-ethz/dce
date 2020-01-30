@@ -41,7 +41,8 @@ rule download_KEGG_pathway:
     output:
         xml_fname = 'kegg_data/{pathway}.xml',
         network_fname = 'kegg_data/{pathway}.edgelist.csv.gz',
-        plot_fname = 'kegg_data/{pathway}.pdf'
+        plot_fname = 'kegg_data/{pathway}.pdf',
+        geneid_fname = 'kegg_data/{pathway}_geneids.csv'
     script:
         'scripts/kegg_download.R'
 
@@ -59,7 +60,8 @@ rule compute_differential_causal_effects:
 
 rule visualize:
     input:
-        dce_fname = 'results/{project}/{project}.{pathway}.dce.rds'
+        dce_fname = 'results/{project}/{project}.{pathway}.dce.rds',
+        geneid_fname = 'kegg_data/{pathway}_geneids.csv'
     output:
         plot_fname = 'plots/{project}/{project}.{pathway}.dce.pdf'
     script:
