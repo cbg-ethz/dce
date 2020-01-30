@@ -21,7 +21,6 @@ if (!file.exists(fname)) {
 # (e.g. PTEN in BreastCancer pathway)
 graph <- KEGGgraph::parseKGML2Graph(fname, genesOnly=FALSE, expandGenes=TRUE)
 graph <- dce::propagate_gene_edges(graph)
-graph
 
 
 # plot pathway
@@ -43,7 +42,8 @@ df.tmp <- AnnotationDbi::select(
   keys=nodes.entrez, keytype="ENTREZID",
   columns=c("ENTREZID", "ENSEMBL", "SYMBOL")
 ) %>%
-  distinct(ENTREZID, .keep_all=TRUE)
+  distinct(ENTREZID, .keep_all=TRUE) %>%
+  mutate(KEGG=nodes(graph))
 
 stopifnot(length(nodes(graph)) == dim(df.tmp)[[1]])
 df.tmp %>% write_csv(snakemake@output$geneid_fname)
@@ -54,7 +54,8 @@ nodes.ensembl <- df.tmp %>% pull(ENSEMBL)
 undef.count <- df.tmp %>% tally(grepl("undef", ENSEMBL)) %>% pull(n)
 undef.count / dim(df.tmp)[1]
 
-nodes(graph) <- nodes.ensembl
+geneid.map <- setNames(as.character(df.tmp$ENSEMBL), df.tmp$KEGG)
+nodes(graph) <- unname(geneid.map[nodes(graph)])
 
 
 # save graph
