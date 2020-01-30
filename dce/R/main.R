@@ -142,6 +142,7 @@ compute_causal_effects <- function(graph, df.expr) {
 #' @param partial if TRUE only computes the partial causal effects on
 #' the edges, else computes the total causal effect
 #' @param conf if TRUE accounts for confounders
+#' @param ... additional parameters for glm2::glm2
 #' @author Kim Jablonski & Martin Pirkl
 #' @return vector of causal effects
 #' @export
@@ -163,7 +164,7 @@ compute_differential_causal_effects <- function(
     bootstrap = FALSE, runs = 100,
     replace = FALSE, frac = 0.5,
     bootMethod = "diff", errDist = "nbinom",
-    theta = NULL, partial = TRUE
+    theta = NULL, partial = TRUE, ...
 ) {
     if (is.null(theta)) {
         theta <- estimateTheta(rbind(df.expr.ctrl, df.expr.mut))
@@ -271,7 +272,7 @@ compute_differential_causal_effects <- function(
                 graph.ctrl, df.expr.ctrl,
                 graph.mut, df.expr.mut,
                 errDist = errDist, theta = theta,
-                partial = partial
+                partial = partial, ...
             )
 
             res <- tmp$dce

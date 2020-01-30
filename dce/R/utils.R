@@ -248,21 +248,21 @@ fulllin <- function(g1, d1, g2, d2, conf = TRUE,
     n <- length(nodes(g1))
     dce <- mat1*0
     dce.p <- mat1*NA
-    glmfun <- function(...) {
+    glmfun <- function(formula) {
         fun <- "glm2"
         linkfun <- "log"
         if (fun %in% "glm.nb") {
-            fit <- MASS::glm.nb(..., link = linkfun)
+            fit <- MASS::glm.nb(formula, link = linkfun, ...)
         } else if (fun %in% "glm2") {
-            fit <- glm2::glm2(..., family = MASS::negative.binomial(
+            fit <- glm2::glm2(formula, family = MASS::negative.binomial(
                                                 theta=theta,
-                                                link=linkfun))
+                                                link=linkfun), ...)
         } else if (fun %in% "glm.cons") {
-            fit <- zetadiv::glm.cons(...,
+            fit <- zetadiv::glm.cons(formula,
                                      family = MASS::negative.binomial(
                                                         theta=theta,
                                                         link=linkfun),
-                                     cons = 1)
+                                     cons = 1, ...)
         } else if (fun %in% "test") {
 
         }
