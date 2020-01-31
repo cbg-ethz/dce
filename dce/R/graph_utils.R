@@ -55,13 +55,13 @@ propagate_gene_edges <- function(graph) {
   for (source.idx in igraph::V(ig)) {
     source <- vertex.names[source.idx]
 
-    for (target.idx in igraph::neighbors(ig, source.idx)) {
+    for (target.idx in igraph::neighbors(ig, source.idx, mode="out")) {
       target <- vertex.names[target.idx]
 
       if (substr(target, start=0, stop=3) != "hsa") {
         # source is not connected to gene
 
-        for (bridge.idx in igraph::neighbors(ig, target.idx)) {
+        for (bridge.idx in igraph::neighbors(ig, target.idx, mode="out")) {
           bridge <- vertex.names[bridge.idx]
           stopifnot(substr(bridge, start=0, stop=3) == "hsa")
 
