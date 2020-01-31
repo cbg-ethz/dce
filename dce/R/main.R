@@ -324,6 +324,7 @@ plot.dce <- function(x, nodename.map = NULL, ...) {
         geom_edge_diagonal(
             aes(
                 label=.data$label, width=abs(.data$dce), color=.data$dce,
+                alpha=abs(.data$dce),
                 start_cap=label_rect(.data$node1.name),
                 end_cap=label_rect(.data$node2.name)
             ),
@@ -337,6 +338,7 @@ plot.dce <- function(x, nodename.map = NULL, ...) {
             midpoint=0
         ) +
         scale_edge_width(range=c(1, 3)) +
+        scale_edge_alpha(range=c(.1, 1)) +
         theme(
             panel.background=element_rect(fill="white"),
             legend.position="none"
