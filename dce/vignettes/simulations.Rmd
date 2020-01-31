@@ -54,28 +54,26 @@ plot.dceSim(simRes, col = col, border = col, showMeth = c(2,3,1), showFeat = c(2
 
 ## testing:
 
-beta <- 0.5
+A <- rnbinom(1000, size=100, mu=10)
+B <- rnbinom(1000, size=100, mu=exp(log(10) + 1.6 * (A - mean(A))))
 
-set.seed(42)
-size <- 1; mu <- 10
-A <- rnbinom(1000, size=size, mu=mu)
-B <- rnbinom(1000, size=size, mu=exp(log(10) + beta * (A  - mean(A)))) # link function keeps mu positive, exp can lead to extreme values
+lib.factor <- sample(c(1, 2, 4, 8), 1000, replace=TRUE)
 
-lib.fac <- sample(1:2, 1000, replace = TRUE)
+A.s <- A * lib.factor
+B.s <- B * lib.factor
 
-A.s <- A*lib.fac
-B.s <- B*lib.fac
+lib.size <- A.s + B.s
 
-lib.size <- apply(rbind(A.s, B.s), 2, sum)
-L <- scale(lib.size, center = FALSE)
+# helper function
+glm.fun <- function(...) {
+  glm2::glm2(..., family = MASS::negative.binomial(theta=100, link="log"), control=list(maxit=1000))
+}
 
-
-linkfun <- "log"
-summary(glm2::glm2(B ~ A, family=MASS::negative.binomial(theta=10, link=linkfun)))
-
-summary(glm2::glm2(B.s ~ A.s, family=MASS::negative.binomial(theta=10, link=linkfun)))
-
-summary(glm2::glm2(B.s ~ A.s*L, family=MASS::negative.binomial(theta=10, link=linkfun)))
+# fit models
+glm.fun(B ~ A) # works fine (no library size effect)
+glm.fun(B.s ~ A.s) # gives useless result (sometimes crashes)
+glm.fun(B.s ~ A.s * lib.factor) # works fine (but `lib.factor` is ground truth)
+glm.fun(B.s ~ A.s * lib.size) #
 
 ```
 ```{r, eval=FALSE}
@@ -145,6 +143,9 @@ saveRDS(phis, file = "pathways.rds")
 
 
 ```{r, eval=FALSE}
+df.expr <- readr::read_csv("~/Documents/CausalPathways/tcga_pipeline/pipeline_run/tcga_data/TCGA-BRCA/expression_matrix.csv") %>% textshape::column_to_rownames("gene")
+df.classi <- readr::read_csv("~/Documents/CausalPathways/tcga_pipeline/pipeline_run/tcga_data/TCGA-BRCA/case_classifications.csv")
+
 source("~/Documents/CausalPathways/dce/R/simulations.R"); source("~/Documents/CausalPathways/dce/R/main.R"); source("~/Documents/CausalPathways/dce/R/utils.R"); source("~/Documents/CausalPathways/dce/R/data_simulation.R")
 
 ## real data:
@@ -211,6 +212,7 @@ theta <- estimateTheta(t(brca.mat)) # theta <- 1.527499 # brca
 library(graph)
 normal <- as(brca.adj, "graphNEL")
 tumor <- normal
+theta <- NULL
 control <- glm.control(epsilon = 1e-8, maxit = 100, trace = FALSE)
 dn <- t(brca.mat[, which(brca.info$definition %in% "Solid Tissue Normal")])
 dt <- t(brca.mat[, which(brca.info$definition %in% "Primary solid Tumor")])
@@ -231,8 +233,8 @@ dceNR <- compute_differential_causal_effects(normal, dn, tumor, dt, theta = thet
 
 
 stage <- list(All = dce, I = dceI, II = dceII, III = dceIII, IV = dceIV, X = dceX, NR = dceNR)
-pdf("temp.pdf", width = 50, height = 50)
-for (i in 1:length(stage)) {
+pdf("temp2.pdf", width = 50, height = 50)
+for (i in 2:4) {#1:length(stage)) {
     print(names(stage)[i])
     dceTmp <- stage[[i]]
     print(compute_enrichment(normal, dce = dceTmp)$p.value)
@@ -250,6 +252,7 @@ for (i in 1:length(stage)) {
     edgecol <- rgb(brca.col, 0, max(brca.col) - brca.col, 0.5)
     source("~/Documents/mnem/R/mnems.r")
     #mnem::
+    print(max(10^(abs(brca.freq))-0.9))
     plotDnf(brca.dnf, edgecol = edgecol, edgewidth = 10^(abs(brca.freq))-0.9, edgelabel = (round(brca.freq, 2)*100), main = names(stage)[i])
 }
 dev.off()
