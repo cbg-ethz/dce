@@ -1,2 +1,11 @@
+# macOS
 *.DS_Store
-tcga_pipeline/*
+
+# R
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+
+# misc
+.snakemake
