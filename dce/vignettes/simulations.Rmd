@@ -21,12 +21,12 @@ fig.cap0 <- "Boxplots of simulation results."
 
 In this vignette we conduct a simulation study. This study shows that we can recover differential causal effects with high accuracy compared to other methods. First, we install and load the package. Make sure to adjust the paths through the vignette.
 
-```{r}
+```{r, eval=FALSE}
 library(dce)
 library(tidyverse); library(purrr); library(graph); library(pcalg); library(assertthat); library(igraph); library(matlib); library(nem); library(mnem); library(expm); library(Linnorm); library(MASS)
 ```
 
-```{r, fig.height = 4, fig.width = 14}
+```{r, fig.height = 4, fig.width = 14, eval=FALSE}
 ## local test parameters:
 n <- 3 # genes
 m <- c(100, 100) # samples: wt and mut
@@ -54,142 +54,190 @@ plot.dceSim(simRes, col = col, border = col, showMeth = c(2,3,1), showFeat = c(2
 
 ## testing:
 
-beta <- -0.5
+beta <- 0.5
 
 set.seed(42)
-size <- 10; mu <- 10
+size <- 1; mu <- 10
 A <- rnbinom(1000, size=size, mu=mu)
 B <- rnbinom(1000, size=size, mu=exp(log(10) + beta * (A  - mean(A)))) # link function keeps mu positive, exp can lead to extreme values
 
 lib.fac <- sample(1:2, 1000, replace = TRUE)
 
-A.s <- A*
+A.s <- A*lib.fac
 B.s <- B*lib.fac
 
 lib.size <- apply(rbind(A.s, B.s), 2, sum)
+L <- scale(lib.size, center = FALSE)
 
-data <- cbind(A.s, B.s)
-data <- data[which(apply(data, 1, sum) > 0), ]
-y <- edgeR::DGEList(counts=t(data))
-y <- edgeR::calcNormFactors(y)
-
-lib.est <- y$samples$norm.factors/lib.size
 
 linkfun <- "log"
-glm2::glm2(B ~ A, family=MASS::negative.binomial(theta=10, link=linkfun))
+summary(glm2::glm2(B ~ A, family=MASS::negative.binomial(theta=10, link=linkfun)))
 
-glm2::glm2(B.s ~ A.s, family=MASS::negative.binomial(theta=10, link=linkfun))
+summary(glm2::glm2(B.s ~ A.s, family=MASS::negative.binomial(theta=10, link=linkfun)))
 
-glm2::glm2(B.s ~ A.s*lib.fac, family=MASS::negative.binomial(theta=10, link=linkfun))
+summary(glm2::glm2(B.s ~ A.s*L, family=MASS::negative.binomial(theta=10, link=linkfun)))
 
-glm2::glm2(data[, 2] ~ data[, 1] + data[, 1]*lib.est, family=MASS::negative.binomial(theta=10, link=linkfun), control = glm.control(epsilon = 1e-08, maxit = 100, trace = FALSE))
+```
+```{r, eval=FALSE}
+## get keggraph:
+library(KEGGgraph)
+library(KEGGREST)
+pws <- keggList("pathway", "hsa")
+ensembl = biomaRt::useMart("ensembl",dataset="hsapiens_gene_ensembl")
+phis <- list()
+custom.edge.propagation <- function(graph) {
+    if (class(graph) == "graphNEL") {
+        adj <- as(graph, "matrix")
+    }
+    adj.tc <- mnem:::mytc(adj)
+    childcount <- apply(adj.tc, 1, sum)
+    parentcount <- apply(adj.tc, 2, sum)
+    adj.order <- order(childcount - parentcount, decreasing = TRUE)
+    adj <- adj[adj.order, adj.order]
+    for (j in (1:nrow(adj))[-grep("^hsa", rownames(adj))]) {
+        parents <- which(adj[, j] == 1)
+        children <- which(adj[j, ] == 1)
+        for (p in parents) {
+            adj[p, children] <- 1
+        }
+    }
+    adj <- adj[grep("^hsa", rownames(adj)),
+               grep("^hsa", colnames(adj))]
+    if (class(graph) == "graphNEL") {
+        adj <- as(adj, "graphNEL")
+    }
+    return(adj)
+}
+for (i in 1:length(pws)) {
+    pwname <- gsub("path:", "", names(pws)[i])
+    pwurl <- getKGMLurl(pwname)
+    graph <- parseKGML2Graph(pwurl, genesOnly = FALSE)
+    adj <- mnem:::graph2adj(graph)
+    if (length(grep("^hsa", rownames(adj))) == 0) {
+        next()
+    }
+    if (length(grep("^hsa", rownames(adj))) == 1) {
+        adj <- adj[grep("^hsa", rownames(adj)), grep("^hsa", rownames(adj))]
+        next()
+    }
+    graph <- custom.edge.propagation(graph)
+    adj <- mnem:::graph2adj(graph)
+    rownames(adj) <- colnames(adj) <- translateKEGGID2GeneID(rownames(adj))
+    # genes <- biomaRt::getBM(attributes=c('hgnc_symbol', 'entrezgene_id'),
+    #     filters = 'entrezgene_id',
+    #     values = rownames(adj),
+    #     mart = ensembl, useCache = FALSE)
+    library(org.Hs.eg.db)
+    library(dplyr)
+    df.tmp <- AnnotationDbi::select(
+    org.Hs.eg.db,
+    keys=rownames(adj), keytype="ENTREZID",
+    columns=c("ENTREZID", "ENSEMBL", "SYMBOL")
+    ) %>%
+    distinct(ENTREZID, .keep_all=TRUE)
+    rownames(adj) <- colnames(adj) <- df.tmp$SYMBOL
+    phis[[i]] <- adj
+    names(phis)[i] <- pwname
+}
+saveRDS(phis, file = "pathways.rds")
 
 ```
 
-```{r}
+
+```{r, eval=FALSE}
+source("~/Documents/CausalPathways/dce/R/simulations.R"); source("~/Documents/CausalPathways/dce/R/main.R"); source("~/Documents/CausalPathways/dce/R/utils.R"); source("~/Documents/CausalPathways/dce/R/data_simulation.R")
+
 ## real data:
 brca <- read.csv("~/Documents/CausalPathways/tcga_pipeline/pipeline_run/tcga_data/TCGA-BRCA/expression_matrix.csv")
 brca.info <- read.csv("~/Documents/CausalPathways/tcga_pipeline/pipeline_run/tcga_data/TCGA-BRCA/case_classifications.csv")
 
 ## alt kegg:
-load("pathways.rda")
+phis <- readRDS("pathways.rds")
 brca.kegg <- phis[[grep("05224", names(phis))]]
-rownames(brca.kegg) <- colnames(brca.kegg) <- unlist(lapply(genelist$hsa05224, function(x) {
-    y <- unlist(strsplit(x, " "))[1]
-    return(y)
-}))
 genes <- which(apply(brca.kegg, 1, sum) > 0 | apply(brca.kegg, 2, sum) > 0)
 brca.kegg <- brca.kegg[genes, genes]
 brca.kegg <- rowsum(brca.kegg, rownames(brca.kegg))
 brca.kegg <- t(rowsum(t(brca.kegg), colnames(brca.kegg)))
 
 ensembl = biomaRt::useMart("ensembl",dataset="hsapiens_gene_ensembl")
-genes <- biomaRt::getBM(attributes=c('ensembl_gene_id','hgnc_symbol'),
+ens_genes <- biomaRt::getBM(attributes=c('ensembl_gene_id','hgnc_symbol'),
       filters = 'hgnc_symbol',
       values = rownames(brca.kegg),
       mart = ensembl)
 brca.adj <- brca.kegg
-rownames(brca.adj) <- colnames(brca.adj) <- genes$ensembl_gene_id
+rownames(brca.adj) <- colnames(brca.adj) <- ens_genes[which(!duplicated(ens_genes$hgnc_symbol)), 1]
 
-# new kegg:
-brca.kegg <- readr::read_csv("~/Documents/CausalPathways/tcga_pipeline/pipeline_run/kegg_data/hsa05224.edgelist.csv.gz")
-brca.genes <- unique(c(as.vector(brca.kegg$source), as.vector(brca.kegg$sink)))
-ensembl = biomaRt::useMart("ensembl",dataset="hsapiens_gene_ensembl")
-genes <- biomaRt::getBM(attributes=c('hgnc_symbol', 'ensembl_gene_id'),
-      filters = 'ensembl_gene_id',
-      values = rownames(brca.adj),
-      mart = ensembl)
-
-
-
-
-brca.genes <- sort(brca.genes[grep("ENSG", brca.genes)])
-brca.kegg <- brca.kegg[intersect(grep("ENSG", brca.kegg$source), grep("ENSG", brca.kegg$sink)), ]
-n <- length(brca.genes)
-brca.adj <- matrix(0, n, n)
-colnames(brca.adj) <- rownames(brca.adj) <- brca.genes
-a <- apply(matrix(brca.kegg$source, 1), 2, function(x) {
-    y <- which(rownames(brca.adj) %in% x)
-    return(y)
-})
-b <- apply(matrix(brca.kegg$sink, 1), 2, function(x) {
-    y <- which(colnames(brca.adj) %in% x)
-    return(y)
-})
-brca.adj[cbind(a,b)] <- 1
+# # new kegg:
+# brca.kegg <- readr::read_csv("~/Documents/CausalPathways/tcga_pipeline/pipeline_run/kegg_data/hsa05224.edgelist.csv.gz")
+# brca.genes <- unique(c(as.vector(brca.kegg$source), as.vector(brca.kegg$sink)))
+# ensembl = biomaRt::useMart("ensembl",dataset="hsapiens_gene_ensembl")
+# genes <- biomaRt::getBM(attributes=c('hgnc_symbol', 'ensembl_gene_id'),
+#       filters = 'ensembl_gene_id',
+#       values = rownames(brca.adj),
+#       mart = ensembl)
+#
+# brca.genes <- sort(brca.genes[grep("ENSG", brca.genes)])
+# brca.kegg <- brca.kegg[intersect(grep("ENSG", brca.kegg$source), grep("ENSG", brca.kegg$sink)), ]
+# n <- length(brca.genes)
+# brca.adj <- matrix(0, n, n)
+# colnames(brca.adj) <- rownames(brca.adj) <- brca.genes
+# a <- apply(matrix(brca.kegg$source, 1), 2, function(x) {
+#     y <- which(rownames(brca.adj) %in% x)
+#     return(y)
+# })
+# b <- apply(matrix(brca.kegg$sink, 1), 2, function(x) {
+#     y <- which(colnames(brca.adj) %in% x)
+#     return(y)
+# })
+# brca.adj[cbind(a,b)] <- 1
 
 brca.mat <- as(brca[, -1], "matrix")
 rownames(brca.mat) <- brca[, 1]
 gene.median <- apply(brca.mat, 1, median)
 brca.mat <- brca.mat[which(gene.median > 10), ]
-theta <- estimateTheta(t(brca.mat))
+theta <- estimateTheta(t(brca.mat)) # theta <- 1.527499 # brca
 
-sum(rownames(brca.mat) %in% brca.kegg$source)
-sum(rownames(brca.mat) %in% brca.kegg$sink)
-
-set.seed(1)
-for (i in 1:10000) {
-    s1 <- sample(1:nrow(brca.mat), 1)
-    s2 <- sample(1:nrow(brca.mat), 1)
-    # theta.pw <- estimateTheta(t(brca.mat[c(s1, s2), ]))
-    theta.pw <- 10
-    glm2::glm2(brca.mat[s1, ] ~ brca.mat[s2, ], family=MASS::negative.binomial(theta=theta.pw, link=linkfun))
-    cat(paste0(".", i))
-}
-plot(brca.mat[s1, ], brca.mat[s2, ])
+# set.seed(1)
+# for (i in 1:10000) {
+#     s1 <- sample(1:nrow(brca.mat), 1)
+#     s2 <- sample(1:nrow(brca.mat), 1)
+#     # theta.pw <- estimateTheta(t(brca.mat[c(s1, s2), ]))
+#     theta.pw <- 10
+#     glm2::glm2(brca.mat[s1, ] ~ brca.mat[s2, ], family=MASS::negative.binomial(theta=theta.pw, link=linkfun))
+#     cat(paste0(".", i))
+# }
+# plot(brca.mat[s1, ], brca.mat[s2, ])
 
 library(graph)
 normal <- as(brca.adj, "graphNEL")
 tumor <- normal
+control <- glm.control(epsilon = 1e-8, maxit = 100, trace = FALSE)
 dn <- t(brca.mat[, which(brca.info$definition %in% "Solid Tissue Normal")])
 dt <- t(brca.mat[, which(brca.info$definition %in% "Primary solid Tumor")])
-dce <- compute_differential_causal_effects(normal, dn, tumor, dt, theta = theta)
+dce <- compute_differential_causal_effects(normal, dn, tumor, dt, theta = theta, control = control)
 dt <- t(brca.mat[, which(brca.info$definition %in% "Primary solid Tumor" & brca.info$tumor_stage %in% "stage i")])
-dceI <- compute_differential_causal_effects(normal, dn, tumor, dt, theta = theta)
+dceI <- compute_differential_causal_effects(normal, dn, tumor, dt, theta = theta, control = control)
 dt <- t(brca.mat[, which(brca.info$definition %in% "Primary solid Tumor" & brca.info$tumor_stage %in% "stage ii")])
-dceII <- compute_differential_causal_effects(normal, dn, tumor, dt, theta = theta, control = glm.control(epsilon = 1e-8, maxit = 100, trace = FALSE))
+dceII <- compute_differential_causal_effects(normal, dn, tumor, dt, theta = theta, control = control)
 dt <- t(brca.mat[, which(brca.info$definition %in% "Primary solid Tumor" & brca.info$tumor_stage %in% "stage iii")])
-dceIII <- compute_differential_causal_effects(normal, dn, tumor, dt, theta = theta)
+dceIII <- compute_differential_causal_effects(normal, dn, tumor, dt, theta = theta, control = control)
 dt <- t(brca.mat[, which(brca.info$definition %in% "Primary solid Tumor" & brca.info$tumor_stage %in% "stage iv")])
-dceIV <- compute_differential_causal_effects(normal, dn, tumor, dt, theta = theta)
+dceIV <- compute_differential_causal_effects(normal, dn, tumor, dt, theta = theta, control = control)
 dt <- t(brca.mat[, which(brca.info$definition %in% "Primary solid Tumor" & brca.info$tumor_stage %in% "stage x")])
-dceX <- compute_differential_causal_effects(normal, dn, tumor, dt, theta = theta)
+dceX <- compute_differential_causal_effects(normal, dn, tumor, dt, theta = theta, control = control)
 dt <- t(brca.mat[, which(brca.info$definition %in% "Primary solid Tumor" & brca.info$tumor_stage %in% "not reported")])
-dceNR <- compute_differential_causal_effects(normal, dn, tumor, dt, theta = theta)
+dceNR <- compute_differential_causal_effects(normal, dn, tumor, dt, theta = theta, control = control)
 
-## ensembl = biomaRt::useMart("ensembl",dataset="hsapiens_gene_ensembl")
-genes <- biomaRt::getBM(attributes=c('hgnc_symbol', 'ensembl_gene_id'),
-      filters = 'ensembl_gene_id',
-      values = rownames(brca.adj),
-      mart = ensembl)
+
 
 stage <- list(All = dce, I = dceI, II = dceII, III = dceIII, IV = dceIV, X = dceX, NR = dceNR)
+pdf("temp.pdf", width = 50, height = 50)
 for (i in 1:length(stage)) {
     print(names(stage)[i])
     dceTmp <- stage[[i]]
     print(compute_enrichment(normal, dce = dceTmp)$p.value)
 
-    rownames(brca.adj) <- colnames(brca.adj) <- genes$hgnc_symbol
+    rownames(brca.adj) <- colnames(brca.adj) <- ens_genes[which(!duplicated(ens_genes$hgnc_symbol)), 2]
 
     brca.dnf <- which(brca.adj == 1, arr.ind = TRUE)
     brca.dnf <- apply(brca.dnf, 1, function(x) {
@@ -199,23 +247,15 @@ for (i in 1:length(stage)) {
     brca.dnf <- brca.dnf[grep("=", brca.dnf)]
     brca.freq <- dceTmp$dce[which(dceTmp$dce != 0)]*100
     brca.col <- abs(brca.freq)/max(abs(brca.freq))
-    edgecol <- rgb(brca.col, 0, max(brca.col) - brca.col)
-    mnem::plotDnf(brca.dnf, edgecol = edgecol, edgewidth = log(round(abs(brca.freq), 2)*100+0.1), edgelabel = round(brca.freq, 2)*100,
-                  main = names(stage)[i])
+    edgecol <- rgb(brca.col, 0, max(brca.col) - brca.col, 0.5)
+    source("~/Documents/mnem/R/mnems.r")
+    #mnem::
+    plotDnf(brca.dnf, edgecol = edgecol, edgewidth = 10^(abs(brca.freq))-0.9, edgelabel = (round(brca.freq, 2)*100), main = names(stage)[i])
 }
-
-brca.kegg <- readr::read_csv("~/Documents/CausalPathways/tcga_pipeline/pipeline_run/kegg_data/hsa05224.edgelist.csv.gz")
-brca.genes <- unique(c(as.vector(brca.kegg$source), as.vector(brca.kegg$sink)))
-ensembl = biomaRt::useMart("ensembl",dataset="hsapiens_gene_ensembl")
-genes <- biomaRt::getBM(attributes=c('hgnc_symbol', 'ensembl_gene_id'),
-      filters = 'ensembl_gene_id',
-      values = brca.genes,
-      mart = ensembl)
-sort(genes$hgnc_symbol)
-
+dev.off()
 ```
 
-```{r}
+```{r, eval=FALSE}
 
 dosave <- 0 # adjust this as needed
 if (dosave) {
@@ -291,7 +331,7 @@ bsub -M ${ram} -q normal.${queue}h -n 1 -e error.txt -o output.txt \
 ```
 
 
-```{r}
+```{r, eval=FALSE}
 dosave <- 0 # adjust this as needed
 if (dosave) {
     library(abind)
@@ -314,7 +354,7 @@ if (dosave) {
 
 Plot the results.
 
-```{r, fig.cap=fig.cap0}
+```{r, fig.cap=fig.cap0, eval=FALSE}
 col <- rgb(c(0.5,1,0,0.1),c(0.5,0,0,0.1),c(0.5,0,1,0.1),0.75)
 plot.dceSim(simRes, col = col, border = col, showMeth = c(2,5,3,6,1,4),
             showFeat = c(1,4,5,6,3),

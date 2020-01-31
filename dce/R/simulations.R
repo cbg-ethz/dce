@@ -23,8 +23,8 @@
 #' @param test if greater than 0, tests the pathway for enrichment with
 #' test permutation runs
 #' @param enriched fraction of runs with enriched pathways
-#' @param theta
-#' @param partial
+#' @param theta theta for negative binomial model
+#' @param partial only compute the edge weights
 #' @param ... additional parameters for compute_differential_causal_effects
 #' @author Martin Pirkl
 #' @return accuracy for several different methods and statistics
