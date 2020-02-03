@@ -233,7 +233,7 @@ ggplot(aes(x=parameter, y=value, fill=variable)) +
   ylim(-1, 1) +
   ggtitle(paste("Variable:", varied.parameter)) +
   ylab("Correlation (truth vs prediction)") +
-  theme_minimal() +
+  theme_minimal(base_size=20) +
   theme(plot.title=element_text(hjust=0.5)) +
   ggsave("benchmark_correlation.pdf")
 
@@ -244,7 +244,7 @@ df.bench %>%
   geom_boxplot() +
   ggtitle(paste("Variable:", varied.parameter)) +
   ylab("Mean squared error") +
-  theme_minimal() +
+  theme_minimal(base_size=20) +
   theme(plot.title=element_text(hjust=0.5)) +
   ggsave("benchmark_mse.pdf")
 
@@ -269,6 +269,6 @@ ggplot(aes(x=parameter, y=full, fill=type)) +
   geom_boxplot() +
   ggtitle(paste("Variable:", varied.parameter)) +
   ylab("value") +
-  theme_minimal() +
+  theme_minimal(base_size=20) +
   theme(plot.title=element_text(hjust=0.5)) +
   ggsave("graph_features.pdf")
