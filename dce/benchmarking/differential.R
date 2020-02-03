@@ -82,6 +82,12 @@ df.bench <- purrr::pmap_dfr(
       mt.X <- simulate_data(mt.graph, n=mt.samples)
 
 
+      # sanity checks
+      if (any(is.nan(wt.X)) || any(is.nan(mt.X))) {
+        stop("Malformed simulated data")
+      }
+
+
       # run models
       ground.truth <- list(dce=trueEffects(wt.graph) - trueEffects(mt.graph))
 
