@@ -9,3 +9,4 @@
 
 # misc
 .snakemake
+tcga_pipeline/pipeline_run/*

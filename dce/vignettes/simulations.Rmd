@@ -28,9 +28,9 @@ library(tidyverse); library(purrr); library(graph); library(pcalg); library(asse
 
 ```{r, fig.height = 4, fig.width = 14, eval=FALSE}
 ## local test parameters:
-n <- 3 # genes
+n <- 100 # genes
 m <- c(100, 100) # samples: wt and mut
-runs <- 10
+runs <- 1
 perturb <- 0 # add (positive fraction) or remove (negative) edges
 p <- "runif" # edge probability
 bootstrap <- c(0, "NB", "Gaus") # number of bootstrap runs for the methods
@@ -40,24 +40,36 @@ test <- 1 # number of permutations for empirical p-value
 ## fixed parameters:
 method <- "p" # correlation accuracy
 mu <- 10 # mean
-sd <- 10 # standard deviation
-lB <- c(-1,0) # negative effects intervall
-uB <- c(0,1) # positive effects intervall
+sd <- 10000 # standard deviation
+lB <- c(-0.1,0) # negative effects intervall
+uB <- c(0,0.1) # positive effects intervall
 
 source("~/Documents/CausalPathways/dce/R/simulations.R"); source("~/Documents/CausalPathways/dce/R/main.R"); source("~/Documents/CausalPathways/dce/R/utils.R"); source("~/Documents/CausalPathways/dce/R/data_simulation.R")
 
 set.seed(9427)
-simRes <- simDce(n,m,runs,mu=mu,sd,c(lB,uB),truepos,perturb,method,p,bootstrap=bootstrap,verbose=TRUE,test=test,partial=1)
+simRes <- simDce(n,m,runs,mu=mu,sd,c(lB,uB),truepos,perturb,method,p,bootstrap=bootstrap,verbose=TRUE,test=test,partial=0)
 
 col <- rgb(c(0.5,1,0,0.1),c(0.5,0,0,0.1),c(0.5,0,1,0.1),0.75)
-plot.dceSim(simRes, col = col, border = col, showMeth = c(2,3,1), showFeat = c(2,1,7,6,3), methNames = c("Neg. Binomial", "correlation", "random"))
+plot.dceSim(simRes, col = col, border = col, showMeth = c(2,3,1), showFeat = c(2,1,3,6), methNames = c("Neg. Binomial", "correlation", "random"))
+```
 
+```{r}
 ## testing:
 
-A <- rnbinom(1000, size=100, mu=10)
-B <- rnbinom(1000, size=100, mu=exp(log(10) + 1.6 * (A - mean(A))))
+beta <- 0.5
+set.seed(42)
+A <- rnbinom(1000, size=Inf, mu=10)
+B <- rnbinom(1000, size=Inf, mu=exp(beta * scale(A, scale = FALSE))) # link function keeps mu positive, exp can lead to extreme values
 
-lib.factor <- sample(c(1, 2, 4, 8), 1000, replace=TRUE)
+estimateTheta(matrix(A, 1000))
+estimateTheta(matrix(B, 1000))
+
+summary(A)
+summary(B)
+
+glm.fun(B ~ A)
+
+lib.factor <- sample(1:10, 1000, replace=TRUE)
 
 A.s <- A * lib.factor
 B.s <- B * lib.factor
@@ -72,7 +84,7 @@ glm.fun <- function(...) {
 # fit models
 glm.fun(B ~ A) # works fine (no library size effect)
 glm.fun(B.s ~ A.s) # gives useless result (sometimes crashes)
-glm.fun(B.s ~ A.s * lib.factor) # works fine (but `lib.factor` is ground truth)
+glm.fun(B.s ~ A.s * factor(lib.factor)) # works fine (but `lib.factor` is ground truth)
 glm.fun(B.s ~ A.s * lib.size) #
 
 ```
@@ -212,7 +224,7 @@ theta <- estimateTheta(t(brca.mat)) # theta <- 1.527499 # brca
 library(graph)
 normal <- as(brca.adj, "graphNEL")
 tumor <- normal
-theta <- NULL
+theta <- theta # NULL
 control <- glm.control(epsilon = 1e-8, maxit = 100, trace = FALSE)
 dn <- t(brca.mat[, which(brca.info$definition %in% "Solid Tissue Normal")])
 dt <- t(brca.mat[, which(brca.info$definition %in% "Primary solid Tumor")])
@@ -233,7 +245,7 @@ dceNR <- compute_differential_causal_effects(normal, dn, tumor, dt, theta = thet
 
 
 stage <- list(All = dce, I = dceI, II = dceII, III = dceIII, IV = dceIV, X = dceX, NR = dceNR)
-pdf("temp2.pdf", width = 50, height = 50)
+pdf("~/Documents/temp.pdf", width = 50, height = 50)
 for (i in 2:4) {#1:length(stage)) {
     print(names(stage)[i])
     dceTmp <- stage[[i]]

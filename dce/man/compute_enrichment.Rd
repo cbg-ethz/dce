@@ -12,8 +12,9 @@ compute_enrichment(
   permutation_count = 100,
   pvalue.method = "hmp",
   theta = NULL,
-  partial = 1,
-  dce = NULL
+  partial = FALSE,
+  dce = NULL,
+  ...
 )
 }
 \arguments{
@@ -27,12 +28,17 @@ compute_enrichment(
 
 \item{permutation_count}{How many permutations to do}
 
+\item{pvalue.method}{"hmp" for harmonic median, "perm" for permutation test}
+
 \item{theta}{prior estimated theta value}
 
-\item{partial}{if TRUE only computes the partial causal effects on}
+\item{partial}{if TRUE only computes the partial causal
+effects (i.e. edge weights)}
 
 \item{dce}{optional dce object
 the edges, else computes the total causal effect}
+
+\item{...}{additional parameters for compute_differential_causal_effects}
 }
 \value{
 Enrichment p-value

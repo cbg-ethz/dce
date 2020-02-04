@@ -352,10 +352,13 @@ plot.dce <- function(x, nodename.map = NULL, ...) {
 #' @param X.mt Expression values of mutant (if dce=NULL)
 #' @param statistic Statistic to compute
 #' @param permutation_count How many permutations to do
+#' @param pvalue.method "hmp" for harmonic median, "perm" for permutation test
 #' @param theta prior estimated theta value
-#' @param partial if TRUE only computes the partial causal effects on
+#' @param partial if TRUE only computes the partial causal
+#' effects (i.e. edge weights)
 #' @param dce optional dce object
 #' the edges, else computes the total causal effect
+#' @param ... additional parameters for compute_differential_causal_effects
 #' @author Hinz und Kunz
 #' @return Enrichment p-value
 #' @export
@@ -370,8 +373,8 @@ compute_enrichment <- function(
     statistic = function(x) { sum(abs(x)) },
     permutation_count = 100,
     pvalue.method = "hmp", # "perm"
-    theta = NULL, partial = 1,
-    dce = NULL
+    theta = NULL, partial = FALSE,
+    dce = NULL, ...
 ) {
     if (is.null(dce)) {
         # compute observed statistic
