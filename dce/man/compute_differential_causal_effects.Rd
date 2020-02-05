@@ -18,6 +18,7 @@ compute_differential_causal_effects(
   errDist = "nbinom",
   theta = NULL,
   partial = TRUE,
+  link.log.base = exp(1),
   ...
 )
 }
@@ -57,6 +58,8 @@ effects, if "cause", bootstraps on the causal effects
 
 \item{partial}{if TRUE only computes the partial causal effects on
 the edges, else computes the total causal effect}
+
+\item{link.log.base}{base of logarithm of link}
 
 \item{...}{additional parameters for glm2::glm2}
 

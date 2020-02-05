@@ -16,7 +16,8 @@
 #' X <- simulate_data(dag)
 simulate_data <- function(
   dag, n = 100,
-  dist.mean = 1000, dist.dispersion = 100
+  dist.mean = 1000, dist.dispersion = 100,
+  link.log.base=exp(1)
 ) {
   p <- length(nodes(dag))
   adj.mat <- igraph::as_adjacency_matrix(
@@ -41,13 +42,15 @@ simulate_data <- function(
   colnames(X) <- nodes(dag)
 
   # simulate data
+  link <- make.log.link(link.log.base)
+
   for (j in seq(2, p)) {
     ij <- seq_len(j - 1)
     betas <- adj.mat[j, ij]
 
     if (any(betas != 0)) {
       # current node has parents
-      mu <- exp(scale(X[, ij, drop = FALSE], scale=FALSE) %*% betas)
+      mu <- link$linkinv(log(dist.mean, link.log.base) + scale(X[, ij, drop = FALSE], scale=FALSE) %*% betas)
       X[, j] <- rnbinom(n, size=dist.dispersion, mu=mu)
     }
   }

@@ -233,6 +233,7 @@ resample_edge_weights <- function(g, lB = -1, uB = 1, tp = 1) {
 #' @importFrom zetadiv glm.cons
 fulllin <- function(g1, d1, g2, d2, conf = TRUE,
                     errDist = "nbinom", theta = NULL,
+                    link.log.base = exp(1),
                     partial = TRUE, ...) {
     mat1 <- as(g1, "matrix")
     mat2 <- as(g2, "matrix")
@@ -250,18 +251,20 @@ fulllin <- function(g1, d1, g2, d2, conf = TRUE,
     dce.p <- mat1*NA
     glmfun <- function(formula) {
         fun <- "glm2"
-        linkfun <- "log"
+
+        link <- make.log.link(link.log.base)
+
         if (fun %in% "glm.nb") {
-            fit <- MASS::glm.nb(formula, link = linkfun, ...)
+            fit <- MASS::glm.nb(formula, link = link, ...)
         } else if (fun %in% "glm2") {
             fit <- glm2::glm2(formula, family = MASS::negative.binomial(
                                                 theta=theta,
-                                                link=linkfun), ...)
+                                                link=link), ...)
         } else if (fun %in% "glm.cons") {
             fit <- zetadiv::glm.cons(formula,
                                      family = MASS::negative.binomial(
                                                         theta=theta,
-                                                        link=linkfun),
+                                                        link=link),
                                      cons = 1, ...)
         } else if (fun %in% "test") {
 
@@ -358,4 +361,14 @@ estimateTheta <- function(data) {
         theta <- 1/y$common.dispersion
     }
     return(theta)
+}
+
+#' @export
+make.log.link <- function(base=exp(1)) {
+    structure(list(
+        linkfun=function(mu) { log(mu, base) },
+        linkinv=function(eta) { base**(eta) },
+        mu.eta=function(eta) { base**(eta) },
+        valideta=function(eta) { TRUE }
+    ), class="link-glm")
 }

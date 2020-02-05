@@ -4,7 +4,13 @@
 \alias{simulate_data}
 \title{Simulate data}
 \usage{
-simulate_data(dag, n = 100, dist.mean = 1000, dist.dispersion = 100)
+simulate_data(
+  dag,
+  n = 100,
+  dist.mean = 1000,
+  dist.dispersion = 100,
+  link.log.base = exp(1)
+)
 }
 \arguments{
 \item{dag}{Graph to simulate on}
