@@ -53,7 +53,7 @@ simulate_data <- function(
       if (link.log.base == 0) {
         betasX <- X[, ij, drop = FALSE] %*% betas
         mu <- -min(betasX) + offset + betasX
-      } else if (linkfun %in% "log") {
+      } else {
         mu <- link$linkinv(log(dist.mean, link.log.base) + scale(X[, ij, drop = FALSE], scale=FALSE) %*% betas)
       }
       X[, j] <- rnbinom(n, size=dist.dispersion, mu=mu)
