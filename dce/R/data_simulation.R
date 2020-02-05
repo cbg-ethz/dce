@@ -17,7 +17,7 @@
 simulate_data <- function(
   dag, n = 100,
   dist.mean = 1000, dist.dispersion = 100,
-  link.log.base=exp(1)
+  link.log.base=exp(1), offset = 100
 ) {
   p <- length(nodes(dag))
   adj.mat <- igraph::as_adjacency_matrix(
@@ -50,7 +50,12 @@ simulate_data <- function(
 
     if (any(betas != 0)) {
       # current node has parents
-      mu <- link$linkinv(log(dist.mean, link.log.base) + scale(X[, ij, drop = FALSE], scale=FALSE) %*% betas)
+      if (link.log.base == 0) {
+        betasX <- X[, ij, drop = FALSE] %*% betas
+        mu <- -min(betasX) + offset + betasX
+      } else if (linkfun %in% "log") {
+        mu <- link$linkinv(log(dist.mean, link.log.base) + scale(X[, ij, drop = FALSE], scale=FALSE) %*% betas)
+      }
       X[, j] <- rnbinom(n, size=dist.dispersion, mu=mu)
     }
   }

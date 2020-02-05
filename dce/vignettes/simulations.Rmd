@@ -28,9 +28,9 @@ library(tidyverse); library(purrr); library(graph); library(pcalg); library(asse
 
 ```{r, fig.height = 4, fig.width = 14, eval=FALSE}
 ## local test parameters:
-n <- 100 # genes
+n <- 10 # genes
 m <- c(100, 100) # samples: wt and mut
-runs <- 1
+runs <- 10
 perturb <- 0 # add (positive fraction) or remove (negative) edges
 p <- "runif" # edge probability
 bootstrap <- c(0, "NB", "Gaus") # number of bootstrap runs for the methods
@@ -40,52 +40,108 @@ test <- 1 # number of permutations for empirical p-value
 ## fixed parameters:
 method <- "p" # correlation accuracy
 mu <- 10 # mean
-sd <- 10000 # standard deviation
-lB <- c(-0.1,0) # negative effects intervall
-uB <- c(0,0.1) # positive effects intervall
+sd <- 10 # standard deviation
+lB <- c(-1,0) # negative effects intervall
+uB <- c(0,1) # positive effects intervall
 
 source("~/Documents/CausalPathways/dce/R/simulations.R"); source("~/Documents/CausalPathways/dce/R/main.R"); source("~/Documents/CausalPathways/dce/R/utils.R"); source("~/Documents/CausalPathways/dce/R/data_simulation.R")
 
-set.seed(9427)
-simRes <- simDce(n,m,runs,mu=mu,sd,c(lB,uB),truepos,perturb,method,p,bootstrap=bootstrap,verbose=TRUE,test=test,partial=0)
+set.seed(9247)
+dag <- create_random_DAG(n, runif(1, 0, 1), lB, uB)
+n <- 100
+dag <- matrix(0, n, n)
+dag[upper.tri(dag)] <- 1
+dag <- transitive.reduction(dag)
+rownames(dag) <- colnames(dag) <- 1:n
+dag <- as(dag, "graphNEL")
+dag <- resample_edge_weights(dag, lB, uB)
+dag2 <- resample_edge_weights(dag, lB, uB)
+wt <- simulate_data(dag, m[1], link.log.base = 0)
+mt <- simulate_data(dag2, m[2], link.log.base = 0)
 
-col <- rgb(c(0.5,1,0,0.1),c(0.5,0,0,0.1),c(0.5,0,1,0.1),0.75)
-plot.dceSim(simRes, col = col, border = col, showMeth = c(2,3,1), showFeat = c(2,1,3,6), methNames = c("Neg. Binomial", "correlation", "random"))
+E <- compute_differential_causal_effects(dag, wt, dag2, mt, link.log.base = 0)
+cor(as.vector(E$dce), as.vector(trueEffects(dag) - trueEffects(dag2)))
+plot(as.vector(E$dce), as.vector(trueEffects(dag) - trueEffects(dag2)))#, xlim = c(-2,2))
+
+```
+
+```{r}
+getMinAdjSets <- function(g, x = NULL, y = NULL, type = "dce") {
+    a <- as(g, "matrix")
+    a[which(a != 0)] <- 1
+    n <- nrow(a)
+    atc <- mnem:::mytc(a)
+    Z <- list()
+    if (is.null(x)) { x <- seq_len(n) }
+    if (is.null(y)) { y <- seq_len(n) }
+    for (i in intersect(seq_len(n-1),x)) {
+        if (all(a[, i] == 0) | all(a[i, ] == 0)) {
+            Z[[i]] <- NULL
+            next()
+        } else {
+            Z[[i]] <- list()
+        }
+        for (j in intrsect((i+1):n, y)) {
+            if (sum(a[, j] == 1) == 1 | a[i, j] == 0) {
+                Z[[i]][[j]] <- NULL
+                next()
+            } else {
+                if (type %in% "pcalg") {
+                    Z[[i]][[j]] <- pcalg::backdoor(a, i, j, type = "dag")
+                } else {
+                    ptc <- which(atc[, i] == 1)
+                    ptc <- ptc[-which(ptc == i)]
+                    Z0 <- NULL
+                    for (k in ptc) {
+                        ap <- a
+                        ap[i, ] <- 0
+                        ap[i, k] <-1
+                        aptc <- mnem:::mytc(ap)
+                        if (aptc[i, j] == 1) {
+                            Z0 <- c(Z0, k)
+                        }
+                    }
+                    Z[[i]][[j]] <- Z0
+                }
+            }
+        }
+    }
+    return(Z)
+}
 ```
 
 ```{r}
 ## testing:
 
-beta <- 0.5
+beta <- 0.6
 set.seed(42)
-A <- rnbinom(1000, size=Inf, mu=10)
-B <- rnbinom(1000, size=Inf, mu=exp(beta * scale(A, scale = FALSE))) # link function keeps mu positive, exp can lead to extreme values
-
+A <- rnbinom(1000, size=0.1, mu=1000)
+hist(A)
+betaA <- beta * scale(A)
+B <- rnbinom(1000, size=Inf, mu= exp(log(1000 - max(betaA)) + betaA)) # link function keeps mu positive, exp can lead to extreme values
+hist(B)
 estimateTheta(matrix(A, 1000))
 estimateTheta(matrix(B, 1000))
 
 summary(A)
 summary(B)
 
+plot(A, B)
+plot(A, log(B+1))
+
 glm.fun(B ~ A)
 
-lib.factor <- sample(1:10, 1000, replace=TRUE)
-
-A.s <- A * lib.factor
-B.s <- B * lib.factor
-
-lib.size <- A.s + B.s
-
 # helper function
-glm.fun <- function(...) {
-  glm2::glm2(..., family = MASS::negative.binomial(theta=100, link="log"), control=list(maxit=1000))
-}
+log1 <- list(linkfun = function(mu) log(mu, 1.001),
+        linkinv = function(eta) 1.001^eta,
+        mu.eta = function(eta) 1.001^eta,
+        valideta = function(eta) TRUE,
+        name = "log1")
+class(log1) <- "link-glm"
 
-# fit models
-glm.fun(B ~ A) # works fine (no library size effect)
-glm.fun(B.s ~ A.s) # gives useless result (sometimes crashes)
-glm.fun(B.s ~ A.s * factor(lib.factor)) # works fine (but `lib.factor` is ground truth)
-glm.fun(B.s ~ A.s * lib.size) #
+glm.fun <- function(...) {
+  glm2::glm2(..., family = MASS::negative.binomial(theta=10, link="log"), control=list(maxit=1000))
+}
 
 ```
 ```{r, eval=FALSE}

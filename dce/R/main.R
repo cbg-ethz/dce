@@ -56,7 +56,7 @@ compute_permutations <- function(normal, dn, tumor, dt, runs=10,
 #' @examples
 #' graph.wt <- as(matrix(c(0,0,0,1,0,0,0,1,0), 3), "graphNEL")
 #' trueEffects(graph.wt)
-trueEffects <- function(g, partial = TRUE) {
+trueEffects <- function(g, partial = FALSE) {
     ## n <- ncol(as(g, "matrix"))
     ## te <- matrix(0, n, n)
     ## for (i in seq_len(n-1)) {
@@ -165,7 +165,7 @@ compute_differential_causal_effects <- function(
     bootstrap = FALSE, runs = 100,
     replace = FALSE, frac = 0.5,
     bootMethod = "diff", errDist = "nbinom",
-    theta = NULL, partial = TRUE,
+    theta = NULL, partial = FALSE,
     link.log.base = exp(1),
     ...
 ) {

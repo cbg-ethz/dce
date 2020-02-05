@@ -251,8 +251,12 @@ fulllin <- function(g1, d1, g2, d2, conf = TRUE,
     dce.p <- mat1*NA
     glmfun <- function(formula) {
         fun <- "glm2"
-
-        link <- make.log.link(link.log.base)
+        
+        if (link.log.base == 0) {
+            link <- "identity"
+        } else {
+            link <- make.log.link(link.log.base)
+        }
 
         if (fun %in% "glm.nb") {
             fit <- MASS::glm.nb(formula, link = link, ...)
@@ -266,8 +270,8 @@ fulllin <- function(g1, d1, g2, d2, conf = TRUE,
                                                         theta=theta,
                                                         link=link),
                                      cons = 1, ...)
-        } else if (fun %in% "test") {
-
+        } else if (fun %in% "gauss") {
+            fit <- glm(formula, family = "gaussian", ...)
         }
         return(fit)
     }
