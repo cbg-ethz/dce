@@ -22,7 +22,7 @@ simulate_data <- function(
   p <- length(nodes(dag))
   adj.mat <- igraph::as_adjacency_matrix(
     igraph::igraph.from.graphNEL(dag),
-    attr="weight"
+    attr=if (numEdges(graph.wt) > 0) "weight" else NULL
   ) %>%
     as.matrix %>%
     t
