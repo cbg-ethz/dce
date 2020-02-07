@@ -245,7 +245,7 @@ fulllin <- function(g1, d1, g2, d2, conf = TRUE,
         theta <- estimateTheta(df)
     }
     colnames(df) <- paste0("X", seq_len(ncol(df)))
-    df <- as.data.frame(cbind(df, N = c(rep(1, nrow(d1)), rep(0, nrow(d2)))))
+    df <- as.data.frame(cbind(df, N = c(rep(0, nrow(d1)), rep(1, nrow(d2)))))
     n <- length(nodes(g1))
     dce <- mat1*0
     dce.p <- mat1*NA
