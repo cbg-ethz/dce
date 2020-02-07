@@ -251,7 +251,7 @@ fulllin <- function(g1, d1, g2, d2, conf = TRUE,
     dce.p <- mat1*NA
     glmfun <- function(formula) {
         fun <- "glm2"
-        
+
         if (link.log.base == 0) {
             link <- "identity"
         } else {
@@ -297,10 +297,10 @@ fulllin <- function(g1, d1, g2, d2, conf = TRUE,
                     }
                     dce[Xidx, i] <- betas[1:length(Xidx)]
                 } else if (errDist %in% "nbinom") {
-                    fit <- glmfun(Y ~ NX + N + X)
+                    fit <- glmfun(Y ~ N * X)
                     coef.mat <- summary(fit)$coefficients
-                    dce[Xidx, i] <- coef.mat[2:(length(Xidx)+1), 1]
-                    dce.p[Xidx, i] <- coef.mat[2:(length(Xidx)+1), 4]
+                    dce[Xidx, i] <- coef.mat["N:X", "Estimate"]
+                    dce.p[Xidx, i] <- coef.mat["N:X", "Pr(>|t|)"]
                 }
             }
         }
@@ -334,13 +334,13 @@ fulllin <- function(g1, d1, g2, d2, conf = TRUE,
                         dce[i, j] <- betas[1]
                     } else if (errDist %in% "nbinom") {
                         if (length(Z) > 0 & conf) {
-                            fit <- glmfun(Y ~ NX + N + X + NZ + Z)
+                            fit <- glmfun(Y ~ N * X + N * Z)
                         } else {
-                            fit <- glmfun(Y ~ NX + N + X)
+                            fit <- glmfun(Y ~ N * X)
                         }
                         coef.mat <- summary(fit)$coefficients
-                        dce[i, j] <- coef.mat[2, 1]
-                        dce.p[i, j] <- coef.mat[2, 4]
+                        dce[i, j] <- coef.mat["N:X", "Estimate"]
+                        dce.p[i, j] <- coef.mat["N:X", "Pr(>|t|)"]
                     }
                 }
             }
