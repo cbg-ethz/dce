@@ -89,14 +89,14 @@ df.bench <- purrr::pmap_dfr(
 
 
       # run models
-      ground.truth <- list(dce=trueEffects(wt.graph) - trueEffects(mt.graph))
+      ground.truth <- list(dce=trueEffects(mt.graph) - trueEffects(wt.graph))
 
       time.tmp <- Sys.time()
-      res.cor <- list(dce=cor(wt.X) - cor(mt.X))
+      res.cor <- list(dce=cor(mt.X) - cor(wt.X))
       time.cor <- as.integer(difftime(Sys.time(), time.tmp, units="secs"))
 
       time.tmp <- Sys.time()
-      res.pcor <- list(dce=ppcor::pcor(wt.X)$estimate - ppcor::pcor(mt.X)$estimate)
+      res.pcor <- list(dce=ppcor::pcor(mt.X)$estimate - ppcor::pcor(wt.X)$estimate)
       time.pcor <- as.integer(difftime(Sys.time(), time.tmp, units="secs"))
 
       time.tmp <- Sys.time()
