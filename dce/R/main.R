@@ -396,7 +396,6 @@ compute_enrichment <- function(
 
     if (pvalue.method == "hmp") {
         # aggregate p-values
-        adj.mat <- as(graph, "matrix")
         tmp <- res$dce.p[!is.na(res$dce.p)]
         p.val <- as.numeric(harmonicmeanp::p.hmp(tmp, L = length(tmp)))
 
