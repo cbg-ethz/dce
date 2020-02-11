@@ -304,6 +304,7 @@ compute_differential_causal_effects <- function(
 #' the dag with the dces
 #' @param x dce object
 #' @param nodename.map node names
+#' @param edge.colorscale.limits Limits for scale_edge_color_gradient2 (should contain 0). Useful to make plot comparable to others
 #' @param ... additional parameters
 #' @author Martin Pirkl, Kim Philipp Jablonski
 #' @method plot dce
@@ -313,7 +314,11 @@ compute_differential_causal_effects <- function(
 #' @importFrom ggplot2 aes theme element_rect arrow unit
 #' @importFrom tidygraph as_tbl_graph activate mutate
 #' @importFrom rlang .data
-plot.dce <- function(x, nodename.map = NULL, ...) {
+plot.dce <- function(
+    x,
+    nodename.map = NULL, edge.colorscale.limits = NULL,
+    ...
+) {
     as_tbl_graph(x$graph) %>%
         activate(nodes) %>%
         mutate(
@@ -342,7 +347,7 @@ plot.dce <- function(x, nodename.map = NULL, ...) {
         geom_node_text(aes(label=.data$label)) +
         scale_edge_color_gradient2(
             low="red", mid="violet", high="blue",
-            midpoint=0
+            midpoint=0, limit=edge.colorscale.limits
         ) +
         scale_edge_width(range=c(1, 3)) +
         scale_edge_alpha(range=c(.1, 1)) +
