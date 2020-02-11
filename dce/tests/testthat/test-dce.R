@@ -19,8 +19,8 @@ test_that("negative beta can be recovered", {
   graph.wt <- as(matrix(c(0, 0, 1e-42, 0), 2, 2), "graphNEL")
   X.wt <- simulate_data(graph.wt)
 
-  graph.mt <- igraph::igraph.to.graphNEL(igraph::graph_from_adjacency_matrix(matrix(c(0, 0, -1.5, 0), 2, 2)))
   X.mt <- simulate_data(graph.mt)
+  graph.mt <- igraph::igraph.to.graphNEL(igraph::graph_from_adjacency_matrix(matrix(c(0, 0, -1.5, 0), 2, 2), weighted=TRUE))
 
   res <- compute_differential_causal_effects(graph.wt, X.wt, graph.mt, X.mt)
 
