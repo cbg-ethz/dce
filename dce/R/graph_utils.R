@@ -17,8 +17,8 @@ create_graph_from_dataframe <- function(
 }
 
 
-#' @export
-graph_union <- function(graph1, graph2) {
+#' @noRd
+graph_union_two <- function(graph1, graph2) {
   # create union
   graph.m <- igraph::union(
     igraph::igraph.from.graphNEL(graph1),
@@ -44,6 +44,12 @@ graph_union <- function(graph1, graph2) {
   # return result
   gn <- igraph::igraph.to.graphNEL(tmp)
   return(gn)
+}
+
+
+#' @export
+graph_union <- function(graph_list) {
+  Reduce(graph_union_two, graph_list)
 }
 
 #' @export
