@@ -228,6 +228,82 @@ resample_edge_weights <- function(g, lB = -1, uB = 1, tp = 1) {
     return(g)
 }
 #' @noRd
+#' @param y numeric vector of response
+#' @param X numeric matrix with variables as columns
+#' @param theta inverse dispersion parameter
+#' @param link link function as character: "identity" or "log"
+#' @param intercept logical to model intercept or not
+#' @param family character of distribution: "nbinom"
+glm.mle <- function (formula, theta=10, link = "identity", intercept = TRUE,
+                     family = "nbinom") {
+    D <- model.frame(formula)
+    D <- as(D, "matrix")
+    terms <- terms(formula)
+    factors <- apply(attr(terms, "factors"), c(1,2), as.numeric)
+    y <- D[, 1]
+    X <- Xcn <- NULL
+    for (i in seq_len(ncol(factors))) {
+        vars <- rownames(factors)[which(factors[, i] == 1)]
+        tmp <- paste0(paste0("^", vars, "$"), collapse = "|")
+        X <- cbind(X, apply(D[ , grep(tmp, colnames(D)), drop = FALSE], 1, prod))
+        Xcn <- c(Xcn, paste(sort(vars), collapse = ":"))
+    }
+    colnames(X) <- Xcn
+    if (is.numeric(intercept)) {
+        int.fixed <- intercept
+        intercept <- FALSE
+    } else {
+        int.fixed <- 0
+    }
+    if (link %in% "log") {
+        link <- log
+        linkinv <- exp
+    } else if (link %in% "identity") {
+        link <- function(x) return(x)
+        linkinv <- link
+    }
+    llnegbin = function(par, X, y, nvar) {
+        beta = par[1:nvar]
+        if (intercept) {
+            int <- par[nvar+1]
+        } else {
+            int <- 0
+        }
+        alpha <- theta
+        mean = linkinv(X %*% beta + int + int.fixed - min(X %*% beta) + mean(y))
+        prob = alpha/(alpha + mean)
+        prob = ifelse(prob < 1e-100, 1e-100, prob)
+        out = dnbinom(y, size = alpha, prob = prob, log = TRUE)
+        return(sum(out))
+    }
+    nvar = ncol(X)
+    nobs = length(y)
+    par = rep(0, nvar+1)
+    mle = optim(par, llnegbin, X = X, y = y, nvar = nvar,
+                method = "L-BFGS-B", upper = c(Inf, Inf, Inf, log(1e+08)),
+                hessian = TRUE, control = list(fnscale = -1))
+    beta = mle$par[1:nvar]
+    intercept <- mle$par[nvar+1]
+    sol <- c(intercept, beta)
+    names(sol) <- c("intercept", colnames(X))
+    class(sol) <- "glmmle"
+    return(sol)
+}
+#' Estiamte p-values
+#'
+#' Function to compute p-values based on regression coefficients
+#' @param x object of class "glmmle"
+#' @author Martin Pirkl
+#' @return data.frame with coefficients and p-values
+#' @export
+#' @method summary glmmle
+summary.glmmle <- function(x) {
+    y <- list()
+    y$coefficients <- cbind(x, x)
+    colnames(y$coefficients) <- c("Estimate", "Pr(>|t|)")
+    return(y)
+}
+#' @noRd
 #' @importFrom methods as
 #' @importFrom MASS glm.nb
 #' @importFrom zetadiv glm.cons
@@ -249,7 +325,7 @@ fulllin <- function(g1, d1, g2, d2, conf = TRUE,
     n <- length(nodes(g1))
     dce <- mat1*0
     dce.p <- mat1*NA
-    glmfun <- function(formula) {
+    glmfun <- function(formula, theta) {
         fun <- "glm2"
 
         if (link.log.base == 0) {
@@ -272,6 +348,8 @@ fulllin <- function(g1, d1, g2, d2, conf = TRUE,
                                      cons = 1, ...)
         } else if (fun %in% "gauss") {
             fit <- glm(formula, family = "gaussian", ...)
+        } else if (fun %in% "glm.mle") {
+            fit <- glm.mle(formula, theta=theta, link=link, ...)
         }
         return(fit)
     }
@@ -280,11 +358,10 @@ fulllin <- function(g1, d1, g2, d2, conf = TRUE,
             Xidx <- which(mat1[, i] == 1)
             if (length(Xidx) > 0) {
                 Y <- df[, i]
-                NX <- as(df[, Xidx] * df$N, "matrix")
                 X <- as(df[, Xidx], "matrix")
                 N <- df$N
                 if (errDist %in% "normal") {
-                    C <- cov(cbind(Y, NX, N, X))
+                    C <- cov(cbind(Y, N*X, N, X))
                     if (Matrix::rankMatrix(C[2:nrow(C), 2:ncol(C)]) <
                         nrow(C[2:nrow(C), 2:ncol(C)])) {
                         betas <- Gsolve(
@@ -309,17 +386,15 @@ fulllin <- function(g1, d1, g2, d2, conf = TRUE,
             for (j in seq_len(n)) {
                 if (dagtc[i, j] == 1 & i != j) {
                     Z <- which(mat1[, i] == 1)
-                    NX <- df[, i] * df$N
-                    NZ <- as(df[, Z] * df$N, "matrix")
                     N <- df$N
                     X <- df[, i]
                     Y <- df[, j]
                     Z <- as(df[, Z], "matrix")
                     if (errDist %in% "normal") {
                         if (length(Z) > 0 & conf) {
-                            C <- cov(cbind(Y, NX, NZ, N, X, Z))
+                            C <- cov(cbind(Y, N*X, N*Z, N, X, Z))
                         } else {
-                            C <- cov(cbind(Y, NX, N, X))
+                            C <- cov(cbind(Y, N*X, N, X))
                         }
                         if (Matrix::rankMatrix(C[2:nrow(C), 2:ncol(C)]) <
                             nrow(C[2:nrow(C), 2:ncol(C)])) {
@@ -334,9 +409,11 @@ fulllin <- function(g1, d1, g2, d2, conf = TRUE,
                         dce[i, j] <- betas[1]
                     } else if (errDist %in% "nbinom") {
                         if (length(Z) > 0 & conf) {
-                            fit <- glmfun(Y ~ N * X + N * Z)
+                            theta <- estimateTheta(cbind(X,Y,Z))
+                            fit <- glmfun(Y ~ N * X + N * Z, theta = theta)
                         } else {
-                            fit <- glmfun(Y ~ N * X)
+                            theta <- estimateTheta(cbind(X,Y))
+                            fit <- glmfun(Y ~ N * X, theta = theta)
                         }
                         coef.mat <- summary(fit)$coefficients
                         dce[i, j] <- coef.mat["N:X", "Estimate"]
