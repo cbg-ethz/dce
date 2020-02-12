@@ -169,7 +169,7 @@ compute_differential_causal_effects <- function(
     link.log.base = exp(1),
     ...
 ) {
-    if (is.null(theta)) {
+    if (is.null(theta) & FALSE) {
         theta <- estimateTheta(rbind(df.expr.ctrl, df.expr.mut))
     }
     if (bootstrap) {

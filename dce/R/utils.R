@@ -228,39 +228,65 @@ resample_edge_weights <- function(g, lB = -1, uB = 1, tp = 1) {
     return(g)
 }
 #' @noRd
+#' @author modified code from the package 'bayesm'
 #' @param y numeric vector of response
 #' @param X numeric matrix with variables as columns
 #' @param theta inverse dispersion parameter
 #' @param link link function as character: "identity" or "log"
 #' @param intercept logical to model intercept or not
 #' @param family character of distribution: "nbinom"
-glm.mle <- function (formula, theta=10, link = "identity", intercept = TRUE,
-                     family = "nbinom") {
-    D <- model.frame(formula)
-    D <- as(D, "matrix")
-    terms <- terms(formula)
-    factors <- apply(attr(terms, "factors"), c(1,2), as.numeric)
-    y <- D[, 1]
-    X <- Xcn <- NULL
-    for (i in seq_len(ncol(factors))) {
-        vars <- rownames(factors)[which(factors[, i] == 1)]
-        tmp <- paste0(paste0("^", vars, "$"), collapse = "|")
-        X <- cbind(X, apply(D[ , grep(tmp, colnames(D)), drop = FALSE], 1, prod))
-        Xcn <- c(Xcn, paste(sort(vars), collapse = ":"))
+glm.mle <- function (formula, data=NULL, theta=10, link="identity",
+                     intercept=TRUE, family = "nbinom") {
+    if (link %in% "identity") {
+        linkfun <- meanfun <- function(x) return(x)
+    } else if (link %in% "log") {
+        linkfun <- function(x) return(log(x))
+        meanfun <- function(x) return(exp(x))
+    } else {
+        linkfun <- function(x) return(log(x, link))
+        meanfun <- function(x) return(link^x)
     }
-    colnames(X) <- Xcn
+    if (is(formula, "formula")) {
+        D <- model.frame(formula)
+        D <- as(D, "matrix")
+        terms <- terms(formula)
+        factors <- apply(attr(terms, "factors"), c(1,2), as.numeric)
+        y <- D[, 1]
+        X <- Xcn <- NULL
+        for (i in seq_len(ncol(factors))) {
+            vars <- rownames(factors)[which(factors[, i] != 0)]
+            vars2 <- gsub("\\[", "\\\\[", vars)
+            vars2 <- gsub("\\]", "\\\\]", vars2)
+            if (sum(factors[, i]) > 1) {
+                vars3 <- rownames(factors)[which(factors[, i] != 0)]
+                vars3 <- gsub("\\[", "\\\\[", vars3)
+                vars3 <- gsub("\\]", "\\\\]", vars3)
+                tmp <- paste0(c(paste0("^", vars3[1], "$"),
+                                paste0("^", vars3[1], "\\.")), collapse = "|")
+                A <- D[, grep(tmp, colnames(D)), drop = FALSE]
+                tmp <- paste0(c(paste0("^", vars3[2], "$"),
+                                paste0("^", vars3[2], "\\.")), collapse = "|")
+                B <- D[, grep(tmp, colnames(D)), drop = FALSE]
+                Ap <- A[, rep(seq_len(ncol(A)), each = ncol(B)), drop = FALSE]
+                X <- cbind(X, Ap*B)
+                Xcn <- c(Xcn, paste0(colnames(A), ":", colnames(B)))
+            } else {
+                tmp <- paste0(c(paste0("^", vars2, "$"),
+                                paste0("^", vars2, "\\.")), collapse = "|")
+                X <- cbind(X, D[ , grep(tmp, colnames(D)), drop = FALSE])
+                Xcn <- c(Xcn, colnames(D)[grep(tmp, colnames(D))])
+            }
+        }
+        colnames(X) <- Xcn
+    } else {
+        y <- formula
+        X <- data
+    }
     if (is.numeric(intercept)) {
         int.fixed <- intercept
         intercept <- FALSE
     } else {
         int.fixed <- 0
-    }
-    if (link %in% "log") {
-        link <- log
-        linkinv <- exp
-    } else if (link %in% "identity") {
-        link <- function(x) return(x)
-        linkinv <- link
     }
     llnegbin = function(par, X, y, nvar) {
         beta = par[1:nvar]
@@ -269,25 +295,28 @@ glm.mle <- function (formula, theta=10, link = "identity", intercept = TRUE,
         } else {
             int <- 0
         }
+        mean = meanfun(X %*% beta + int + int.fixed - min(X %*% beta))
+        mean <- mean +  mean(y)
         alpha <- theta
-        mean = linkinv(X %*% beta + int + int.fixed - min(X %*% beta) + mean(y))
-        prob = alpha/(alpha + mean)
-        prob = ifelse(prob < 1e-100, 1e-100, prob)
-        out = dnbinom(y, size = alpha, prob = prob, log = TRUE)
+        out = dnbinom(y, size = alpha, mu = mean, log = TRUE)
         return(sum(out))
     }
     nvar = ncol(X)
     nobs = length(y)
     par = rep(0, nvar+1)
     mle = optim(par, llnegbin, X = X, y = y, nvar = nvar,
-                method = "L-BFGS-B", upper = c(Inf, Inf, Inf, log(1e+08)),
+                method = "BFGS", # "BFGS" (best?) or "Nelder-Mead" work best?
                 hessian = TRUE, control = list(fnscale = -1))
+    if (!intercept) { mle$par[nvar+1] <- int.fixed }
     beta = mle$par[1:nvar]
     intercept <- mle$par[nvar+1]
-    sol <- c(intercept, beta)
-    names(sol) <- c("intercept", colnames(X))
-    class(sol) <- "glmmle"
-    return(sol)
+    coefficients <- c(intercept, beta)
+    names(coefficients) <- c("intercept", colnames(X))
+    hessian <- mle$hessian
+    colnames(hessian) <- rownames(hessian) <- names(coefficients)
+    result <- list(coefficients = coefficients, hessian = hessian)
+    class(result) <- "glmmle"
+    return(result)
 }
 #' Estiamte p-values
 #'
@@ -296,11 +325,24 @@ glm.mle <- function (formula, theta=10, link = "identity", intercept = TRUE,
 #' @author Martin Pirkl
 #' @return data.frame with coefficients and p-values
 #' @export
+#' @importFrom aod wald.test
 #' @method summary glmmle
 summary.glmmle <- function(x) {
+    coef <- x$coefficients
+    hess <- x$hessian
+    df <- seq_len(length(coef))
+    hess <- hess[df, df]
+    hessGlob <- hess
+    coef <- coef[df]
+    cov <- Gsolve(-hess)
+    var.cf <- diag(cov)
+    s.err <- sqrt(var.cf)
+    tvalue <- coef/s.err
+    ptvalue <- 2*pt(-abs(tvalue), ncol(hess))
+    pzvalue <- 2*pnorm(-abs(tvalue))
     y <- list()
-    y$coefficients <- cbind(x, x)
-    colnames(y$coefficients) <- c("Estimate", "Pr(>|t|)")
+    y$coefficients <- cbind(coef, s.err, tvalue, ptvalue, pzvalue)
+    colnames(y$coefficients) <- c("Estimate", "Std. Error", "t value", "Pr(>|t|)", "P(>|z|)")
     return(y)
 }
 #' @noRd
@@ -317,7 +359,7 @@ fulllin <- function(g1, d1, g2, d2, conf = TRUE,
     mat2[which(mat2 != 0)] <- 1
     dagtc <- nem::transitive.closure(mat1, mat=TRUE)
     df <- rbind(d1, d2)
-    if (is.null(theta)) {
+    if (is.null(theta) & FALSE) {
         theta <- estimateTheta(df)
     }
     colnames(df) <- paste0("X", seq_len(ncol(df)))
@@ -326,7 +368,7 @@ fulllin <- function(g1, d1, g2, d2, conf = TRUE,
     dce <- mat1*0
     dce.p <- mat1*NA
     glmfun <- function(formula, theta) {
-        fun <- "glm2"
+        fun <- "glm.mle"
 
         if (link.log.base == 0) {
             link <- "identity"
@@ -349,6 +391,9 @@ fulllin <- function(g1, d1, g2, d2, conf = TRUE,
         } else if (fun %in% "gauss") {
             fit <- glm(formula, family = "gaussian", ...)
         } else if (fun %in% "glm.mle") {
+            if (link.log.base != 0) {
+                link <- link.log.base
+            }
             fit <- glm.mle(formula, theta=theta, link=link, ...)
         }
         return(fit)
