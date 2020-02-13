@@ -361,12 +361,12 @@ summary.glmmle <- function(x) {
 fulllin <- function(g1, d1, g2, d2, conf = TRUE,
                     errDist = "nbinom", theta = NULL,
                     link.log.base = exp(1),
-                    partial = TRUE, ...) {
+                    partial = TRUE, method = "full", ...) {
     mat1 <- as(g1, "matrix")
     mat2 <- as(g2, "matrix")
     mat1[which(mat1 != 0)] <- 1
     mat2[which(mat2 != 0)] <- 1
-    dagtc <- nem::transitive.closure(mat1, mat=TRUE)
+    dag <- mat1 # nem::transitive.closure(mat1, mat=TRUE)
     df <- rbind(d1, d2)
     if (is.null(theta) & FALSE) {
         theta <- estimateTheta(df)
@@ -377,7 +377,7 @@ fulllin <- function(g1, d1, g2, d2, conf = TRUE,
     dce <- mat1*0
     dce.p <- mat1*NA
     glmfun <- function(formula, theta) {
-        fun <- "glm2"
+        fun <- "glm.mle"
 
         if (link.log.base == 0) {
             link <- "identity"
@@ -438,30 +438,40 @@ fulllin <- function(g1, d1, g2, d2, conf = TRUE,
     } else {
         for (i in seq_len(n)) {
             for (j in seq_len(n)) {
-                if (dagtc[i, j] == 1 & i != j) {
+                if (dag[i, j] == 1 & i != j) {
                     Z <- which(mat1[, i] == 1)
                     N <- df$N
                     X <- df[, i]
                     Y <- df[, j]
                     Z <- as(df[, Z], "matrix")
-                    if (errDist %in% "normal") {
+                    if (!(method %in% "full")) {
                         if (length(Z) > 0 & conf) {
-                            C <- cov(cbind(Y, N*X, N*Z, N, X, Z))
+                            X1 <- X[which(N == 0)]
+                            Z1 <- Z[which(N == 0), , drop = FALSE]
+                            Y1 <- Y[which(N == 0)]
+                            fit1 <- glmfun(Y1 ~ X1 + Z1, theta = theta)
+                            X1 <- X[which(N == 1)]
+                            Z1 <- Z[which(N == 1), , drop = FALSE]
+                            Y1 <- Y[which(N == 1)]
+                            fit2 <- glmfun(Y1 ~ X1 + Z1, theta = theta)
                         } else {
-                            C <- cov(cbind(Y, N*X, N, X))
+                            X1 <- X[which(N == 0)]
+                            Y1 <- Y[which(N == 0)]
+                            fit1 <- glmfun(Y1 ~ X1, theta = theta)
+                            X1 <- X[which(N == 1)]
+                            Y1 <- Y[which(N == 1)]
+                            fit2 <- glmfun(Y1 ~ X1, theta = theta)
                         }
-                        if (Matrix::rankMatrix(C[2:nrow(C), 2:ncol(C)]) <
-                            nrow(C[2:nrow(C), 2:ncol(C)])) {
-                            betas <- Gsolve(
-                                C[2:nrow(C), 2:ncol(C)], C[2:nrow(C), 1]
-                            )
-                        } else {
-                            betas <- solve(
-                                C[2:nrow(C), 2:ncol(C)], C[2:nrow(C), 1]
-                            )
-                        }
-                        dce[i, j] <- betas[1]
-                    } else if (errDist %in% "nbinom") {
+                        coef.mat1 <- summary(fit1)$coefficients
+                        coef.mat2 <- summary(fit2)$coefficients
+                        dce[i, j] <- coef.mat2["X1", "Estimate"] -
+                            coef.mat1["X1", "Estimate"]
+                        p1 <- max(c(coef.mat1["X1", "Pr(>|t|)"], 1), na.rm=TRUE)
+                        p2 <- max(c(coef.mat2["X1", "Pr(>|t|)"], 1), na.rm=TRUE)
+                        dce.p[i, j] <-
+                            as.numeric(
+                                harmonicmeanp::p.hmp(c(p1,p2), L = 2))
+                    } else {
                         if (length(Z) > 0 & conf) {
                             theta <- estimateTheta(cbind(X,Y,Z))
                             fit <- glmfun(Y ~ N * X + N * Z, theta = theta)

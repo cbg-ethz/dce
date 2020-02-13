@@ -214,24 +214,14 @@ compute_differential_causal_effects <- function(
                         replace = replace
                     ),
                 ]
-                if (!(method %in% "full")) {
-                    dces <- dces +
-                        compute_differential_causal_effects(
-                            graph.ctrl,
-                            df.expr.ctrl.sub,
-                            graph.mut,
-                            df.expr.mut.sub
-                        )$dce
-                } else {
-                    dces <- dces + fulllin(
-                        graph.ctrl, df.expr.ctrl.sub,
-                        graph.mut, df.expr.mut.sub,
-                        errDist = errDist, theta = theta,
-                        partial = partial,
-                        link.log.base = link.log.base,
-                        ...
-                    )$dce
-                }
+                dces <- dces + fulllin(
+                                   graph.ctrl, df.expr.ctrl.sub,
+                                   graph.mut, df.expr.mut.sub,
+                                   errDist = errDist, theta = theta,
+                                   partial = partial,
+                                   link.log.base = link.log.base,
+                                   method = metho, ...
+                               )$dce
             }
             res <- dces/runs
             res.p <- NULL
@@ -267,24 +257,16 @@ compute_differential_causal_effects <- function(
             res.p <- NULL
         }
     } else {
-        if (!(method %in% "full")) {
-            ce.ctrl <- compute_causal_effects(graph.ctrl, df.expr.ctrl)
-            ce.mut <- compute_causal_effects(graph.mut, df.expr.mut)
-            res <- as.matrix(ce.ctrl - ce.mut)
-            res.p <- NULL
-        } else {
-            tmp <- fulllin(
-                graph.ctrl, df.expr.ctrl,
-                graph.mut, df.expr.mut,
-                errDist = errDist, theta = theta,
-                partial = partial,
-                link.log.base = link.log.base,
-                ...
-            )
-
-            res <- tmp$dce
-            res.p <- tmp$dce.p
-        }
+        tmp <- fulllin(
+            graph.ctrl, df.expr.ctrl,
+            graph.mut, df.expr.mut,
+            errDist = errDist, theta = theta,
+            partial = partial,
+            link.log.base = link.log.base,
+            method = method, ...
+        )
+        res <- tmp$dce
+        res.p <- tmp$dce.p
     }
     mat <- as(graph.ctrl, "matrix")
     mat[which(mat != 0)] <- 1
