@@ -235,7 +235,7 @@ resample_edge_weights <- function(g, lB = -1, uB = 1, tp = 1) {
 #' @param link link function as character: "identity" or "log"
 #' @param intercept logical to model intercept or not
 #' @param family character of distribution: "nbinom"
-glm.mle <- function (formula, data=NULL, theta=10, link="identity",
+glm.mle <- function (formula, data=NULL, theta=NULL, link="identity",
                      intercept=TRUE, family = "nbinom") {
     if (link %in% "identity") {
         linkfun <- meanfun <- function(x) return(x)
@@ -295,15 +295,18 @@ glm.mle <- function (formula, data=NULL, theta=10, link="identity",
         } else {
             int <- 0
         }
-        mean = meanfun(X %*% beta + int + int.fixed - min(X %*% beta))
-        mean <- mean +  mean(y)
-        alpha <- theta
-        out = dnbinom(y, size = alpha, mu = mean, log = TRUE)
+        mu = meanfun(X %*% beta + int + int.fixed - min(X %*% beta) + mean(y))
+        if (is.null(theta)) {
+            alpha <- par[nvar+2]
+        } else {
+            alpha <- theta
+        }
+        out = dnbinom(y, size = alpha, mu = mu, log = TRUE)
         return(sum(out))
     }
     nvar = ncol(X)
     nobs = length(y)
-    par = rep(0, nvar+1)
+    par = c(rep(0, nvar+1), 1)
     mle = optim(par, llnegbin, X = X, y = y, nvar = nvar,
                 method = "BFGS", # "BFGS" (best?) or "Nelder-Mead" work best?
                 hessian = TRUE, control = list(fnscale = -1))
@@ -312,13 +315,19 @@ glm.mle <- function (formula, data=NULL, theta=10, link="identity",
     intercept <- mle$par[nvar+1]
     coefficients <- c(intercept, beta)
     names(coefficients) <- c("intercept", colnames(X))
-    hessian <- mle$hessian
+    hessian <- mle$hessian[c(nvar+1, seq_len(nvar)), c(nvar+1, seq_len(nvar))]
     colnames(hessian) <- rownames(hessian) <- names(coefficients)
-    result <- list(coefficients = coefficients, hessian = hessian)
+    if (is.null(theta)) {
+        alpha <- mle$par[nvar+2]
+    } else {
+        alpha <- theta
+    }
+    result <- list(coefficients = coefficients, hessian = hessian,
+                   theta=alpha)
     class(result) <- "glmmle"
     return(result)
 }
-#' Estiamte p-values
+#' Estimate p-values
 #'
 #' Function to compute p-values based on regression coefficients
 #' @param x object of class "glmmle"
@@ -368,7 +377,7 @@ fulllin <- function(g1, d1, g2, d2, conf = TRUE,
     dce <- mat1*0
     dce.p <- mat1*NA
     glmfun <- function(formula, theta) {
-        fun <- "glm.mle"
+        fun <- "glm2"
 
         if (link.log.base == 0) {
             link <- "identity"
@@ -394,7 +403,7 @@ fulllin <- function(g1, d1, g2, d2, conf = TRUE,
             if (link.log.base != 0) {
                 link <- link.log.base
             }
-            fit <- glm.mle(formula, theta=theta, link=link, ...)
+            fit <- glm.mle(formula, link=link, ...)
         }
         return(fit)
     }
