@@ -227,6 +227,49 @@ resample_edge_weights <- function(g, lB = -1, uB = 1, tp = 1) {
     g@edgeData@data <- w
     return(g)
 }
+
+
+#' @export
+glm.mle.2 <- function(form, df) {
+    # massage data
+    model.X <- model.matrix(form, data=df)
+
+    df.model.frame <- model.frame(form, data=df)
+    model.terms <- attributes(terms(df.model.frame))
+
+    # define log-likelihood
+    loglikeli.func <- function(params, X, Y) {
+        beta.vec <- params[-length(params)]
+        theta <- params[length(params)]
+
+        mu <- X %*% beta.vec
+
+        if (any(mu <= 0)) {
+            return(NA)
+        }
+
+        -sum(dnbinom(Y, size=theta, mu=mu, log=TRUE))
+    }
+
+    # solve (minimization)
+    params <- rep(1, length(model.terms$term.labels) + 2) # terms, intercept and theta
+    fit <- optim(
+        params, loglikeli.func,
+        X=model.X, Y=df.model.frame[, model.terms$response],
+        method="BFGS", hessian=TRUE,
+        control=list(maxit=1000, trace=1)
+    )
+
+    # return formatted result
+    coef <- setNames(fit$par, c("Intercept", model.terms$term.labels, "Theta"))
+
+    list(
+        coefficients=coef,
+        log.likelihood=-fit$value
+    )
+}
+
+
 #' @noRd
 #' @author modified code from the package 'bayesm'
 #' @param y numeric vector of response
