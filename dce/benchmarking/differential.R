@@ -1,4 +1,5 @@
 library(tidyverse)
+library(magrittr)
 library(graph)
 
 devtools::load_all("..")
