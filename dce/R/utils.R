@@ -297,7 +297,12 @@ glm.mle <- function (formula, data=NULL, theta=NULL, link="identity",
         } else {
             int <- 0
         }
-        mu = meanfun(X %*% beta + int + int.fixed - min(X %*% beta) + mean(y))
+        if (link %in% "identity") {
+            int <- int + int.fixed
+            mu <- meanfun(X %*% beta + int - min(X %*% beta) + mean(y))
+        } else {
+            mu <- meanfun(X %*% beta)
+        }
         if (is.null(theta)) {
             alpha <- par[nvar+2]
         } else {
@@ -308,10 +313,10 @@ glm.mle <- function (formula, data=NULL, theta=NULL, link="identity",
     }
     nvar = ncol(X)
     nobs = length(y)
-    par = c(rep(0, nvar+1), 1)
+    par = c(rep(1, nvar+1), 1)
     mle = optim(par, llnegbin, X = X, y = y, nvar = nvar,
-                method = "BFGS", # "BFGS" (best?) or "Nelder-Mead" work best?
-                hessian = TRUE, control = list(fnscale = -1))
+                method = "BFGS",
+                hessian = TRUE, control = list(fnscale = -1, maxit = 1000))
     if (!intercept) { mle$par[nvar+1] <- int.fixed }
     beta = mle$par[1:nvar]
     intercept <- mle$par[nvar+1]
@@ -379,7 +384,7 @@ fulllin <- function(g1, d1, g2, d2, conf = TRUE,
     dce <- mat1*0
     dce.p <- mat1*NA
     glmfun <- function(formula, theta) {
-        fun <- "glm.mle"
+        fun <- "glm2"
 
         if (link.log.base == 0) {
             link <- "identity"
@@ -451,17 +456,21 @@ fulllin <- function(g1, d1, g2, d2, conf = TRUE,
                             X1 <- X[which(N == 0)]
                             Z1 <- Z[which(N == 0), , drop = FALSE]
                             Y1 <- Y[which(N == 0)]
+                            theta <- estimateTheta(cbind(X1,Y1,Z1))
                             fit1 <- glmfun(Y1 ~ X1 + Z1, theta = theta)
                             X1 <- X[which(N == 1)]
                             Z1 <- Z[which(N == 1), , drop = FALSE]
                             Y1 <- Y[which(N == 1)]
+                            theta <- estimateTheta(cbind(X1,Y1,Z1))
                             fit2 <- glmfun(Y1 ~ X1 + Z1, theta = theta)
                         } else {
                             X1 <- X[which(N == 0)]
                             Y1 <- Y[which(N == 0)]
+                            theta <- estimateTheta(cbind(X1,Y1))
                             fit1 <- glmfun(Y1 ~ X1, theta = theta)
                             X1 <- X[which(N == 1)]
                             Y1 <- Y[which(N == 1)]
+                            theta <- estimateTheta(cbind(X1,Y1))
                             fit2 <- glmfun(Y1 ~ X1, theta = theta)
                         }
                         coef.mat1 <- summary(fit1)$coefficients
