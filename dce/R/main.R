@@ -220,7 +220,7 @@ compute_differential_causal_effects <- function(
                                    errDist = errDist, theta = theta,
                                    partial = partial,
                                    link.log.base = link.log.base,
-                                   method = metho, ...
+                                   method = method, ...
                                )$dce
             }
             res <- dces/runs
