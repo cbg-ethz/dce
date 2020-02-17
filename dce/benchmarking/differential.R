@@ -101,36 +101,18 @@ df.bench <- purrr::pmap_dfr(
       time.pcor <- as.integer(difftime(Sys.time(), time.tmp, units="secs"))
 
       time.tmp <- Sys.time()
-      res.basic <- compute_differential_causal_effects(
-        wt.graph, wt.X,
-        mt.graph, mt.X,
-        method="basic"
+      res.glm <- dce::dce(
+        wt.graph, wt.X, mt.X,
+        family = MASS::negative.binomial(theta=100, link="identity"), solver = "glm2"
       )
-      time.basic <- as.integer(difftime(Sys.time(), time.tmp, units="secs"))
-
-      # time.tmp <- Sys.time()
-      # res.basic.bootstrap <- compute_differential_causal_effects(
-      #   wt.graph, wt.X,
-      #   mt.graph, mt.X,
-      #   method="basic", bootstrap=TRUE
-      # )
-      # time.basic.bootstrap <- as.integer(difftime(Sys.time(), time.tmp, units="secs"))
+      time.glm <- as.integer(difftime(Sys.time(), time.tmp, units="secs"))
 
       time.tmp <- Sys.time()
-      res.full <- compute_differential_causal_effects(
-        wt.graph, wt.X,
-        mt.graph, mt.X,
-        method="full"
+      res.mle <- dce::dce(
+        wt.graph, wt.X, mt.X,
+        family = MASS::negative.binomial(theta=100, link="identity"), solver = "mle"
       )
-      time.full <- as.integer(difftime(Sys.time(), time.tmp, units="secs"))
-
-      # time.tmp <- Sys.time()
-      # res.full.bootstrap <- compute_differential_causal_effects(
-      #   wt.graph, wt.X,
-      #   mt.graph, mt.X,
-      #   method="full", bootstrap=TRUE
-      # )
-      # time.full.bootstrap <- as.integer(difftime(Sys.time(), time.tmp, units="secs"))
+      time.mle <- as.integer(difftime(Sys.time(), time.tmp, units="secs"))
 
       time.tmp <- Sys.time()
       tmp <- as.matrix(ground.truth$dce)
@@ -145,10 +127,8 @@ df.bench <- purrr::pmap_dfr(
         truth=as.vector(ground.truth$dce),
         cor=as.vector(res.cor$dce),
         pcor=as.vector(res.pcor$dce),
-        basic=as.vector(res.basic$dce),
-        # basic.bootstrap=as.vector(res.basic.bootstrap$dce),
-        full=as.vector(res.full$dce),
-        # full.bootstrap=as.vector(res.full.bootstrap$dce),
+        glm=as.vector(res.glm$dce),
+        mle=as.vector(res.mle$dce),
         rand=as.vector(res.rand$dce)
       )
 
@@ -165,16 +145,14 @@ df.bench <- purrr::pmap_dfr(
           ) %>%
             rownames_to_column() %>%
             dplyr::filter(rowname == "truth") %>%
-            select(-rowname, -truth) %>%
+            dplyr::select(-rowname, -truth) %>%
             mutate(type="correlation"),
 
           bind_rows(list(
             cor=get_prediction_counts(df.res$truth, df.res$cor),
             pcor=get_prediction_counts(df.res$truth, df.res$pcor),
-            basic=get_prediction_counts(df.res$truth, df.res$basic),
-            # basic.bootstrap=get_prediction_counts(df.res$truth, df.res$basic.bootstrap),
-            full=get_prediction_counts(df.res$truth, df.res$full),
-            # full.bootstrap=get_prediction_counts(df.res$truth, df.res$full.bootstrap),
+            glm=get_prediction_counts(df.res$truth, df.res$glm),
+            mle=get_prediction_counts(df.res$truth, df.res$mle),
             rand=get_prediction_counts(df.res$truth, df.res$rand)
           ), .id="name") %>%
             column_to_rownames(var="name") %>%
@@ -185,10 +163,8 @@ df.bench <- purrr::pmap_dfr(
           data.frame(
             cor=compute.mse(df.res$truth, df.res$cor),
             pcor=compute.mse(df.res$truth, df.res$pcor),
-            basic=compute.mse(df.res$truth, df.res$basic),
-            # basic.bootstrap=compute.mse(df.res$truth, df.res$basic.bootstrap),
-            full=compute.mse(df.res$truth, df.res$full),
-            # full.bootstrap=compute.mse(df.res$truth, df.res$full.bootstrap),
+            glm=compute.mse(df.res$truth, df.res$glm),
+            mle=compute.mse(df.res$truth, df.res$mle),
             rand=compute.mse(df.res$truth, df.res$rand)
           ) %>%
             mutate(type="mse"),
@@ -196,10 +172,8 @@ df.bench <- purrr::pmap_dfr(
           data.frame(
             cor=time.cor,
             pcor=time.pcor,
-            basic=time.basic,
-            # basic.bootstrap=time.basic.bootstrap,
-            full=time.full,
-            # full.bootstrap=time.full.bootstrap,
+            glm=time.glm,
+            mle=time.mle,
             rand=time.rand
           ) %>%
             mutate(type="runtime"),
@@ -207,10 +181,8 @@ df.bench <- purrr::pmap_dfr(
           data.frame(
             cor=graph.density,
             pcor=graph.density,
-            basic=graph.density,
-            # basic.bootstrap=graph.density,
-            full=graph.density,
-            # full.bootstrap=graph.density,
+            glm=graph.density,
+            mle=graph.density,
             rand=graph.density
           ) %>%
             mutate(type="graph.density"),
@@ -269,8 +241,8 @@ ggplot(aes(x=parameter, y=value, fill=parameter)) +
 
 df.bench %>%
   dplyr::filter(grepl("^graph.", type)) %>%
-  select(full, type, parameter) %>%
-ggplot(aes(x=parameter, y=full, fill=type)) +
+  dplyr::select(glm, type, parameter) %>%
+ggplot(aes(x=parameter, y=glm, fill=type)) +
   geom_boxplot() +
   ggtitle(paste("Variable:", varied.parameter)) +
   ylab("value") +
