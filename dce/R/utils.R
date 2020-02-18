@@ -397,7 +397,7 @@ fulllin <- function(g1, d1, g2, d2, conf = TRUE,
         } else if (fun %in% "glm2") {
             fit <- glm2::glm2(formula, family = MASS::negative.binomial(
                                                 theta=theta,
-                                                link=link), ...)
+                                                link=link), method = "glm.dce.fit", ...)
         } else if (fun %in% "glm.cons") {
             fit <- zetadiv::glm.cons(formula,
                                      family = MASS::negative.binomial(
@@ -601,6 +601,10 @@ glm.dce.fit <- function (x, y, weights = rep(1, nobs), start = NULL, etastart = 
             }
         else family$linkfun(mustart)
         mu <- linkinv(eta)
+        if (any(mu <= 0)) {
+            offset2 <- - min(eta) + mean(y)
+            mu <- linkinv(eta <- eta + offset2)
+        }
         if (!(validmu(mu) && valideta(eta))) 
             stop("cannot find valid starting values: please specify some", 
                 call. = FALSE)
@@ -664,6 +668,10 @@ glm.dce.fit <- function (x, y, weights = rep(1, nobs), start = NULL, etastart = 
                   start <- (start + coefold)/2
                   eta <- drop(x %*% start)
                   mu <- linkinv(eta <- eta + offset)
+                  if (any(mu <= 0)) {
+                      offset2 <- - min(eta) + mean(y) + offset
+                      mu <- linkinv(eta <- eta + offset2)
+                  }
                   dev <- sum(dev.resids(y, mu, weights))
                 }
                 boundary <- TRUE
@@ -686,6 +694,10 @@ glm.dce.fit <- function (x, y, weights = rep(1, nobs), start = NULL, etastart = 
                   mu <- linkinv(eta <- eta + offset)
                 }
                 boundary <- TRUE
+                if (any(mu <= 0)) {
+                    offset2 <- - min(eta) + mean(y) + offset
+                    mu <- linkinv(eta <- eta + offset2)
+                }
                 dev <- sum(dev.resids(y, mu, weights))
                 if (control$trace) 
                   cat("Step halved: new deviance =", dev, "\n")
@@ -704,6 +716,10 @@ glm.dce.fit <- function (x, y, weights = rep(1, nobs), start = NULL, etastart = 
                   start <- (start + coefold)/2
                   eta <- drop(x %*% start)
                   mu <- linkinv(eta <- eta + offset)
+                  if (any(mu <= 0)) {
+                      offset2 <- - min(eta) + mean(y) + offset
+                      mu <- linkinv(eta <- eta + offset2)
+                  }
                   dev <- sum(dev.resids(y, mu, weights))
                 }
                 if (ii > control$maxit) 
