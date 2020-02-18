@@ -384,7 +384,7 @@ fulllin <- function(g1, d1, g2, d2, conf = TRUE,
     dce <- mat1*0
     dce.p <- mat1*NA
     glmfun <- function(formula, theta) {
-        fun <- "glm2"
+        fun <- "glm"
 
         if (link.log.base == 0) {
             link <- "identity"
@@ -396,6 +396,10 @@ fulllin <- function(g1, d1, g2, d2, conf = TRUE,
             fit <- MASS::glm.nb(formula, link = link, ...)
         } else if (fun %in% "glm2") {
             fit <- glm2::glm2(formula, family = MASS::negative.binomial(
+                                                theta=theta,
+                                                link=link), method = "glm.dce.fit", ...)
+        } else if (fun %in% "glm") {
+            fit <- stats::glm(formula, family = MASS::negative.binomial(
                                                 theta=theta,
                                                 link=link), method = "glm.dce.fit", ...)
         } else if (fun %in% "glm.cons") {
@@ -645,8 +649,9 @@ glm.dce.fit <- function (x, y, weights = rep(1, nobs), start = NULL, etastart = 
             start <- fit$coefficients
             eta <- drop(x %*% start)
             mu <- linkinv(eta <- eta + offset)
+            offset0 <- 1
             if (any(mu <= 0)) {
-                offset2 <- - min(eta) + mean(y) + offset
+                offset2 <- - min(eta) + offset0
                 mu <- linkinv(eta <- eta + offset2)
             }
             dev <- sum(dev.resids(y, mu, weights))
@@ -669,7 +674,7 @@ glm.dce.fit <- function (x, y, weights = rep(1, nobs), start = NULL, etastart = 
                   eta <- drop(x %*% start)
                   mu <- linkinv(eta <- eta + offset)
                   if (any(mu <= 0)) {
-                      offset2 <- - min(eta) + mean(y) + offset
+                      offset2 <- - min(eta) + offset0
                       mu <- linkinv(eta <- eta + offset2)
                   }
                   dev <- sum(dev.resids(y, mu, weights))
@@ -695,7 +700,7 @@ glm.dce.fit <- function (x, y, weights = rep(1, nobs), start = NULL, etastart = 
                 }
                 boundary <- TRUE
                 if (any(mu <= 0)) {
-                    offset2 <- - min(eta) + mean(y) + offset
+                    offset2 <- - min(eta) + offset0
                     mu <- linkinv(eta <- eta + offset2)
                 }
                 dev <- sum(dev.resids(y, mu, weights))
@@ -717,7 +722,7 @@ glm.dce.fit <- function (x, y, weights = rep(1, nobs), start = NULL, etastart = 
                   eta <- drop(x %*% start)
                   mu <- linkinv(eta <- eta + offset)
                   if (any(mu <= 0)) {
-                      offset2 <- - min(eta) + mean(y) + offset
+                      offset2 <- - min(eta) + offset0
                       mu <- linkinv(eta <- eta + offset2)
                   }
                   dev <- sum(dev.resids(y, mu, weights))
