@@ -640,15 +640,17 @@ glm.dce.fit <- function (x, y, weights = rep(1, nobs), start = NULL, etastart = 
                   fit$rank, nobs), domain = NA)
             start <- fit$coefficients
             eta <- drop(x %*% start)
-            offset <- - min(eta) +  mean(y) + offset
             mu <- linkinv(eta <- eta + offset)
+            if (any(mu <= 0)) {
+                offset2 <- - min(eta) + mean(y) + offset
+                mu <- linkinv(eta <- eta + offset2)
+            }
             dev <- sum(dev.resids(y, mu, weights))
             if (control$trace) 
                 cat("Deviance =", dev, "Iterations -", iter, 
                   "\n")
             boundary <- FALSE
             if (!is.finite(dev)) {
-                print("1")
                 if (is.null(coefold)) {
                     stop("no valid set of coefficients has been found: please supply starting values", call. = FALSE)
                 }
@@ -669,7 +671,6 @@ glm.dce.fit <- function (x, y, weights = rep(1, nobs), start = NULL, etastart = 
                   cat("Step halved: new deviance =", dev, "\n")
             }
             if (!(valideta(eta) && validmu(mu))) {
-                print("2")
                 if (is.null(coefold)) {
                     stop("no valid set of coefficients has been found: please supply starting values", call. = FALSE)
                 }
@@ -691,11 +692,10 @@ glm.dce.fit <- function (x, y, weights = rep(1, nobs), start = NULL, etastart = 
             }
             if (((dev - devold)/(0.1 + abs(dev)) >= control$epsilon) & 
                 (iter > 1)) {
-                #print("3")
                 if (is.null(coefold)) {
                     stop("no valid set of coefficients has been found: please supply starting values", call. = FALSE)
                 }
-                ##warning("step size truncated due to increasing deviance", call. = FALSE)
+                warning("step size truncated due to increasing deviance", call. = FALSE)
                 ii <- 1
                 while ((dev - devold)/(0.1 + abs(dev)) > -control$epsilon) {
                   if (ii > control$maxit) 
@@ -706,10 +706,10 @@ glm.dce.fit <- function (x, y, weights = rep(1, nobs), start = NULL, etastart = 
                   mu <- linkinv(eta <- eta + offset)
                   dev <- sum(dev.resids(y, mu, weights))
                 }
-                ## if (ii > control$maxit) 
-                ##   #warning("inner loop 3; cannot correct step size")
-                ## else if (control$trace) 
-                ##   cat("Step halved: new deviance =", dev, "\n")
+                if (ii > control$maxit) 
+                    warning("inner loop 3; cannot correct step size")
+                else if (control$trace) 
+                    cat("Step halved: new deviance =", dev, "\n")
             }
             if (abs(dev - devold)/(0.1 + abs(dev)) < control$epsilon) {
                 conv <- TRUE
