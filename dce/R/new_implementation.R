@@ -227,7 +227,7 @@ glm.mle.new <- function(form, family, data, control=list()) {
     )
 }
 #' @export
-#' @method summary glmmle
+#' @method summary glm.mle
 summary.glm.mle <- function(x) {
     # get coefficients
     coef <- x$coefficients %>%
