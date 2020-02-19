@@ -604,9 +604,10 @@ glm.dce.fit <- function (x, y, weights = rep(1, nobs), start = NULL, etastart = 
                 else x %*% start)
             }
         else family$linkfun(mustart)
+        offset0 <- 1
         mu <- linkinv(eta)
         if (any(mu <= 0)) {
-            offset2 <- - min(eta) + mean(y)
+            offset2 <- - min(eta) + offset0
             mu <- linkinv(eta <- eta + offset2)
         }
         if (!(validmu(mu) && valideta(eta))) 
@@ -649,7 +650,6 @@ glm.dce.fit <- function (x, y, weights = rep(1, nobs), start = NULL, etastart = 
             start <- fit$coefficients
             eta <- drop(x %*% start)
             mu <- linkinv(eta <- eta + offset)
-            offset0 <- 1
             if (any(mu <= 0)) {
                 offset2 <- - min(eta) + offset0
                 mu <- linkinv(eta <- eta + offset2)
@@ -697,12 +697,12 @@ glm.dce.fit <- function (x, y, weights = rep(1, nobs), start = NULL, etastart = 
                   start <- (start + coefold)/2
                   eta <- drop(x %*% start)
                   mu <- linkinv(eta <- eta + offset)
+                  if (any(mu <= 0)) {
+                      offset2 <- - min(eta) + offset0
+                      mu <- linkinv(eta <- eta + offset2)
+                  }
                 }
                 boundary <- TRUE
-                if (any(mu <= 0)) {
-                    offset2 <- - min(eta) + offset0
-                    mu <- linkinv(eta <- eta + offset2)
-                }
                 dev <- sum(dev.resids(y, mu, weights))
                 if (control$trace) 
                   cat("Step halved: new deviance =", dev, "\n")
