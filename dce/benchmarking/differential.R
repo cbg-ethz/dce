@@ -101,18 +101,10 @@ df.bench <- purrr::pmap_dfr(
       time.pcor <- as.integer(difftime(Sys.time(), time.tmp, units="secs"))
 
       time.tmp <- Sys.time()
-      res.glm <- dce::dce(
-        wt.graph, wt.X, mt.X,
-        family = MASS::negative.binomial(theta=100, link="identity"), solver = "glm2"
+      res.dce <- dce::dce.nb(
+        wt.graph, wt.X, mt.X
       )
-      time.glm <- as.integer(difftime(Sys.time(), time.tmp, units="secs"))
-
-      time.tmp <- Sys.time()
-      res.mle <- dce::dce(
-        wt.graph, wt.X, mt.X,
-        family = MASS::negative.binomial(theta=100, link="identity"), solver = "mle"
-      )
-      time.mle <- as.integer(difftime(Sys.time(), time.tmp, units="secs"))
+      time.dce <- as.integer(difftime(Sys.time(), time.tmp, units="secs"))
 
       time.tmp <- Sys.time()
       tmp <- as.matrix(ground.truth$dce)
@@ -127,8 +119,7 @@ df.bench <- purrr::pmap_dfr(
         truth=as.vector(ground.truth$dce),
         cor=as.vector(res.cor$dce),
         pcor=as.vector(res.pcor$dce),
-        glm=as.vector(res.glm$dce),
-        mle=as.vector(res.mle$dce),
+        dce=as.vector(res.dce$dce),
         rand=as.vector(res.rand$dce)
       )
 
@@ -151,8 +142,7 @@ df.bench <- purrr::pmap_dfr(
           bind_rows(list(
             cor=get_prediction_counts(df.res$truth, df.res$cor),
             pcor=get_prediction_counts(df.res$truth, df.res$pcor),
-            glm=get_prediction_counts(df.res$truth, df.res$glm),
-            mle=get_prediction_counts(df.res$truth, df.res$mle),
+            dce=get_prediction_counts(df.res$truth, df.res$dce),
             rand=get_prediction_counts(df.res$truth, df.res$rand)
           ), .id="name") %>%
             column_to_rownames(var="name") %>%
@@ -163,8 +153,7 @@ df.bench <- purrr::pmap_dfr(
           data.frame(
             cor=compute.mse(df.res$truth, df.res$cor),
             pcor=compute.mse(df.res$truth, df.res$pcor),
-            glm=compute.mse(df.res$truth, df.res$glm),
-            mle=compute.mse(df.res$truth, df.res$mle),
+            dce=compute.mse(df.res$truth, df.res$dce),
             rand=compute.mse(df.res$truth, df.res$rand)
           ) %>%
             mutate(type="mse"),
@@ -172,8 +161,7 @@ df.bench <- purrr::pmap_dfr(
           data.frame(
             cor=time.cor,
             pcor=time.pcor,
-            glm=time.glm,
-            mle=time.mle,
+            dce=time.dce,
             rand=time.rand
           ) %>%
             mutate(type="runtime"),
@@ -181,8 +169,7 @@ df.bench <- purrr::pmap_dfr(
           data.frame(
             cor=graph.density,
             pcor=graph.density,
-            glm=graph.density,
-            mle=graph.density,
+            dce=graph.density,
             rand=graph.density
           ) %>%
             mutate(type="graph.density"),
@@ -241,8 +228,8 @@ ggplot(aes(x=parameter, y=value, fill=parameter)) +
 
 df.bench %>%
   dplyr::filter(grepl("^graph.", type)) %>%
-  dplyr::select(glm, type, parameter) %>%
-ggplot(aes(x=parameter, y=glm, fill=type)) +
+  dplyr::select(dce, type, parameter) %>%
+ggplot(aes(x=parameter, y=dce, fill=type)) +
   geom_boxplot() +
   ggtitle(paste("Variable:", varied.parameter)) +
   ylab("value") +

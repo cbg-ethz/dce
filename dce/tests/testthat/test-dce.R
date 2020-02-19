@@ -7,7 +7,7 @@ test_that("positive beta can be recovered", {
   graph.mt <- matrix(c(0, 0, 1.5, 0), 2, 2)
   X.mt <- simulate_data(graph.mt)
 
-  res <- dce::dce(graph.wt, X.wt, X.mt, family = MASS::negative.binomial(theta=100, link="identity"))
+  res <- dce::dce.nb(graph.wt, X.wt, X.mt)
   res
 
   expect_equal(as.vector(res$dce), c(0, 0, 1.5, 0), tolerance = 0.1)
@@ -23,7 +23,7 @@ test_that("negative beta can be recovered", {
   graph.mt <- matrix(c(0, 0, -1.5, 0), 2, 2)
   X.mt <- simulate_data(graph.mt)
 
-  res <- dce::dce(graph.wt, X.wt, X.mt, family = MASS::negative.binomial(theta=100, link="identity"))
+  res <- dce::dce.nb(graph.wt, X.wt, X.mt)
   res
 
   expect_equal(as.vector(res$dce), c(0, 0, -1.5, 0), tolerance = 0.1)
@@ -40,7 +40,7 @@ test_that("igraph input works", {
   X.wt <- simulate_data(graph.wt)
   X.mt <- simulate_data(graph.mt)
 
-  res <- dce::dce(graph, X.wt, X.mt, family = MASS::negative.binomial(theta=100, link="identity"))
+  res <- dce::dce.nb(graph, X.wt, X.mt)
   res
 
   expect_equal(as.vector(res$dce), c(0, 0, 0, 1.4, 0, 0, 1.4, 0, 0), tolerance = 0.1)
@@ -56,7 +56,7 @@ test_that("graphNEL input works", {
   graph.mt <- as(matrix(c(0, 0, 1.6, 0), 2, 2), "graphNEL")
   X.mt <- simulate_data(graph.mt)
 
-  res <- dce::dce(graph.wt, X.wt, X.mt, family = MASS::negative.binomial(theta=100, link="identity"))
+  res <- dce::dce.nb(graph.wt, X.wt, X.mt)
   res
 
   expect_equal(as.vector(res$dce), c(0, 0, 1.6, 0), tolerance = 0.1)
@@ -77,7 +77,7 @@ test_that("graph nodes and simulated data column mismatch throws error", {
   colnames(X.wt) <- c("Hinz", "Kunz") # introduce error
 
   expect_error(
-    dce::dce(graph, X.wt, X.mt, family = MASS::negative.binomial(theta=100, link="identity")),
+    dce::dce.nb(graph, X.wt, X.mt),
     "Not all nodes have expression vector in WT data"
   )
 })

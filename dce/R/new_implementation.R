@@ -6,7 +6,7 @@ setGeneric(
     "dce",
     function(
         graph, df.expr.wt, df.expr.mt,
-        family, solver = "glm2",
+        solver = "glm2", solver.args = list(method = "glm.dce.fit"),
         verbose = FALSE
     ) {
         standardGeneric("dce")
@@ -21,13 +21,13 @@ setMethod(
     signature = signature(graph = "igraph"),
     function(
         graph, df.expr.wt, df.expr.mt,
-        family, solver = "glm2",
+        solver = "glm2", solver.args = list(method = "glm.dce.fit"),
         verbose = FALSE
     ) {
         dce(
             as(igraph::as_adjacency_matrix(graph, attr=NULL), "matrix"),
             df.expr.wt, df.expr.mt,
-            family, solver,
+            solver, solver.args,
             verbose
         )
     }
@@ -39,13 +39,13 @@ setMethod(
     signature = signature(graph = "graphNEL"),
     function(
         graph, df.expr.wt, df.expr.mt,
-        family, solver = "glm2",
+        solver = "glm2", solver.args = list(method = "glm.dce.fit"),
         verbose = FALSE
     ) {
         dce(
             as(graph, "matrix"),
             df.expr.wt, df.expr.mt,
-            family, solver,
+            solver, solver.args,
             verbose
         )
     }
@@ -57,7 +57,7 @@ setMethod(
     signature = signature(graph = "matrix"),
     function(
         graph, df.expr.wt, df.expr.mt,
-        family, solver = "glm2",
+        solver = "glm2", solver.args = list(method = "glm.dce.fit"),
         verbose = FALSE
     ) {
         # preparations
@@ -74,7 +74,7 @@ setMethod(
         # fit model
         .dce(
             graph, df.expr.wt, df.expr.mt,
-            family, solver,
+            solver, solver.args,
             verbose
         )
     }
@@ -84,7 +84,7 @@ setMethod(
 #' @noRd
 .dce <- function(
     graph, df.expr.wt, df.expr.mt,
-    family, solver,
+    solver, solver.args,
     verbose
 ) {
     # compute DCEs
@@ -126,7 +126,7 @@ setMethod(
 
             fit <- glm.solver(
                 form = form, df = df.data,
-                family = family, solver = solver
+                solver = solver, solver.args = solver.args
             )
 
             # extract results
@@ -136,7 +136,7 @@ setMethod(
                 row = row,
                 col = col,
                 dce = coef.mat["N:X", "Estimate"],
-                p.value = coef.mat["N:X", "Pr(>|t|)"]
+                p.value = coef.mat["N:X", if (solver == "glm.nb") "Pr(>|z|)" else "Pr(>|t|)"]
             )
         }
     )
@@ -151,16 +151,34 @@ setMethod(
 
 
 #' @export
-glm.solver <- function(form, df, family, solver) {
+dce.nb <- function(
+    graph, df.expr.wt, df.expr.mt,
+    link = "identity",
+    verbose = FALSE
+) {
+    dce(
+        graph, df.expr.wt, df.expr.mt,
+        solver = "glm.nb",
+        solver.args = list(method = "glm.dce.fit", link = link),
+        verbose
+    )
+}
+
+
+#' @export
+glm.solver <- function(form, df, solver, solver.args) {
     if (solver == "glm2") {
-        fit <- glm2::glm2(form, family = family, data = df)
+        fit.func <- glm2::glm2
+    } else if (solver == "glm.nb") {
+        fit.func <- glm.nb
     } else if (solver == "mle") {
-        fit <- glm.mle.new(form, family = family, data = df)
+        fit.func <- glm.mle.new
     } else {
         stop(paste("Invalid solver", solver))
     }
 
-    fit
+    func.args <- c(list(formula = form, data = df), solver.args)
+    do.call(fit.func, func.args)
 }
 
 
