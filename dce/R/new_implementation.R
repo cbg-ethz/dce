@@ -153,13 +153,12 @@ setMethod(
 #' @export
 dce.nb <- function(
     graph, df.expr.wt, df.expr.mt,
-    link = "identity",
+    solver.args = list(method = "glm.dce.fit", link = "identity"),
     verbose = FALSE
 ) {
     dce(
         graph, df.expr.wt, df.expr.mt,
-        solver = "glm.nb",
-        solver.args = list(method = "glm.dce.fit", link = link),
+        solver = "glm.nb", solver.args = solver.args,
         verbose
     )
 }
