@@ -124,8 +124,8 @@ df.bench <- purrr::pmap_dfr(
       )
 
 
-      # make performance evaluation fairer by only comparing results for edges in transitively closed DAG
-      df.res %<>% dplyr::filter(truth != 0)
+      # make performance evaluation fairer by only comparing results for edges
+      df.res %<>% dplyr::filter(as.vector(as(wt.graph, "matrix")) != 0)
 
 
       # return performance computation
