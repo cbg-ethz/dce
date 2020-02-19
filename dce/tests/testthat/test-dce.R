@@ -10,7 +10,7 @@ test_that("positive beta can be recovered", {
   res <- dce::dce(graph.wt, X.wt, X.mt, family = MASS::negative.binomial(theta=100, link="identity"))
   res
 
-  expect_equal(as.vector(res$dce), c(0, 0, 1.5, 0), tolerance=0.1)
+  expect_equal(as.vector(res$dce), c(0, 0, 1.5, 0), tolerance = 0.1)
 })
 
 
@@ -26,7 +26,7 @@ test_that("negative beta can be recovered", {
   res <- dce::dce(graph.wt, X.wt, X.mt, family = MASS::negative.binomial(theta=100, link="identity"))
   res
 
-  expect_equal(as.vector(res$dce), c(0, 0, -1.5, 0), tolerance=0.1)
+  expect_equal(as.vector(res$dce), c(0, 0, -1.5, 0), tolerance = 0.1)
 })
 
 
@@ -43,7 +43,7 @@ test_that("igraph input works", {
   res <- dce::dce(graph, X.wt, X.mt, family = MASS::negative.binomial(theta=100, link="identity"))
   res
 
-  expect_equal(as.vector(res$dce), c(0, 0, 0, 1.4, 0, 0, 1.4, 0, 0), tolerance=0.1)
+  expect_equal(as.vector(res$dce), c(0, 0, 0, 1.4, 0, 0, 1.4, 0, 0), tolerance = 0.1)
 })
 
 
@@ -59,5 +59,5 @@ test_that("graphNEL input works", {
   res <- dce::dce(graph.wt, X.wt, X.mt, family = MASS::negative.binomial(theta=100, link="identity"))
   res
 
-  expect_equal(as.vector(res$dce), c(0, 0, 1.6, 0), tolerance=0.1)
+  expect_equal(as.vector(res$dce), c(0, 0, 1.6, 0), tolerance = 0.1)
 })
