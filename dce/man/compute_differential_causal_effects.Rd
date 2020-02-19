@@ -17,7 +17,7 @@ compute_differential_causal_effects(
   bootMethod = "diff",
   errDist = "nbinom",
   theta = NULL,
-  partial = TRUE,
+  partial = FALSE,
   link.log.base = exp(1),
   ...
 )

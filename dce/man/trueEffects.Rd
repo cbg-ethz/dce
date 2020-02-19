@@ -4,7 +4,7 @@
 \alias{trueEffects}
 \title{Compute the true casual effects of a simulated dag}
 \usage{
-trueEffects(g, partial = TRUE)
+trueEffects(g, partial = FALSE)
 }
 \arguments{
 \item{g}{graphNEL object}

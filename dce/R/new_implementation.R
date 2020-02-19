@@ -1,6 +1,6 @@
 #' @export
 #' @importFrom graph graphNEL
-#' @importFrom igraph igraph
+#' @importFrom igraph as_adjacency_matrix
 #' @importFrom Matrix sparseMatrix
 setGeneric(
     "dce",
