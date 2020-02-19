@@ -19,7 +19,7 @@ setGeneric(
     function(
         graph, n = 100,
         dist.mean = 1000, dist.dispersion = 100,
-        link.log.base = exp(1)
+        link.log.base = 0
     ) {
         standardGeneric("simulate_data")
     },
@@ -34,7 +34,7 @@ setMethod(
     function(
         graph, n = 100,
         dist.mean = 1000, dist.dispersion = 100,
-        link.log.base = exp(1)
+        link.log.base = 0
     ) {
         simulate_data(
             as(igraph::as_adjacency_matrix(
@@ -54,7 +54,7 @@ setMethod(
     function(
         graph, n = 100,
         dist.mean = 1000, dist.dispersion = 100,
-        link.log.base = exp(1)
+        link.log.base = 0
     ) {
         simulate_data(
             as(graph, "matrix"),
@@ -71,7 +71,7 @@ setMethod(
     function(
         graph, n = 100,
         dist.mean = 1000, dist.dispersion = 100,
-        link.log.base = exp(1)
+        link.log.base = 0
     ) {
         p <- dim(graph)[[1]]
 
