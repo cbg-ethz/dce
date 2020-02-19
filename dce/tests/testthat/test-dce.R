@@ -61,3 +61,23 @@ test_that("graphNEL input works", {
 
   expect_equal(as.vector(res$dce), c(0, 0, 1.6, 0), tolerance = 0.1)
 })
+
+
+test_that("graph nodes and simulated data column mismatch throws error", {
+  set.seed(42)
+
+  graph <- dce::create_graph_from_dataframe(data.frame(
+    from=c("A"),
+    to=c("B")
+  ))
+
+  X.wt <- simulate_data(graph)
+  X.mt <- simulate_data(graph)
+
+  colnames(X.wt) <- c("Hinz", "Kunz") # introduce error
+
+  expect_error(
+    dce::dce(graph, X.wt, X.mt, family = MASS::negative.binomial(theta=100, link="identity")),
+    "Not all nodes have expression vector in WT data"
+  )
+})

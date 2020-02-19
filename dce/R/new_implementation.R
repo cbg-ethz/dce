@@ -64,15 +64,11 @@ setMethod(
         graph[graph != 0] <- 1 # ignore edge weights
 
         # validate input
-        nonzero.idx <- which(graph != 0, arr.ind = TRUE)
-        if (
-            (nrow(nonzero.idx) > 0) &&
-            (
-                any(nonzero.idx[, 2] - nonzero.idx[, 1] < 0) ||
-                any(diag(graph) != 0)
-            )
-        ) {
-            stop("Input DAG must be topologically ordered!")
+        if (!all(colnames(graph) %in% colnames(df.expr.wt))) {
+            stop("Not all nodes have expression vector in WT data")
+        }
+        if (!all(colnames(graph) %in% colnames(df.expr.mt))) {
+            stop("Not all nodes have expression vector in MT data")
         }
 
         # fit model
