@@ -165,6 +165,22 @@ dce.nb <- function(
 
 
 #' @export
+negative.binomial.special <- function(
+    link = function(mu, offset = 0) { offset + mu - min(mu) }
+) {
+    structure(
+        list(
+            family = "negative.binomial",
+            linkfun = link,
+            linkinv = function(...) stop("not implemented"),
+            loss = function(...) stop("not implemented")
+        ),
+        class = "dce.nb.family"
+    )
+}
+
+
+#' @export
 glm.solver <- function(form, df, solver, solver.args) {
     solver.func <- switch(
         solver,

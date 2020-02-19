@@ -19,7 +19,7 @@ setGeneric(
     function(
         graph, n = 100,
         dist.mean = 1000, dist.dispersion = 100,
-        link.log.base = 0
+        link = negative.binomial.special()$linkfun
     ) {
         standardGeneric("simulate_data")
     },
@@ -34,7 +34,7 @@ setMethod(
     function(
         graph, n = 100,
         dist.mean = 1000, dist.dispersion = 100,
-        link.log.base = 0
+        link = negative.binomial.special()$linkfun
     ) {
         simulate_data(
             as(igraph::as_adjacency_matrix(
@@ -42,7 +42,7 @@ setMethod(
                 attr = if ("weight" %in% igraph::edge_attr_names(graph)) "weight" else NULL
             ), "matrix"),
             n, dist.mean, dist.dispersion,
-            link.log.base
+            link
         )
     }
 )
@@ -54,12 +54,12 @@ setMethod(
     function(
         graph, n = 100,
         dist.mean = 1000, dist.dispersion = 100,
-        link.log.base = 0
+        link = negative.binomial.special()$linkfun
     ) {
         simulate_data(
             as(graph, "matrix"),
             n, dist.mean, dist.dispersion,
-            link.log.base
+            link
         )
     }
 )
@@ -71,7 +71,7 @@ setMethod(
     function(
         graph, n = 100,
         dist.mean = 1000, dist.dispersion = 100,
-        link.log.base = 0
+        link = negative.binomial.special()$linkfun
     ) {
         p <- dim(graph)[[1]]
 
@@ -90,25 +90,18 @@ setMethod(
         }
 
         # setup data
-        X <- matrix(rnbinom(n * p, size=dist.dispersion, mu=dist.mean), nrow=n, ncol=p)
+        X <- matrix(rnbinom(n * p, size = dist.dispersion, mu = dist.mean), nrow = n, ncol = p)
         colnames(X) <- colnames(graph)
 
         # simulate data
-        link <- make.log.link(link.log.base)
-
         for (j in seq(2, p)) {
           ij <- seq_len(j - 1)
           betas <- graph[ij, j]
 
           if (any(betas != 0)) {
             # current node has parents
-            if (link.log.base == 0) {
-              betasX <- X[, ij, drop = FALSE] %*% betas
-              mu <- dist.mean + betasX - min(betasX)
-            } else {
-              mu <- link$linkinv(log(dist.mean, link.log.base) + scale(X[, ij, drop = FALSE], scale=FALSE) %*% betas)
-            }
-            X[, j] <- rnbinom(n, size=dist.dispersion, mu=mu)
+            mu <- link(X[, ij, drop = FALSE] %*% betas, offset = dist.mean)
+            X[, j] <- rnbinom(n, size = dist.dispersion, mu = mu)
           }
         }
         return(X)

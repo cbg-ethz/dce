@@ -32,13 +32,14 @@ test_that("negative beta can be recovered", {
 
 test_that("igraph input works", {
   set.seed(42)
+  devtools::load_all("/Users/kimja/university/PhD/projects/causal_pathways/dce/")
 
   graph <- igraph::make_tree(3, children = 3, mode = "out")
   graph.wt <- igraph::set.edge.attribute(graph, name = "weight", value = 1)
   graph.mt <- igraph::set.edge.attribute(graph, name = "weight", value = 2.4)
 
-  X.wt <- simulate_data(graph.wt)
-  X.mt <- simulate_data(graph.mt)
+  X.wt <- simulate_data(graph.wt, n = 1000)
+  X.mt <- simulate_data(graph.mt, n = 1000)
 
   res <- dce::dce.nb(graph, X.wt, X.mt)
   res
