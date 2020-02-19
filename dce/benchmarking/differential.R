@@ -65,8 +65,8 @@ df.bench <- purrr::pmap_dfr(
       # create graphs
       edge.prob <- runif(1, 0, 1)
 
-      negweight.range <- c(-.5, 0)
-      posweight.range <- c(0, .5)
+      negweight.range <- c(-1, 0)
+      posweight.range <- c(0, 1)
 
       wt.graph <- create_random_DAG(node.num, edge.prob, negweight.range, posweight.range)
       mt.graph <- resample_edge_weights(wt.graph, negweight.range, posweight.range)
