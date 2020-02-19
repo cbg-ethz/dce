@@ -167,18 +167,18 @@ dce.nb <- function(
 
 #' @export
 glm.solver <- function(form, df, solver, solver.args) {
-    if (solver == "glm2") {
-        fit.func <- glm2::glm2
-    } else if (solver == "glm.nb") {
-        fit.func <- glm.nb
-    } else if (solver == "mle") {
-        fit.func <- glm.mle.new
-    } else {
+    solver.func <- switch(
+        solver,
+        "glm2" = glm2::glm2,
+        "glm.nb" = glm.nb,
+        "mle" = glm.mle.new
+    )
+    if (is.null(solver.func)) {
         stop(paste("Invalid solver", solver))
     }
 
     func.args <- c(list(formula = form, data = df), solver.args)
-    do.call(fit.func, func.args)
+    do.call(solver.func, func.args)
 }
 
 
