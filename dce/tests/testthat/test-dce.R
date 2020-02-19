@@ -1,13 +1,14 @@
 test_that("positive beta can be recovered", {
   set.seed(42)
 
-  graph.wt <- as(matrix(c(0, 0, 1e-42, 0), 2, 2), "graphNEL")
+  graph.wt <- matrix(c(0, 0, 1e-42, 0), 2, 2)
   X.wt <- simulate_data(graph.wt)
 
-  graph.mt <- as(matrix(c(0, 0, 1.5, 0), 2, 2), "graphNEL")
+  graph.mt <- matrix(c(0, 0, 1.5, 0), 2, 2)
   X.mt <- simulate_data(graph.mt)
 
-  res <- compute_differential_causal_effects(graph.wt, X.wt, graph.mt, X.mt)
+  res <- dce::dce(graph.wt, X.wt, X.mt, family = MASS::negative.binomial(theta=100, link="identity"))
+  res
 
   expect_equal(as.vector(res$dce), c(0, 0, 1.5, 0), tolerance=0.1)
 })
@@ -16,13 +17,47 @@ test_that("positive beta can be recovered", {
 test_that("negative beta can be recovered", {
   set.seed(42)
 
+  graph.wt <- matrix(c(0, 0, 1e-42, 0), 2, 2)
+  X.wt <- simulate_data(graph.wt)
+
+  graph.mt <- matrix(c(0, 0, -1.5, 0), 2, 2)
+  X.mt <- simulate_data(graph.mt)
+
+  res <- dce::dce(graph.wt, X.wt, X.mt, family = MASS::negative.binomial(theta=100, link="identity"))
+  res
+
+  expect_equal(as.vector(res$dce), c(0, 0, -1.5, 0), tolerance=0.1)
+})
+
+
+test_that("igraph input works", {
+  set.seed(42)
+
+  graph <- igraph::make_tree(3, children = 3, mode = "out")
+  graph.wt <- igraph::set.edge.attribute(graph, name = "weight", value = 1)
+  graph.mt <- igraph::set.edge.attribute(graph, name = "weight", value = 2.4)
+
+  X.wt <- simulate_data(graph.wt)
+  X.mt <- simulate_data(graph.mt)
+
+  res <- dce::dce(graph, X.wt, X.mt, family = MASS::negative.binomial(theta=100, link="identity"))
+  res
+
+  expect_equal(as.vector(res$dce), c(0, 0, 0, 1.4, 0, 0, 1.4, 0, 0), tolerance=0.1)
+})
+
+
+test_that("graphNEL input works", {
+  set.seed(42)
+
   graph.wt <- as(matrix(c(0, 0, 1e-42, 0), 2, 2), "graphNEL")
   X.wt <- simulate_data(graph.wt)
 
+  graph.mt <- as(matrix(c(0, 0, 1.6, 0), 2, 2), "graphNEL")
   X.mt <- simulate_data(graph.mt)
-  graph.mt <- igraph::igraph.to.graphNEL(igraph::graph_from_adjacency_matrix(matrix(c(0, 0, -1.5, 0), 2, 2), weighted=TRUE))
 
-  res <- compute_differential_causal_effects(graph.wt, X.wt, graph.mt, X.mt)
+  res <- dce::dce(graph.wt, X.wt, X.mt, family = MASS::negative.binomial(theta=100, link="identity"))
+  res
 
-  expect_equal(as.vector(res$dce), c(0, 0, -1.5, 0), tolerance=0.1)
+  expect_equal(as.vector(res$dce), c(0, 0, 1.6, 0), tolerance=0.1)
 })
