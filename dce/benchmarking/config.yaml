@@ -1,0 +1,12 @@
+project_source: git@github.com:kpj/CausalPathways.git
+working_dir: tmp
+
+exec_command:
+    - Rscript dce/benchmarking/differential.R --variable {variable_name} --values {value_list}
+
+config_parameters:
+    - key: variable_name
+      values: [node.num, mt.samples, beta.magnitude]
+      paired:
+          - key: value_list
+            values: ["10,50,100", "100,200,400", "0.1,1,10"]
