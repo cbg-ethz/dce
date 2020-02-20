@@ -298,7 +298,7 @@ compute_differential_causal_effects <- function(
 #' @importFrom rlang .data
 plot.dce <- function(
     x,
-    nodename.map = NULL, edge.colorscale.limits = NULL,
+    nodename.map = NULL, edgescale.limits = NULL,
     ...
 ) {
     as_tbl_graph(x$graph) %>%
@@ -329,10 +329,10 @@ plot.dce <- function(
         geom_node_text(aes(label=.data$label)) +
         scale_edge_color_gradient2(
             low="red", mid="violet", high="blue",
-            midpoint=0, limit=edge.colorscale.limits
+            midpoint=0, limit=edgescale.limits
         ) +
-        scale_edge_width(range=c(1, 3)) +
-        scale_edge_alpha(range=c(.1, 1)) +
+        scale_edge_width(range=c(1, 3), limit=c(0, edgescale.limits[[2]])) +
+        scale_edge_alpha(range=c(.1, 1), limit=c(0, edgescale.limits[[2]])) +
         theme(
             panel.background=element_rect(fill="white"),
             legend.position="none"

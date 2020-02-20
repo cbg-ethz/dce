@@ -13,14 +13,15 @@ geneid.map <- setNames(as.character(df.genes$SYMBOL), df.genes$ENSEMBL)
 dce.abs.max <- max(sapply(res, function(x) { max(abs(x$dce)) }))
 custom.limits <- c(-dce.abs.max, dce.abs.max)
 
-p.list <- lapply(res, plot, nodename.map=geneid.map, edge.colorscale.limits=custom.limits)
+p.list <- lapply(res, plot, nodename.map=geneid.map, edgescale.limits=custom.limits)
 
 p <- cowplot::plot_grid(
   plotlist=p.list, labels=names(p.list),
-  ncol=3
+  label_size=40
 )
+
 cowplot::save_plot(
   snakemake@output$plot_fname,
-  p, ncol=3,
-  base_height=10, base_asp=.8
+  p, ncol=length(p.list),
+  base_height=20, base_asp=1, limitsize=FALSE
 )
