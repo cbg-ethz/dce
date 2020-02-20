@@ -28,6 +28,7 @@ arguments <- docopt::docopt(doc)
 node.num <- 100
 wt.samples <- 200
 mt.samples <- 200
+beta.magnitude <- 1
 
 varied.parameter <- arguments$variable
 parameter.list <- unlist(
@@ -58,15 +59,16 @@ df.bench <- purrr::pmap_dfr(
         node.num={ node.num <- parameter },
         wt.samples={ wt.samples <- parameter },
         mt.samples={ mt.samples <- parameter },
+        beta.magnitude={ beta.magnitude <- parameter }
       )
-      print(glue::glue("node.num={node.num} wt.samples={wt.samples} mt.samples={mt.samples}"))
+      print(glue::glue("node.num={node.num} wt.samples={wt.samples} mt.samples={mt.samples} beta.magnitude={beta.magnitude}"))
 
 
       # create graphs
       edge.prob <- runif(1, 0, 1)
 
-      negweight.range <- c(-1, 0)
-      posweight.range <- c(0, 1)
+      negweight.range <- c(-beta.magnitude, 0)
+      posweight.range <- c(0, beta.magnitude)
 
       wt.graph <- create_random_DAG(node.num, edge.prob, negweight.range, posweight.range)
       mt.graph <- resample_edge_weights(wt.graph, negweight.range, posweight.range)
