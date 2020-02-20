@@ -17,7 +17,7 @@ p.list <- lapply(res, plot, nodename.map=geneid.map, edgescale.limits=custom.lim
 
 p <- cowplot::plot_grid(
   plotlist=p.list, labels=names(p.list),
-  label_size=40
+  label_size=40, ncol=length(p.list)
 )
 
 cowplot::save_plot(
