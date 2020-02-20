@@ -2,7 +2,14 @@ project_source: git@github.com:kpj/CausalPathways.git
 working_dir: tmp
 
 exec_command:
-    - Rscript dce/benchmarking/differential.R --variable {variable_name} --values {value_list}
+    - bsub
+          -N -R 'rusage[mem=5000]' -W 23:00
+          -oo job.{variable_name}.out
+          -eo job.{variable_name}.err
+      Rscript
+          dce/benchmarking/differential.R
+          --variable {variable_name}
+          --values {value_list}
 
 config_parameters:
     - key: variable_name
