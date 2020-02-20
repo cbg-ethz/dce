@@ -47,9 +47,8 @@ res <- purrr::map(tumor_stage_list, function (selected_tumor_stage) {
 
 
   # compute DCEs
-  dce::compute_differential_causal_effects(
-    graph, X.wt,
-    graph, X.mt
+  dce::dce.nb(
+    graph, X.wt,X.mt
   )
 }) %>%
   purrr::set_names(tumor_stage_list)

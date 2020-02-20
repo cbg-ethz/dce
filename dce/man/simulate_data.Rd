@@ -5,22 +5,22 @@
 \title{Simulate data}
 \usage{
 simulate_data(
-  dag,
+  graph,
   n = 100,
   dist.mean = 1000,
   dist.dispersion = 100,
-  link.log.base = exp(1)
+  link = negative.binomial.special()$linkfun
 )
 }
 \arguments{
-\item{dag}{Graph to simulate on}
-
 \item{n}{Number of samples}
 
 \item{dist.mean}{distribution mean as numeric}
 
 \item{dist.dispersion}{distribution dispersion
 (actually dispersion^-1) as a scalar}
+
+\item{dag}{Graph to simulate on}
 }
 \value{
 graph

@@ -533,6 +533,7 @@ make.log.link <- function(base=exp(1)) {
     ), class="link-glm")
 }
 #' modified glm.fit function
+#' @export
 glm.dce.fit <- function (x, y, weights = rep(1, nobs), start = NULL, etastart = NULL, 
     mustart = NULL, offset = rep(0, nobs), family = gaussian(), 
     control = list(), intercept = TRUE, singular.ok = TRUE) 
