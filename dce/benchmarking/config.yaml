@@ -6,7 +6,7 @@ exec_command:
 
 config_parameters:
     - key: variable_name
-      values: [node.num, mt.samples, beta.magnitude]
+      values: [node.num, mt.samples, beta.magnitude, dispersion]
       paired:
           - key: value_list
-            values: ["10,50,100", "100,200,400", "0.1,1,10"]
+            values: ["10,50,100", "100,200,400", "0.1,1,10", "10,100,1000"]

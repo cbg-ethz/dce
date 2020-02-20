@@ -29,6 +29,7 @@ node.num <- 100
 wt.samples <- 200
 mt.samples <- 200
 beta.magnitude <- 1
+dispersion <- 100
 
 varied.parameter <- arguments$variable
 parameter.list <- unlist(
@@ -59,9 +60,10 @@ df.bench <- purrr::pmap_dfr(
         node.num={ node.num <- parameter },
         wt.samples={ wt.samples <- parameter },
         mt.samples={ mt.samples <- parameter },
-        beta.magnitude={ beta.magnitude <- parameter }
+        beta.magnitude={ beta.magnitude <- parameter },
+        dispersion={ dispersion <- parameter }
       )
-      print(glue::glue("node.num={node.num} wt.samples={wt.samples} mt.samples={mt.samples} beta.magnitude={beta.magnitude}"))
+      print(glue::glue("node.num={node.num} wt.samples={wt.samples} mt.samples={mt.samples} beta.magnitude={beta.magnitude} dispersion={dispersion}"))
 
 
       # create graphs
@@ -81,8 +83,8 @@ df.bench <- purrr::pmap_dfr(
 
 
       # generate data
-      wt.X <- simulate_data(wt.graph, n=wt.samples)
-      mt.X <- simulate_data(mt.graph, n=mt.samples)
+      wt.X <- simulate_data(wt.graph, n=wt.samples, dist.dispersion=dispersion)
+      mt.X <- simulate_data(mt.graph, n=mt.samples, dist.dispersion=dispersion)
 
 
       # sanity checks
