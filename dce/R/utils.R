@@ -532,7 +532,11 @@ make.log.link <- function(base=exp(1)) {
         valideta=function(eta) { TRUE }
     ), class="link-glm")
 }
-#' modified glm.fit function
+#' Identity robust glm fit.
+#'
+#' A modified glm.fit function which prevents negative mean
+#' values in case of the identity link function. Convergence
+#' is not guaranteed!
 #' @export
 glm.dce.fit <- function (x, y, weights = rep(1, nobs), start = NULL, etastart = NULL, 
     mustart = NULL, offset = rep(0, nobs), family = gaussian(), 
@@ -744,19 +748,19 @@ glm.dce.fit <- function (x, y, weights = rep(1, nobs), start = NULL, etastart = 
             }
         }
         if (!conv) 
-            warning("glm.fit2: algorithm did not converge. Try increasing the maximum iterations", call. = FALSE)
+            warning("glm.dce.fit: algorithm did not converge. Try increasing the maximum iterations", call. = FALSE)
         if (boundary) 
-            warning("glm.fit2: algorithm stopped at boundary value", 
+            warning("glm.dce.fit: algorithm stopped at boundary value", 
                 call. = FALSE)
         eps <- 10 * .Machine$double.eps
         if (family$family == "binomial") {
             if (any(mu > 1 - eps) || any(mu < eps)) 
-                warning("glm.fit2: fitted probabilities numerically 0 or 1 occurred", 
+                warning("glm.dce.fit: fitted probabilities numerically 0 or 1 occurred", 
                   call. = FALSE)
         }
         if (family$family == "poisson") {
             if (any(mu < eps)) 
-                warning("glm.fit2: fitted rates numerically 0 occurred", 
+                warning("glm.dce.fit: fitted rates numerically 0 occurred", 
                   call. = FALSE)
         }
         if (fit$rank < nvars) {
