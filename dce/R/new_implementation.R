@@ -142,10 +142,20 @@ setMethod(
     )
 
     # return result (TODO: make not computed p-values NA)
+    dce.mat <- as.matrix(Matrix::sparseMatrix(
+        res$row, res$col, x = res$dce, dims = dim(graph)
+    ))
+    rownames(dce.mat) <- colnames(dce.mat) <- rownames(graph)
+
+    dce.pvalue.mat <- as.matrix(Matrix::sparseMatrix(
+        res$row, res$col, x = res$p.value, dims = dim(graph)
+    ))
+    rownames(dce.pvalue.mat) <- colnames(dce.pvalue.mat) <- rownames(graph)
+
     structure(list(
         graph = graph,
-        dce = as.matrix(Matrix::sparseMatrix(res$row, res$col, x = res$dce, dims = dim(graph))),
-        dce.pvalue = as.matrix(Matrix::sparseMatrix(res$row, res$col, x = res$p.value, dims = dim(graph)))
+        dce = dce.mat,
+        dce.pvalue = dce.pvalue.mat
     ), class="dce")
 }
 
