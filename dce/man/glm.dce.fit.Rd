@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{glm.dce.fit}
 \alias{glm.dce.fit}
-\title{modified glm.fit function}
+\title{Identity robust glm fit.}
 \usage{
 glm.dce.fit(
   x,
@@ -19,5 +19,7 @@ glm.dce.fit(
 )
 }
 \description{
-modified glm.fit function
+A modified glm.fit function which prevents negative mean
+values in case of the identity link function. Convergence
+is not guaranteed!
 }
