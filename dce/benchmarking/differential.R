@@ -29,7 +29,7 @@ node.num <- 100
 wt.samples <- 200
 mt.samples <- 200
 beta.magnitude <- 1
-dispersion <- 100
+dispersion <- 10
 
 varied.parameter <- arguments$variable
 parameter.list <- unlist(
