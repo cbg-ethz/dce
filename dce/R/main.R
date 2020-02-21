@@ -349,11 +349,11 @@ plot.dce <- function(
         )
 }
 #' @export
-symlog <- function(x, base = 10, threshold = 1, scale = 1) {
+symlog <- function(x, base = 10, threshold = 1) {
     ifelse(
         abs(x) < threshold,
         x,
-        sign(x) * (threshold + scale * suppressWarnings(log(sign(x) * x / threshold, base)))
+        sign(x) * (threshold + log(sign(x) * x / threshold, base))
     )
 }
 
