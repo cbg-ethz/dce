@@ -15,10 +15,10 @@ geneid.map <- setNames(as.character(df.genes$SYMBOL), df.genes$ENSEMBL)
 
 # plot
 
-type<- "new"
+type<- "graph"
 if (type == "graph") {
     dce.abs.max <- max(sapply(res, function(x) { max(abs(x$dce)) }))
-    custom.limits <- c(-dce.abs.max, dce.abs.max)
+    custom.limits <- dce::symlog(c(-dce.abs.max, dce.abs.max))
     
     p.list <- lapply(res, plot, nodename.map=geneid.map, edgescale.limits=custom.limits)
     
@@ -32,35 +32,6 @@ if (type == "graph") {
                  p, ncol=length(p.list),
                  base_height=20, base_asp=1, limitsize=FALSE
              )
-} else if (type == "heatmap") {
-    dcemax <- lapply(res, function(x) {
-        tmp <- x$dce
-        tmp <- as.vector(tmp[which(tmp != 0)])
-        geq0 <- which(tmp > 0)
-        leq0 <- which(tmp < 0)
-        tmp[geq0] <- log(tmp[geq0] + 1)
-        tmp[leq0] <- -log(-tmp[leq0] + 1)
-        return(log = abs(tmp))
-    })
-    dcemax <- max(unlist(dcemax))
-    
-    p <- list()
-    for (i in seq_len(length(res))) {
-        x <- res[[i]]
-        if (i == length(res)) {
-            colorkey <- list(space="right")
-        } else {
-            colorkey <- NULL
-        }
-        p[[i]] <- dce::plotDce(x, type = "heatmap", log = TRUE, col = "RdBu",
-                               bordercol = "transparent", aspect = "iso",
-                               colorkey = colorkey, main = names(res)[i],
-                               cexMain = 4, clusterx = res[[1]]$dce,
-                               genelabels = geneid.map, scalefac = dcemax, par.settings=list(layout.heights=list(top.padding=-20)))
-    }
-    pdf(snakemake@output$plot_fname, width = 60, height = 20)
-    gridExtra::grid.arrange(grobs=p, ncol=length(res))
-    dev.off()
 } else if (type == "new") {
     genesymbol <- as.character(df.genes$SYMBOL)
     names(genesymbol) <- df.genes$ENSEMBL
@@ -85,3 +56,33 @@ if (type == "graph") {
     }
     dev.off()
 }
+
+
+dcemax <- lapply(res, function(x) {
+    tmp <- x$dce
+    tmp <- as.vector(tmp[which(tmp != 0)])
+    geq0 <- which(tmp > 0)
+    leq0 <- which(tmp < 0)
+    tmp[geq0] <- log(tmp[geq0] + 1)
+    tmp[leq0] <- -log(-tmp[leq0] + 1)
+    return(log = abs(tmp))
+})
+dcemax <- max(unlist(dcemax))
+
+p <- list()
+for (i in seq_len(length(res))) {
+    x <- res[[i]]
+    if (i == length(res)) {
+        colorkey <- list(space="right")
+    } else {
+        colorkey <- NULL
+    }
+    p[[i]] <- dce::plotDce(x, type = "heatmap", log = TRUE, col = "RdBu",
+                           bordercol = "transparent", aspect = "iso",
+                           colorkey = colorkey, main = names(res)[i],
+                           cexMain = 4, clusterx = res[[1]]$dce,
+                           genelabels = geneid.map, scalefac = dcemax, par.settings=list(layout.heights=list(top.padding=-20)))
+}
+pdf(snakemake@output$heatmap_fname, width = 60, height = 20)
+gridExtra::grid.arrange(grobs=p, ncol=length(res))
+dev.off()
