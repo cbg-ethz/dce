@@ -301,6 +301,13 @@ plot.dce <- function(
     nodename.map = NULL, edgescale.limits = NULL,
     ...
 ) {
+    layout.dot <- purrr::map_dfr(
+        Rgraphviz::agopen(graph, name="foo", layoutType="dot")@AgNode,
+        function(node) {
+            data.frame(x=node@center@x, y=node@center@y) # name=node@name,
+        }
+    )
+
     as_tbl_graph(x$graph) %>%
         activate(nodes) %>%
         mutate(
@@ -312,9 +319,10 @@ plot.dce <- function(
                 list(.data$from, .data$to),
                 function (f, t) { x$dce[f, t] }
             ),
+            dce.log=symlog(dce),
             label=.data$dce %>% round(2) %>% as.character
         ) %>%
-    ggraph(layout="sugiyama") +
+    ggraph(layout=layout.dot) + # "sugiyama"
         geom_edge_diagonal(
             aes(
                 label=.data$label, width=abs(.data$dce), color=.data$dce,
@@ -325,10 +333,10 @@ plot.dce <- function(
             strength=0.5,
             arrow=arrow(length=unit(3, "mm"))
         ) +
-        geom_node_point(color="grey", size=8) +
-        geom_node_text(aes(label=.data$label)) +
+        geom_node_point(color="black", fill="white", size=17, shape=21) +
+        geom_node_text(aes(label=.data$label), size=3) +
         scale_edge_color_gradient2(
-            low="red", mid="violet", high="blue",
+            low="red", mid="grey", high="blue",
             midpoint=0, limit=edgescale.limits
         ) +
         scale_edge_width(range=c(1, 3), limit=c(0, edgescale.limits[[2]])) +
@@ -338,6 +346,16 @@ plot.dce <- function(
             legend.position="none"
         )
 }
+#' @export
+symlog <- function(x, base = 10, threshold = 1, scale = 1) {
+    ifelse(
+        abs(x) < threshold,
+        x,
+        sign(x) * (threshold + scale * suppressWarnings(log(sign(x) * x / threshold, base)))
+    )
+}
+
+
 #' Compute pathway enrichment
 #'
 #' This function computes a p-value.
