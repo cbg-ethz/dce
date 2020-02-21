@@ -302,7 +302,7 @@ plot.dce <- function(
     ...
 ) {
     layout.dot <- purrr::map_dfr(
-        Rgraphviz::agopen(graph, name="foo", layoutType="dot")@AgNode,
+        Rgraphviz::agopen(as(x$graph, "graphNEL"), name="foo", layoutType="dot")@AgNode,
         function(node) {
             data.frame(x=node@center@x, y=node@center@y) # name=node@name,
         }
