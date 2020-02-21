@@ -7,6 +7,7 @@ setGeneric(
     function(
         graph, df.expr.wt, df.expr.mt,
         solver = "glm2", solver.args = list(method = "glm.dce.fit"),
+        adjustment.type = "parents",
         verbose = FALSE
     ) {
         standardGeneric("dce")
@@ -22,12 +23,14 @@ setMethod(
     function(
         graph, df.expr.wt, df.expr.mt,
         solver = "glm2", solver.args = list(method = "glm.dce.fit"),
+        adjustment.type = "parents",
         verbose = FALSE
     ) {
         dce(
             as(igraph::as_adjacency_matrix(graph, attr=NULL), "matrix"),
             df.expr.wt, df.expr.mt,
             solver, solver.args,
+            adjustment.type,
             verbose
         )
     }
@@ -40,12 +43,14 @@ setMethod(
     function(
         graph, df.expr.wt, df.expr.mt,
         solver = "glm2", solver.args = list(method = "glm.dce.fit"),
+        adjustment.type = "parents",
         verbose = FALSE
     ) {
         dce(
             as(graph, "matrix"),
             df.expr.wt, df.expr.mt,
             solver, solver.args,
+            adjustment.type,
             verbose
         )
     }
@@ -58,6 +63,7 @@ setMethod(
     function(
         graph, df.expr.wt, df.expr.mt,
         solver = "glm2", solver.args = list(method = "glm.dce.fit"),
+        adjustment.type = "parents",
         verbose = FALSE
     ) {
         # preparations
@@ -75,6 +81,7 @@ setMethod(
         .dce(
             graph, df.expr.wt, df.expr.mt,
             solver, solver.args,
+            adjustment.type,
             verbose
         )
     }
@@ -85,6 +92,7 @@ setMethod(
 .dce <- function(
     graph, df.expr.wt, df.expr.mt,
     solver, solver.args,
+    adjustment.type,
     verbose
 ) {
     # compute DCEs
@@ -103,7 +111,7 @@ setMethod(
             )
 
             # incorporate adjustment set
-            valid.adjustment.set <- which(graph[, row] != 0) # parents
+            valid.adjustment.set <- get.adjustment.set(graph, row, col, adjustment.type)
 
             form.adjustment.suffix <- ""
             for (idx in valid.adjustment.set) {
@@ -164,12 +172,34 @@ setMethod(
 dce.nb <- function(
     graph, df.expr.wt, df.expr.mt,
     solver.args = list(method = "glm.dce.fit", link = "identity"),
+    adjustment.type = "parents",
     verbose = FALSE
 ) {
     dce(
         graph, df.expr.wt, df.expr.mt,
         solver = "glm.nb", solver.args = solver.args,
+        adjustment.type,
         verbose
+    )
+}
+
+
+#' @export
+get.adjustment.set <- function(graph, x, y, adjustment.type) {
+    switch(
+        adjustment.type,
+        parents = {
+            names(which(graph[, x] != 0))
+        },
+        minimal = {
+            tmp <- pcalg::adjustment(graph, "dag", x, y, "minimal")
+
+            if (length(tmp) > 0) {
+                rownames(graph)[tmp[[1]]]
+            } else {
+                vector(mode = "character")
+            }
+        }
     )
 }
 

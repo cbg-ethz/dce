@@ -24,16 +24,19 @@ Options:
 arguments <- docopt::docopt(doc)
 
 
-# parse parameters
+# global parameters
 node.num <- 100
 wt.samples <- 200
 mt.samples <- 200
 beta.magnitude <- 1
 dispersion <- 10
+adjustment.type <- "parents"
 
+
+# parse parameters
 varied.parameter <- arguments$variable
 parameter.list <- unlist(
-  purrr::map(strsplit(arguments$values, ",")[[1]], as.numeric)
+  purrr::map(strsplit(arguments$values, ",")[[1]], type.convert)
 )
 
 print(glue::glue("Benchmark parameters:"))
@@ -61,9 +64,10 @@ df.bench <- purrr::pmap_dfr(
         wt.samples={ wt.samples <- parameter },
         mt.samples={ mt.samples <- parameter },
         beta.magnitude={ beta.magnitude <- parameter },
-        dispersion={ dispersion <- parameter }
+        dispersion={ dispersion <- parameter },
+        adjustment.type={ adjustment.type <- parameter }
       )
-      print(glue::glue("node.num={node.num} wt.samples={wt.samples} mt.samples={mt.samples} beta.magnitude={beta.magnitude} dispersion={dispersion}"))
+      print(glue::glue("node.num={node.num} wt.samples={wt.samples} mt.samples={mt.samples} beta.magnitude={beta.magnitude} dispersion={dispersion} adjustment.type={adjustment.type}"))
 
 
       # create graphs
@@ -106,7 +110,8 @@ df.bench <- purrr::pmap_dfr(
 
       time.tmp <- Sys.time()
       res.dce <- dce::dce.nb(
-        wt.graph, wt.X, mt.X
+        wt.graph, wt.X, mt.X,
+        adjustment.type = adjustment.type
       )
       time.dce <- as.integer(difftime(Sys.time(), time.tmp, units="secs"))
 

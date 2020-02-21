@@ -82,3 +82,22 @@ test_that("graph nodes and simulated data column mismatch throws error", {
     "Not all nodes have expression vector in WT data"
   )
 })
+
+
+test_that("adjustment sets work", {
+  set.seed(42)
+
+  graph <- dce::create_graph_from_dataframe(data.frame(
+    from=c("A", "B"),
+    to=c("C", "C")
+  ))
+
+  expect_equal(
+    get.adjustment.set(as(graph, "matrix"), which(nodes(graph) == "A"), which(nodes(graph) == "B"), "parents"),
+    vector(mode="character")
+  )
+  expect_equal(
+    get.adjustment.set(as(graph, "matrix"), which(nodes(graph) == "A"), which(nodes(graph) == "B"), "minimal"),
+    c("C")
+  )
+})
