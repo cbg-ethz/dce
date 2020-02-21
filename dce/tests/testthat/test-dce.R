@@ -1,16 +1,25 @@
 test_that("positive beta can be recovered", {
   set.seed(42)
 
+  node.names <- c("A", "B")
+
   graph.wt <- matrix(c(0, 0, 1e-42, 0), 2, 2)
+  rownames(graph.wt) <- colnames(graph.wt) <- node.names
   X.wt <- simulate_data(graph.wt)
 
   graph.mt <- matrix(c(0, 0, 1.5, 0), 2, 2)
+  rownames(graph.mt) <- colnames(graph.mt) <- node.names
   X.mt <- simulate_data(graph.mt)
 
   res <- dce::dce.nb(graph.wt, X.wt, X.mt)
   res
 
   expect_equal(as.vector(res$dce), c(0, 0, 1.5, 0), tolerance = 0.1)
+
+  expect_equal(rownames(res$dce), node.names)
+  expect_equal(colnames(res$dce), node.names)
+  expect_equal(rownames(res$dce.pvalue), node.names)
+  expect_equal(colnames(res$dce.pvalue), node.names)
 })
 
 
