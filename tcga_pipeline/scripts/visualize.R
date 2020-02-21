@@ -9,9 +9,10 @@ df.genes <- read_csv(snakemake@input$geneid_fname)
 
 geneid.map <- setNames(as.character(df.genes$SYMBOL), df.genes$ENSEMBL)
 
+
 # plot
 dce.abs.max <- max(sapply(res, function(x) { max(abs(x$dce)) }))
-custom.limits <- dce::symlog(c(-dce.abs.max, dce.abs.max))
+custom.limits <- c(-dce.abs.max, dce.abs.max)
 
 p.list <- lapply(res, plot, nodename.map=geneid.map, edgescale.limits=custom.limits)
 

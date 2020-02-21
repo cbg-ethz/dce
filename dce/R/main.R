@@ -301,10 +301,10 @@ plot.dce <- function(
     nodename.map = NULL, edgescale.limits = NULL,
     ...
 ) {
-    layout.dot <- purrr::map_dfr(
+    coords.dot <- purrr::map_dfr(
         Rgraphviz::agopen(as(x$graph, "graphNEL"), name="foo", layoutType="dot")@AgNode,
         function(node) {
-            data.frame(x=node@center@x, y=node@center@y) # name=node@name,
+            data.frame(x=node@center@x, y=node@center@y)
         }
     )
 
@@ -322,7 +322,7 @@ plot.dce <- function(
             dce.log=symlog(dce),
             label=.data$dce %>% round(2) %>% as.character
         ) %>%
-    ggraph(layout=layout.dot) + # "sugiyama"
+    ggraph(layout=coords.dot) + # "sugiyama"
         geom_edge_diagonal(
             aes(
                 color=.data$dce.log,
@@ -339,7 +339,7 @@ plot.dce <- function(
         geom_node_text(aes(label=.data$label), size=3) +
         scale_edge_color_gradient2(
             low="red", mid="grey", high="blue",
-            midpoint=0, limit=edgescale.limits
+            midpoint=0, limit=symlog(edgescale.limits)
         ) +
         scale_edge_width(range=c(1, 3), limit=c(0, edgescale.limits[[2]])) +
         scale_edge_alpha(range=c(.1, 1), limit=c(0, edgescale.limits[[2]])) +
