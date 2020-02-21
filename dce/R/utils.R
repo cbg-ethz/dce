@@ -821,11 +821,15 @@ glm.dce.fit <- function (x, y, weights = rep(1, nobs), start = NULL, etastart = 
 #' @param type "graph" or "heatmap"
 #' @param log if TRUE, applies log to dces
 #' @param scalefac scalar for scaling the dces
+#' @param edgecol optional
+#' @param edgewidth otpional
+#' @param genelabels named vector with names like the original names
+#' used in the dce object and values as subtitute names
 #' @param ... more arguments for mnem::plotDnf or epiNEM::HeatmapOP
 #' @importFrom mnem plotDnf
 #' @export
 plotDce <- function(x, type = "graph", log = FALSE, scalefac = NULL,
-                    edgecol = NULL, edgewidth = NULL, ...) {
+                    edgecol = NULL, edgewidth = NULL, genelabels = NULL, ...) {
     if (type == "graph") {
         graph <- x$graph
         graph <- as(x$graph, "matrix")
@@ -877,8 +881,13 @@ plotDce <- function(x, type = "graph", log = FALSE, scalefac = NULL,
             tmp[geq0] <- log(tmp[geq0] + 1)
             tmp[leq0] <- -log(-tmp[leq0] + 1)
         }
-        tmpBlue <- tmp/scalefac
-        tmpRed <- tmp/scalefac
+        tmp <- tmp/scalefac
+        if (!is.null(genelabels)) {
+            rownames(tmp) <- colnames(tmp) <-
+                unlist(lapply(rownames(tmp), function(x) {
+                    y <- genelabels[which(names(genelabels) == x)]
+                }))
+        }
         epiNEM::HeatmapOP(tmp, ...)
     }
 }
