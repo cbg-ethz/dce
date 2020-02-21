@@ -888,8 +888,12 @@ plotDce <- function(x, type = "graph", log = FALSE, scalefac = NULL,
         }
         tmp <- tmp/scalefac
         if (!is.null(genelabels)) {
-            rownames(tmp) <- colnames(tmp) <-
+            rownames(tmp) <-
                 unlist(lapply(rownames(tmp), function(x) {
+                    y <- genelabels[which(names(genelabels) == x)]
+                }))
+            colnames(tmp) <-
+                unlist(lapply(colnames(tmp), function(x) {
                     y <- genelabels[which(names(genelabels) == x)]
                 }))
         }

@@ -95,12 +95,19 @@ setMethod(
     adjustment.type,
     verbose
 ) {
+    graph.tc <- nem::transitive.closure(graph, mat = TRUE)
     # compute DCEs
     res <- purrr::pmap_dfr(
         as.data.frame(which(graph != 0, arr.ind = TRUE)),
         function (row, col) {
             if (row == col) {
-                stop("oh no")
+                return(data.frame(
+                    row = row,
+                    col = col,
+                    dce = NA,
+                    p.value = NA
+                ))
+                
             }
 
             # concatenate data
@@ -154,12 +161,17 @@ setMethod(
         res$row, res$col, x = res$dce, dims = dim(graph)
     ))
     rownames(dce.mat) <- colnames(dce.mat) <- rownames(graph)
+    
+    graph.tc <- nem::transitive.closure(graph, mat = TRUE)
+    dce.mat[which(graph.tc == 0)] <- NA
 
     dce.pvalue.mat <- as.matrix(Matrix::sparseMatrix(
         res$row, res$col, x = res$p.value, dims = dim(graph)
     ))
     rownames(dce.pvalue.mat) <- colnames(dce.pvalue.mat) <- rownames(graph)
 
+    dce.pvalue.mat[which(graph.tc == 0)] <- NA
+    
     structure(list(
         graph = graph,
         dce = dce.mat,

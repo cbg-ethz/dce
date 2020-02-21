@@ -27,14 +27,58 @@ cowplot::save_plot(
   base_height=30, base_asp=1, limitsize=FALSE
 )
 
-
-
-
-# other stuff
+# heatmap:
 library(gridExtra)
 library(epiNEM)
 
+dcemax <- lapply(res, function(x) {
+    tmp <- x$dce
+    tmp <- as.vector(tmp[which(tmp != 0)])
+    geq0 <- which(tmp > 0)
+    leq0 <- which(tmp < 0)
+    tmp[geq0] <- log(tmp[geq0] + 1)
+    tmp[leq0] <- -log(-tmp[leq0] + 1)
+    return(log = abs(tmp))
+})
+dcemax <- max(unlist(dcemax))
 
+n <- length(res)
+
+dcesum <- 0
+for (i in seq_len(n)) {
+    dcesum <- res[[i]]$dce + dcesum
+}
+
+pdf(snakemake@output$heatmap_fname, width = n*20, height = 7*n)
+p <- list()
+for (i in seq_len(n)) {
+    x <- res[[i]]
+    if (i > 1) {
+        rownames(x$dce) <- NULL
+    }
+    if (i == length(res)) {
+        colorkey <- NULL # list(space="right")
+    } else {
+        colorkey <- NULL
+    }
+    p[[i]] <- dce::plotDce(x, type = "heatmap", log = TRUE, col = "RdBu",
+                           bordercol = "transparent", aspect = "iso",
+                           colorkey = colorkey, main = names(res)[i],
+                           cexMain = n, clusterx = dcesum,
+                           genelabels = geneid.map, scalefac = dcemax)
+    marginpct <- 0.05
+    if (i == 1) {
+        print(p[[i]], position = c((i-1)*(1/n),0,i*(1/n)+(1/n)*marginpct,1), more = TRUE)
+    } else if (i == n) {
+        print(p[[i]], position = c((i-1)*(1/n)-(1/n)*marginpct,0,i*(1/n),1))
+    } else {
+        print(p[[i]], position = c((i-1)*(1/n)-(1/n)*marginpct,0,i*(1/n)+(1/n)*marginpct,1), more = TRUE)
+    }
+}
+## gridExtra::grid.arrange(grobs=p, ncol=length(res)) ## alternate with large margins
+dev.off()
+
+## alternative:
 if (FALSE) {
     genesymbol <- as.character(df.genes$SYMBOL)
     names(genesymbol) <- df.genes$ENSEMBL
@@ -60,32 +104,3 @@ if (FALSE) {
     dev.off()
 }
 
-
-dcemax <- lapply(res, function(x) {
-    tmp <- x$dce
-    tmp <- as.vector(tmp[which(tmp != 0)])
-    geq0 <- which(tmp > 0)
-    leq0 <- which(tmp < 0)
-    tmp[geq0] <- log(tmp[geq0] + 1)
-    tmp[leq0] <- -log(-tmp[leq0] + 1)
-    return(log = abs(tmp))
-})
-dcemax <- max(unlist(dcemax))
-
-p <- list()
-for (i in seq_len(length(res))) {
-    x <- res[[i]]
-    if (i == length(res)) {
-        colorkey <- list(space="right")
-    } else {
-        colorkey <- NULL
-    }
-    p[[i]] <- dce::plotDce(x, type = "heatmap", log = TRUE, col = "RdBu",
-                           bordercol = "transparent", aspect = "iso",
-                           colorkey = colorkey, main = names(res)[i],
-                           cexMain = 4, clusterx = res[[1]]$dce,
-                           genelabels = geneid.map, scalefac = dcemax, par.settings=list(layout.heights=list(top.padding=-20)))
-}
-pdf(snakemake@output$heatmap_fname, width = 60, height = 20)
-gridExtra::grid.arrange(grobs=p, ncol=length(res))
-dev.off()
