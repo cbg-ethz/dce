@@ -325,8 +325,10 @@ plot.dce <- function(
     ggraph(layout=layout.dot) + # "sugiyama"
         geom_edge_diagonal(
             aes(
-                label=.data$label, width=abs(.data$dce), color=.data$dce,
+                color=.data$dce.log,
                 alpha=abs(.data$dce),
+                width=abs(.data$dce),
+                # label=.data$label,
                 start_cap=label_rect(.data$node1.name),
                 end_cap=label_rect(.data$node2.name)
             ),
