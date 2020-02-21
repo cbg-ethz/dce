@@ -23,5 +23,5 @@ p <- cowplot::plot_grid(
 cowplot::save_plot(
   snakemake@output$plot_fname,
   p, ncol=length(p.list),
-  base_height=20, base_asp=1, limitsize=FALSE
+  base_height=30, base_asp=1, limitsize=FALSE
 )
