@@ -814,3 +814,71 @@ glm.dce.fit <- function (x, y, weights = rep(1, nobs), start = NULL, etastart = 
         weights = wt, prior.weights = weights, df.residual = resdf, 
         df.null = nulldf, y = y, converged = conv, boundary = boundary)
 }
+#' Plot dce
+#'
+#' Wrapper function for mnem::plotDnf
+#' @param x object of class dce
+#' @param type "graph" or "heatmap"
+#' @param log if TRUE, applies log to dces
+#' @param scalefac scalar for scaling the dces
+#' @param ... more arguments for mnem::plotDnf or epiNEM::HeatmapOP
+#' @importFrom mnem plotDnf
+#' @export
+plotDce <- function(x, type = "graph", log = FALSE, scalefac = NULL,
+                    edgecol = NULL, edgewidth = NULL, ...) {
+    if (type == "graph") {
+        graph <- x$graph
+        graph <- as(x$graph, "matrix")
+        graph1 <- which(graph == 1, arr.ind = TRUE)
+        graph <- apply(graph1, 1, function(x) {
+            y <- paste0(rownames(graph)[x[1]], "=", colnames(graph)[x[2]])
+            return(y)
+        })
+        tmp <- x$dce
+        tmp <- as.vector(tmp[which(tmp != 0)])
+        if (log) {
+            geq0 <- which(tmp > 0)
+            leq0 <- which(tmp < 0)
+            tmp[geq0] <- log(tmp[geq0] + 1)
+            tmp[leq0] <- -log(-tmp[leq0] + 1)
+        }
+        if (is.null(scalefac)) {
+            scalefac <- max(abs(tmp))
+        }
+        tmpBlue <- tmp/scalefac
+        tmpRed <- -tmp/scalefac
+        tmpBlue[which(tmpBlue < 0)] <- 0
+        tmpRed[which(tmpRed < 0)] <- 0
+        if (is.null(edgecol)) {
+            if (max(tmpRed) > 1) {
+                tmpRed2 <- tmpRed/max(tmpRed)
+            } else {
+                tmpRed2 <- tmpRed
+            }
+            if (max(tmpBlue) > 1) {
+                tmpBlue2 <- tmpBlue/max(tmpBlue)
+            } else {
+                tmpBlue2 <- tmpBlue
+            }
+            edgecol <- rgb(tmpRed2,0,tmpBlue2,apply(cbind(tmpBlue2+tmpRed2,
+                                                          0.1), 1, max))
+        }
+        if (is.null(edgewidth)) {
+            edgewidth <- apply(cbind(tmpBlue, tmpRed), 1, max)
+        }
+        mnem::plotDnf(graph, edgecol = edgecol,
+                      edgewidth = (edgewidth*9)+1, ...)
+    } else if (type == "heatmap") {
+        graph <- as(x$graph, "matrix")
+        tmp <- x$dce
+        if (log) {
+            geq0 <- which(tmp > 0)
+            leq0 <- which(tmp < 0)
+            tmp[geq0] <- log(tmp[geq0] + 1)
+            tmp[leq0] <- -log(-tmp[leq0] + 1)
+        }
+        tmpBlue <- tmp/scalefac
+        tmpRed <- tmp/scalefac
+        epiNEM::HeatmapOP(tmp, ...)
+    }
+}

@@ -4,16 +4,16 @@
 \alias{plot.dce}
 \title{Plot dce object}
 \usage{
-\method{plot}{dce}(x, nodename.map = NULL, edge.colorscale.limits = NULL, ...)
+\method{plot}{dce}(x, nodename.map = NULL, edgescale.limits = NULL, ...)
 }
 \arguments{
 \item{x}{dce object}
 
 \item{nodename.map}{node names}
 
-\item{edge.colorscale.limits}{Limits for scale_edge_color_gradient2 (should contain 0). Useful to make plot comparable to others}
-
 \item{...}{additional parameters}
+
+\item{edge.colorscale.limits}{Limits for scale_edge_color_gradient2 (should contain 0). Useful to make plot comparable to others}
 }
 \value{
 plot of dag and dces
