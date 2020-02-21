@@ -11,6 +11,12 @@ exec_command:
           --variable {variable_name}
           --values {value_list}
 
+result_files:
+    - benchmark_results.csv
+    - benchmark_correlation.pdf
+    - runtime.pdf
+    - graph_features.pdf
+
 config_parameters:
     - key: variable_name
       values: [node.num, mt.samples, beta.magnitude, dispersion]
