@@ -864,8 +864,13 @@ plotDce <- function(x, type = "graph", log = FALSE, scalefac = NULL,
             } else {
                 tmpBlue2 <- tmpBlue
             }
+            if (log) {
+                lowerbound <- 0
+            } else {
+                lowerbound <- 0.1
+            }
             edgecol <- rgb(tmpRed2,0,tmpBlue2,apply(cbind(tmpBlue2+tmpRed2,
-                                                          0.1), 1, max))
+                                                          lowerbound), 1, max))
         }
         if (is.null(edgewidth)) {
             edgewidth <- apply(cbind(tmpBlue, tmpRed), 1, max)

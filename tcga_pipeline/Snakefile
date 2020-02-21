@@ -63,7 +63,8 @@ rule visualize:
         dce_fname = 'results/{project}/{project}.{pathway}.dce.rds',
         geneid_fname = 'kegg_data/{pathway}_geneids.csv'
     output:
-        plot_fname = 'plots/{project}/{project}.{pathway}.dce.pdf'
+        plot_fname = 'plots/{project}/{project}.{pathway}.dce.pdf',
+        heatmap_fname = 'plots/{project}/{project}.{pathway}.dce.heatmap.pdf'
     script:
         'scripts/visualize.R'
 
