@@ -57,9 +57,9 @@ for (i in seq_len(n)) {
     x <- res[[i]]
     p[[i]] <- dce::plotDce(x, type = "heatmap", log = TRUE, col = "RdBu",
                            bordercol = "transparent", aspect = "iso",
-                           colorkey = NULL, main = names(res)[i],
-                           cexMain = n, clusterx = dcesum,
-                           genelabels = geneid.map, scalefac = dcemax)
+                           colorkey = NULL, main = names(res)[i], #clusterx = dcesum, 
+                           cexMain = n, Colv = FALSE, Rowv = FALSE,
+                           genelabels = geneid.map, scalefac = dcemax, sort = "topo")
 }
 gridExtra::grid.arrange(grobs=p, ncol=length(res), widths = rep(22, 3))
 dev.off()

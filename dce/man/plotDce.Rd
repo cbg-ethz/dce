@@ -12,6 +12,7 @@ plotDce(
   edgecol = NULL,
   edgewidth = NULL,
   genelabels = NULL,
+  sort = "name",
   ...
 )
 }
@@ -30,6 +31,12 @@ plotDce(
 
 \item{genelabels}{named vector with names like the original names
 used in the dce object and values as subtitute names}
+
+\item{sort}{Colv and Rowv have to be set to FALSE;
+default sorting is by "name"; "strength" does sort for
+effects strength and "topo" does a topological sorting,
+alternatively a clusterx argument can be set to sort the rows/columns
+by the clustering of clusterx}
 
 \item{...}{more arguments for mnem::plotDnf or epiNEM::HeatmapOP}
 }
