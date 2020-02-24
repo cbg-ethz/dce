@@ -34,5 +34,5 @@ used in the dce object and values as subtitute names}
 \item{...}{more arguments for mnem::plotDnf or epiNEM::HeatmapOP}
 }
 \description{
-Wrapper function for mnem::plotDnf
+Wrapper function for mnem::plotDnf and epiNEM::HeatmapOP
 }

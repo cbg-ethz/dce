@@ -816,7 +816,7 @@ glm.dce.fit <- function (x, y, weights = rep(1, nobs), start = NULL, etastart = 
 }
 #' Plot dce
 #'
-#' Wrapper function for mnem::plotDnf
+#' Wrapper function for mnem::plotDnf and epiNEM::HeatmapOP
 #' @param x object of class dce
 #' @param type "graph" or "heatmap"
 #' @param log if TRUE, applies log to dces
