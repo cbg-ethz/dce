@@ -107,7 +107,6 @@ setMethod(
                     dce = NA,
                     p.value = NA
                 ))
-                
             }
 
             # concatenate data
@@ -156,22 +155,23 @@ setMethod(
         }
     )
 
-    # return result (TODO: make not computed p-values NA)
+    # process result
     dce.mat <- as.matrix(Matrix::sparseMatrix(
         res$row, res$col, x = res$dce, dims = dim(graph)
     ))
     rownames(dce.mat) <- colnames(dce.mat) <- rownames(graph)
-    
-    graph.tc <- nem::transitive.closure(graph, mat = TRUE)
-    dce.mat[which(graph.tc == 0)] <- NA
 
     dce.pvalue.mat <- as.matrix(Matrix::sparseMatrix(
         res$row, res$col, x = res$p.value, dims = dim(graph)
     ))
     rownames(dce.pvalue.mat) <- colnames(dce.pvalue.mat) <- rownames(graph)
 
+    # make uncomputed values NA
+    graph.tc <- nem::transitive.closure(graph, mat = TRUE)
+    dce.mat[which(graph.tc == 0)] <- NA
     dce.pvalue.mat[which(graph.tc == 0)] <- NA
-    
+
+    # return appropriate object
     structure(list(
         graph = graph,
         dce = dce.mat,
