@@ -15,9 +15,10 @@ dce.abs.max <- max(sapply(res, function(x) { max(abs(x$dce)) }))
 custom.limits <- c(-dce.abs.max, dce.abs.max)
 
 p.list <- lapply(res, plot, nodename.map=geneid.map, edgescale.limits=custom.limits)
+labels.list <- purrr::map2(names(p.list), res, ~ glue::glue("{.x} (Enrichment: {.y$pathway.pvalue})")) %>% unlist
 
 p <- cowplot::plot_grid(
-  plotlist=p.list, labels=names(p.list),
+  plotlist=p.list, labels=labels.list,
   label_size=40, ncol=length(p.list)
 )
 

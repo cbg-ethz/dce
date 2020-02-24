@@ -11,6 +11,7 @@ workdir: config['working_directory']
 # rule definitions
 rule all:
     input:
+        'summary/enrichments.csv',
         expand(
             'plots/{project}/{project}.{pathway}.dce.pdf',
             project=config['projects'], pathway=config['pathways']),
@@ -83,3 +84,14 @@ rule discover_drugs:
         result_fname = 'drugs/results_{pathway}.csv'
     script:
         'scripts/drug_discovery.py'
+
+
+rule summarize:
+    input:
+        dce_fname_list = expand(
+            'results/{project}/{project}.{pathway}.dce.rds',
+            project=config['projects'], pathway=config['pathways'])
+    output:
+        enrichment_fname = 'summary/enrichments.csv'
+    script:
+        'scripts/summarize_results.R'

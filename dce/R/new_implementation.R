@@ -171,11 +171,17 @@ setMethod(
     dce.mat[which(graph.tc == 0)] <- NA
     dce.pvalue.mat[which(graph.tc == 0)] <- NA
 
+    # compute overall pathway enrichment
+    tmp <- dce.pvalue.mat[!is.na(dce.pvalue.mat)]
+    tmp[tmp == 0] <- min(tmp[tmp != 0])
+    pathway.pvalue <- as.numeric(harmonicmeanp::p.hmp(tmp, L = length(tmp)))
+
     # return appropriate object
     structure(list(
         graph = graph,
         dce = dce.mat,
-        dce.pvalue = dce.pvalue.mat
+        dce.pvalue = dce.pvalue.mat,
+        pathway.pvalue = pathway.pvalue
     ), class="dce")
 }
 
