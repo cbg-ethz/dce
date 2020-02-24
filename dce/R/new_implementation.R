@@ -95,7 +95,16 @@ setMethod(
     adjustment.type,
     verbose
 ) {
-    graph.tc <- nem::transitive.closure(graph, mat = TRUE)
+    # handle empty graph (no edges)
+    if (sum(graph) == 0) {
+        return(structure(list(
+            graph = graph,
+            dce = graph * NA,
+            dce.pvalue = graph * NA,
+            pathway.pvalue = NA
+        ), class="dce"))
+    }
+
     # compute DCEs
     res <- purrr::pmap_dfr(
         as.data.frame(which(graph != 0, arr.ind = TRUE)),
