@@ -48,34 +48,19 @@ dcesum <- 0
 for (i in seq_len(n)) {
     dcesum <- res[[i]]$dce + dcesum
 }
+dcesum[is.na(dcesum)] <- 0
 
 pdf(snakemake@output$heatmap_fname, width = n*20, height = 7*n)
 p <- list()
 for (i in seq_len(n)) {
     x <- res[[i]]
-    if (i > 1) {
-        rownames(x$dce) <- NULL
-    }
-    if (i == length(res)) {
-        colorkey <- NULL # list(space="right")
-    } else {
-        colorkey <- NULL
-    }
     p[[i]] <- dce::plotDce(x, type = "heatmap", log = TRUE, col = "RdBu",
                            bordercol = "transparent", aspect = "iso",
-                           colorkey = colorkey, main = names(res)[i],
+                           colorkey = NULL, main = names(res)[i],
                            cexMain = n, clusterx = dcesum,
                            genelabels = geneid.map, scalefac = dcemax)
-    marginpct <- 0.05
-    if (i == 1) {
-        print(p[[i]], position = c((i-1)*(1/n),0,i*(1/n)+(1/n)*marginpct,1), more = TRUE)
-    } else if (i == n) {
-        print(p[[i]], position = c((i-1)*(1/n)-(1/n)*marginpct,0,i*(1/n),1))
-    } else {
-        print(p[[i]], position = c((i-1)*(1/n)-(1/n)*marginpct,0,i*(1/n)+(1/n)*marginpct,1), more = TRUE)
-    }
 }
-## gridExtra::grid.arrange(grobs=p, ncol=length(res)) ## alternate with large margins
+gridExtra::grid.arrange(grobs=p, ncol=length(res), widths = rep(22, 3))
 dev.off()
 
 ## alternative:
