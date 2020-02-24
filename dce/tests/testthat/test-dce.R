@@ -14,7 +14,7 @@ test_that("positive beta can be recovered", {
   res <- dce::dce.nb(graph.wt, X.wt, X.mt)
   res
 
-  expect_equal(as.vector(res$dce), c(0, 0, 1.5, 0), tolerance = 0.1)
+  expect_equal(as.vector(res$dce), c(0, NA, 1.5, 0), tolerance = 0.1)
 
   expect_equal(rownames(res$dce), node.names)
   expect_equal(colnames(res$dce), node.names)
@@ -35,7 +35,7 @@ test_that("negative beta can be recovered", {
   res <- dce::dce.nb(graph.wt, X.wt, X.mt)
   res
 
-  expect_equal(as.vector(res$dce), c(0, 0, -1.5, 0), tolerance = 0.1)
+  expect_equal(as.vector(res$dce), c(0, NA, -1.5, 0), tolerance = 0.1)
 })
 
 
@@ -53,7 +53,7 @@ test_that("igraph input works", {
   res <- dce::dce.nb(graph, X.wt, X.mt)
   res
 
-  expect_equal(as.vector(res$dce), c(0, 0, 0, 1.4, 0, 0, 1.4, 0, 0), tolerance = 0.1)
+  expect_equal(as.vector(res$dce), c(0, NA, NA, 1.4, 0, NA, 1.4, NA, 0), tolerance = 0.1)
 })
 
 
@@ -69,7 +69,7 @@ test_that("graphNEL input works", {
   res <- dce::dce.nb(graph.wt, X.wt, X.mt)
   res
 
-  expect_equal(as.vector(res$dce), c(0, 0, 1.6, 0), tolerance = 0.1)
+  expect_equal(as.vector(res$dce), c(0, NA, 1.6, 0), tolerance = 0.1)
 })
 
 
