@@ -8,7 +8,7 @@ res <- readRDS(file=snakemake@input$dce_fname)
 df.genes <- read_csv(snakemake@input$geneid_fname)
 
 geneid.map <- setNames(as.character(df.genes$SYMBOL), df.genes$ENSEMBL)
-geneid.map <- geneid.map[which(duplicated(names(geneid.map) == FALSE))]
+geneid.map <- geneid.map[which(duplicated(names(geneid.map)) == FALSE)]
 
 # plot
 dce.abs.max <- max(sapply(res, function(x) { max(abs(x$dce)) }))
