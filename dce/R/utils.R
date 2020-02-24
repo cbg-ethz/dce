@@ -825,12 +825,18 @@ glm.dce.fit <- function (x, y, weights = rep(1, nobs), start = NULL, etastart = 
 #' @param edgewidth otpional
 #' @param genelabels named vector with names like the original names
 #' used in the dce object and values as subtitute names
+#' @param sort Colv and Rowv have to be set to FALSE;
+#' default sorting is by "name"; "strength" does sort for
+#' effects strength and "topo" does a topological sorting,
+#' alternatively a clusterx argument can be set to sort the rows/columns
+#' by the clustering of clusterx
 #' @param ... more arguments for mnem::plotDnf or epiNEM::HeatmapOP
 #' @importFrom mnem plotDnf
 #' @importFrom epiNEM HeatmapOP
 #' @export
 plotDce <- function(x, type = "graph", log = FALSE, scalefac = NULL,
-                    edgecol = NULL, edgewidth = NULL, genelabels = NULL, ...) {
+                    edgecol = NULL, edgewidth = NULL, genelabels = NULL,
+                    sort = "name", ...) {
     if (type == "graph") {
         graph <- x$graph
         graph <- as(x$graph, "matrix")
@@ -890,6 +896,21 @@ plotDce <- function(x, type = "graph", log = FALSE, scalefac = NULL,
             tmp[leq0] <- -log(-tmp[leq0] + 1)
         }
         tmp <- tmp/scalefac
+        tmp[NAidx] <- NA
+        tmp <- tmp[order(rownames(tmp)), order(colnames(tmp))]
+        graph <- nem::transitive.closure(graph[order(rownames(graph)),
+                                               order(colnames(graph))],
+                                         mat = TRUE)
+        if (sort == "topo") {
+            topoord <- order(apply(graph, 1, sum) -
+                             apply(graph, 2, sum), decreasing = TRUE)
+            tmp <- tmp[topoord, topoord]
+        } else if (sort == "strength") {
+            strord <- order(apply(abs(tmp), 1, sum, na.rm = TRUE) -
+                            apply(abs(tmp), 2, sum, na.rm = TRUE),
+                            decreasing = TRUE)
+            tmp <- tmp[strord, strord]
+        }
         if (!is.null(genelabels)) {
             rownames(tmp) <-
                 unlist(lapply(rownames(tmp), function(x) {
@@ -900,7 +921,9 @@ plotDce <- function(x, type = "graph", log = FALSE, scalefac = NULL,
                     y <- genelabels[which(names(genelabels) == x)]
                 }))
         }
-        tmp[NAidx] <- NA
+        if (sort == "names") {
+            tmp <- tmp[order(rownames(tmp)), order(colnames(tmp))]
+        }
         epiNEM::HeatmapOP(tmp, ...)
     }
 }
