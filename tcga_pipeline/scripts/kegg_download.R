@@ -34,7 +34,7 @@ cowplot::save_plot(
   base_height=8, base_width=10)
 
 
-# relabel nodes (KEGG_ID -> Ensembl)
+# gene id conversions (KEGG_ID -> Ensembl)
 nodes.entrez <- KEGGgraph::translateKEGGID2GeneID(nodes(graph))
 
 df.tmp <- AnnotationDbi::select(
@@ -48,12 +48,57 @@ df.tmp <- AnnotationDbi::select(
 stopifnot(length(nodes(graph)) == dim(df.tmp)[[1]])
 df.tmp %>% write_csv(snakemake@output$geneid_fname)
 
+
+# identify nodes where KEGG ID has no ENSEMBL mapping
 df.tmp$ENSEMBL[is.na(df.tmp$ENSEMBL)] <- paste0("undef_entrez", df.tmp$ENTREZID[is.na(df.tmp$ENSEMBL)])
-nodes.ensembl <- df.tmp %>% pull(ENSEMBL)
 
 undef.count <- df.tmp %>% tally(grepl("undef", ENSEMBL)) %>% pull(n)
-undef.count / dim(df.tmp)[1]
+print(glue::glue("Fraction of KEGG nodes (genes) without Ensembl ID: {undef.count / dim(df.tmp)[1]}"))
 
+
+# identify nodes where different KEGG IDs map to same Ensembl ID
+df.mapping.overlaps <- df.tmp %>%
+  group_by(ENSEMBL) %>%
+  dplyr::filter(n() > 1)
+
+if (dim(df.mapping.overlaps)[[1]] > 0) {
+  print("Multiple KEGG IDs map to same Ensembl ID:")
+  print(df.mapping.overlaps)
+
+  contraction.map <- df.mapping.overlaps %>%
+    group_map(function(df.cur, name) {
+      contract.idx <- match(df.cur$KEGG, nodes(graph))
+      list(source.idx = contract.idx, target.idx = contract.idx[[1]])
+    })
+  contraction.mapping <- purrr::map(seq(1, length(nodes(graph))), function(x) {
+    for (e in contraction.map) {
+      if (x %in% e$source.idx) {
+        return(e$target.idx)
+      }
+      return(x)
+    }
+  }) %>%
+    unlist
+
+  graph.ig <- igraph::igraph.from.graphNEL(graph)
+  g.con <- igraph::contract(graph.ig, contraction.mapping, vertex.attr.comb = "first")
+
+  # contraction leads to multiple edges between two nodes. Remove them
+  g.con <- igraph::simplify(g.con)
+
+  # contraction place isolated node with empty name in graph. Remove it
+  isolated.nodes = which(igraph::degree(g.con) == 0)
+  g.con <- igraph::delete.vertices(g.con, isolated.nodes)
+
+  # contraction saves node names as list instead of vector. To retain names when converting to graphNEL, they have to be a vector
+  raw.nodes <- unname(unlist(igraph::get.vertex.attribute(g.con, "name")))
+  g.con <- igraph::set.vertex.attribute(igraph::delete_vertex_attr(g.con, "name"), "name", value = raw.nodes)
+
+  graph <- igraph::igraph.to.graphNEL(g.con)
+}
+
+
+# relabel nodes
 geneid.map <- setNames(as.character(df.tmp$ENSEMBL), df.tmp$KEGG)
 nodes(graph) <- unname(geneid.map[nodes(graph)])
 

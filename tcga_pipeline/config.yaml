@@ -3,5 +3,6 @@ projects:
 
 pathways:
     - hsa05224 # breast cancer
+    - hsa04012 # ErbB signaling pathway
 
 working_directory: pipeline_run
