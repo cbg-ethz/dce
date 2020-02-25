@@ -219,10 +219,15 @@ get.adjustment.set <- function(graph, x, y, adjustment.type) {
     check_parents <- function(g, x, y) {
         parents <- which(g[, x] == 1)
         gxy <- g
-        gxy[x, y] <- 0
+        gxy[parents, x] <- 0
         gxy <- nem::transitive.closure(gxy, mat = TRUE)
+        grandparents <- unlist(lapply(parents, function(u) {
+            v <- which(gxy[, u] == 1)
+            w <- any(gxy[v, y] == 1)
+            return(w)
+        }))
         minset <- NULL
-        minset <- c(minset, parents[which(gxy[parents,y] == 1)])
+        minset <- c(minset, parents[which(gxy[parents, y] == 1 | grandparents == TRUE)])
         return(minset)
     }
     switch(
