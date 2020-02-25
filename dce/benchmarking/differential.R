@@ -95,6 +95,7 @@ df.bench <- purrr::pmap_dfr(
       wt.X <- simulate_data(wt.graph, n=wt.samples, dist.dispersion=dispersion)
       mt.X <- simulate_data(mt.graph, n=mt.samples, dist.dispersion=dispersion)
 
+      dispersion.estimate <- estimateTheta(cbind(wt.X, mt.X))
 
       # sanity checks
       if (any(is.nan(wt.X)) || any(is.nan(mt.X))) {
@@ -187,6 +188,14 @@ df.bench <- purrr::pmap_dfr(
             rand=graph.density
           ) %>%
             mutate(type="graph.density"),
+
+          data.frame(
+            cor=dispersion.estimate,
+            pcor=dispersion.estimate,
+            dce=dispersion.estimate,
+            rand=dispersion.estimate
+          ) %>%
+            mutate(type="dispersion.estimate"),
         ) %>%
         mutate(parameter=parameter)
     },
@@ -252,3 +261,14 @@ ggplot(aes(x=parameter, y=dce, fill=type)) +
   theme_minimal(base_size=20) +
   theme(plot.title=element_text(hjust=0.5)) +
   ggsave("graph_features.pdf")
+
+df.bench %>%
+  dplyr::filter(grepl("^dispersion.", type)) %>%
+  dplyr::select(dce, type, parameter) %>%
+ggplot(aes(x=parameter, y=dce, fill=type)) +
+  geom_boxplot() +
+  ggtitle(paste("Variable:", varied.parameter)) +
+  ylab("value") +
+  theme_minimal(base_size=20) +
+  theme(plot.title=element_text(hjust=0.5)) +
+  ggsave("dispersion_estimate.pdf")
