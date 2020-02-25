@@ -214,9 +214,17 @@ dce.nb <- function(
     )
 }
 
-
 #' @export
 get.adjustment.set <- function(graph, x, y, adjustment.type) {
+    check_parents <- function(g, x, y) {
+        parents <- which(g[, x] == 1)
+        gxy <- g
+        gxy[x, y] <- 0
+        gxy <- nem::transitive.closure(gxy, mat = TRUE)
+        minset <- NULL
+        minset <- c(minset, parents[which(gxy[parents,y] == 1)])
+        return(minset)
+    }
     switch(
         adjustment.type,
         parents = {
@@ -230,6 +238,9 @@ get.adjustment.set <- function(graph, x, y, adjustment.type) {
             } else {
                 vector(mode = "character")
             }
+        },
+        parents_filtered = {
+            rownames(graph)[check_parents(graph, x, y)]
         }
     )
 }
