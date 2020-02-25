@@ -177,7 +177,11 @@ setMethod(
 
     # make uncomputed values NA
     graph.tc <- nem::transitive.closure(graph, mat = TRUE)
+
+    diag(dce.mat) <- NA
     dce.mat[which(graph.tc == 0)] <- NA
+
+    diag(dce.pvalue.mat) <- NA
     dce.pvalue.mat[which(graph.tc == 0)] <- NA
 
     # compute overall pathway enrichment
