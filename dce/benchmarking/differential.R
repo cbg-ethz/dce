@@ -77,6 +77,9 @@ df.bench <- purrr::pmap_dfr(
       posweight.range <- c(0, beta.magnitude)
 
       wt.graph <- create_random_DAG(node.num, edge.prob, negweight.range, posweight.range)
+      while(length(wt.graph@edgeData@data) <= 1) {
+          wt.graph <- create_random_DAG(node.num, edge.prob, negweight.range, posweight.range)
+      }
       mt.graph <- resample_edge_weights(wt.graph, negweight.range, posweight.range)
 
 
@@ -192,9 +195,11 @@ df.bench <- purrr::pmap_dfr(
   write_csv("benchmark_results.csv")
 
 
-df.bench$parameter %<>% as.factor %>% fct_inseq
-df.bench %>%
-  head
+if (!(varied.parameter %in% "adjustment.type")) {
+    df.bench$parameter %<>% as.factor %>% fct_inseq
+    df.bench %>%
+    head
+}
 
 
 # plotting
