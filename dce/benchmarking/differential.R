@@ -53,10 +53,12 @@ compute.mse <- function(y_pred, y_true) {
 # do benchmarking
 replicate.count <- 100
 
+seed.list <- sample(seq_len(10^9), replicate.count)
+
 df.bench <- purrr::pmap_dfr(
-  list(parameter=rep(parameter.list, each=replicate.count)),
+  list(parameter=rep(parameter.list, each=replicate.count), index=rep(seq_len(replicate.count), length(parameter.list))),
   purrr::possibly(
-    function(parameter) {
+    function(parameter, index) {
       # handle parametrization
       switch(
         varied.parameter,
@@ -68,7 +70,7 @@ df.bench <- purrr::pmap_dfr(
         adjustment.type={ adjustment.type <- parameter }
       )
       print(glue::glue("node.num={node.num} wt.samples={wt.samples} mt.samples={mt.samples} beta.magnitude={beta.magnitude} dispersion={dispersion} adjustment.type={adjustment.type}"))
-
+      set.seed(seed.list[index])
 
       # create graphs
       edge.prob <- runif(1, 0, 1)
