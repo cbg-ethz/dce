@@ -100,7 +100,7 @@ setMethod(
 
           if (any(betas != 0)) {
             # current node has parents
-            mu <- link(X[, ij, drop = FALSE] %*% betas, offset = dist.mean)
+            mu <- link(X[, ij, drop = FALSE] %*% betas, offset = dist.mean*0 + 1)
             X[, j] <- rnbinom(n, size = dist.dispersion, mu = mu)
           }
         }

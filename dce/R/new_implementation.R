@@ -226,8 +226,12 @@ get.adjustment.set <- function(graph, x, y, adjustment.type) {
             w <- any(gxy[v, y] == 1)
             return(w)
         }))
-        minset <- NULL
-        minset <- c(minset, parents[which(gxy[parents, y] == 1 | grandparents == TRUE)])
+        set <- which(gxy[parents, y] == 1 | grandparents == TRUE)
+        if (length(set) > 0) {
+            minset <- parents[set]
+        } else {
+            minset <- NULL
+        }
         return(minset)
     }
     switch(
