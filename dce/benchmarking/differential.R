@@ -29,8 +29,10 @@ node.num <- 100
 wt.samples <- 200
 mt.samples <- 200
 beta.magnitude <- 1
-dispersion <- 10
+dispersion <- 2
 adjustment.type <- "parents"
+dist.mean <- 1000
+sample.kegg <- FALSE # TRUE
 
 
 # parse parameters
@@ -49,14 +51,21 @@ compute.mse <- function(y_pred, y_true) {
   return(mean((y_pred - y_true)^2))
 }
 
-
 # do benchmarking
 replicate.count <- 100
 
+if (sample.kegg) {
+    kegg.dag <- readRDS("pathways.rds")
+    node.num <- 10^9
+    replicate.count <- length(kegg.dag)
+}
+
+seed.list <- sample(seq_len(10^9), replicate.count)
+
 df.bench <- purrr::pmap_dfr(
-  list(parameter=rep(parameter.list, each=replicate.count)),
+  list(parameter=rep(parameter.list, each=replicate.count), index=rep(seq_len(replicate.count), length(parameter.list))),
   purrr::possibly(
-    function(parameter) {
+    function(parameter, index) {
       # handle parametrization
       switch(
         varied.parameter,
@@ -68,7 +77,7 @@ df.bench <- purrr::pmap_dfr(
         adjustment.type={ adjustment.type <- parameter }
       )
       print(glue::glue("node.num={node.num} wt.samples={wt.samples} mt.samples={mt.samples} beta.magnitude={beta.magnitude} dispersion={dispersion} adjustment.type={adjustment.type}"))
-
+      set.seed(seed.list[index])
 
       # create graphs
       edge.prob <- runif(1, 0, 1)
@@ -76,7 +85,21 @@ df.bench <- purrr::pmap_dfr(
       negweight.range <- c(-beta.magnitude, 0)
       posweight.range <- c(0, beta.magnitude)
 
-      wt.graph <- create_random_DAG(node.num, edge.prob, negweight.range, posweight.range)
+      if (sample.kegg) {
+          wt.graph <- kegg.dag[[sample(1:length(kegg.dag), 1)]]
+          kegg.order <- order(apply(wt.graph, 1, sum) - apply(wt.graph, 2, sum), decreasing = TRUE)
+          wt.graph <- wt.graph[kegg.order, kegg.order]
+          wt.graph[lower.tri(wt.graph)] <- 0
+          diag(wt.graph) <- 0
+          wt.graph <- wt.graph[seq_len(min(node.num, nrow(wt.graph))), seq_len(min(node.num, nrow(wt.graph)))]
+          wt.graph <- as(wt.graph, "graphNEL")
+          wt.graph <- resample_edge_weights(wt.graph, negweight.range, posweight.range)
+      } else {
+          wt.graph <- create_random_DAG(node.num, edge.prob, negweight.range, posweight.range)
+          while(length(wt.graph@edgeData@data) <= 1) {
+              wt.graph <- create_random_DAG(node.num, edge.prob, negweight.range, posweight.range)
+          }
+      }
       mt.graph <- resample_edge_weights(wt.graph, negweight.range, posweight.range)
 
 
@@ -87,9 +110,11 @@ df.bench <- purrr::pmap_dfr(
 
 
       # generate data
-      wt.X <- simulate_data(wt.graph, n=wt.samples, dist.dispersion=dispersion)
-      mt.X <- simulate_data(mt.graph, n=mt.samples, dist.dispersion=dispersion)
+      wt.X <- simulate_data(wt.graph, n=wt.samples, dist.dispersion=dispersion, dist.mean=dist.mean)
+      mt.X <- simulate_data(mt.graph, n=mt.samples, dist.dispersion=dispersion, dist.mean=dist.mean)
 
+      dispersion.estimate <- estimateTheta(cbind(wt.X, mt.X))
+      mean.estimate <- mean(cbind(wt.X, mt.X))  
 
       # sanity checks
       if (any(is.nan(wt.X)) || any(is.nan(mt.X))) {
@@ -182,6 +207,23 @@ df.bench <- purrr::pmap_dfr(
             rand=graph.density
           ) %>%
             mutate(type="graph.density"),
+
+          data.frame(
+            cor=dispersion.estimate,
+            pcor=dispersion.estimate,
+            dce=dispersion.estimate,
+            rand=dispersion.estimate
+          ) %>%
+            mutate(type="dispersion.estimate"),
+
+          
+          data.frame(
+            cor=mean.estimate,
+            pcor=mean.estimate,
+            dce=mean.estimate,
+            rand=mean.estimate
+          ) %>%
+            mutate(type="mean.estimate"),
         ) %>%
         mutate(parameter=parameter)
     },
@@ -192,9 +234,11 @@ df.bench <- purrr::pmap_dfr(
   write_csv("benchmark_results.csv")
 
 
-df.bench$parameter %<>% as.factor %>% fct_inseq
-df.bench %>%
-  head
+if (!(varied.parameter %in% "adjustment.type")) {
+    df.bench$parameter %<>% as.factor %>% fct_inseq
+    df.bench %>%
+    head
+}
 
 
 # plotting
@@ -245,3 +289,25 @@ ggplot(aes(x=parameter, y=dce, fill=type)) +
   theme_minimal(base_size=20) +
   theme(plot.title=element_text(hjust=0.5)) +
   ggsave("graph_features.pdf")
+
+df.bench %>%
+  dplyr::filter(grepl("^dispersion.", type)) %>%
+  dplyr::select(dce, type, parameter) %>%
+ggplot(aes(x=parameter, y=dce, fill=type)) +
+  geom_boxplot() +
+  ggtitle(paste("Variable:", varied.parameter)) +
+  ylab("value") +
+  theme_minimal(base_size=20) +
+  theme(plot.title=element_text(hjust=0.5)) +
+  ggsave("dispersion_estimate.pdf")
+
+df.bench %>%
+  dplyr::filter(grepl("^mean.", type)) %>%
+  dplyr::select(dce, type, parameter) %>%
+ggplot(aes(x=parameter, y=dce, fill=type)) +
+  geom_boxplot() +
+  ggtitle(paste("Variable:", varied.parameter)) +
+  ylab("value") +
+  theme_minimal(base_size=20) +
+  theme(plot.title=element_text(hjust=0.5)) +
+  ggsave("mean_estimate.pdf")
