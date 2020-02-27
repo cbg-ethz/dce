@@ -13,12 +13,14 @@ Benchmark DCE performance and runtime.
 
 Usage:
   differential.R
-  differential.R --variable NAME --values VALUES
+  differential.R --variable NAME --values VALUES --append TRUE/FALSE --replicates NUMBER
 
 Options:
   -h --help        Show this screen.
   --variable NAME  Which property to vary [default: node.num].
   --values VALUES  What values to assign to varied property [default: 20,50,100].
+  --append FALSE   If TRUE appends the results of this/these run(s) to an existing results file.
+  --replicates 100 Number of simulation runs.
 " -> doc
 
 arguments <- docopt::docopt(doc)
@@ -28,11 +30,13 @@ arguments <- docopt::docopt(doc)
 node.num <- 100
 wt.samples <- 200
 mt.samples <- 200
-beta.magnitude <- 1
+beta.magnitude <- 0.1
 dispersion <- 2
 adjustment.type <- "parents"
 dist.mean <- 1000
-sample.kegg <- FALSE # TRUE
+sample.kegg <- FALSE
+append <- FALSE
+replicate.count <- 100
 
 
 # parse parameters
@@ -40,6 +44,8 @@ varied.parameter <- arguments$variable
 parameter.list <- unlist(
   purrr::map(strsplit(arguments$values, ",")[[1]], type.convert)
 )
+replicate.count <- arguments$replicates
+append <- as.logical(arguments$append)
 
 print(glue::glue("Benchmark parameters:"))
 print(glue::glue("  Varied parameter: {varied.parameter}"))
@@ -52,8 +58,6 @@ compute.mse <- function(y_pred, y_true) {
 }
 
 # do benchmarking
-replicate.count <- 100
-
 if (sample.kegg) {
     kegg.dag <- readRDS("pathways.rds")
     node.num <- 10^9
@@ -230,16 +234,21 @@ df.bench <- purrr::pmap_dfr(
     otherwise=NULL,
     quiet=FALSE
   )
-) %>%
-  write_csv("benchmark_results.csv")
+) %>% { if (file.exists("benchmark_results.csv") && append) {
+            write_csv(., "benchmark_results.csv", append = append)
+        } else {
+            write_csv(., "benchmark_results.csv", append = append, col_names = TRUE)
+        }}
 
+if (append) {
+    df.bench <- read_csv("benchmark_results.csv")
+}
 
 if (!(varied.parameter %in% "adjustment.type")) {
     df.bench$parameter %<>% as.factor %>% fct_inseq
     df.bench %>%
     head
 }
-
 
 # plotting
 df.bench %>%
