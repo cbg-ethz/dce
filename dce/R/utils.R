@@ -509,6 +509,9 @@ fulllin <- function(g1, d1, g2, d2, conf = TRUE,
 #' @importFrom edgeR DGEList calcNormFactors estimateDisp
 #' @noRd
 estimateTheta <- function(data) {
+    if (is.null(dim(data))) {
+        data <- matrix(data, length(data))
+    }
     if (ncol(data) < 5) {
         mus <- apply(data, 2, mean)
         sigmas <- apply(data, 2, sd)
