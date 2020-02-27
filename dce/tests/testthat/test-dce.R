@@ -110,3 +110,28 @@ test_that("adjustment sets work", {
     c("C")
   )
 })
+
+
+test_that("better solver can mitigate crash", {
+  set.seed(42)
+
+  # create problematic dataset
+  beta <- 2
+  theta <- 1
+  mu <- 1000
+
+  A <- rnbinom(1000, size = theta, mu = mu)
+
+  beta.tmp <- beta * A
+  B <- rnbinom(1000, size = theta, mu = beta.tmp - min(beta.tmp) + mu)
+
+  # normal fit will fail
+  expect_error(
+    MASS::glm.nb(B ~ A, link = "identity", method="glm.fit"),
+    "no valid set of coefficients has been found: please supply starting values"
+  )
+
+  # custom fit will succeed
+  fit <- MASS::glm.nb(B ~ A, link = "identity", method="glm.dce.nb.fit")
+  fit
+})

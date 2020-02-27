@@ -202,7 +202,7 @@ setMethod(
 #' @export
 dce.nb <- function(
     graph, df.expr.wt, df.expr.mt,
-    solver.args = list(method = "glm.dce.fit", link = "identity"),
+    solver.args = list(method = "glm.dce.nb.fit", link = "identity"),
     adjustment.type = "parents",
     verbose = FALSE
 ) {
@@ -237,17 +237,30 @@ get.adjustment.set <- function(graph, x, y, adjustment.type) {
 
 #' @export
 negative.binomial.special <- function(
-    link = function(mu, offset = 0) { offset + mu - min(mu) }
+    theta = NULL,
+    linkinv = function(mu, offset = 1) { mu - min(mu) + offset }
 ) {
-    structure(
-        list(
-            family = "negative.binomial",
-            linkfun = link,
-            linkinv = function(...) stop("not implemented"),
-            loss = function(...) stop("not implemented")
-        ),
-        class = "dce.nb.family"
+    funcs <- list(
+        family = "negative.binomial.special",
+        link = "special",
+
+        linkfun = linkinv, # well...
+        linkinv = linkinv
     )
+
+    if (!is.null(theta)) {
+        tmp <- MASS::negative.binomial(theta, link = "identity")
+
+        funcs <- c(
+            funcs,
+            mu.eta = tmp$mu.eta,
+            variance = tmp$variance,
+            dev.resids = tmp$dev.resids,
+            aic = tmp$aic
+        )
+    }
+
+    structure(funcs, class = c("dce.nb.family", "family"))
 }
 
 
@@ -334,4 +347,31 @@ summary.glm.mle <- function(x) {
     list(
         coefficients = coef
     )
+}
+
+
+#' Extra robust model fitting
+#'
+#' `glm.nb` uses two families: poisson (initial theta fit) and negative binomial (final fit).
+#' The solver can fail if mu becomes negative
+#' @export
+glm.dce.nb.fit <- function(...) {
+    args <- list(...)
+
+    # if (startsWith(args$family$family, "Negative Binomial")) {
+    #   theta <- as.numeric(str_match(args$family$family, "\\((.*?)\\)")[[2]]) # this is horrible
+    #   args$family <- dce::negative.binomial.special(theta = theta)
+    # }
+    args$family$linkinv <- function(eta, offset = 1) {
+        mu <- eta # identity
+
+        if (any(mu <= 0)) {
+            mu <- mu - min(mu) + offset
+        }
+
+        mu
+    }
+
+    # do.call(glm.fit, args)
+    do.call(glm2::glm.fit2, args)
 }
