@@ -4,7 +4,7 @@ library(graph)
 
 devtools::load_all("..")
 
-set.seed(42)
+# set.seed(42) # do not use this, if you append independent runs!
 
 
 # parse commandline arguments
@@ -30,7 +30,7 @@ arguments <- docopt::docopt(doc)
 node.num <- 100
 wt.samples <- 200
 mt.samples <- 200
-beta.magnitude <- 0.1
+beta.magnitude <- 1
 dispersion <- 2
 adjustment.type <- "parents"
 dist.mean <- 1000
@@ -117,8 +117,8 @@ df.bench <- purrr::pmap_dfr(
       wt.X <- simulate_data(wt.graph, n=wt.samples, dist.dispersion=dispersion, dist.mean=dist.mean)
       mt.X <- simulate_data(mt.graph, n=mt.samples, dist.dispersion=dispersion, dist.mean=dist.mean)
 
-      dispersion.estimate <- estimateTheta(cbind(wt.X, mt.X))
-      mean.estimate <- mean(cbind(wt.X, mt.X))  
+      dispersion.estimate <- estimateTheta(rbind(wt.X, mt.X))
+      mean.estimate <- mean(rbind(wt.X, mt.X))  
 
       # sanity checks
       if (any(is.nan(wt.X)) || any(is.nan(mt.X))) {
@@ -134,7 +134,7 @@ df.bench <- purrr::pmap_dfr(
       time.cor <- as.integer(difftime(Sys.time(), time.tmp, units="secs"))
 
       time.tmp <- Sys.time()
-      res.pcor <- list(dce=ppcor::pcor(mt.X)$estimate - ppcor::pcor(wt.X)$estimate)
+      res.pcor <- list(dce=pcor(mt.X) - pcor(wt.X))
       time.pcor <- as.integer(difftime(Sys.time(), time.tmp, units="secs"))
 
       time.tmp <- Sys.time()
@@ -220,7 +220,6 @@ df.bench <- purrr::pmap_dfr(
           ) %>%
             mutate(type="dispersion.estimate"),
 
-          
           data.frame(
             cor=mean.estimate,
             pcor=mean.estimate,
@@ -228,6 +227,7 @@ df.bench <- purrr::pmap_dfr(
             rand=mean.estimate
           ) %>%
             mutate(type="mean.estimate"),
+          
         ) %>%
         mutate(parameter=parameter)
     },

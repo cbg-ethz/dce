@@ -1,3 +1,23 @@
+#' robust partial correlation of column variables
+#' 
+#' @param x matrix
+#' @importFrom pcor ppcor
+#' @export
+pcor <- function(x) {
+    rho <- try(ppcor::pcor(x), silent = TRUE)
+    if (length(grep("Error", rho)) > 0) {
+        warning("Moore-Penrose generalized matrix invers in function ppcor::pcor crashed. Using matlib::Ginv instead.")
+        omega <- cor(x)
+        p <- Gsolve(omega)
+        pdiag <- diag(p)%*%t(diag(p))
+        rho <- -p/(pdiag^0.5)
+        diag(rho) <- 1
+        rho[which(is.na(rho) | is.infinite(rho))] <- 0
+    } else {
+        rho <- rho$estimate
+    }
+    return(rho)
+}
 #' Graph to DAG
 #'
 #' Converts a general graph to a dag with minimum distance to the
