@@ -37,6 +37,7 @@ dist.mean <- 1000
 sample.kegg <- FALSE
 append <- FALSE
 replicate.count <- 100
+perturb <- 0
 
 
 # parse parameters
@@ -78,7 +79,8 @@ df.bench <- purrr::pmap_dfr(
         mt.samples={ mt.samples <- parameter },
         beta.magnitude={ beta.magnitude <- parameter },
         dispersion={ dispersion <- parameter },
-        adjustment.type={ adjustment.type <- parameter }
+        adjustment.type={ adjustment.type <- parameter },
+        perturb={ perturb <- parameter }
       )
       print(glue::glue("node.num={node.num} wt.samples={wt.samples} mt.samples={mt.samples} beta.magnitude={beta.magnitude} dispersion={dispersion} adjustment.type={adjustment.type}"))
       set.seed(seed.list[index])
@@ -106,13 +108,6 @@ df.bench <- purrr::pmap_dfr(
       }
       mt.graph <- resample_edge_weights(wt.graph, negweight.range, posweight.range)
 
-
-      # compute graph features
-      tmp <- as(wt.graph, "matrix")
-      tmp[which(tmp != 0)] <- 1
-      graph.density <- sum(tmp) / ((dim(tmp)[1] * (dim(tmp)[1] - 1)) / 2)
-
-
       # generate data
       wt.X <- simulate_data(wt.graph, n=wt.samples, dist.dispersion=dispersion, dist.mean=dist.mean)
       mt.X <- simulate_data(mt.graph, n=mt.samples, dist.dispersion=dispersion, dist.mean=dist.mean)
@@ -125,6 +120,34 @@ df.bench <- purrr::pmap_dfr(
         stop("Malformed simulated data")
       }
 
+      # perturb dag
+      if (perturb > 0) {
+          p.dag <- as(wt.graph, "matrix")
+          p.dag[which(p.dag != 0)] <- 1
+          candidates <- intersect(which(p.dag == 0),
+                                  which(upper.tri(p.dag) == TRUE))
+          turn <- sample(candidates, floor(perturb*length(candidates)))
+          p.dag[turn] <- 1
+          p.dag<- as(p.dag, "graphNEL")
+      } else if (perturb < 0) {
+          p.dag <- as(wt.graph, "matrix")
+          p.dag[which(p.dag != 0)] <- 1
+          candidates <- which(p.dag != 0)
+          sample.n <- floor(abs(perturb)*length(candidates))
+          if (length(candidates) - sample.n <= 1) {
+              sample.n <- length(candidates)
+          }
+          turn <- sample(candidates, sample.n)
+          p.dag[turn] <- 0
+          p.dag <- as(p.dag, "graphNEL")
+      } else {
+          p.dag <- wt.graph
+      }
+
+      # compute graph features
+      tmp <- as(wt.graph, "matrix")
+      tmp[which(tmp != 0)] <- 1
+      graph.density <- sum(tmp) / ((dim(tmp)[1] * (dim(tmp)[1] - 1)) / 2)
 
       # run models
       ground.truth <- list(dce=trueEffects(mt.graph) - trueEffects(wt.graph))
@@ -139,7 +162,7 @@ df.bench <- purrr::pmap_dfr(
 
       time.tmp <- Sys.time()
       res.dce <- dce::dce.nb(
-        wt.graph, wt.X, mt.X,
+        p.dag, wt.X, mt.X,
         adjustment.type = adjustment.type
       )
       time.dce <- as.integer(difftime(Sys.time(), time.tmp, units="secs"))
@@ -161,7 +184,6 @@ df.bench <- purrr::pmap_dfr(
         rand=as.vector(res.rand$dce)
       )
 
-
       # make performance evaluation fairer by only comparing results for edges
       df.res %<>% dplyr::filter(as.vector(as(wt.graph, "matrix")) != 0)
 
@@ -170,7 +192,7 @@ df.bench <- purrr::pmap_dfr(
       data.frame() %>%
         bind_rows(
           as.data.frame(
-            cor(df.res, method="spearman")
+            cor(df.res, method="spearman", use="pairwise.complete.obs")
           ) %>%
             rownames_to_column() %>%
             dplyr::filter(rowname == "truth") %>%
