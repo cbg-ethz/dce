@@ -42,3 +42,36 @@ test_that("union works", {
         )
     )
 })
+
+
+test_that("DAG sampling works", {
+  set.seed(42)
+
+  # initial graph
+  graph <- dce::create_random_DAG(100, prob = 0.5, lB = c(-7, -4), uB = c(2, 3))
+  mat <- as(graph, "matrix")
+
+  expect_equal(dim(mat), c(100, 100))
+  for (w in mat[mat < 0]) {
+    expect_lte(w, -4)
+    expect_gte(w, -7)
+  }
+  for (w in mat[mat > 0]) {
+    expect_lte(w, 3)
+    expect_gte(w, 2)
+  }
+
+  # resampled graph
+  graph.s <- dce::resample_edge_weights(graph, lB = c(-10, -9), uB = c(6, 8))
+  mat.s <- as(graph.s, "matrix")
+
+  expect_equal(dim(mat.s), c(100, 100))
+  for (w in mat.s[mat.s < 0]) {
+    expect_lte(w, -9)
+    expect_gte(w, -10)
+  }
+  for (w in mat.s[mat.s > 0]) {
+    expect_lte(w, 8)
+    expect_gte(w, 6)
+  }
+})
