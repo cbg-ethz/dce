@@ -1,7 +1,20 @@
+#' graphNEL with 0 edge weights to proper adjacency matrix
+#'
+#' @param g graphNEL object
+as.adjmat <- function(g) {
+    adj <- as(g, "matrix")
+    for (p in names(g@edgeData@data)) {
+        a <- gsub("\\|.*", "", p)
+        b <- gsub(".*\\|", "", p)
+        adj[a, b] <- 1
+    }
+    return(adj)
+}
+
 #' robust partial correlation of column variables
 #' 
 #' @param x matrix
-#' @importFrom pcor ppcor
+#' @importFrom ppcor pcor
 #' @export
 pcor <- function(x) {
     rho <- try(ppcor::pcor(x), silent = TRUE)
@@ -197,7 +210,7 @@ create_random_DAG <- function (
     if (listSize > 0) {
         nmbEdges <- nmbEdges + 1
         edgeList <- n
-        weightList <- runif(1, min = lB[1], max = uB[2])
+        weightList <- sample(c(runif(1, min = lB[1], max = lB[2]), runif(1, min = uB[1], max = uB[2])), 1)
     }
     else {
         edgeList <- integer(0)
