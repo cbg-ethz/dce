@@ -26,8 +26,9 @@ setMethod(
         adjustment.type = "parents",
         verbose = FALSE
     ) {
+        graph <- igraph::igraph.to.graphNEL(graph)
         dce(
-            as(igraph::as_adjacency_matrix(graph, attr=NULL), "matrix"),
+            as.adjmat(graph),
             df.expr.wt, df.expr.mt,
             solver, solver.args,
             adjustment.type,
@@ -47,7 +48,7 @@ setMethod(
         verbose = FALSE
     ) {
         dce(
-            as(graph, "matrix"),
+            as.adjmat(graph),
             df.expr.wt, df.expr.mt,
             solver, solver.args,
             adjustment.type,

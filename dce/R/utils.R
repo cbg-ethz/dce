@@ -1,6 +1,7 @@
 #' graphNEL with 0 edge weights to proper adjacency matrix
 #'
 #' @param g graphNEL object
+#' @export
 as.adjmat <- function(g) {
     adj <- as(g, "matrix")
     for (p in names(g@edgeData@data)) {
