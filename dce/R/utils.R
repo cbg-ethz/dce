@@ -12,7 +12,7 @@ as.adjmat <- function(g) {
 }
 
 #' robust partial correlation of column variables
-#' 
+#'
 #' @param x matrix
 #' @importFrom ppcor pcor
 #' @export
