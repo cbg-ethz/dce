@@ -8,14 +8,15 @@
 #' @param solver.args additional arguments for the solver function
 #' @param adjustment.type character string for the method to define
 #' the adjustment set Z for the regression
-#' @param p.method character string. "hmp" for harmonic mean
+#' @param p.method character string. "hmp" for harmonic mean, "test"
+#' for the selfcontained.test of package 'CombinePValue'
 #' or any method from package 'metap', e.g., "meanp" or "sump"
 #' @param verbose logical for verbose output
 #' @export
 #' @importFrom graph graphNEL
 #' @importFrom igraph as_adjacency_matrix
 #' @importFrom Matrix sparseMatrix
-#' @import metap
+#' @import metap CombinePValue
 setGeneric(
     "dce",
     function(
@@ -212,6 +213,9 @@ setMethod(
     tmp[tmp == 0] <- min(tmp[tmp != 0])
     if (p.method == "hmp") {
         pathway.pvalue <- as.numeric(harmonicmeanp::p.hmp(tmp, L = length(tmp)))
+    } else if (p.method == "test") {
+        require(CombinedPValue)
+        pathway.pvalue <- selfcontained.test(tmp, weight=NA)[[1]]
     } else {
         require(metap)
         pathway.pvalue <- do.call(p.method, list(p=tmp))$p
