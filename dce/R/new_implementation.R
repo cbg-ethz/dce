@@ -1,13 +1,28 @@
+#' dce - main function
+#'
+#' Main function to compute differential causal effects and its enrichment
+#' @param graph valid object defining a directed acyclic graph
+#' @param df.expr.wt data frame with wild type expression values
+#' @param df.expr.mt data from with mutation type expression values
+#' @param solver character with name of solver function
+#' @param solver.args additional arguments for the solver function
+#' @param adjustment.type character string for the method to define
+#' the adjustment set Z for the regression
+#' @param p.method character string. "hmp" for harmonic mean
+#' or any method from package 'metap', e.g., "meanp" or "sump"
+#' @param verbose logical for verbose output
 #' @export
 #' @importFrom graph graphNEL
 #' @importFrom igraph as_adjacency_matrix
 #' @importFrom Matrix sparseMatrix
+#' @import metap
 setGeneric(
     "dce",
     function(
         graph, df.expr.wt, df.expr.mt,
         solver = "glm2", solver.args = list(method = "glm.dce.fit"),
         adjustment.type = "parents",
+        p.method = "meanp",
         verbose = FALSE
     ) {
         standardGeneric("dce")
@@ -24,6 +39,7 @@ setMethod(
         graph, df.expr.wt, df.expr.mt,
         solver = "glm2", solver.args = list(method = "glm.dce.fit"),
         adjustment.type = "parents",
+        p.method = "meanp",
         verbose = FALSE
     ) {
         graph <- igraph::igraph.to.graphNEL(graph)
@@ -32,6 +48,7 @@ setMethod(
             df.expr.wt, df.expr.mt,
             solver, solver.args,
             adjustment.type,
+            p.method,
             verbose
         )
     }
@@ -45,6 +62,7 @@ setMethod(
         graph, df.expr.wt, df.expr.mt,
         solver = "glm2", solver.args = list(method = "glm.dce.fit"),
         adjustment.type = "parents",
+        p.method = "meanp",
         verbose = FALSE
     ) {
         dce(
@@ -52,6 +70,7 @@ setMethod(
             df.expr.wt, df.expr.mt,
             solver, solver.args,
             adjustment.type,
+            p.method,
             verbose
         )
     }
@@ -65,6 +84,7 @@ setMethod(
         graph, df.expr.wt, df.expr.mt,
         solver = "glm2", solver.args = list(method = "glm.dce.fit"),
         adjustment.type = "parents",
+        p.method = "meanp",
         verbose = FALSE
     ) {
         # preparations
@@ -83,6 +103,7 @@ setMethod(
             graph, df.expr.wt, df.expr.mt,
             solver, solver.args,
             adjustment.type,
+            p.method,
             verbose
         )
     }
@@ -94,6 +115,7 @@ setMethod(
     graph, df.expr.wt, df.expr.mt,
     solver, solver.args,
     adjustment.type,
+    p.method,
     verbose
 ) {
     # handle empty graph (no edges)
@@ -188,8 +210,13 @@ setMethod(
     # compute overall pathway enrichment
     tmp <- dce.pvalue.mat[!is.na(dce.pvalue.mat)]
     tmp[tmp == 0] <- min(tmp[tmp != 0])
-    pathway.pvalue <- as.numeric(harmonicmeanp::p.hmp(tmp, L = length(tmp)))
-
+    if (p.method == "hmp") {
+        pathway.pvalue <- as.numeric(harmonicmeanp::p.hmp(tmp, L = length(tmp)))
+    } else {
+        require(metap)
+        pathway.pvalue <- do.call(p.method, list(p=tmp))$p
+    }
+    
     # return appropriate object
     structure(list(
         graph = graph,
@@ -205,12 +232,14 @@ dce.nb <- function(
     graph, df.expr.wt, df.expr.mt,
     solver.args = list(method = "glm.dce.nb.fit", link = "identity"),
     adjustment.type = "parents",
+    p.method = "meanp",
     verbose = FALSE
 ) {
     dce(
         graph, df.expr.wt, df.expr.mt,
         solver = "glm.nb", solver.args = solver.args,
         adjustment.type,
+        p.method,
         verbose
     )
 }
