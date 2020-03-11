@@ -8,8 +8,9 @@
 #' @param solver.args additional arguments for the solver function
 #' @param adjustment.type character string for the method to define
 #' the adjustment set Z for the regression
-#' @param p.method character string. "hmp" for harmonic mean, "test"
-#' for the selfcontained.test of package 'CombinePValue'
+#' @param p.method character string. "mean", "sum" for standard summary functions,
+#' "hmp" for harmonic mean,
+#' "test" for the selfcontained.test of package 'CombinePValue'
 #' or any method from package 'metap', e.g., "meanp" or "sump"
 #' @param verbose logical for verbose output
 #' @export
@@ -23,7 +24,7 @@ setGeneric(
         graph, df.expr.wt, df.expr.mt,
         solver = "glm2", solver.args = list(method = "glm.dce.fit"),
         adjustment.type = "parents",
-        p.method = "meanp",
+        p.method = "mean",
         verbose = FALSE
     ) {
         standardGeneric("dce")
@@ -40,7 +41,7 @@ setMethod(
         graph, df.expr.wt, df.expr.mt,
         solver = "glm2", solver.args = list(method = "glm.dce.fit"),
         adjustment.type = "parents",
-        p.method = "meanp",
+        p.method = "mean",
         verbose = FALSE
     ) {
         graph <- igraph::igraph.to.graphNEL(graph)
@@ -63,7 +64,7 @@ setMethod(
         graph, df.expr.wt, df.expr.mt,
         solver = "glm2", solver.args = list(method = "glm.dce.fit"),
         adjustment.type = "parents",
-        p.method = "meanp",
+        p.method = "mean",
         verbose = FALSE
     ) {
         dce(
@@ -85,7 +86,7 @@ setMethod(
         graph, df.expr.wt, df.expr.mt,
         solver = "glm2", solver.args = list(method = "glm.dce.fit"),
         adjustment.type = "parents",
-        p.method = "meanp",
+        p.method = "mean",
         verbose = FALSE
     ) {
         # preparations
@@ -216,6 +217,8 @@ setMethod(
     } else if (p.method == "test") {
         require(CombinedPValue)
         pathway.pvalue <- selfcontained.test(tmp, weight=NA)[[1]]
+    } else if (p.method %in% c("mean", "median", "sum", "max", "min")) {
+        pathway.pvalue <- do.call(p.method, list(x=tmp))
     } else {
         require(metap)
         pathway.pvalue <- do.call(p.method, list(p=tmp))$p
@@ -236,7 +239,7 @@ dce.nb <- function(
     graph, df.expr.wt, df.expr.mt,
     solver.args = list(method = "glm.dce.nb.fit", link = "identity"),
     adjustment.type = "parents",
-    p.method = "meanp",
+    p.method = "mean",
     verbose = FALSE
 ) {
     dce(

@@ -11,7 +11,7 @@ dce(
   solver = "glm2",
   solver.args = list(method = "glm.dce.fit"),
   adjustment.type = "parents",
-  p.method = "meanp",
+  p.method = "mean",
   verbose = FALSE
 )
 }
@@ -29,7 +29,9 @@ dce(
 \item{adjustment.type}{character string for the method to define
 the adjustment set Z for the regression}
 
-\item{p.method}{character string. "hmp" for harmonic mean
+\item{p.method}{character string. "mean", "sum" for standard summary functions,
+"hmp" for harmonic mean,
+"test" for the selfcontained.test of package 'CombinePValue'
 or any method from package 'metap', e.g., "meanp" or "sump"}
 
 \item{verbose}{logical for verbose output}
