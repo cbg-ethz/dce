@@ -215,8 +215,7 @@ setMethod(
     if (p.method == "hmp") {
         pathway.pvalue <- as.numeric(harmonicmeanp::p.hmp(tmp, L = length(tmp)))
     } else if (p.method == "test") {
-        require(CombinedPValue)
-        pathway.pvalue <- selfcontained.test(tmp, weight=NA)[[1]]
+        pathway.pvalue <- CombinePValue::selfcontained.test(tmp, weight=NA)[[1]]
     } else if (p.method %in% c("mean", "median", "sum", "max", "min")) {
         pathway.pvalue <- do.call(p.method, list(x=tmp))
     } else {
