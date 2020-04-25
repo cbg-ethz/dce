@@ -151,6 +151,7 @@ df.bench <- purrr::pmap_dfr(
 
       # run models
       ground.truth <- list(dce=trueEffects(mt.graph) - trueEffects(wt.graph))
+      ground.truth$dce[which(tmp == 0)] <- NA
 
       time.tmp <- Sys.time()
       res.cor <- list(dce=cor(mt.X) - cor(wt.X))
