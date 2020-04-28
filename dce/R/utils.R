@@ -1,3 +1,21 @@
+#' permutation test for (partial) correlation on non-Gaussian data
+#' @param x wild type data set
+#' @param y mutant data set
+#' @param i number of iterations (permutations)
+#' @param fun function to compute the statistic, e.g., cor or pcor
+pcor_perm <- function(x, y, iter = 1000, fun = pcor, method = "spearman") {
+    z <- fun(y) - fun(x)
+    p <- z*0
+    for (i in seq_len(iter)) {
+        xp <- x[, sample(seq_len(ncol(x)), ncol(x))]
+        yp <- y[, sample(seq_len(ncol(y)), ncol(y))]
+        zp <- fun(yp) - fun(xp)
+        idx <- which(abs(zp) >= abs(z))
+        p[idx] <- p[idx] + 1
+    }
+    p <- p/iter
+    return(p)
+}
 #' graphNEL with 0 edge weights to proper adjacency matrix
 #'
 #' @param g graphNEL object
@@ -17,11 +35,13 @@ as.adjmat <- function(g) {
 #' @param x matrix
 #' @importFrom ppcor pcor
 #' @export
-pcor <- function(x) {
-    rho <- try(ppcor::pcor(x), silent = TRUE)
+pcor <- function(x, method = "spearman") {
+    rho <- try(ppcor::pcor(x, method = method), silent = TRUE)
     if (length(grep("Error", rho)) > 0) {
-        warning("Moore-Penrose generalized matrix invers in function ppcor::pcor crashed. Using matlib::Ginv instead.")
-        omega <- cor(x)
+        warning(paste0("Moore-Penrose generalized matrix invers in ",
+                       "function ppcor::pcor crashed. Using ",
+                       "matlib::Ginv instead."))
+        omega <- cor(x, method = method)
         p <- Gsolve(omega)
         pdiag <- diag(p)%*%t(diag(p))
         rho <- -p/(pdiag^0.5)

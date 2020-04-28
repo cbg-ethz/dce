@@ -38,6 +38,7 @@ sample.kegg <- FALSE
 append <- FALSE
 replicate.count <- 100
 perturb <- 0
+true.positives <- 0.5
 
 
 # parse parameters
@@ -56,6 +57,32 @@ print(glue::glue("  Parameter: {parameter.list}"))
 # helper functions
 compute.mse <- function(y_pred, y_true) {
   return(mean((y_pred - y_true)^2))
+}
+compute.prec <- function(x, y, do = "prec") {
+    tp <- sum(y < 0.05 & x != 0, na.rm = TRUE)
+    fp <- sum(y < 0.05 & x == 0, na.rm = TRUE)
+    if (do == "prec") {
+        z <- tp/(tp+fp)
+    } else if (do == "rec") {
+        fn <- sum(y >= 0.05 & x != 0, na.rm = TRUE)
+        z <- tp/(tp+fn)
+    }
+    return(z)
+}
+compute.auc <- function(x, y, seq = 100) {
+    prec <- rec <- numeric(seq)
+    alphas <- c(seq(0,1,length.out=seq), 2)
+    for (i in seq_len(seq)) {
+        alpha <- alphas[i]
+        tp <- sum(y < alpha & x != 0, na.rm = TRUE)
+        fp <- sum(y < alpha & x == 0, na.rm = TRUE)
+        fn <- sum(y >= alpha & x != 0, na.rm = TRUE)
+        prec[i] <- tp/(tp+fp)
+        rec[i] <- tp/(tp+fn)
+    }
+    prec[is.na(prec)] <- 0
+    auc <- sum(prec*abs(c(0,rec[seq_len(seq-1)])-rec[seq_len(seq)]))
+    return(auc)
 }
 
 # do benchmarking
@@ -106,7 +133,7 @@ df.bench <- purrr::pmap_dfr(
               wt.graph <- create_random_DAG(node.num, edge.prob, negweight.range, posweight.range)
           }
       }
-      mt.graph <- resample_edge_weights(wt.graph, negweight.range, posweight.range)
+      mt.graph <- resample_edge_weights(wt.graph, negweight.range, posweight.range, tp = true.positives)
 
       # generate data
       wt.X <- simulate_data(wt.graph, n=wt.samples, dist.dispersion=dispersion, dist.mean=dist.mean)
@@ -151,14 +178,15 @@ df.bench <- purrr::pmap_dfr(
 
       # run models
       ground.truth <- list(dce=trueEffects(mt.graph) - trueEffects(wt.graph))
-      ground.truth$dce[which(tmp == 0)] <- NA
 
       time.tmp <- Sys.time()
       res.cor <- list(dce=cor(mt.X) - cor(wt.X))
+      res.cor$dce.pvalue <- pcor_perm(wt.X, mt.X, fun = cor)  
       time.cor <- as.integer(difftime(Sys.time(), time.tmp, units="secs"))
 
       time.tmp <- Sys.time()
       res.pcor <- list(dce=pcor(mt.X) - pcor(wt.X))
+      res.pcor$dce.pvalue <- pcor_perm(wt.X, mt.X, fun = pcor)  
       time.pcor <- as.integer(difftime(Sys.time(), time.tmp, units="secs"))
 
       time.tmp <- Sys.time()
@@ -174,7 +202,9 @@ df.bench <- purrr::pmap_dfr(
         runif(sum(as.matrix(ground.truth$dce) != 0), negweight.range[1], posweight.range[2]) -
         runif(sum(as.matrix(ground.truth$dce) != 0), negweight.range[1], posweight.range[2])
       )
-      res.rand <- list(dce=tmp)
+      tmp2 <- tmp*0
+      tmp2[which(as.matrix(ground.truth$dce) != 0)] <- runif(sum(as.matrix(ground.truth$dce) != 0), 0,1)
+      res.rand <- list(dce=tmp, dce.pvalue=tmp2)
       time.rand <- as.integer(difftime(Sys.time(), time.tmp, units="secs"))
 
       df.res <- data.frame(
@@ -185,8 +215,17 @@ df.bench <- purrr::pmap_dfr(
         rand=as.vector(res.rand$dce)
       )
 
+      df.pvals <- data.frame(
+        truth=as.vector(ground.truth$dce),
+        cor=as.vector(res.cor$dce.pvalue),
+        pcor=as.vector(res.pcor$dce.pvalue),
+        dce=as.vector(res.dce$dce.pvalue),
+        rand=as.vector(res.rand$dce.pvalue)
+      )
+
       # make performance evaluation fairer by only comparing results for edges
       df.res %<>% dplyr::filter(as.vector(as(wt.graph, "matrix")) != 0)
+      df.pvals %<>% dplyr::filter(as.vector(as(wt.graph, "matrix")) != 0)
 
 
       # return performance computation
@@ -218,6 +257,30 @@ df.bench <- purrr::pmap_dfr(
             rand=compute.mse(df.res$truth, df.res$rand)
           ) %>%
             mutate(type="mse"),
+
+          data.frame(
+            cor=compute.prec(df.pvals$truth, df.pvals$cor),
+            pcor=compute.prec(df.pvals$truth, df.pvals$pcor),
+            dce=compute.prec(df.pvals$truth, df.pvals$dce),
+            rand=compute.prec(df.pvals$truth, df.pvals$rand)
+          ) %>%
+            mutate(type="precision"),
+
+          data.frame(
+            cor=compute.prec(df.pvals$truth, df.pvals$cor, do = "rec"),
+            pcor=compute.prec(df.pvals$truth, df.pvals$pcor, do = "rec"),
+            dce=compute.prec(df.pvals$truth, df.pvals$dce, do = "rec"),
+            rand=compute.prec(df.pvals$truth, df.pvals$rand, do = "rec")
+          ) %>%
+            mutate(type="recall"),
+
+          data.frame(
+            cor=compute.auc(df.pvals$truth, df.pvals$cor),
+            pcor=compute.auc(df.pvals$truth, df.pvals$pcor),
+            dce=compute.auc(df.pvals$truth, df.pvals$dce),
+            rand=compute.auc(df.pvals$truth, df.pvals$rand)
+          ) %>%
+            mutate(type="auc"),
 
           data.frame(
             cor=time.cor,
@@ -285,6 +348,42 @@ ggplot(aes(x=parameter, y=value, fill=variable)) +
   theme_minimal(base_size=20) +
   theme(plot.title=element_text(hjust=0.5)) +
   ggsave("benchmark_correlation.pdf")
+
+df.bench %>%
+  dplyr::filter(type == "precision") %>%
+  gather("variable", "value", -parameter, -type) %>%
+ggplot(aes(x=parameter, y=value, fill=variable)) +
+  geom_boxplot() +
+  ylim(0, 1) +
+  ggtitle(paste("Variable:", varied.parameter)) +
+  ylab("Precision (truth vs prediction)") +
+  theme_minimal(base_size=20) +
+  theme(plot.title=element_text(hjust=0.5)) +
+  ggsave("benchmark_precision.pdf")
+
+df.bench %>%
+  dplyr::filter(type == "recall") %>%
+  gather("variable", "value", -parameter, -type) %>%
+ggplot(aes(x=parameter, y=value, fill=variable)) +
+  geom_boxplot() +
+  ylim(0, 1) +
+  ggtitle(paste("Variable:", varied.parameter)) +
+  ylab("Recall (truth vs prediction)") +
+  theme_minimal(base_size=20) +
+  theme(plot.title=element_text(hjust=0.5)) +
+  ggsave("benchmark_recall.pdf")
+
+df.bench %>%
+  dplyr::filter(type == "auc") %>%
+  gather("variable", "value", -parameter, -type) %>%
+ggplot(aes(x=parameter, y=value, fill=variable)) +
+  geom_boxplot() +
+  ylim(0, 1) +
+  ggtitle(paste("Variable:", varied.parameter)) +
+  ylab("Precision-Recall (AUC) (truth vs prediction)") +
+  theme_minimal(base_size=20) +
+  theme(plot.title=element_text(hjust=0.5)) +
+  ggsave("benchmark_auc.pdf")
 
 df.bench %>%
   dplyr::filter(type == "mse") %>%
