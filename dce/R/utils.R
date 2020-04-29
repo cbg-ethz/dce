@@ -1,3 +1,143 @@
+#' Modified glm.nb function from package MASS
+#'
+#' fixes a bug, if theta estimation breaks
+#' see ?MASS::glm.nb for argument values
+glm.nb.rob <- function (formula, data, weights, subset, na.action, start = NULL, 
+    etastart, mustart, control = glm.control(...), method = "glm.fit", 
+    model = TRUE, x = FALSE, y = TRUE, contrasts = NULL, ..., 
+    init.theta, link = log) 
+{
+    loglik <- function(n, th, mu, y, w) sum(w * (lgamma(th + 
+        y) - lgamma(th) - lgamma(y + 1) + th * log(th) + y * 
+        log(mu + (y == 0)) - (th + y) * log(th + mu)))
+    link <- substitute(link)
+    fam0 <- if (missing(init.theta)) 
+        do.call("poisson", list(link = link))
+    else do.call("negative.binomial", list(theta = init.theta, 
+        link = link))
+    mf <- Call <- match.call()
+    m <- match(c("formula", "data", "subset", "weights", "na.action", 
+        "etastart", "mustart", "offset"), names(mf), 0)
+    mf <- mf[c(1, m)]
+    mf$drop.unused.levels <- TRUE
+    mf[[1L]] <- quote(stats::model.frame)
+    mf <- eval.parent(mf)
+    Terms <- attr(mf, "terms")
+    if (method == "model.frame") 
+        return(mf)
+    Y <- model.response(mf, "numeric")
+    X <- if (!is.empty.model(Terms)) 
+        model.matrix(Terms, mf, contrasts)
+    else matrix(, NROW(Y), 0)
+    w <- model.weights(mf)
+    if (!length(w)) 
+        w <- rep(1, nrow(mf))
+    else if (any(w < 0)) 
+        stop("negative weights not allowed")
+    offset <- model.offset(mf)
+    mustart <- model.extract(mf, "mustart")
+    etastart <- model.extract(mf, "etastart")
+    n <- length(Y)
+    if (!missing(method)) {
+        if (!exists(method, mode = "function")) 
+            stop(gettextf("unimplemented method: %s", sQuote(method)), 
+                domain = NA)
+        glm.fitter <- get(method)
+    }
+    else {
+        method <- "glm.fit"
+        glm.fitter <- stats::glm.fit
+    }
+    if (control$trace > 1) 
+        message("Initial fit:")
+    fit <- glm.fitter(x = X, y = Y, w = w, start = start, etastart = etastart, 
+        mustart = mustart, offset = offset, family = fam0, control = list(maxit = control$maxit, 
+            epsilon = control$epsilon, trace = control$trace > 
+                1), intercept = attr(Terms, "intercept") > 0)
+    class(fit) <- c("glm", "lm")
+    mu <- fit$fitted.values
+    th <- as.vector(MASS::theta.ml(Y, mu, sum(w), w, limit = control$maxit, 
+        trace = control$trace > 2))
+    if (control$trace > 1) 
+        message(gettextf("Initial value for 'theta': %f", signif(th)), 
+              domain = NA)
+    negative.binomial <- MASS::negative.binomial
+    fam <- do.call("negative.binomial", list(theta = th, link = link))
+    iter <- 0
+    d1 <- sqrt(2 * max(1, fit$df.residual))
+    d2 <- del <- 1
+    g <- fam$linkfun
+    Lm <- loglik(n, th, mu, Y, w)
+    Lm0 <- Lm + 2 * d1
+    while ((iter <- iter + 1) <= control$maxit && (abs(Lm0 - 
+        Lm)/d1 + abs(del)/d2) > control$epsilon) {
+        eta <- g(mu)
+        fit <- glm.fitter(x = X, y = Y, w = w, etastart = eta, 
+            offset = offset, family = fam, control = list(maxit = control$maxit, 
+                epsilon = control$epsilon, trace = control$trace > 
+                  1), intercept = attr(Terms, "intercept") > 
+                0)
+        t0 <- th
+        th <- MASS::theta.ml(Y, mu, sum(w), w, limit = control$maxit, 
+            trace = control$trace > 2)
+        fam <- do.call("negative.binomial", list(theta = th, 
+            link = link))
+        mu <- fit$fitted.values
+        del <- t0 - th
+        Lm0 <- Lm
+        Lm <- loglik(n, th, mu, Y, w)
+        if (control$trace) {
+            Ls <- loglik(n, th, Y, Y, w)
+            Dev <- 2 * (Ls - Lm)
+            message(sprintf("Theta(%d) = %f, 2(Ls - Lm) = %f", 
+                iter, signif(th), signif(Dev)), domain = NA)
+        }
+        if (is.nan(Lm)) {
+            th <- t0
+            Lm <- Lm0
+            warning("no convergence: try larger number of iterations or larger epsilon")
+            break()
+        }
+    }
+    if (!is.null(attr(th, "warn"))) 
+        fit$th.warn <- attr(th, "warn")
+    if (iter > control$maxit) {
+        warning("alternation limit reached")
+        fit$th.warn <- gettext("alternation limit reached")
+    }
+    if (length(offset) && attr(Terms, "intercept")) {
+        null.deviance <- if (length(Terms)) 
+            glm.fitter(X[, "(Intercept)", drop = FALSE], Y, w, 
+                offset = offset, family = fam, control = list(maxit = control$maxit, 
+                  epsilon = control$epsilon, trace = control$trace > 
+                    1), intercept = TRUE)$deviance
+        else fit$deviance
+        fit$null.deviance <- null.deviance
+    }
+    class(fit) <- c("negbin", "glm", "lm")
+    fit$terms <- Terms
+    fit$formula <- as.vector(attr(Terms, "formula"))
+    Call$init.theta <- signif(as.vector(th), 10)
+    Call$link <- link
+    fit$call <- Call
+    if (model) 
+        fit$model <- mf
+    fit$na.action <- attr(mf, "na.action")
+    if (x) 
+        fit$x <- X
+    if (!y) 
+        fit$y <- NULL
+    fit$theta <- as.vector(th)
+    fit$SE.theta <- attr(th, "SE")
+    fit$twologlik <- as.vector(2 * Lm)
+    fit$aic <- -fit$twologlik + 2 * fit$rank + 2
+    fit$contrasts <- attr(X, "contrasts")
+    fit$xlevels <- .getXlevels(Terms, mf)
+    fit$method <- method
+    fit$control <- control
+    fit$offset <- offset
+    fit
+}
 #' permutation test for (partial) correlation on non-Gaussian data
 #' @param x wild type data set
 #' @param y mutant data set
@@ -281,8 +421,6 @@ resample_edge_weights <- function(g, lB = -1, uB = 1, tp = 1) {
     g@edgeData@data <- w
     return(g)
 }
-
-
 #' @noRd
 #' @author modified code from the package 'bayesm'
 #' @param y numeric vector of response
@@ -414,151 +552,6 @@ summary.glmmle <- function(x) {
     y$coefficients <- cbind(coef, s.err, tvalue, ptvalue, pzvalue)
     colnames(y$coefficients) <- c("Estimate", "Std. Error", "t value", "Pr(>|t|)", "P(>|z|)")
     return(y)
-}
-#' @noRd
-#' @importFrom methods as
-#' @importFrom MASS glm.nb
-#' @importFrom zetadiv glm.cons
-fulllin <- function(g1, d1, g2, d2, conf = TRUE,
-                    errDist = "nbinom", theta = NULL,
-                    link.log.base = exp(1),
-                    partial = TRUE, method = "full", ...) {
-    mat1 <- as(g1, "matrix")
-    mat2 <- as(g2, "matrix")
-    mat1[which(mat1 != 0)] <- 1
-    mat2[which(mat2 != 0)] <- 1
-    dag <- mat1 # nem::transitive.closure(mat1, mat=TRUE)
-    df <- rbind(d1, d2)
-    if (is.null(theta) & FALSE) {
-        theta <- estimateTheta(df)
-    }
-    colnames(df) <- paste0("X", seq_len(ncol(df)))
-    df <- as.data.frame(cbind(df, N = c(rep(0, nrow(d1)), rep(1, nrow(d2)))))
-    n <- length(nodes(g1))
-    dce <- mat1*0
-    dce.p <- mat1*NA
-    glmfun <- function(formula, theta) {
-        fun <- "glm"
-
-        if (link.log.base == 0) {
-            link <- "identity"
-        } else {
-            link <- make.log.link(link.log.base)
-        }
-
-        if (fun %in% "glm.nb") {
-            fit <- MASS::glm.nb(formula, link = link, ...)
-        } else if (fun %in% "glm2") {
-            fit <- glm2::glm2(formula, family = MASS::negative.binomial(
-                                                theta=theta,
-                                                link=link), method = "glm.dce.fit", ...)
-        } else if (fun %in% "glm") {
-            fit <- stats::glm(formula, family = MASS::negative.binomial(
-                                                theta=theta,
-                                                link=link), method = "glm.dce.fit", ...)
-        } else if (fun %in% "glm.cons") {
-            fit <- zetadiv::glm.cons(formula,
-                                     family = MASS::negative.binomial(
-                                                        theta=theta,
-                                                        link=link),
-                                     cons = 1, ...)
-        } else if (fun %in% "gauss") {
-            fit <- glm(formula, family = "gaussian", ...)
-        } else if (fun %in% "glm.mle") {
-            if (link.log.base != 0) {
-                link <- link.log.base
-            }
-            fit <- glm.mle(formula, link=link, ...)
-        }
-        return(fit)
-    }
-    if (partial) {
-        for (i in seq_len(n)) {
-            Xidx <- which(mat1[, i] == 1)
-            if (length(Xidx) > 0) {
-                Y <- df[, i]
-                X <- as(df[, Xidx], "matrix")
-                N <- df$N
-                if (errDist %in% "normal") {
-                    C <- cov(cbind(Y, N*X, N, X))
-                    if (Matrix::rankMatrix(C[2:nrow(C), 2:ncol(C)]) <
-                        nrow(C[2:nrow(C), 2:ncol(C)])) {
-                        betas <- Gsolve(
-                            C[2:nrow(C), 2:ncol(C)], C[2:nrow(C), 1]
-                        )
-                    } else {
-                        betas <- solve(
-                            C[2:nrow(C), 2:ncol(C)], C[2:nrow(C), 1]
-                        )
-                    }
-                    dce[Xidx, i] <- betas[1:length(Xidx)]
-                } else if (errDist %in% "nbinom") {
-                    fit <- glmfun(Y ~ N * X)
-                    coef.mat <- summary(fit)$coefficients
-                    dce[Xidx, i] <- coef.mat["N:X", "Estimate"]
-                    dce.p[Xidx, i] <- coef.mat["N:X", "Pr(>|t|)"]
-                }
-            }
-        }
-    } else {
-        for (i in seq_len(n)) {
-            for (j in seq_len(n)) {
-                if (dag[i, j] == 1 & i != j) {
-                    Z <- which(mat1[, i] == 1)
-                    N <- df$N
-                    X <- df[, i]
-                    Y <- df[, j]
-                    Z <- as(df[, Z], "matrix")
-                    if (!(method %in% "full")) {
-                        if (length(Z) > 0 & conf) {
-                            X1 <- X[which(N == 0)]
-                            Z1 <- Z[which(N == 0), , drop = FALSE]
-                            Y1 <- Y[which(N == 0)]
-                            theta <- estimateTheta(cbind(X1,Y1,Z1))
-                            fit1 <- glmfun(Y1 ~ X1 + Z1, theta = theta)
-                            X1 <- X[which(N == 1)]
-                            Z1 <- Z[which(N == 1), , drop = FALSE]
-                            Y1 <- Y[which(N == 1)]
-                            theta <- estimateTheta(cbind(X1,Y1,Z1))
-                            fit2 <- glmfun(Y1 ~ X1 + Z1, theta = theta)
-                        } else {
-                            X1 <- X[which(N == 0)]
-                            Y1 <- Y[which(N == 0)]
-                            theta <- estimateTheta(cbind(X1,Y1))
-                            fit1 <- glmfun(Y1 ~ X1, theta = theta)
-                            X1 <- X[which(N == 1)]
-                            Y1 <- Y[which(N == 1)]
-                            theta <- estimateTheta(cbind(X1,Y1))
-                            fit2 <- glmfun(Y1 ~ X1, theta = theta)
-                        }
-                        coef.mat1 <- summary(fit1)$coefficients
-                        coef.mat2 <- summary(fit2)$coefficients
-                        dce[i, j] <- coef.mat2["X1", "Estimate"] -
-                            coef.mat1["X1", "Estimate"]
-                        p1 <- max(c(coef.mat1["X1", "Pr(>|t|)"], 1), na.rm=TRUE)
-                        p2 <- max(c(coef.mat2["X1", "Pr(>|t|)"], 1), na.rm=TRUE)
-                        dce.p[i, j] <-
-                            as.numeric(
-                                harmonicmeanp::p.hmp(c(p1,p2), L = 2))
-                    } else {
-                        if (length(Z) > 0 & conf) {
-                            theta <- estimateTheta(cbind(X,Y,Z))
-                            fit <- glmfun(Y ~ N * X + N * Z, theta = theta)
-                        } else {
-                            theta <- estimateTheta(cbind(X,Y))
-                            fit <- glmfun(Y ~ N * X, theta = theta)
-                        }
-                        coef.mat <- summary(fit)$coefficients
-                        dce[i, j] <- coef.mat["N:X", "Estimate"]
-                        dce.p[i, j] <- coef.mat["N:X", "Pr(>|t|)"]
-                    }
-                }
-            }
-        }
-    }
-    res <- list(dce = dce, dce.p = dce.p, graph = g1)
-    class(res) <- "dce"
-    return(res)
 }
 #' @importFrom edgeR DGEList calcNormFactors estimateDisp
 #' @noRd

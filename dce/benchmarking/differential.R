@@ -39,6 +39,7 @@ append <- FALSE
 replicate.count <- 100
 perturb <- 0
 true.positives <- 0.5
+theta.fixed <- "glm" # alternative "edgeR" or a numerical greater 0
 
 
 # parse parameters
@@ -190,10 +191,25 @@ df.bench <- purrr::pmap_dfr(
       time.pcor <- as.integer(difftime(Sys.time(), time.tmp, units="secs"))
 
       time.tmp <- Sys.time()
-      res.dce <- dce::dce.nb(
-        p.dag, wt.X, mt.X,
-        adjustment.type = adjustment.type
-      )
+      if (theta.fixed == "glm") {
+        res.dce <- dce::dce.nb(
+          p.dag, wt.X, mt.X,
+          adjustment.type = adjustment.type
+        )
+      } else if (theta.fixed == "edgeR") {
+        theta.est <- estimateTheta(rbind(wt.X, mt.X))
+        res.dce <- dce::dce(
+          p.dag, wt.X, mt.X,
+          adjustment.type = adjustment.type,
+          solver.args = list(method = "glm.dce.nb.fit", family = MASS::negative.binomial(link = "identity", theta = theta.est))
+        )
+      } else {
+        res.dce <- dce::dce(
+          p.dag, wt.X, mt.X,
+          adjustment.type = adjustment.type,
+          solver.args = list(method = "glm.dce.nb.fit", family = MASS::negative.binomial(link = "identity", theta = theta.fixed))
+        )
+      }
       time.dce <- as.integer(difftime(Sys.time(), time.tmp, units="secs"))
 
       time.tmp <- Sys.time()
@@ -330,7 +346,7 @@ if (append) {
     df.bench <- read_csv("benchmark_results.csv")
 }
 
-if (!(varied.parameter %in% "adjustment.type")) {
+if (!(varied.parameter %in% c("adjustment.type", "theta.fixed"))) {
     df.bench$parameter %<>% as.factor %>% fct_inseq
     df.bench %>%
     head

@@ -180,11 +180,18 @@ setMethod(
             # extract results
             coef.mat <- summary(fit)$coefficients
 
+            if (length(grep("N:X", rownames(coef.mat))) == 0) {
+                coef.xn <- NA
+                pval.xn <- NA
+            } else {
+                coef.xn <- coef.mat["N:X", "Estimate"]
+                pval.xn <- coef.mat["N:X", if (solver == "glm.nb") "Pr(>|z|)" else "Pr(>|t|)"]
+            }
             data.frame(
                 row = row,
                 col = col,
-                dce = coef.mat["N:X", "Estimate"],
-                p.value = coef.mat["N:X", if (solver == "glm.nb") "Pr(>|z|)" else "Pr(>|t|)"]
+                dce = coef.xn,
+                p.value = pval.xn
             )
         }
     )
@@ -324,8 +331,8 @@ negative.binomial.special <- function(
 glm.solver <- function(form, df, solver, solver.args) {
     solver.func <- switch(
         solver,
-        "glm2" = glm2::glm2,
-        "glm.nb" = glm.nb,
+        "glm2" = glm2.rob,
+        "glm.nb" = glm.nb.rob,
         "mle" = glm.mle.new
     )
     if (is.null(solver.func)) {
