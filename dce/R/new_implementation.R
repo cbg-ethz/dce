@@ -331,7 +331,7 @@ negative.binomial.special <- function(
 glm.solver <- function(form, df, solver, solver.args) {
     solver.func <- switch(
         solver,
-        "glm2" = glm2.rob,
+        "glm2" = glm2::glm2,
         "glm.nb" = glm.nb.rob,
         "mle" = glm.mle.new
     )

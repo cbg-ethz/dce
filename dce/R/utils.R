@@ -1,3 +1,55 @@
+#' Modified theta.ml function from package MASS
+#'
+#' fixes a bug, if theta estimation breaks
+#' see ?MASS::theta.ml for argument values
+theta.ml.rob <- function (y, mu, n = sum(weights), weights, limit = 10, eps = .Machine$double.eps^0.25, 
+    trace = FALSE) 
+{
+    score <- function(n, th, mu, y, w) sum(w * (digamma(th + 
+        y) - digamma(th) + log(th) + 1 - log(th + mu) - (y + 
+        th)/(mu + th)))
+    info <- function(n, th, mu, y, w) sum(w * (-trigamma(th + 
+        y) + trigamma(th) - 1/th + 2/(mu + th) - (y + th)/(mu + 
+        th)^2))
+    if (inherits(y, "lm")) {
+        mu <- y$fitted.values
+        y <- if (is.null(y$y)) 
+            mu + residuals(y)
+        else y$y
+    }
+    if (missing(weights)) 
+        weights <- rep(1, length(y))
+    t0 <- n/sum(weights * (y/mu - 1)^2)
+    it <- 0
+    del <- 1
+    if (trace) 
+        message(sprintf("theta.ml.rob: iter %d 'theta = %f'", it, 
+            signif(t0)), domain = NA)
+    while ((it <- it + 1) < limit && abs(del) > eps) {
+        t0 <- abs(t0)
+        del <- score(n, t0, mu, y, weights)/(i <- info(n, t0, 
+            mu, y, weights))
+        t0 <- t0 + del
+        if (trace) 
+            message("theta.ml.rob: iter", it, " theta =", signif(t0))
+        if (is.nan(del) | is.infinite(del)) {
+            warning("NaNs produced. Resetting theta to 0.")
+            t0 <- 0
+            del <- 0
+        }
+    }
+    if (t0 < 0) {
+        t0 <- 0
+        warning("estimate truncated at zero")
+        attr(t0, "warn") <- gettext("estimate truncated at zero")
+    }
+    if (it == limit) {
+        warning("iteration limit reached")
+        attr(t0, "warn") <- gettext("iteration limit reached")
+    }
+    attr(t0, "SE") <- sqrt(1/i)
+    t0
+}
 #' Modified glm.nb function from package MASS
 #'
 #' fixes a bug, if theta estimation breaks
@@ -56,8 +108,9 @@ glm.nb.rob <- function (formula, data, weights, subset, na.action, start = NULL,
                 1), intercept = attr(Terms, "intercept") > 0)
     class(fit) <- c("glm", "lm")
     mu <- fit$fitted.values
-    th <- as.vector(MASS::theta.ml(Y, mu, sum(w), w, limit = control$maxit, 
-        trace = control$trace > 2))
+    th <- as.vector(theta.ml.rob(Y, mu, sum(w), w, limit = control$maxit, 
+                                   trace = control$trace > 2))
+    if (th < 1) { th <- 1 }
     if (control$trace > 1) 
         message(gettextf("Initial value for 'theta': %f", signif(th)), 
               domain = NA)
@@ -78,7 +131,7 @@ glm.nb.rob <- function (formula, data, weights, subset, na.action, start = NULL,
                   1), intercept = attr(Terms, "intercept") > 
                 0)
         t0 <- th
-        th <- MASS::theta.ml(Y, mu, sum(w), w, limit = control$maxit, 
+        th <- theta.ml.rob(Y, mu, sum(w), w, limit = control$maxit, 
             trace = control$trace > 2)
         fam <- do.call("negative.binomial", list(theta = th, 
             link = link))
@@ -572,7 +625,6 @@ estimateTheta <- function(data) {
     }
     return(theta)
 }
-
 #' @export
 make.log.link <- function(base=exp(1)) {
     structure(list(

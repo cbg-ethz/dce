@@ -39,7 +39,7 @@ append <- FALSE
 replicate.count <- 100
 perturb <- 0
 true.positives <- 0.5
-theta.fixed <- "glm" # alternative "edgeR" or a numerical greater 0
+theta.fixed <- "glm" # alternative "edgeR"
 
 
 # parse parameters
@@ -72,17 +72,22 @@ compute.prec <- function(x, y, do = "prec") {
 }
 compute.auc <- function(x, y, seq = 100) {
     prec <- rec <- numeric(seq)
-    alphas <- c(seq(0,1,length.out=seq), 2)
+    auc <- 0
+    alphas <- c(seq(0,1,length.out=seq-1), 2)
     for (i in seq_len(seq)) {
         alpha <- alphas[i]
         tp <- sum(y < alpha & x != 0, na.rm = TRUE)
         fp <- sum(y < alpha & x == 0, na.rm = TRUE)
         fn <- sum(y >= alpha & x != 0, na.rm = TRUE)
         prec[i] <- tp/(tp+fp)
+        if (is.na(prec[i])) { prec[i] <- 0.5 }
         rec[i] <- tp/(tp+fn)
+        if (i == 1) {
+            auc <- auc + prec[i]*rec[i]
+        } else {
+            auc <- auc + (rec[i]-rec[i-1])*((prec[i]+prec[i-1])/2)
+        }
     }
-    prec[is.na(prec)] <- 0
-    auc <- sum(prec*abs(c(0,rec[seq_len(seq-1)])-rec[seq_len(seq)]))
     return(auc)
 }
 
@@ -192,23 +197,23 @@ df.bench <- purrr::pmap_dfr(
 
       time.tmp <- Sys.time()
       if (theta.fixed == "glm") {
-        res.dce <- dce::dce.nb(
+        res.dce <- try(dce::dce.nb(
           p.dag, wt.X, mt.X,
           adjustment.type = adjustment.type
-        )
+        ))
       } else if (theta.fixed == "edgeR") {
         theta.est <- estimateTheta(rbind(wt.X, mt.X))
-        res.dce <- dce::dce(
+        res.dce <- try(dce::dce(
           p.dag, wt.X, mt.X,
           adjustment.type = adjustment.type,
-          solver.args = list(method = "glm.dce.nb.fit", family = MASS::negative.binomial(link = "identity", theta = theta.est))
+          solver.args = list(method = "glm.dce.nb.fit", family = MASS::negative.binomial(link = "identity", theta = theta.est)))
         )
-      } else {
-        res.dce <- dce::dce(
-          p.dag, wt.X, mt.X,
-          adjustment.type = adjustment.type,
-          solver.args = list(method = "glm.dce.nb.fit", family = MASS::negative.binomial(link = "identity", theta = theta.fixed))
-        )
+      }
+      if (length(grep("Error", res.dce)) > 0) {
+          print("this seed produced an error:")
+          print(seed.list[index])
+          print("error msg:")
+          print(res.dce)
       }
       time.dce <- as.integer(difftime(Sys.time(), time.tmp, units="secs"))
 
@@ -331,7 +336,7 @@ df.bench <- purrr::pmap_dfr(
             mutate(type="mean.estimate"),
           
         ) %>%
-        mutate(parameter=parameter)
+        mutate(parameter=parameter) %>% mutate(varied.parameter=varied.parameter)
     },
     otherwise=NULL,
     quiet=FALSE
@@ -355,7 +360,7 @@ if (!(varied.parameter %in% c("adjustment.type", "theta.fixed"))) {
 # plotting
 df.bench %>%
   dplyr::filter(type == "correlation") %>%
-  gather("variable", "value", -parameter, -type) %>%
+  gather("variable", "value", -parameter, -type, -varied.parameter) %>%
 ggplot(aes(x=parameter, y=value, fill=variable)) +
   geom_boxplot() +
   ylim(-1, 1) +
@@ -367,7 +372,7 @@ ggplot(aes(x=parameter, y=value, fill=variable)) +
 
 df.bench %>%
   dplyr::filter(type == "precision") %>%
-  gather("variable", "value", -parameter, -type) %>%
+  gather("variable", "value", -parameter, -type, -varied.parameter) %>%
 ggplot(aes(x=parameter, y=value, fill=variable)) +
   geom_boxplot() +
   ylim(0, 1) +
@@ -379,7 +384,7 @@ ggplot(aes(x=parameter, y=value, fill=variable)) +
 
 df.bench %>%
   dplyr::filter(type == "recall") %>%
-  gather("variable", "value", -parameter, -type) %>%
+  gather("variable", "value", -parameter, -type, -varied.parameter) %>%
 ggplot(aes(x=parameter, y=value, fill=variable)) +
   geom_boxplot() +
   ylim(0, 1) +
@@ -391,7 +396,7 @@ ggplot(aes(x=parameter, y=value, fill=variable)) +
 
 df.bench %>%
   dplyr::filter(type == "auc") %>%
-  gather("variable", "value", -parameter, -type) %>%
+  gather("variable", "value", -parameter, -type, -varied.parameter) %>%
 ggplot(aes(x=parameter, y=value, fill=variable)) +
   geom_boxplot() +
   ylim(0, 1) +
@@ -403,7 +408,7 @@ ggplot(aes(x=parameter, y=value, fill=variable)) +
 
 df.bench %>%
   dplyr::filter(type == "mse") %>%
-  gather("variable", "value", -parameter, -type) %>%
+  gather("variable", "value", -parameter, -type, -varied.parameter) %>%
   ggplot(aes(x=parameter, y=value, fill=variable)) +
   geom_boxplot() +
   ggtitle(paste("Variable:", varied.parameter)) +
@@ -414,7 +419,7 @@ df.bench %>%
 
 df.bench %>%
   dplyr::filter(type == "runtime") %>%
-  gather("variable", "value", -parameter, -type) %>%
+  gather("variable", "value", -parameter, -type, -varied.parameter) %>%
   mutate(value=lubridate::as.duration(value)) %>%
 ggplot(aes(x=parameter, y=value, fill=parameter)) +
   geom_boxplot() +
@@ -424,37 +429,37 @@ ggplot(aes(x=parameter, y=value, fill=parameter)) +
   ylab("runtime") +
   theme_minimal() +
   theme(plot.title=element_text(hjust=0.5)) +
-  ggsave("runtime.pdf")
+  ggsave("benchmark_runtime.pdf")
 
 df.bench %>%
   dplyr::filter(grepl("^graph.", type)) %>%
-  dplyr::select(dce, type, parameter) %>%
+  dplyr::select(dce, type, parameter, varied.parameter) %>%
 ggplot(aes(x=parameter, y=dce, fill=type)) +
   geom_boxplot() +
   ggtitle(paste("Variable:", varied.parameter)) +
   ylab("value") +
   theme_minimal(base_size=20) +
   theme(plot.title=element_text(hjust=0.5)) +
-  ggsave("graph_features.pdf")
+  ggsave("benchmark_graph_features.pdf")
 
 df.bench %>%
   dplyr::filter(grepl("^dispersion.", type)) %>%
-  dplyr::select(dce, type, parameter) %>%
+  dplyr::select(dce, type, parameter, varied.parameter) %>%
 ggplot(aes(x=parameter, y=dce, fill=type)) +
   geom_boxplot() +
   ggtitle(paste("Variable:", varied.parameter)) +
   ylab("value") +
   theme_minimal(base_size=20) +
   theme(plot.title=element_text(hjust=0.5)) +
-  ggsave("dispersion_estimate.pdf")
+  ggsave("benchmark_dispersion_estimate.pdf")
 
 df.bench %>%
   dplyr::filter(grepl("^mean.", type)) %>%
-  dplyr::select(dce, type, parameter) %>%
+  dplyr::select(dce, type, parameter, varied.parameter) %>%
 ggplot(aes(x=parameter, y=dce, fill=type)) +
   geom_boxplot() +
   ggtitle(paste("Variable:", varied.parameter)) +
   ylab("value") +
   theme_minimal(base_size=20) +
   theme(plot.title=element_text(hjust=0.5)) +
-  ggsave("mean_estimate.pdf")
+  ggsave("benchmark_mean_estimate.pdf")
