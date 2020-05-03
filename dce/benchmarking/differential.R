@@ -39,7 +39,6 @@ append <- FALSE
 replicate.count <- 100
 perturb <- 0
 true.positives <- 0.5
-theta.fixed <- "glm" # alternative "edgeR"
 
 
 # parse parameters
@@ -113,7 +112,8 @@ df.bench <- purrr::pmap_dfr(
         beta.magnitude={ beta.magnitude <- parameter },
         dispersion={ dispersion <- parameter },
         adjustment.type={ adjustment.type <- parameter },
-        perturb={ perturb <- parameter }
+        perturb={ perturb <- parameter },
+        true.positives={ true.positives <- parameter }
       )
       print(glue::glue("node.num={node.num} wt.samples={wt.samples} mt.samples={mt.samples} beta.magnitude={beta.magnitude} dispersion={dispersion} adjustment.type={adjustment.type} perturb={perturb}"))
       set.seed(seed.list[index])
@@ -196,19 +196,10 @@ df.bench <- purrr::pmap_dfr(
       time.pcor <- as.integer(difftime(Sys.time(), time.tmp, units="secs"))
 
       time.tmp <- Sys.time()
-      if (theta.fixed == "glm") {
-        res.dce <- try(dce::dce.nb(
-          p.dag, wt.X, mt.X,
-          adjustment.type = adjustment.type
-        ))
-      } else if (theta.fixed == "edgeR") {
-        theta.est <- estimateTheta(rbind(wt.X, mt.X))
-        res.dce <- try(dce::dce(
-          p.dag, wt.X, mt.X,
-          adjustment.type = adjustment.type,
-          solver.args = list(method = "glm.dce.nb.fit", family = MASS::negative.binomial(link = "identity", theta = theta.est)))
-        )
-      }
+      res.dce <- try(dce::dce.nb(
+        p.dag, wt.X, mt.X,
+        adjustment.type = adjustment.type
+      ))
       if (length(grep("Error", res.dce)) > 0) {
           print("this seed produced an error:")
           print(seed.list[index])
