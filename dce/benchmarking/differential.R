@@ -27,11 +27,11 @@ arguments <- docopt::docopt(doc)
 
 
 # global parameters
-node.num <- 100
+node.num <- 10
 wt.samples <- 200
 mt.samples <- 200
 beta.magnitude <- 1
-dispersion <- 2
+dispersion <- 1
 adjustment.type <- "parents"
 dist.mean <- 1000
 sample.kegg <- FALSE
@@ -69,7 +69,7 @@ compute.prec <- function(x, y, do = "prec") {
     }
     return(z)
 }
-compute.auc <- function(x, y, seq = 100) {
+compute.prauc <- function(x, y, seq = 1000, NAweight = 1) {
     prec <- rec <- numeric(seq)
     auc <- 0
     alphas <- c(seq(0,1,length.out=seq-1), 2)
@@ -79,12 +79,28 @@ compute.auc <- function(x, y, seq = 100) {
         fp <- sum(y < alpha & x == 0, na.rm = TRUE)
         fn <- sum(y >= alpha & x != 0, na.rm = TRUE)
         prec[i] <- tp/(tp+fp)
-        if (is.na(prec[i])) { prec[i] <- 0.5 }
+        if (is.na(prec[i])) { prec[i] <- NAweight }
         rec[i] <- tp/(tp+fn)
-        if (i == 1) {
-            auc <- auc + prec[i]*rec[i]
-        } else {
+        if (i > 1) {
             auc <- auc + (rec[i]-rec[i-1])*((prec[i]+prec[i-1])/2)
+        }
+    }
+    return(auc)
+}
+compute.rocauc <- function(x, y, seq = 1000) {
+    sens <- spec <- numeric(seq)
+    auc <- 0
+    alphas <- c(seq(0,1,length.out=seq-1), 2)
+    for (i in seq_len(seq)) {
+        alpha <- alphas[i]
+        tp <- sum(y < alpha & x != 0, na.rm = TRUE)
+        fp <- sum(y < alpha & x == 0, na.rm = TRUE)
+        tn <- sum(y >= alpha & x == 0, na.rm = TRUE)
+        fn <- sum(y >= alpha & x != 0, na.rm = TRUE)
+        sens[i] <- tp/(tp+fn)
+        spec[i] <- tn/(tn+fp)
+        if (i > 1) {
+            auc <- auc + (spec[i-1]-spec[i])*((sens[i]+sens[i-1])/2)
         }
     }
     return(auc)
@@ -287,12 +303,20 @@ df.bench <- purrr::pmap_dfr(
             mutate(type="recall"),
 
           data.frame(
-            cor=compute.auc(df.pvals$truth, df.pvals$cor),
-            pcor=compute.auc(df.pvals$truth, df.pvals$pcor),
-            dce=compute.auc(df.pvals$truth, df.pvals$dce),
-            rand=compute.auc(df.pvals$truth, df.pvals$rand)
+            cor=compute.prauc(df.pvals$truth, df.pvals$cor),
+            pcor=compute.prauc(df.pvals$truth, df.pvals$pcor),
+            dce=compute.prauc(df.pvals$truth, df.pvals$dce),
+            rand=compute.prauc(df.pvals$truth, df.pvals$rand)
           ) %>%
-            mutate(type="auc"),
+            mutate(type="pr-auc"),
+
+          data.frame(
+            cor=compute.rocauc(df.pvals$truth, df.pvals$cor),
+            pcor=compute.rocauc(df.pvals$truth, df.pvals$pcor),
+            dce=compute.rocauc(df.pvals$truth, df.pvals$dce),
+            rand=compute.rocauc(df.pvals$truth, df.pvals$rand)
+          ) %>%
+            mutate(type="roc-auc"),
 
           data.frame(
             cor=time.cor,
@@ -342,6 +366,8 @@ if (append) {
     df.bench <- read_csv("benchmark_results.csv")
 }
 
+df.bench <- df.bench[which(df.bench$varied.parameter == varied.parameter), ]
+
 if (!(varied.parameter %in% c("adjustment.type", "theta.fixed"))) {
     df.bench$parameter %<>% as.factor %>% fct_inseq
     df.bench %>%
@@ -386,7 +412,7 @@ ggplot(aes(x=parameter, y=value, fill=variable)) +
   ggsave("benchmark_recall.pdf")
 
 df.bench %>%
-  dplyr::filter(type == "auc") %>%
+  dplyr::filter(type == "pr-auc") %>%
   gather("variable", "value", -parameter, -type, -varied.parameter) %>%
 ggplot(aes(x=parameter, y=value, fill=variable)) +
   geom_boxplot() +
@@ -395,7 +421,19 @@ ggplot(aes(x=parameter, y=value, fill=variable)) +
   ylab("Precision-Recall (AUC) (truth vs prediction)") +
   theme_minimal(base_size=20) +
   theme(plot.title=element_text(hjust=0.5)) +
-  ggsave("benchmark_auc.pdf")
+  ggsave("benchmark_prauc.pdf")
+
+df.bench %>%
+  dplyr::filter(type == "roc-auc") %>%
+  gather("variable", "value", -parameter, -type, -varied.parameter) %>%
+ggplot(aes(x=parameter, y=value, fill=variable)) +
+  geom_boxplot() +
+  ylim(0, 1) +
+  ggtitle(paste("Variable:", varied.parameter)) +
+  ylab("ROC (AUC) (truth vs prediction)") +
+  theme_minimal(base_size=20) +
+  theme(plot.title=element_text(hjust=0.5)) +
+  ggsave("benchmark_rocauc.pdf")
 
 df.bench %>%
   dplyr::filter(type == "mse") %>%
