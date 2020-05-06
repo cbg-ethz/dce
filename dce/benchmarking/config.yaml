@@ -1,25 +1,5 @@
-project_source: git@github.com:kpj/CausalPathways.git
-working_dir: tmp
-
-exec_command:
-    - bsub
-          -N -R 'rusage[mem=5000]' -W 23:00
-          -oo job.{variable_name}.out
-          -eo job.{variable_name}.err
-      Rscript
-          dce/benchmarking/differential.R
-          --variable {variable_name}
-          --values {value_list}
-
-result_files:
-    - benchmark_results.csv
-    - benchmark_correlation.pdf
-    - runtime.pdf
-    - graph_features.pdf
-
-config_parameters:
-    - key: variable_name
-      values: [node.num, mt.samples, beta.magnitude, dispersion]
-      paired:
-          - key: value_list
-            values: ["10,50,100", "100,200,400", "0.1,1,10", "10,100,1000"]
+benchmarks:
+    node.num: '10,50,100'
+    mt.samples: '100,200,400'
+    beta.magnitude: '0.1,1,10'
+    dispersion: '10,100,1000'

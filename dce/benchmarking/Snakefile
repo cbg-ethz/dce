@@ -1,0 +1,25 @@
+configfile: 'config.yaml'
+
+
+rule all:
+    input:
+        expand('benchmark_{varied_param}', varied_param=config['benchmarks'].keys())
+
+
+rule run_benchmark:
+    output:
+        outdir = directory('benchmark_{varied_param}')
+    params:
+        benchmark_script = srcdir('main.R')
+    run:
+        import sh
+
+        sh.Rscript(
+            params.benchmark_script,
+            '--variable', wildcards.varied_param,
+            '--values', config['benchmarks'][wildcards.varied_param],
+            '--replicates', 100,
+            '--targetdir', output.outdir,
+            '--append', 'FALSE',
+            _fg=True
+        )
