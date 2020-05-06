@@ -39,6 +39,10 @@ append <- FALSE
 replicate.count <- 100
 perturb <- 0
 true.positives <- 0.5
+link.method <- "identity"
+if (link.method == "log") {   
+    beta.magnitude <- beta.magnitude*0.001
+}
 
 
 # parse parameters
@@ -157,6 +161,12 @@ df.bench <- purrr::pmap_dfr(
       }
       mt.graph <- resample_edge_weights(wt.graph, negweight.range, posweight.range, tp = true.positives)
 
+      if (link.method == "log") {
+          link <- function(x, offset = 0) { exp(x + offset) }
+      } else {
+          link <- negative.binomial.special()$linkfun
+      }
+      
       # generate data
       wt.X <- simulate_data(wt.graph, n=wt.samples, dist.dispersion=dispersion, dist.mean=dist.mean)
       mt.X <- simulate_data(mt.graph, n=mt.samples, dist.dispersion=dispersion, dist.mean=dist.mean)
@@ -211,10 +221,17 @@ df.bench <- purrr::pmap_dfr(
       res.pcor$dce.pvalue <- pcor_perm(wt.X, mt.X, fun = pcor)  
       time.pcor <- as.integer(difftime(Sys.time(), time.tmp, units="secs"))
 
+      if (link.method == "log") {
+          solver.args <- list(method = "glm.fit", link = "log")
+      } else {
+          solver.args <- list(method = "glm.dce.nb.fit", link = "identity")
+      }
+        
       time.tmp <- Sys.time()
       res.dce <- try(dce::dce.nb(
         p.dag, wt.X, mt.X,
-        adjustment.type = adjustment.type
+        adjustment.type = adjustment.type,
+        solver.args = solver.args
       ))
       if (length(grep("Error", res.dce)) > 0) {
           print("this seed produced an error:")
@@ -223,6 +240,20 @@ df.bench <- purrr::pmap_dfr(
           print(res.dce)
       }
       time.dce <- as.integer(difftime(Sys.time(), time.tmp, units="secs"))
+        
+      time.tmp <- Sys.time()
+      res.dce.lr <- try(dce::dce.nb(
+        p.dag, wt.X, mt.X,
+        adjustment.type = adjustment.type,
+        solver.args = solver.args, test = "lr"
+      ))
+      if (length(grep("Error", res.dce.lr)) > 0) {
+          print("this seed produced an error:")
+          print(seed.list[index])
+          print("error msg:")
+          print(res.dce.lr)
+      }
+      time.dce.lr <- as.integer(difftime(Sys.time(), time.tmp, units="secs"))
 
       time.tmp <- Sys.time()
       tmp <- as.matrix(ground.truth$dce)
@@ -240,6 +271,7 @@ df.bench <- purrr::pmap_dfr(
         cor=as.vector(res.cor$dce),
         pcor=as.vector(res.pcor$dce),
         dce=as.vector(res.dce$dce),
+        dce.lr=as.vector(res.dce.lr$dce),
         rand=as.vector(res.rand$dce)
       )
 
@@ -248,6 +280,7 @@ df.bench <- purrr::pmap_dfr(
         cor=as.vector(res.cor$dce.pvalue),
         pcor=as.vector(res.pcor$dce.pvalue),
         dce=as.vector(res.dce$dce.pvalue),
+        dce.lr=as.vector(res.dce.lr$dce.pvalue),
         rand=as.vector(res.rand$dce.pvalue)
       )
 
@@ -271,6 +304,7 @@ df.bench <- purrr::pmap_dfr(
             cor=get_prediction_counts(df.res$truth, df.res$cor),
             pcor=get_prediction_counts(df.res$truth, df.res$pcor),
             dce=get_prediction_counts(df.res$truth, df.res$dce),
+            dce.lr=get_prediction_counts(df.res$truth, df.res$dce.lr),
             rand=get_prediction_counts(df.res$truth, df.res$rand)
           ), .id="name") %>%
             column_to_rownames(var="name") %>%
@@ -282,6 +316,7 @@ df.bench <- purrr::pmap_dfr(
             cor=compute.mse(df.res$truth, df.res$cor),
             pcor=compute.mse(df.res$truth, df.res$pcor),
             dce=compute.mse(df.res$truth, df.res$dce),
+            dce.lr=compute.mse(df.res$truth, df.res$dce.lr),
             rand=compute.mse(df.res$truth, df.res$rand)
           ) %>%
             mutate(type="mse"),
@@ -290,6 +325,7 @@ df.bench <- purrr::pmap_dfr(
             cor=compute.prec(df.pvals$truth, df.pvals$cor),
             pcor=compute.prec(df.pvals$truth, df.pvals$pcor),
             dce=compute.prec(df.pvals$truth, df.pvals$dce),
+            dce.lr=compute.prec(df.pvals$truth, df.pvals$dce.lr),
             rand=compute.prec(df.pvals$truth, df.pvals$rand)
           ) %>%
             mutate(type="precision"),
@@ -298,6 +334,7 @@ df.bench <- purrr::pmap_dfr(
             cor=compute.prec(df.pvals$truth, df.pvals$cor, do = "rec"),
             pcor=compute.prec(df.pvals$truth, df.pvals$pcor, do = "rec"),
             dce=compute.prec(df.pvals$truth, df.pvals$dce, do = "rec"),
+            dce.lr=compute.prec(df.pvals$truth, df.pvals$dce.lr, do = "rec"),
             rand=compute.prec(df.pvals$truth, df.pvals$rand, do = "rec")
           ) %>%
             mutate(type="recall"),
@@ -306,6 +343,7 @@ df.bench <- purrr::pmap_dfr(
             cor=compute.prauc(df.pvals$truth, df.pvals$cor),
             pcor=compute.prauc(df.pvals$truth, df.pvals$pcor),
             dce=compute.prauc(df.pvals$truth, df.pvals$dce),
+            dce.lr=compute.prauc(df.pvals$truth, df.pvals$dce.lr),
             rand=compute.prauc(df.pvals$truth, df.pvals$rand)
           ) %>%
             mutate(type="pr-auc"),
@@ -314,6 +352,7 @@ df.bench <- purrr::pmap_dfr(
             cor=compute.rocauc(df.pvals$truth, df.pvals$cor),
             pcor=compute.rocauc(df.pvals$truth, df.pvals$pcor),
             dce=compute.rocauc(df.pvals$truth, df.pvals$dce),
+            dce.lr=compute.rocauc(df.pvals$truth, df.pvals$dce.lr),
             rand=compute.rocauc(df.pvals$truth, df.pvals$rand)
           ) %>%
             mutate(type="roc-auc"),
@@ -322,6 +361,7 @@ df.bench <- purrr::pmap_dfr(
             cor=time.cor,
             pcor=time.pcor,
             dce=time.dce,
+            dce.lr=time.dce.lr,
             rand=time.rand
           ) %>%
             mutate(type="runtime"),
@@ -330,6 +370,7 @@ df.bench <- purrr::pmap_dfr(
             cor=graph.density,
             pcor=graph.density,
             dce=graph.density,
+            dce.lr=graph.density,
             rand=graph.density
           ) %>%
             mutate(type="graph.density"),
@@ -338,6 +379,7 @@ df.bench <- purrr::pmap_dfr(
             cor=dispersion.estimate,
             pcor=dispersion.estimate,
             dce=dispersion.estimate,
+            dce.lr=dispersion.estimate,
             rand=dispersion.estimate
           ) %>%
             mutate(type="dispersion.estimate"),
@@ -346,6 +388,7 @@ df.bench <- purrr::pmap_dfr(
             cor=mean.estimate,
             pcor=mean.estimate,
             dce=mean.estimate,
+            dce.lr=mean.estimate,
             rand=mean.estimate
           ) %>%
             mutate(type="mean.estimate"),

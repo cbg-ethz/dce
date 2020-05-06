@@ -25,6 +25,7 @@ setGeneric(
         solver = "glm2", solver.args = list(method = "glm.dce.fit"),
         adjustment.type = "parents",
         p.method = "mean",
+        test = "wald",
         verbose = FALSE
     ) {
         standardGeneric("dce")
@@ -42,6 +43,7 @@ setMethod(
         solver = "glm2", solver.args = list(method = "glm.dce.fit"),
         adjustment.type = "parents",
         p.method = "mean",
+        test = "wald",
         verbose = FALSE
     ) {
         graph <- igraph::igraph.to.graphNEL(graph)
@@ -51,6 +53,7 @@ setMethod(
             solver, solver.args,
             adjustment.type,
             p.method,
+            test,
             verbose
         )
     }
@@ -65,6 +68,7 @@ setMethod(
         solver = "glm2", solver.args = list(method = "glm.dce.fit"),
         adjustment.type = "parents",
         p.method = "mean",
+        test = "wald",
         verbose = FALSE
     ) {
         dce(
@@ -73,6 +77,7 @@ setMethod(
             solver, solver.args,
             adjustment.type,
             p.method,
+            test,
             verbose
         )
     }
@@ -87,6 +92,7 @@ setMethod(
         solver = "glm2", solver.args = list(method = "glm.dce.fit"),
         adjustment.type = "parents",
         p.method = "mean",
+        test = "wald",
         verbose = FALSE
     ) {
         # preparations
@@ -106,6 +112,7 @@ setMethod(
             solver, solver.args,
             adjustment.type,
             p.method,
+            test,
             verbose
         )
     }
@@ -118,6 +125,7 @@ setMethod(
     solver, solver.args,
     adjustment.type,
     p.method,
+    test,
     verbose
 ) {
     # handle empty graph (no edges)
@@ -166,7 +174,7 @@ setMethod(
 
             # fit model
             form <- paste0("Y ~ N * X", form.adjustment.suffix)
-
+            
             if (verbose) {
                 print(df.data %>% head)
                 print(form)
@@ -176,14 +184,29 @@ setMethod(
                 form = form, df = df.data,
                 solver = solver, solver.args = solver.args
             )
-
+            
             # extract results
             coef.mat <- summary(fit)$coefficients
-
-            if (length(grep("N:X", rownames(coef.mat))) == 0) {
-                coef.xn <- NA
-                pval.xn <- NA
-            } else {
+            coef.xn <- NA
+            pval.xn <- NA
+               
+            if (test == "lr") {
+                form2 <- paste0("Y ~ N + X", form.adjustment.suffix)
+                
+                if (verbose) {
+                    print(form2)
+                }
+                 
+                fit2 <- glm.solver(
+                    form = form2, df = df.data,
+                    solver = solver, solver.args = solver.args
+                )
+                
+                if (length(grep("N:X", rownames(coef.mat))) != 0) {
+                    coef.xn <- coef.mat["N:X", "Estimate"]
+                    pval.xn <- lmtest::lrtest(fit, fit2)[[5]][2]
+                }
+            } else if (test == "wald" & length(grep("N:X", rownames(coef.mat))) != 0) {
                 coef.xn <- coef.mat["N:X", "Estimate"]
                 pval.xn <- coef.mat["N:X", if (solver == "glm.nb") "Pr(>|z|)" else "Pr(>|t|)"]
             }
@@ -246,6 +269,7 @@ dce.nb <- function(
     solver.args = list(method = "glm.dce.nb.fit", link = "identity"),
     adjustment.type = "parents",
     p.method = "mean",
+    test = "wald",
     verbose = FALSE
 ) {
     dce(
@@ -253,6 +277,7 @@ dce.nb <- function(
         solver = "glm.nb", solver.args = solver.args,
         adjustment.type,
         p.method,
+        test,
         verbose
     )
 }
