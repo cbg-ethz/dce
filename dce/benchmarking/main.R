@@ -16,7 +16,7 @@ Benchmark DCE performance and runtime.
 
 Usage:
   main.R
-  main.R --variable NAME --values VALUES --append BOOL --replicates INT --targetdir STR
+  main.R --variable NAME --values VALUES --append BOOL --replicates INT --link STR --targetdir STR
 
 Options:
   -h --help        Show this screen.
@@ -24,6 +24,7 @@ Options:
   --values VALUES  What values to assign to varied property [default: 20,50,100].
   --append BOOL    If TRUE appends the results of this/these run(s) to an existing results file [default: FALSE].
   --replicates INT Number of simulation runs [default: 100].
+  --link STR       Either log or identity as link function [default: identity].
   --targetdir STR  Directory where to store results [default: ./].
 " -> doc
 
@@ -31,7 +32,7 @@ arguments <- docopt::docopt(doc)
 
 
 # global parameters
-node.num <- 100
+node.num <- 10
 wt.samples <- 200
 mt.samples <- 200
 
@@ -47,9 +48,6 @@ perturb <- 0
 true.positives <- 0.5
 
 link.method <- "identity"
-if (link.method == "log") {
-  beta.magnitude <- beta.magnitude * 0.001
-}
 
 # special parameters which can later be modified from commandline
 target.dir <- "./"
@@ -65,6 +63,11 @@ parameter.list <- unlist(
 target.dir <- arguments$targetdir
 replicate.count <- as.numeric(arguments$replicates)
 append <- as.logical(arguments$append)
+
+link.method <- arguments$link
+if (link.method == "log") {
+  beta.magnitude <- beta.magnitude * 0.001
+}
 
 print(glue::glue("Benchmark parameters:"))
 print(glue::glue("  Varied parameter: {varied.parameter}"))

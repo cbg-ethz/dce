@@ -19,6 +19,7 @@ rule run_benchmark:
             '--variable', wildcards.varied_param,
             '--values', config['benchmarks'][wildcards.varied_param],
             '--replicates', 100,
+            '--link', "identity",
             '--targetdir', output.outdir,
             '--append', 'FALSE',
             _fg=True
