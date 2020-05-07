@@ -47,11 +47,11 @@ append <- FALSE
 perturb <- 0
 true.positives <- 0.5
 
-link.method <- "identity"
 
 # special parameters which can later be modified from commandline
 target.dir <- "./"
 replicate.count <- 100
+link.method <- "identity"
 
 
 # parse parameters
