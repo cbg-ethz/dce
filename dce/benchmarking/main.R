@@ -32,7 +32,7 @@ arguments <- docopt::docopt(doc)
 
 
 # global parameters
-node.num <- 10
+node.num <- 100
 wt.samples <- 200
 mt.samples <- 200
 
