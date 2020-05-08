@@ -6,4 +6,4 @@ bsub \
 snakemake \
   --profile lsf \
   -pr \
-  $@
+  "$@"
