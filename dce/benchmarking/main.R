@@ -7,7 +7,6 @@ devtools::load_all("..")
 source("helper_functions.R")
 source("models.R")
 source("performance_measures.R")
-source("plotting.R")
 
 
 # parse commandline arguments
@@ -16,7 +15,7 @@ Benchmark DCE performance and runtime.
 
 Usage:
   main.R
-  main.R --variable NAME --values VALUES --append BOOL --replicates INT --link STR --targetdir STR
+  main.R --variable NAME --values VALUES --append BOOL --replicates INT --link STR --output STR
 
 Options:
   -h --help        Show this screen.
@@ -25,7 +24,7 @@ Options:
   --append BOOL    If TRUE appends the results of this/these run(s) to an existing results file [default: FALSE].
   --replicates INT Number of simulation runs [default: 100].
   --link STR       Either log or identity as link function [default: identity].
-  --targetdir STR  Directory where to store results [default: ./].
+  --output STR     CSV File to store results in [default: benchmark_results.csv].
 " -> doc
 
 arguments <- docopt::docopt(doc)
@@ -49,7 +48,7 @@ true.positives <- 0.5
 
 
 # special parameters which can later be modified from commandline
-target.dir <- "./"
+output.fname <- "benchmark_results.csv"
 replicate.count <- 100
 link.method <- "identity"
 
@@ -60,7 +59,7 @@ parameter.list <- unlist(
   purrr::map(strsplit(arguments$values, ",")[[1]], type.convert)
 )
 
-target.dir <- arguments$targetdir
+output.fname <- arguments$output
 replicate.count <- as.numeric(arguments$replicates)
 append <- as.logical(arguments$append)
 
@@ -75,8 +74,6 @@ print(glue::glue("  Parameter: {parameter.list}"))
 
 
 # further preparations
-dir.create(target.dir)
-
 seed.list <- sample(seq_len(10^9), replicate.count)
 
 if (sample.kegg) {
@@ -232,26 +229,9 @@ df.bench <- purrr::pmap_dfr(
     quiet = FALSE
   )
 ) %>% {
-  if (append && file.exists(file.path(target.dir, "benchmark_results.csv"))) {
-    write_csv(., file.path(target.dir, "benchmark_results.csv"), append = append)
+  if (append && file.exists(output.fname)) {
+    write_csv(., output.fname, append = append)
   } else {
-    write_csv(., file.path(target.dir, "benchmark_results.csv"), append = append, col_names = TRUE)
+    write_csv(., output.fname, append = append, col_names = TRUE)
   }
 }
-
-
-# prepare results for plotting
-df.bench <- read_csv(file.path(target.dir, "benchmark_results.csv"))
-
-if (append) {
-  # we might have results from other unrelated runs in here, let's keep only a relevant subset
-  df.bench %<>% dplyr::filter(varied.parameter == varied.parameter)
-}
-
-if (!(varied.parameter %in% c("adjustment.type", "theta.fixed"))) {
-  df.bench$parameter %<>% as.factor %>% fct_inseq
-}
-
-
-# create plots
-create.plots(df.bench, target.dir)

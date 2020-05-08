@@ -1,4 +1,35 @@
-create.plots <- function(df.bench, target.dir) {
+library(tidyverse)
+
+
+# parse commandline arguments
+"
+Benchmark DCE performance and runtime.
+
+Usage:
+  plotting.R
+  plotting.R --input STR --output STR
+
+Options:
+  -h --help     Show this screen.
+  --input STR   CSV file to read data from [default: benchmark_results.csv].
+  --output STR  Directory to store plots in [default: plots/].
+" -> doc
+
+arguments <- docopt::docopt(doc)
+
+
+# setup environment
+input.fname <- "benchmark_results.csv"
+target.dir <- "plots/"
+
+input.fname <- arguments$input
+target.dir <- arguments$output
+
+print(glue::glue("{input.fname} -> {target.dir}"))
+
+
+# helper functions
+create.plots <- function(df.bench, plot.dir, varied.parameter) {
   # create performance plots
   performance.measures <- c("correlation", "mse", "precision", "recall", "pr-auc", "roc-auc")
 
@@ -15,7 +46,7 @@ create.plots <- function(df.bench, target.dir) {
       ylab(glue::glue("{measure} (truth vs prediction)")) +
       theme_minimal(base_size=20) +
       theme(plot.title=element_text(hjust=0.5)) +
-      ggsave(file.path(target.dir, glue::glue("benchmark_{measure}.pdf")))
+      ggsave(file.path(plot.dir, glue::glue("benchmark_{measure}.pdf")))
   }
 
 
@@ -32,7 +63,7 @@ create.plots <- function(df.bench, target.dir) {
     ylab("runtime") +
     theme_minimal() +
     theme(plot.title=element_text(hjust=0.5)) +
-    ggsave(file.path(target.dir, "benchmark_runtime.pdf"))
+    ggsave(file.path(plot.dir, "benchmark_runtime.pdf"))
 
   df.bench %>%
     dplyr::filter(grepl("^graph.", type)) %>%
@@ -43,7 +74,7 @@ create.plots <- function(df.bench, target.dir) {
     ylab("value") +
     theme_minimal(base_size=20) +
     theme(plot.title=element_text(hjust=0.5)) +
-    ggsave(file.path(target.dir, "benchmark_graph_features.pdf"))
+    ggsave(file.path(plot.dir, "benchmark_graph_features.pdf"))
 
   df.bench %>%
     dplyr::filter(grepl("^dispersion.", type)) %>%
@@ -54,7 +85,7 @@ create.plots <- function(df.bench, target.dir) {
     ylab("value") +
     theme_minimal(base_size=20) +
     theme(plot.title=element_text(hjust=0.5)) +
-    ggsave(file.path(target.dir, "benchmark_dispersion_estimate.pdf"))
+    ggsave(file.path(plot.dir, "benchmark_dispersion_estimate.pdf"))
 
   df.bench %>%
     dplyr::filter(grepl("^mean.", type)) %>%
@@ -65,5 +96,21 @@ create.plots <- function(df.bench, target.dir) {
     ylab("value") +
     theme_minimal(base_size=20) +
     theme(plot.title=element_text(hjust=0.5)) +
-    ggsave(file.path(target.dir, "benchmark_mean_estimate.pdf"))
+    ggsave(file.path(plot.dir, "benchmark_mean_estimate.pdf"))
 }
+
+
+# read data
+df.bench <- read_csv(input.fname)
+
+tmp <- df.bench %>% pull(varied.parameter) %>% unique
+stopifnot(length(tmp) == 1)
+varied.parameter <- tmp[[1]]
+
+if (!(varied.parameter %in% c("adjustment.type", "theta.fixed"))) {
+  df.bench$parameter %<>% as.factor %>% fct_inseq
+}
+
+
+# create plots
+create.plots(df.bench, target.dir, varied.parameter)

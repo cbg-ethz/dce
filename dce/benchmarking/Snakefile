@@ -5,12 +5,12 @@ localrules: all
 
 rule all:
     input:
-        expand('benchmark_{varied_param}', varied_param=config['benchmarks'].keys())
+        expand('benchmarks/plots_{varied_param}/', varied_param=config['benchmarks'].keys())
 
 
 rule run_benchmark:
     output:
-        outdir = directory('benchmark_{varied_param}')
+        fname = 'benchmarks/bench_{varied_param}.csv'
     params:
         benchmark_script = srcdir('main.R')
     run:
@@ -22,7 +22,25 @@ rule run_benchmark:
             '--values', config['benchmarks'][wildcards.varied_param],
             '--replicates', 100,
             '--link', 'identity',
-            '--targetdir', output.outdir,
+            '--output', output.fname,
             '--append', 'FALSE',
+            _fg=True
+        )
+
+
+rule plot_results:
+    input:
+        fname = 'benchmarks/bench_{varied_param}.csv'
+    output:
+        outdir = directory('benchmarks/plots_{varied_param}/')
+    params:
+        plotting_script = srcdir('plotting.R')
+    run:
+        import sh
+
+        sh.Rscript(
+            params.plotting_script,
+            '--input', input.fname,
+            '--output', output.outdir,
             _fg=True
         )
