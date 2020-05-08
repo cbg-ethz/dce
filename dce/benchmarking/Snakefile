@@ -1,5 +1,7 @@
 configfile: 'config.yaml'
 
+localrules: all
+
 
 rule all:
     input:
