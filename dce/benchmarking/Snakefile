@@ -12,6 +12,8 @@ rule run_benchmark:
         fname = 'benchmarks/replicates/bench_{varied_param}_{replicate}.csv'
     params:
         benchmark_script = srcdir('main.R')
+    resources:
+        mem_mb = 5_000
     run:
         import sh
 
