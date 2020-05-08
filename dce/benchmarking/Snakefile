@@ -1,6 +1,5 @@
 configfile: 'config.yaml'
-
-localrules: all
+localrules: all, aggregate_replicates
 
 
 rule all:
@@ -10,7 +9,7 @@ rule all:
 
 rule run_benchmark:
     output:
-        fname = 'benchmarks/bench_{varied_param}.csv'
+        fname = 'benchmarks/replicates/bench_{varied_param}_{replicate}.csv'
     params:
         benchmark_script = srcdir('main.R')
     run:
@@ -20,12 +19,27 @@ rule run_benchmark:
             params.benchmark_script,
             '--variable', wildcards.varied_param,
             '--values', config['benchmarks'][wildcards.varied_param],
-            '--replicates', 100,
+            '--replicates', config['script_replicates'],
             '--link', 'identity',
             '--output', output.fname,
             '--append', 'FALSE',
             _fg=True
         )
+
+
+rule aggregate_replicates:
+    input:
+        fname_list = expand(
+            'benchmarks/replicates/bench_{varied_param}_{replicate}.csv',
+            replicate=list(range(config['rule_replicates'])),
+            allow_missing=True)
+    output:
+        fname = 'benchmarks/bench_{varied_param}.csv'
+    run:
+        import pandas as pd
+
+        df_list = [pd.read_csv(fname) for fname in input.fname_list]
+        pd.concat(df_list).to_csv(output.fname, index=False)
 
 
 rule plot_results:

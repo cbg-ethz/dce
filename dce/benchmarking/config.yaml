@@ -1,3 +1,6 @@
+script_replicates: 10
+rule_replicates: 10
+
 benchmarks:
     node.num: '10,50,100'
     mt.samples: '100,200,400'
