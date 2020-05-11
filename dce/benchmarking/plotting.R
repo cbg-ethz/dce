@@ -38,7 +38,7 @@ create.plots <- function(df.bench, plot.dir, varied.parameter) {
 
     df.bench %>%
       dplyr::filter(type == measure) %>%
-      gather("variable", "value", -parameter, -type, -varied.parameter) %>%
+      gather("variable", "value", -parameter, -type, -varied.parameter, -rng.seed) %>%
       ggplot(aes(x=parameter, y=value, fill=variable)) +
       geom_boxplot() +
       ylim(-1, 1) +
@@ -53,7 +53,7 @@ create.plots <- function(df.bench, plot.dir, varied.parameter) {
   # create special plots
   df.bench %>%
     dplyr::filter(type == "runtime") %>%
-    gather("variable", "value", -parameter, -type, -varied.parameter) %>%
+    gather("variable", "value", -parameter, -type, -varied.parameter, -rng.seed) %>%
     mutate(value=lubridate::as.duration(value)) %>%
     ggplot(aes(x=parameter, y=value, fill=parameter)) +
     geom_boxplot() +

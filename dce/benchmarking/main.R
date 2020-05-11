@@ -95,6 +95,9 @@ df.bench <- purrr::pmap_dfr(
   purrr::possibly(
     function(parameter, index) {
       # handle parametrization
+      rng.seed <- seed.list[index]
+      set.seed(rng.seed)
+
       switch(
         varied.parameter,
         node.num={ node.num <- parameter },
@@ -107,8 +110,7 @@ df.bench <- purrr::pmap_dfr(
         true.positives={ true.positives <- parameter }
       )
 
-      set.seed(seed.list[index])
-      print(glue::glue("seed={seed.list[index]} node.num={node.num} wt.samples={wt.samples} mt.samples={mt.samples} beta.magnitude={beta.magnitude} dispersion={dispersion} adjustment.type={adjustment.type} perturb={perturb}"))
+      print(glue::glue("seed={rng.seed} node.num={node.num} wt.samples={wt.samples} mt.samples={mt.samples} beta.magnitude={beta.magnitude} dispersion={dispersion} adjustment.type={adjustment.type} perturb={perturb}"))
 
 
       # generate graphs
@@ -223,7 +225,7 @@ df.bench <- purrr::pmap_dfr(
             mutate(type="mean.estimate"),
 
         ) %>%
-          mutate(parameter=parameter) %>% mutate(varied.parameter=varied.parameter)
+          mutate(parameter=parameter, varied.parameter=varied.parameter, rng.seed=rng.seed)
     },
     otherwise = NULL,
     quiet = FALSE
