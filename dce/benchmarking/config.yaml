@@ -1,4 +1,4 @@
-script_replicates: 10
+script_replicates: 5
 rule_replicates: 10
 
 benchmarks:
