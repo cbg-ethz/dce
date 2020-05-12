@@ -36,17 +36,21 @@ create.plots <- function(df.bench, plot.dir, varied.parameter) {
   for (measure in performance.measures) {
     print(glue::glue("Plotting {measure}"))
 
-    df.bench %>%
+    p <- df.bench %>%
       dplyr::filter(type == measure) %>%
       gather("variable", "value", -parameter, -type, -varied.parameter, -rng.seed) %>%
       ggplot(aes(x=parameter, y=value, fill=variable)) +
       geom_boxplot() +
-      ylim(-1, 1) +
       ggtitle(paste("Variable:", varied.parameter)) +
       ylab(glue::glue("{measure} (truth vs prediction)")) +
       theme_minimal(base_size=20) +
-      theme(plot.title=element_text(hjust=0.5)) +
-      ggsave(file.path(plot.dir, glue::glue("benchmark_{measure}.pdf")))
+      theme(plot.title=element_text(hjust=0.5))
+
+    if (!(measure %in% c("mse"))) {
+      p <- p + ylim(-1, 1)
+    }
+
+    ggsave(file.path(plot.dir, glue::glue("benchmark_{measure}.pdf")), plot = p)
   }
 
 
