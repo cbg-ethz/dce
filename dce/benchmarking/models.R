@@ -46,7 +46,7 @@ run.all.models <- function(
   time.dce.lr <- as.integer(difftime(Sys.time(), time.tmp, units = "secs"))
 
   time.tmp <- Sys.time()
-  tmp <- as(wt.graph.perturbed, "matrix") * 0
+  tmp <- as(wt.graph.perturbed, "matrix") * NA
   tmp[which(as(wt.graph.perturbed, "matrix") != 0)] = (
     runif(sum(as(wt.graph.perturbed, "matrix") != 0), negweight.range[1], posweight.range[2]) -
       runif(sum(as(wt.graph.perturbed, "matrix") != 0), negweight.range[1], posweight.range[2])
