@@ -117,7 +117,7 @@ df.bench <- purrr::pmap_dfr(
       if (sample.kegg) {
         graphs <- sample.graph.from.kegg(kegg.dag)
       } else {
-          graphs <- generate.random.graphs(node.num, beta.magnitude, true.positives)
+        graphs <- generate.random.graphs(node.num, beta.magnitude, true.positives)
       }
 
       wt.graph <- graphs$wt
