@@ -46,13 +46,13 @@ run.all.models <- function(
   time.dce.lr <- as.integer(difftime(Sys.time(), time.tmp, units = "secs"))
 
   time.tmp <- Sys.time()
-  tmp <- as.matrix(ground.truth$dce)
-  tmp[which(as.matrix(ground.truth$dce) != 0)] = (
-    runif(sum(as.matrix(ground.truth$dce) != 0), negweight.range[1], posweight.range[2]) -
-      runif(sum(as.matrix(ground.truth$dce) != 0), negweight.range[1], posweight.range[2])
+  tmp <- as(wt.graph.perturbed, "matrix") * 0
+  tmp[which(as(wt.graph.perturbed, "matrix") != 0)] = (
+    runif(sum(as(wt.graph.perturbed, "matrix") != 0), negweight.range[1], posweight.range[2]) -
+      runif(sum(as(wt.graph.perturbed, "matrix") != 0), negweight.range[1], posweight.range[2])
   )
-  tmp.pvals <- tmp*0
-  tmp.pvals[which(as.matrix(ground.truth$dce) != 0)] <- runif(sum(as.matrix(ground.truth$dce) != 0), 0, 1)
+  tmp.pvals <- as(wt.graph.perturbed, "matrix") * 0
+  tmp.pvals[which(as(wt.graph.perturbed, "matrix") != 0)] <- runif(sum(as(wt.graph.perturbed, "matrix") != 0), 0, 1)
   res.rand <- list(dce = tmp, dce.pvalue = tmp.pvals)
   time.rand <- as.integer(difftime(Sys.time(), time.tmp, units = "secs"))
 
