@@ -190,8 +190,8 @@ df.bench <- purrr::pmap_dfr(
             rownames_to_column(var="type"),
 
           apply.performance.measure(df.edges, compute.mse, "mse"),
-          apply.performance.measure(df.pvalues, compute.prec, "precision"),
-          apply.performance.measure(df.pvalues, compute.prec, "recall", do = "rec"),
+          apply.performance.measure(df.pvalues, compute.precision, "precision"),
+          apply.performance.measure(df.pvalues, compute.recall, "recall"),
           apply.performance.measure(df.pvalues, compute.prauc, "pr-auc"),
           apply.performance.measure(df.pvalues, compute.rocauc, "roc-auc"),
 
