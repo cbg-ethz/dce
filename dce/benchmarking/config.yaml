@@ -1,5 +1,5 @@
 script_replicates: 5
-rule_replicates: 10
+rule_replicates: 20
 
 benchmarks:
     node.num: '10,50,100'
