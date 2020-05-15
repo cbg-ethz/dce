@@ -338,12 +338,14 @@ get_prediction_counts <- function(truth, inferred, cutoff = 0.5) {
     tp <- sum(
         abs(truth) > cutoff &
         abs(inferred) > cutoff &
-        sign(truth) == sign(inferred) & inferred != 0
+        sign(truth) == sign(inferred) & inferred != 0,
+        na.rm = TRUE
     )
     fn <- sum(
         abs(truth) > cutoff &
         abs(inferred) <= cutoff &
-        inferred != 0
+        inferred != 0,
+        na.rm = TRUE
     )
     fp <- sum(
         abs(truth) <= cutoff &
@@ -353,12 +355,14 @@ get_prediction_counts <- function(truth, inferred, cutoff = 0.5) {
             abs(inferred) > cutoff &
             sign(truth) != sign(inferred)
         ) &
-        inferred != 0
+        inferred != 0,
+        na.rm = TRUE
     )
     tn <- sum(
         abs(truth) <= cutoff &
         abs(inferred) <= cutoff &
-        inferred != 0
+        inferred != 0,
+        na.rm = TRUE
     )
 
     return(data.frame(
