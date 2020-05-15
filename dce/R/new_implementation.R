@@ -174,7 +174,7 @@ setMethod(
 
             # fit model
             form <- paste0("Y ~ N * X", form.adjustment.suffix)
-            
+
             if (verbose) {
                 print(df.data %>% head)
                 print(form)
@@ -184,24 +184,24 @@ setMethod(
                 form = form, df = df.data,
                 solver = solver, solver.args = solver.args
             )
-            
+
             # extract results
             coef.mat <- summary(fit)$coefficients
             coef.xn <- NA
             pval.xn <- NA
-               
+
             if (test == "lr") {
                 form2 <- paste0("Y ~ N + X", form.adjustment.suffix)
                 
                 if (verbose) {
                     print(form2)
                 }
-                 
+
                 fit2 <- glm.solver(
                     form = form2, df = df.data,
                     solver = solver, solver.args = solver.args
                 )
-                
+
                 if (length(grep("N:X", rownames(coef.mat))) != 0) {
                     coef.xn <- coef.mat["N:X", "Estimate"]
                     pval.xn <- lmtest::lrtest(fit, fit2)[[5]][2]
@@ -252,7 +252,7 @@ setMethod(
         require(metap)
         pathway.pvalue <- do.call(p.method, list(p=tmp))$p
     }
-    
+
     # return appropriate object
     structure(list(
         graph = graph,
