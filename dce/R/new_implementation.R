@@ -192,7 +192,7 @@ setMethod(
 
             if (test == "lr") {
                 form2 <- paste0("Y ~ N + X", form.adjustment.suffix)
-                
+
                 if (verbose) {
                     print(form2)
                 }
@@ -231,13 +231,11 @@ setMethod(
     rownames(dce.pvalue.mat) <- colnames(dce.pvalue.mat) <- rownames(graph)
 
     # make uncomputed values NA
-    graph.tc <- nem::transitive.closure(graph, mat = TRUE)
-
     diag(dce.mat) <- NA
-    dce.mat[which(graph.tc == 0)] <- NA
+    dce.mat[which(graph == 0)] <- NA
 
     diag(dce.pvalue.mat) <- NA
-    dce.pvalue.mat[which(graph.tc == 0)] <- NA
+    dce.pvalue.mat[which(graph == 0)] <- NA
 
     # compute overall pathway enrichment
     tmp <- dce.pvalue.mat[!is.na(dce.pvalue.mat)]
