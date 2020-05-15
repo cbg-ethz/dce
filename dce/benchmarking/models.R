@@ -51,7 +51,7 @@ run.all.models <- function(
     runif(sum(as(wt.graph.perturbed, "matrix") != 0), negweight.range[1], posweight.range[2]) -
       runif(sum(as(wt.graph.perturbed, "matrix") != 0), negweight.range[1], posweight.range[2])
   )
-  tmp.pvals <- as(wt.graph.perturbed, "matrix") * 0
+  tmp.pvals <- as(wt.graph.perturbed, "matrix") * NA
   tmp.pvals[which(as(wt.graph.perturbed, "matrix") != 0)] <- runif(sum(as(wt.graph.perturbed, "matrix") != 0), 0, 1)
   res.rand <- list(dce = tmp, dce.pvalue = tmp.pvals)
   time.rand <- as.integer(difftime(Sys.time(), time.tmp, units = "secs"))
