@@ -464,19 +464,48 @@ resample_edge_weights <- function(g, lB = -1, uB = 1, tp = 1) {
     if (uB[1] - uB[2] == 0) {
         uB <- lB
     }
-    n <- length(g@nodes)
-    w <- g@edgeData@data
-    arediff <- sample(seq_len(length(w)), floor(tp*length(w)))
-    for (i in arediff) {
-        die <- sample(c(0,1), 1)
-        if (die) {
-            w[[i]]$weight <- runif(1, lB[1], lB[2])
-        } else {
-            w[[i]]$weight <- runif(1, uB[1], uB[2])
+    gold <- g
+    g <- as(g, "matrix")
+    changes <- floor((1-tp)*sum(g != 0))
+    matpow <- function(x, n) {
+        for (i in seq(n-1)) {
+            if (n == 1) { break() }
+            x <- x%*%x
         }
+        return(x)
     }
-    g@edgeData@data <- w
-    return(g)
+    gbin <- g
+    gbin[which(gbin != 0)] <- 1
+    count <- 0
+    gtr <- gbin
+    start <- TRUE
+    while(sum(gtr) < changes & sum(gtr) != 0 | start) {
+        start <- FALSE
+        count <- count + 1
+        gtr <- matpow(gtr, count)
+        if (changes == 1 | sum(gtr) == 1) {
+            keep <- c(keep, which(gtr == 1))
+        } else {
+            keep <- c(keep,
+                      sample(which(gtr == 1),
+                             min(changes, sum(gtr))))
+        }
+        changes <- changes - sum(gtr)
+    }
+    g2 <- g
+    pos <- sample(which(g != 0), floor(sum(g != 0)*0.5))
+    g[pos] <- runif(length(pos), uB[1], uB[2])
+    neg <- sample(intersect(which(g != 0),
+                            which(!(seq(length(g)) %in% pos))),
+                  floor(sum(g != 0)*0.5))
+    g[neg] <- runif(length(neg), lB[1], lB[2])
+    g[keep] <- g2[keep]
+    edges <- which(gbin == 1, arr.ind = TRUE)
+    for (i in seq(nrow(edges))) {
+        edge <- paste0(rownames(gbin)[edges[i, 1]], "|", rownames(gbin)[edges[i, 2]])
+        gold@edgeData@data[[edge]]$weight <- g[edges[i, 1],edges[i, 2]]
+    }
+    return(gold)
 }
 #' @noRd
 #' @author modified code from the package 'bayesm'
