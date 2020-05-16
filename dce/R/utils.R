@@ -479,6 +479,7 @@ resample_edge_weights <- function(g, lB = -1, uB = 1, tp = 1) {
     count <- 0
     gtr <- gbin
     start <- TRUE
+    keep <- NULL
     while(sum(gtr) < changes & sum(gtr) != 0 | start) {
         start <- FALSE
         count <- count + 1
