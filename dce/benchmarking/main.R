@@ -15,6 +15,7 @@ Benchmark DCE performance and runtime.
 
 Usage:
   main.R
+  main.R --variable NAME --values VALUES --replicates INT --output STR
   main.R --variable NAME --values VALUES --append BOOL --replicates INT --link STR --output STR
 
 Options:

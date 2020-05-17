@@ -22,9 +22,7 @@ rule run_benchmark:
             '--variable', wildcards.varied_param,
             '--values', config['benchmarks'][wildcards.varied_param],
             '--replicates', config['script_replicates'],
-            '--link', 'identity',
             '--output', output.fname,
-            '--append', 'FALSE',
             _fg=True
         )
 
