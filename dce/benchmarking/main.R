@@ -162,9 +162,44 @@ df.bench <- purrr::pmap_dfr(
       df.runtime <- res$runtime
 
 
-      # make performance evaluation fairer by only comparing results for existing edges
-      df.edges %<>% dplyr::filter(as.vector(as(wt.graph, "matrix")) != 0)
-      df.pvalues %<>% dplyr::filter(as.vector(as(wt.graph, "matrix")) != 0)
+      # modify predictions
+      #  * if edge exists only in original graph (but not in perturbed one), it should be a false negative if truth != 0
+      #  * for performance evaluation use all entries with edge in original or perturbed graph
+      df.all <- bind_cols(
+        data.frame(orig.edge=as.numeric(as.vector(as(wt.graph, "matrix")) != 0)),
+        data.frame(pert.edge=as.numeric(as.vector(as(wt.graph.perturbed, "matrix")) != 0)),
+        df.pvalues
+      )
+
+      df.all %<>%
+        mutate(
+          cor = case_when(
+            pert.edge == orig.edge | pert.edge == 1 ~ cor,
+            pert.edge != orig.edge ~ 1
+          ),
+          pcor = case_when(
+            pert.edge == orig.edge | pert.edge == 1 ~ pcor,
+            pert.edge != orig.edge ~ 1
+          ),
+          dce = case_when(
+            pert.edge == orig.edge | pert.edge == 1 ~ dce,
+            pert.edge != orig.edge ~ 1
+          ),
+          dce.lr = case_when(
+            pert.edge == orig.edge | pert.edge == 1 ~ dce.lr,
+            pert.edge != orig.edge ~ 1
+          ),
+          rand = case_when(
+            pert.edge == orig.edge | pert.edge == 1 ~ rand,
+            pert.edge != orig.edge ~ 1
+          )
+        )
+
+      df.all %<>%
+        dplyr::filter(orig.edge | pert.edge)
+
+      df.pvalues.mod <- df.all %>%
+        select(-orig.edge, -pert.edge)
 
 
       # return performance computation
@@ -191,10 +226,10 @@ df.bench <- purrr::pmap_dfr(
             rownames_to_column(var="type"),
 
           apply.performance.measure(df.edges, compute.mse, "mse"),
-          apply.performance.measure(df.pvalues, compute.precision, "precision"),
-          apply.performance.measure(df.pvalues, compute.recall, "recall"),
-          apply.performance.measure(df.pvalues, compute.prauc, "pr-auc"),
-          apply.performance.measure(df.pvalues, compute.rocauc, "roc-auc"),
+          apply.performance.measure(df.pvalues.mod, compute.precision, "precision"),
+          apply.performance.measure(df.pvalues.mod, compute.recall, "recall"),
+          apply.performance.measure(df.pvalues.mod, compute.prauc, "pr-auc"),
+          apply.performance.measure(df.pvalues.mod, compute.rocauc, "roc-auc"),
 
           df.runtime %>% mutate(type="runtime"),
 
