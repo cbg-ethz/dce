@@ -15,11 +15,15 @@ run.all.models <- function(
   time.tmp <- Sys.time()
   res.cor <- list(dce = cor(mt.X) - cor(wt.X))
   res.cor$dce.pvalue <- pcor_perm(wt.X, mt.X, fun = cor)
+  res.cor$dce[as(wt.graph.perturbed, "matrix") == 0] <- NA
+  res.cor$dce.pvalue[as(wt.graph.perturbed, "matrix") == 0] <- NA
   time.cor <- as.integer(difftime(Sys.time(), time.tmp, units = "secs"))
 
   time.tmp <- Sys.time()
   res.pcor <- list(dce = pcor(mt.X) - pcor(wt.X))
   res.pcor$dce.pvalue <- pcor_perm(wt.X, mt.X, fun = pcor)
+  res.pcor$dce[as(wt.graph.perturbed, "matrix") == 0] <- NA
+  res.pcor$dce.pvalue[as(wt.graph.perturbed, "matrix") == 0] <- NA
   time.pcor <- as.integer(difftime(Sys.time(), time.tmp, units = "secs"))
 
   # differential causal effects
