@@ -105,6 +105,10 @@ create.plots <- function(df.bench, plot.dir, varied.parameter) {
 
 
 # read data
+if (!dir.exists(target.dir)) {
+  dir.create(target.dir, recursive = TRUE)
+}
+
 df.bench <- read_csv(input.fname)
 
 tmp <- df.bench %>% pull(varied.parameter) %>% unique
