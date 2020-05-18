@@ -231,10 +231,5 @@ df.bench <- purrr::pmap_dfr(
     otherwise = NULL,
     quiet = FALSE
   )
-) %>% {
-  if (append && file.exists(output.fname)) {
-    write_csv(., output.fname, append = append)
-  } else {
-    write_csv(., output.fname, append = append, col_names = TRUE)
-  }
-}
+) %>%
+  write_csv(output.fname, append = append, col_names = !(append && file.exists(output.fname)))
