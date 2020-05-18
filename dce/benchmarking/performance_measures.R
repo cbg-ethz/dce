@@ -31,7 +31,7 @@ get.classification.counts <- function(df, col, alpha = 0.05) {
 }
 
 compute.mse <- function(df, col) {
-  return(mean((df[[col]] - df$true)^2))
+  return(mean((df[[col]] - df$truth)^2, na.rm = TRUE))
 }
 
 compute.precision <- function(df, col, alpha = .05) {
