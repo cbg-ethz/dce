@@ -123,8 +123,9 @@ df.bench <- purrr::pmap_dfr(
 
       wt.graph <- graphs$wt
       mt.graph <- graphs$mt
-
-
+  
+      prevalence <- compute.prevalence(wt.graph, mt.graph)
+      
       # generate data
       wt.X <- simulate_data(wt.graph, n = wt.samples, dist.dispersion = dispersion, dist.mean = dist.mean)
       mt.X <- simulate_data(mt.graph, n = mt.samples, dist.dispersion = dispersion, dist.mean = dist.mean)
@@ -259,7 +260,16 @@ df.bench <- purrr::pmap_dfr(
             rand=mean.estimate
           ) %>%
             mutate(type="mean.estimate"),
-
+          
+          data.frame(
+            cor=prevalence,
+            pcor=prevalence,
+            dce=prevalence,
+            dce.lr=prevalence,
+            rand=prevalence
+          ) %>%
+            mutate(type="prevalence"),
+          
         ) %>%
           mutate(parameter=parameter, varied.parameter=varied.parameter, rng.seed=rng.seed)
     },

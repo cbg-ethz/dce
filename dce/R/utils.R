@@ -467,31 +467,31 @@ resample_edge_weights <- function(g, lB = -1, uB = 1, tp = 1) {
     gold <- g
     g <- as(g, "matrix")
     changes <- floor((1-tp)*sum(g != 0))
-    matpow <- function(x, n) {
-        for (i in seq(n-1)) {
-            if (n == 1) { break() }
-            x <- x%*%x
-        }
-        return(x)
-    }
     gbin <- g
     gbin[which(gbin != 0)] <- 1
-    count <- 0
-    gtr <- gbin
+    gtr <- gtr2 <- nem::transitive.reduction(gbin)
+    diag(gtr) <- 1
+    noedges <- 1
     start <- TRUE
     keep <- NULL
-    while(sum(gtr) < changes & sum(gtr) != 0 | start) {
+    while(changes > 0 & sum(gtr2) != 0 | start) {
         start <- FALSE
-        count <- count + 1
-        gtr <- matpow(gtr, count)
-        if (changes == 1 | sum(gtr) == 1) {
-            keep <- c(keep, which(gtr == 1))
+        if (changes == 1 & sum(gtr2) == 1) {
+            keep <- c(keep, which(gtr2 == 1))
         } else {
             keep <- c(keep,
-                      sample(which(gtr == 1),
-                             min(changes, sum(gtr))))
+                      sample(which(gtr2 == 1),
+                             min(changes, sum(gtr2))))
         }
-        changes <- changes - sum(gtr)
+        changes <- changes - sum(gtr2)
+        diag(gtr2) <- 1
+        gtr2[noedges] <- 1
+        gtr2[keep] <- 1
+        gtr2 <- gtr2%*%gtr
+        gtr2[which(gtr2 > 0)] <- 1
+        noedges <- which(gbin == 0 & gtr2 == 1)
+        gtr2[noedges] <- 0
+        gtr2[keep] <- 0
     }
     g2 <- g
     pos <- sample(which(g != 0), floor(sum(g != 0)*0.5))

@@ -55,3 +55,10 @@ perturb.dag <- function(dag, perturb) {
 
   return(p.dag)
 }
+
+compute.prevalence <- function(wt.graph, mt.graph) {
+  wt.a <- as(wt.graph, "matrix")
+  mt.a <- as(mt.graph, "matrix")
+  p <- sum(wt.a != mt.a)/sum(wt.a != 0)
+  return(p)
+}
