@@ -642,7 +642,7 @@ summary.glmmle <- function(x) {
 }
 #' @importFrom edgeR DGEList calcNormFactors estimateDisp
 #' @noRd
-estimateTheta <- function(data) {
+estimateTheta <- function(data, ...) {
     if (is.null(dim(data))) {
         data <- matrix(data, length(data))
     }
@@ -654,7 +654,7 @@ estimateTheta <- function(data) {
     } else {
         y <- edgeR::DGEList(counts=t(data))
         y <- edgeR::calcNormFactors(y)
-        y <- edgeR::estimateDisp(y)
+        y <- edgeR::estimateDisp(y, ...)
         theta <- 1/y$common.dispersion
     }
     return(theta)

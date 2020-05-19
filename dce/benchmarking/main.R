@@ -130,7 +130,10 @@ df.bench <- purrr::pmap_dfr(
       wt.X <- simulate_data(wt.graph, n = wt.samples, dist.dispersion = dispersion, dist.mean = dist.mean)
       mt.X <- simulate_data(mt.graph, n = mt.samples, dist.dispersion = dispersion, dist.mean = dist.mean)
 
-      dispersion.estimate <- estimateTheta(rbind(wt.X, mt.X))
+      xt <- c(rep(0,nrow(wt.X)),rep(1,nrow(mt.X)))
+      names(xt) <- "group"
+      design <- model.matrix(~xt)
+      dispersion.estimate <- estimateTheta(rbind(wt.X, mt.X), design = design)
       mean.estimate <- mean(rbind(wt.X, mt.X))
 
 
