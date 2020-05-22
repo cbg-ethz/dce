@@ -9,7 +9,10 @@ generate.random.graphs <- function(node.num, beta.magnitude, true.positives) {
     wt.graph <- create_random_DAG(node.num, edge.prob, negweight.range, posweight.range)
   }
 
-  mt.graph <- resample_edge_weights(wt.graph, negweight.range, posweight.range, tp = true.positives)
+  mt.graph <- resample_edge_weights(wt.graph, tp = true.positives,
+                                    mineff = beta.magnitude,
+                                    maxeff = 0.01,
+                                    method = "exp")
 
   return(list(wt=wt.graph, mt=mt.graph))
 }
@@ -61,4 +64,14 @@ compute.prevalence <- function(wt.graph, mt.graph) {
   mt.a <- as(mt.graph, "matrix")
   p <- sum(wt.a != mt.a)/sum(wt.a != 0)
   return(p)
+}
+
+compute.dce.stats <- function(wt.graph, mt.graph) {
+  ground.truth <- abs(trueEffects(mt.graph) - trueEffects(wt.graph))
+  ground.truth[which(ground.truth == 0)] <- NA
+  res <- list(min = min(ground.truth, na.rm = TRUE),
+              max = max(ground.truth, na.rm = TRUE),
+              median = median(ground.truth, na.rm = TRUE),
+              mean = mean(ground.truth, na.rm = TRUE))
+  return(res)
 }

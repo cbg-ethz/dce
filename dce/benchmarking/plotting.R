@@ -68,7 +68,20 @@ create.plots <- function(df.bench, plot.dir, varied.parameter) {
     theme_minimal() +
     theme(plot.title=element_text(hjust=0.5)) +
     ggsave(file.path(plot.dir, "benchmark_runtime.pdf"))
-
+  
+  df.bench %>%
+    dplyr::filter(grepl("^dce.", type)) %>%
+    dplyr::select(dce, type, parameter, varied.parameter) %>%
+    ggplot(aes(x=parameter, y=dce, fill=type)) +
+    scale_y_continuous(trans = 'log10') +
+    # scale_y_log10() +
+    geom_boxplot() +
+    ggtitle(paste("Variable:", varied.parameter)) +
+    ylab("value") +
+    theme_minimal(base_size=20) +
+    theme(plot.title=element_text(hjust=0.5)) +
+    ggsave(file.path(plot.dir, "benchmark_dce_range.pdf"))
+  
   df.bench %>%
     dplyr::filter(grepl("^graph.", type)) %>%
     dplyr::select(dce, type, parameter, varied.parameter) %>%

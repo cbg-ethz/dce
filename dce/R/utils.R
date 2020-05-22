@@ -446,24 +446,20 @@ create_random_DAG <- function (
 #'
 #' Takes a graph and modifies edge weights.
 #' @param g original graph
-#' @param lB lower bound for new edge weights
-#' @param uB upper bound for new edge weights
 #' @param tp fraction of edge weights which will be modified
+#' @param mineff minimal differential effect size
+#' @param maxeff maximum effect effect size or standard deviation,
+#' if method is "gauss"
+#' @param method method for drawing the differential for the causal effects. can be "runif", "exp" or "gauss".
 #' @author Martin Pirkl
 #' @return graph with new edge weights
 #' @export
 #' @examples
 #' graph.wt <- as(matrix(c(0,0,0,1,0,0,0,1,0), 3), "graphNEL")
 #' graph.mt <- resample_edge_weights(graph.wt)
-resample_edge_weights <- function(g, lB = -1, uB = 1, tp = 1) {
-    if (length(uB) == 1) { uB <- c(0, uB) }
-    if (length(lB) == 1) { lB <- c(lB, 0) }
-    if (lB[1] - lB[2] == 0) {
-        lB <- uB
-    }
-    if (uB[1] - uB[2] == 0) {
-        uB <- lB
-    }
+resample_edge_weights <- function(g, tp = 1,
+                                  mineff = 1, maxeff = 2,
+                                  method = "runif") {
     gold <- g
     g <- as(g, "matrix")
     changes <- floor((1-tp)*sum(g != 0))
@@ -494,12 +490,30 @@ resample_edge_weights <- function(g, lB = -1, uB = 1, tp = 1) {
         gtr2[keep] <- 0
     }
     g2 <- g
-    pos <- sample(which(g != 0), floor(sum(g != 0)*0.5))
-    g[pos] <- runif(length(pos), uB[1], uB[2])
-    neg <- sample(intersect(which(g != 0),
-                            which(!(seq(length(g)) %in% pos))),
-                  floor(sum(g != 0)*0.5))
-    g[neg] <- runif(length(neg), lB[1], lB[2])
+    change <- which(g != 0)
+    change <- unlist(lapply(change, function(x) {
+        eff <- g2[x]
+        die <- sample(c(0,1), 1)
+        if (die) {
+            if (method == "runif") {
+                effnew <- runif(1, eff+mineff, eff+maxeff)
+            } else if (method == "gauss") {
+                effnew <- eff+mineff+abs(rnorm(1, 0, maxeff))
+            } else if (method == "exp") {
+                effnew <- eff+mineff+rexp(1, maxeff)
+            }
+        } else {
+            if (method == "runif") {
+                effnew <- runif(1, eff-maxeff, eff-mineff)
+            } else if (method == "gauss") {
+                effnew <- eff-mineff-abs(rnorm(1, 0, maxeff))
+            } else if (method == "exp") {
+                effnew <- eff-mineff-rexp(1, maxeff)
+            }
+        }
+        return(effnew)
+    }))
+    g[which(g != 0)] <- change
     g[keep] <- g2[keep]
     edges <- which(gbin == 1, arr.ind = TRUE)
     for (i in seq(nrow(edges))) {

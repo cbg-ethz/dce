@@ -37,7 +37,7 @@ wt.samples <- 200
 mt.samples <- 200
 
 beta.magnitude <- 1
-dist.mean <- 1000
+dist.mean <- 100
 dispersion <- 1
 adjustment.type <- "parents"
 
@@ -125,6 +125,9 @@ df.bench <- purrr::pmap_dfr(
       mt.graph <- graphs$mt
   
       prevalence <- compute.prevalence(wt.graph, mt.graph)
+      
+      # compute dce stats
+      dce.stats <- compute.dce.stats(wt.graph, mt.graph)
       
       # generate data
       wt.X <- simulate_data(wt.graph, n = wt.samples, dist.dispersion = dispersion, dist.mean = dist.mean)
@@ -245,6 +248,42 @@ df.bench <- purrr::pmap_dfr(
             rand=graph.density
           ) %>%
             mutate(type="graph.density"),
+
+          data.frame(
+            cor=dce.stats$min,
+            pcor=dce.stats$min,
+            dce=dce.stats$min,
+            dce.lr=dce.stats$min,
+            rand=dce.stats$min
+          ) %>%
+            mutate(type="dce.min"),
+
+          data.frame(
+            cor=dce.stats$max,
+            pcor=dce.stats$max,
+            dce=dce.stats$max,
+            dce.lr=dce.stats$max,
+            rand=dce.stats$max
+          ) %>%
+            mutate(type="dce.max"),
+
+          data.frame(
+            cor=dce.stats$median,
+            pcor=dce.stats$median,
+            dce=dce.stats$median,
+            dce.lr=dce.stats$median,
+            rand=dce.stats$median
+          ) %>%
+            mutate(type="dce.median"),
+
+          data.frame(
+            cor=dce.stats$mean,
+            pcor=dce.stats$mean,
+            dce=dce.stats$mean,
+            dce.lr=dce.stats$mean,
+            rand=dce.stats$mean
+          ) %>%
+            mutate(type="dce.mean"),
 
           data.frame(
             cor=dispersion.estimate,
