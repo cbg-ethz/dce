@@ -308,7 +308,7 @@ plot.dce <- function(
         }
     )
 
-    as_tbl_graph(x$graph) %>%
+    as_tbl_graph(as(x$graph, "graphNEL")) %>%
         activate(nodes) %>%
         mutate(
             label=if(is.null(nodename.map)) .data$name else nodename.map[.data$name]
