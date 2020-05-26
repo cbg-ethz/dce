@@ -31,7 +31,7 @@ print(glue::glue("{input.fname} -> {target.dir}"))
 # helper functions
 create.plots <- function(df.bench, plot.dir, varied.parameter) {
   # create performance plots
-  performance.measures <- c("correlation", "mse", "precision", "recall", "pr-auc", "roc-auc")
+  performance.measures <- c("correlation", "mse", "precision", "recall", "f1-score", "pr-auc", "roc-auc")
 
   for (measure in performance.measures) {
     print(glue::glue("Plotting {measure}"))
@@ -68,7 +68,7 @@ create.plots <- function(df.bench, plot.dir, varied.parameter) {
     theme_minimal() +
     theme(plot.title=element_text(hjust=0.5)) +
     ggsave(file.path(plot.dir, "benchmark_runtime.pdf"))
-  
+
   df.bench %>%
     dplyr::filter(grepl("^dce.", type)) %>%
     dplyr::select(dce, type, parameter, varied.parameter) %>%
@@ -81,7 +81,7 @@ create.plots <- function(df.bench, plot.dir, varied.parameter) {
     theme_minimal(base_size=20) +
     theme(plot.title=element_text(hjust=0.5)) +
     ggsave(file.path(plot.dir, "benchmark_dce_range.pdf"))
-  
+
   df.bench %>%
     dplyr::filter(grepl("^graph.", type)) %>%
     dplyr::select(dce, type, parameter, varied.parameter) %>%
@@ -114,7 +114,7 @@ create.plots <- function(df.bench, plot.dir, varied.parameter) {
     theme_minimal(base_size=20) +
     theme(plot.title=element_text(hjust=0.5)) +
     ggsave(file.path(plot.dir, "benchmark_mean_estimate.pdf"))
-  
+
   df.bench %>%
     dplyr::filter(grepl("^prevalence$", type)) %>%
     dplyr::select(dce, type, parameter, varied.parameter) %>%

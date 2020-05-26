@@ -123,12 +123,12 @@ df.bench <- purrr::pmap_dfr(
 
       wt.graph <- graphs$wt
       mt.graph <- graphs$mt
-  
+
       prevalence <- compute.prevalence(wt.graph, mt.graph)
-      
+
       # compute dce stats
       dce.stats <- compute.dce.stats(wt.graph, mt.graph)
-      
+
       # generate data
       wt.X <- simulate_data(wt.graph, n = wt.samples, dist.dispersion = dispersion, dist.mean = dist.mean)
       mt.X <- simulate_data(mt.graph, n = mt.samples, dist.dispersion = dispersion, dist.mean = dist.mean)
@@ -235,6 +235,7 @@ df.bench <- purrr::pmap_dfr(
           apply.performance.measure(df.edges, compute.mse, "mse"),
           apply.performance.measure(df.pvalues.mod, compute.precision, "precision"),
           apply.performance.measure(df.pvalues.mod, compute.recall, "recall"),
+          apply.performance.measure(df.pvalues.mod, compute.f1score, "f1-score"),
           apply.performance.measure(df.pvalues.mod, compute.prauc, "pr-auc"),
           apply.performance.measure(df.pvalues.mod, compute.rocauc, "roc-auc"),
 
@@ -302,7 +303,7 @@ df.bench <- purrr::pmap_dfr(
             rand=mean.estimate
           ) %>%
             mutate(type="mean.estimate"),
-          
+
           data.frame(
             cor=prevalence,
             pcor=prevalence,
@@ -311,7 +312,7 @@ df.bench <- purrr::pmap_dfr(
             rand=prevalence
           ) %>%
             mutate(type="prevalence"),
-          
+
         ) %>%
           mutate(parameter=parameter, varied.parameter=varied.parameter, rng.seed=rng.seed)
     },

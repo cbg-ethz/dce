@@ -44,6 +44,13 @@ compute.recall <- function(df, col, alpha = .05) {
   return(c$tp / (c$tp + c$fn))
 }
 
+compute.f1score <- function(df, col, alpha = .05) {
+  prec <- compute.precision(df, col, alpha = alpha)
+  reca <- compute.recall(df, col, alpha = alpha)
+
+  return(2 * prec * reca / (prec + reca))
+}
+
 compute.prauc <- function(df, col, seq = 1000, NAweight = 1) {
   prec <- rec <- numeric(seq)
   auc <- 0
