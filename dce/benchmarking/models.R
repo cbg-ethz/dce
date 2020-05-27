@@ -2,7 +2,9 @@ run.all.models <- function(
   wt.graph, wt.X,
   mt.graph, mt.X,
   wt.graph.perturbed,
-  beta.magnitude
+  beta.magnitude,
+  methods = c("cor", "pcor", "dce", "dce.lr", "rand"),
+  lib.size = NULL
 ) {
   # for null model
   negweight.range <- c(-beta.magnitude, 0)
@@ -13,15 +15,25 @@ run.all.models <- function(
 
   # correlations
   time.tmp <- Sys.time()
-  res.cor <- list(dce = cor(mt.X) - cor(wt.X))
-  res.cor$dce.pvalue <- pcor_perm(wt.X, mt.X, fun = cor)
+  if ("cor" %in% methods) {
+    res.cor <- list(dce = cor(mt.X) - cor(wt.X))
+    res.cor$dce.pvalue <- pcor_perm(wt.X, mt.X, fun = cor)
+  } else {
+    res.cor <- ground.truth
+    res.cor$dce.pvalue <- ground.truth$dce*0
+  }
   res.cor$dce[as(wt.graph.perturbed, "matrix") == 0] <- NA
   res.cor$dce.pvalue[as(wt.graph.perturbed, "matrix") == 0] <- NA
   time.cor <- as.integer(difftime(Sys.time(), time.tmp, units = "secs"))
 
   time.tmp <- Sys.time()
-  res.pcor <- list(dce = pcor(mt.X) - pcor(wt.X))
-  res.pcor$dce.pvalue <- pcor_perm(wt.X, mt.X, fun = pcor)
+  if ("pcor" %in% methods) {
+    res.pcor <- list(dce = pcor(mt.X) - pcor(wt.X))
+    res.pcor$dce.pvalue <- pcor_perm(wt.X, mt.X, fun = pcor)
+  } else {
+    res.pcor <- ground.truth
+    res.pcor$dce.pvalue <- ground.truth$dce*0
+  }
   res.pcor$dce[as(wt.graph.perturbed, "matrix") == 0] <- NA
   res.pcor$dce.pvalue[as(wt.graph.perturbed, "matrix") == 0] <- NA
   time.pcor <- as.integer(difftime(Sys.time(), time.tmp, units = "secs"))
@@ -34,30 +46,52 @@ run.all.models <- function(
   }
 
   time.tmp <- Sys.time()
-  res.dce <- dce::dce.nb(
-    wt.graph.perturbed, wt.X, mt.X,
-    adjustment.type = adjustment.type,
-    solver.args = solver.args
-  )
+  if ("dce" %in% methods) {
+    res.dce <- dce::dce.nb(
+      wt.graph.perturbed, wt.X, mt.X,
+      adjustment.type = adjustment.type,
+      solver.args = solver.args
+    )
+  } else {
+    res.dce <- ground.truth
+    res.dce$dce.pvalue <- ground.truth$dce*0
+    res.dce$dce[as(wt.graph.perturbed, "matrix") == 0] <- NA
+    res.dce$dce.pvalue[as(wt.graph.perturbed, "matrix") == 0] <- NA
+  }
   time.dce <- as.integer(difftime(Sys.time(), time.tmp, units = "secs"))
 
   time.tmp <- Sys.time()
-  res.dce.lr <- dce::dce.nb(
-    wt.graph.perturbed, wt.X, mt.X,
-    adjustment.type = adjustment.type,
-    solver.args = solver.args, test = "lr"
-  )
+  if ("dce.lr" %in% methods) {
+    res.dce.lr <- dce::dce.nb(
+      wt.graph.perturbed, wt.X, mt.X,
+      adjustment.type = adjustment.type,
+      solver.args = solver.args,#, test = "lr",
+      lib.size = lib.size
+    )
+  } else {
+    res.dce.lr <- ground.truth
+    res.dce.lr$dce.pvalue <- ground.truth$dce*0
+    res.dce.lr$dce[as(wt.graph.perturbed, "matrix") == 0] <- NA
+    res.dce.lr$dce.pvalue[as(wt.graph.perturbed, "matrix") == 0] <- NA
+  }
   time.dce.lr <- as.integer(difftime(Sys.time(), time.tmp, units = "secs"))
 
   time.tmp <- Sys.time()
-  tmp <- as(wt.graph.perturbed, "matrix") * NA
-  tmp[which(as(wt.graph.perturbed, "matrix") != 0)] = (
-    runif(sum(as(wt.graph.perturbed, "matrix") != 0), negweight.range[1], posweight.range[2]) -
-      runif(sum(as(wt.graph.perturbed, "matrix") != 0), negweight.range[1], posweight.range[2])
-  )
-  tmp.pvals <- as(wt.graph.perturbed, "matrix") * NA
-  tmp.pvals[which(as(wt.graph.perturbed, "matrix") != 0)] <- runif(sum(as(wt.graph.perturbed, "matrix") != 0), 0, 1)
-  res.rand <- list(dce = tmp, dce.pvalue = tmp.pvals)
+  if ("rand" %in% methods) {
+    tmp <- as(wt.graph.perturbed, "matrix") * NA
+    tmp[which(as(wt.graph.perturbed, "matrix") != 0)] = (
+      runif(sum(as(wt.graph.perturbed, "matrix") != 0), negweight.range[1], posweight.range[2]) -
+        runif(sum(as(wt.graph.perturbed, "matrix") != 0), negweight.range[1], posweight.range[2])
+    )
+    tmp.pvals <- as(wt.graph.perturbed, "matrix") * NA
+    tmp.pvals[which(as(wt.graph.perturbed, "matrix") != 0)] <- runif(sum(as(wt.graph.perturbed, "matrix") != 0), 0, 1)
+    res.rand <- list(dce = tmp, dce.pvalue = tmp.pvals)
+  } else {
+    res.rand <- ground.truth
+    res.rand$dce.pvalue <- ground.truth$dce*0
+    res.rand$dce[as(wt.graph.perturbed, "matrix") == 0] <- NA
+    res.rand$dce.pvalue[as(wt.graph.perturbed, "matrix") == 0] <- NA
+  }
   time.rand <- as.integer(difftime(Sys.time(), time.tmp, units = "secs"))
 
   # gather results
