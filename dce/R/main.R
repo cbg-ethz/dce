@@ -343,13 +343,14 @@ plot.dce <- function(
         geom_node_text(aes(label=.data$label), size=3) +
         scale_edge_color_gradient2(
             low="red", mid="grey", high="blue",
-            midpoint=0, limits=symlog(edgescale.limits)
+            midpoint=0, limits=symlog(edgescale.limits),
+            name='DCE (symlog)'
         ) +
-        scale_edge_width(range=c(1, 3), limit=c(0, edgescale.limits[[2]])) +
-        scale_edge_alpha(range=c(.1, 1), limit=c(0, edgescale.limits[[2]])) +
+        scale_edge_width(range=c(1, 3), limits=c(0, edgescale.limits[[2]]), guide=FALSE) +
+        scale_edge_alpha(range=c(.1, 1), limits=c(0, edgescale.limits[[2]]), guide=FALSE) +
         theme(
             panel.background=element_rect(fill="white"),
-            legend.position="none"
+            # legend.position="none"
         )
 }
 #' @export
