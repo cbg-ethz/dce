@@ -132,6 +132,16 @@ df.bench <- purrr::pmap_dfr(
       # generate data
       wt.X <- simulate_data(wt.graph, n = wt.samples, dist.dispersion = dispersion, dist.mean = dist.mean)
       mt.X <- simulate_data(mt.graph, n = mt.samples, dist.dispersion = dispersion, dist.mean = dist.mean)
+      pop <- 10000
+      X <- matrix(rnbinom(pop*(wt.samples+mt.samples), size = dispersion, mu = dist.mean), (wt.samples+mt.samples), pop)
+      # library size difference
+      lib.size.gtn <- sample(c(1:10), nrow(X), replace = TRUE)
+      wt.X <- wt.X*lib.size.gtn[seq_len(wt.samples)]
+      mt.X <- mt.X*lib.size.gtn[(wt.samples+1):(wt.samples+mt.samples)]
+      X <- X*lib.size.gtn
+      X <- cbind(rbind(wt.X, mt.X), X)
+      lib.size <- apply(X, 1, sum)
+      lib.size <- round(lib.size/min(lib.size))
 
       xt <- c(rep(0,nrow(wt.X)),rep(1,nrow(mt.X)))
       names(xt) <- "group"
@@ -157,11 +167,17 @@ df.bench <- purrr::pmap_dfr(
 
 
       # run models
+      methods <- c("cor", "pcor", "dce", "dce.lr", "rand")
+      if (node.num > 100) {
+        methods <- c("cor", "dce", "rand")
+      }
       res <- run.all.models(
         wt.graph, wt.X,
         mt.graph, mt.X,
         wt.graph.perturbed,
-        beta.magnitude
+        beta.magnitude,
+        methods = methods,
+        lib.size = lib.size
       )
 
       df.edges <- res$edges

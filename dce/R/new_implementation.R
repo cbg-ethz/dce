@@ -26,6 +26,7 @@ setGeneric(
         adjustment.type = "parents",
         p.method = "mean",
         test = "wald",
+        lib.size = NULL,
         verbose = FALSE
     ) {
         standardGeneric("dce")
@@ -44,6 +45,7 @@ setMethod(
         adjustment.type = "parents",
         p.method = "mean",
         test = "wald",
+        lib.size = NULL,
         verbose = FALSE
     ) {
         graph <- igraph::igraph.to.graphNEL(graph)
@@ -54,6 +56,7 @@ setMethod(
             adjustment.type,
             p.method,
             test,
+            lib.size,
             verbose
         )
     }
@@ -69,6 +72,7 @@ setMethod(
         adjustment.type = "parents",
         p.method = "mean",
         test = "wald",
+        lib.size = NULL,
         verbose = FALSE
     ) {
         dce(
@@ -78,6 +82,7 @@ setMethod(
             adjustment.type,
             p.method,
             test,
+            lib.size,
             verbose
         )
     }
@@ -93,6 +98,7 @@ setMethod(
         adjustment.type = "parents",
         p.method = "mean",
         test = "wald",
+        lib.size = NULL,
         verbose = FALSE
     ) {
         # preparations
@@ -113,6 +119,7 @@ setMethod(
             adjustment.type,
             p.method,
             test,
+            lib.size,
             verbose
         )
     }
@@ -126,6 +133,7 @@ setMethod(
     adjustment.type,
     p.method,
     test,
+    lib.size,
     verbose
 ) {
     # handle empty graph (no edges)
@@ -173,7 +181,12 @@ setMethod(
             }
 
             # fit model
-            form <- paste0("Y ~ N * X", form.adjustment.suffix)
+            if (is.null(lib.size)) {
+                form <- paste0("Y ~ N * X", form.adjustment.suffix)
+            } else {
+                df.data <- cbind(df.data, lib.size = factor(lib.size))
+                form <- paste0("Y ~ N * X + N : lib.size", form.adjustment.suffix)
+            }
 
             if (verbose) {
                 print(df.data %>% head)
@@ -191,7 +204,11 @@ setMethod(
             pval.xn <- NA
 
             if (test == "lr") {
-                form2 <- paste0("Y ~ N + X", form.adjustment.suffix)
+                if (is.null(lib.size)) {
+                    form2 <- paste0("Y ~ N + X", form.adjustment.suffix)
+                } else {
+                    form2 <- paste0("Y ~ N + X + N : lib.size", form.adjustment.suffix)
+                }
 
                 if (verbose) {
                     print(form2)
@@ -268,6 +285,7 @@ dce.nb <- function(
     adjustment.type = "parents",
     p.method = "mean",
     test = "wald",
+    lib.size = NULL,
     verbose = FALSE
 ) {
     dce(
@@ -276,6 +294,7 @@ dce.nb <- function(
         adjustment.type,
         p.method,
         test,
+        lib.size,
         verbose
     )
 }
