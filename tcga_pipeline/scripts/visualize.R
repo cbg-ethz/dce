@@ -57,7 +57,7 @@ for (i in seq_len(n)) {
     x <- res[[i]]
     p[[i]] <- dce::plotDce(x, type = "heatmap", log = TRUE, col = "RdBu",
                            bordercol = "transparent", aspect = "iso",
-                           colorkey = NULL, main = names(res)[i], #clusterx = dcesum, 
+                           colorkey = NULL, main = names(res)[i], #clusterx = dcesum,
                            cexMain = n, Colv = FALSE, Rowv = FALSE,
                            genelabels = geneid.map, scalefac = dcemax, sort = "topo")
 }
@@ -79,7 +79,7 @@ if (FALSE) {
         return(log = abs(tmp))
     })
     dcemax <- max(unlist(dcemax))
-    
+
     pdf(snakemake@output$plot_fname, width = length(res)*50, height = 50)
     top <- NULL
     par(mfrow=c(1,length(res)))
@@ -89,4 +89,3 @@ if (FALSE) {
     }
     dev.off()
 }
-
