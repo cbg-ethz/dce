@@ -135,3 +135,23 @@ test_that("better solver can mitigate crash", {
   fit <- MASS::glm.nb(B ~ A, link = "identity", method="glm.dce.nb.fit")
   fit
 })
+
+
+test_that("plotting function does not crash", {
+  set.seed(42)
+
+  node.names <- c("A", "B", "C")
+
+  graph.wt <- matrix(c(0, 0, 0, 1e-42, 0, 0, 1e-42, 0, 0), 3, 3)
+  rownames(graph.wt) <- colnames(graph.wt) <- node.names
+  X.wt <- simulate_data(graph.wt)
+
+  graph.mt <- matrix(c(0, 0, 0, 1.5, 0, 0, -.7, 0, 0), 3, 3)
+  rownames(graph.mt) <- colnames(graph.mt) <- node.names
+  X.mt <- simulate_data(graph.mt)
+
+  res <- dce::dce.nb(graph.wt, X.wt, X.mt)
+  res
+
+  plot(res)
+})
