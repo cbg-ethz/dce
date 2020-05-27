@@ -62,16 +62,16 @@ test_that("DAG sampling works", {
   }
 
   # resampled graph
-  graph.s <- dce::resample_edge_weights(graph, lB = c(-10, -9), uB = c(6, 8))
+  graph.s <- dce::resample_edge_weights(graph, tp = 1, mineff = 4, maxeff = 7)
   mat.s <- as(graph.s, "matrix")
 
   expect_equal(dim(mat.s), c(100, 100))
   for (w in mat.s[mat.s < 0]) {
-    expect_lte(w, -9)
-    expect_gte(w, -10)
+    expect_lte(w, -4)
+    expect_gte(w, -7)
   }
   for (w in mat.s[mat.s > 0]) {
-    expect_lte(w, 8)
-    expect_gte(w, 6)
+    expect_lte(w, 7)
+    expect_gte(w, 4)
   }
 })
