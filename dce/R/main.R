@@ -308,6 +308,10 @@ plot.dce <- function(
         }
     )
 
+    if(is.null(edgescale.limits)) {
+        edgescale.limits <- c(-max(abs(x$dce), na.rm=TRUE), max(abs(x$dce), na.rm=TRUE))
+    }
+
     as_tbl_graph(as(x$graph, "graphNEL")) %>%
         activate(nodes) %>%
         mutate(
@@ -319,13 +323,13 @@ plot.dce <- function(
                 list(.data$from, .data$to),
                 function (f, t) { x$dce[f, t] }
             ),
-            dce.log=symlog(dce),
+            dce.symlog=symlog(dce),
             label=.data$dce %>% round(2) %>% as.character
         ) %>%
     ggraph(layout=coords.dot) + # "sugiyama"
         geom_edge_diagonal(
             aes(
-                color=.data$dce.log,
+                color=.data$dce.symlog,
                 alpha=abs(.data$dce),
                 width=abs(.data$dce),
                 # label=.data$label,
@@ -339,7 +343,7 @@ plot.dce <- function(
         geom_node_text(aes(label=.data$label), size=3) +
         scale_edge_color_gradient2(
             low="red", mid="grey", high="blue",
-            midpoint=0, limit=symlog(edgescale.limits)
+            midpoint=0, limits=symlog(edgescale.limits)
         ) +
         scale_edge_width(range=c(1, 3), limit=c(0, edgescale.limits[[2]])) +
         scale_edge_alpha(range=c(.1, 1), limit=c(0, edgescale.limits[[2]])) +
