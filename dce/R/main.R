@@ -350,6 +350,10 @@ plot.dce <- function(
 }
 #' @export
 symlog <- function(x, base = 10, threshold = 1) {
+    if(is.null(x)) {
+        return(NULL)
+    }
+
     ifelse(
         abs(x) < threshold,
         x,
