@@ -315,7 +315,8 @@ plot.dce <- function(
     as_tbl_graph(as(x$graph, "graphNEL")) %>%
         activate(nodes) %>%
         mutate(
-            label=if(is.null(nodename.map)) .data$name else nodename.map[.data$name]
+            label=if(is.null(nodename.map)) .data$name else nodename.map[.data$name],
+            nodesize=17
         ) %>%
         activate(edges) %>%
         mutate(
@@ -333,14 +334,15 @@ plot.dce <- function(
                 alpha=abs(.data$dce),
                 width=abs(.data$dce),
                 # label=.data$label,
-                start_cap=label_rect(.data$node1.name),
-                end_cap=label_rect(.data$node2.name)
+                # start_cap = circle(.data$node1.nodesize, unit="native"), # uncomment once https://github.com/thomasp85/ggraph/pull/246 has been merged
+                end_cap = circle(.data$node2.nodesize, unit="native")
             ),
             strength=0.5,
-            arrow=arrow(length=unit(3, "mm"))
+            arrow=arrow(type="closed", length=unit(3, "mm"))
         ) +
-        geom_node_point(color="black", fill="white", size=17, shape=21) +
+        geom_node_circle(aes(r=.data$nodesize), color="black", fill="white") +
         geom_node_text(aes(label=.data$label), size=3) +
+        coord_fixed() +
         scale_edge_color_gradient2(
             low="red", mid="grey", high="blue",
             midpoint=0, limits=symlog(edgescale.limits),
