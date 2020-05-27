@@ -12,12 +12,16 @@ run.all.models <- function(
 
   # ground truth
   ground.truth <- list(dce = trueEffects(mt.graph) - trueEffects(wt.graph))
+  # reduce data for correlations
+  graph <- as(wt.graph, "matrix")
+  wt.X.cor <- wt.X[, seq_len(ncol(graph))]
+  mt.X.cor <- mt.X[, seq_len(ncol(graph))]
 
   # correlations
   time.tmp <- Sys.time()
   if ("cor" %in% methods) {
-    res.cor <- list(dce = cor(mt.X) - cor(wt.X))
-    res.cor$dce.pvalue <- pcor_perm(wt.X, mt.X, fun = cor)
+    res.cor <- list(dce = cor(mt.X.cor) - cor(wt.X.cor))
+    res.cor$dce.pvalue <- pcor_perm(wt.X.cor, mt.X.cor, fun = cor)
   } else {
     res.cor <- ground.truth
     res.cor$dce.pvalue <- ground.truth$dce*0
@@ -28,8 +32,8 @@ run.all.models <- function(
 
   time.tmp <- Sys.time()
   if ("pcor" %in% methods) {
-    res.pcor <- list(dce = pcor(mt.X) - pcor(wt.X))
-    res.pcor$dce.pvalue <- pcor_perm(wt.X, mt.X, fun = pcor)
+    res.pcor <- list(dce = pcor(mt.X.cor) - pcor(wt.X.cor))
+    res.pcor$dce.pvalue <- pcor_perm(wt.X.cor, mt.X.cor, fun = pcor)
   } else {
     res.pcor <- ground.truth
     res.pcor$dce.pvalue <- ground.truth$dce*0
@@ -66,7 +70,7 @@ run.all.models <- function(
       wt.graph.perturbed, wt.X, mt.X,
       adjustment.type = adjustment.type,
       solver.args = solver.args,#, test = "lr",
-      lib.size = lib.size
+      lib.size = TRUE
     )
   } else {
     res.dce.lr <- ground.truth

@@ -8,10 +8,16 @@
 #' @param solver.args additional arguments for the solver function
 #' @param adjustment.type character string for the method to define
 #' the adjustment set Z for the regression
-#' @param p.method character string. "mean", "sum" for standard summary functions,
-#' "hmp" for harmonic mean,
-#' "test" for the selfcontained.test of package 'CombinePValue'
-#' or any method from package 'metap', e.g., "meanp" or "sump"
+#' @param p.method character string. "mean", "sum" for standard summary
+#' functions, "hmp" for harmonic mean, "test" for the selfcontained
+#' test of package 'CombinePValue' or any method from package 'metap',
+#' e.g., "meanp" or "sump".
+#' @param test either "wald" for testing significance with the
+#' wald test or "lr" for using a likelihood ratio test
+#' @param lib.size either a numeric vector of the same length as the
+#' sum of wild type and mutant samples or a logical. If TRUE, it is
+#' recommended that both data sets include not only the genes
+#' included in the graph but all genes available in the original data set.
 #' @param verbose logical for verbose output
 #' @export
 #' @importFrom graph graphNEL
@@ -26,7 +32,7 @@ setGeneric(
         adjustment.type = "parents",
         p.method = "mean",
         test = "wald",
-        lib.size = NULL,
+        lib.size = FALSE,
         verbose = FALSE
     ) {
         standardGeneric("dce")
@@ -45,7 +51,7 @@ setMethod(
         adjustment.type = "parents",
         p.method = "mean",
         test = "wald",
-        lib.size = NULL,
+        lib.size = FALSE,
         verbose = FALSE
     ) {
         graph <- igraph::igraph.to.graphNEL(graph)
@@ -72,7 +78,7 @@ setMethod(
         adjustment.type = "parents",
         p.method = "mean",
         test = "wald",
-        lib.size = NULL,
+        lib.size = FALSE,
         verbose = FALSE
     ) {
         dce(
@@ -98,7 +104,7 @@ setMethod(
         adjustment.type = "parents",
         p.method = "mean",
         test = "wald",
-        lib.size = NULL,
+        lib.size = FALSE,
         verbose = FALSE
     ) {
         # preparations
@@ -126,6 +132,7 @@ setMethod(
 )
 
 
+#' @importFrom naturalsort naturalorder
 #' @noRd
 .dce <- function(
     graph, df.expr.wt, df.expr.mt,
@@ -136,6 +143,21 @@ setMethod(
     lib.size,
     verbose
 ) {
+    # handle lib.size + filter data
+    if (!is.numeric(lib.size)) {
+        if (lib.size) {
+            lib.size <- apply(rbind(df.expr.wt, df.expr.mt), 1, sum)
+            lib.size <- round(lib.size/min(lib.size))
+        }
+    }
+    df.expr.wt <- df.expr.wt[, which(colnames(df.expr.wt) %in% colnames(graph))]
+    df.expr.mt <- df.expr.mt[, which(colnames(df.expr.mt) %in% colnames(graph))]
+
+    # ensure the data and graph have the same order of genes
+    df.expr.wt <- df.expr.wt[, naturalorder(colnames(df.expr.wt))]
+    df.expr.mt <- df.expr.mt[, naturalorder(colnames(df.expr.mt))]
+    graph <- graph[naturalorder(rownames(graph)), naturalorder(colnames(graph))]
+
     # handle empty graph (no edges)
     if (sum(graph) == 0) {
         return(structure(list(
@@ -181,7 +203,7 @@ setMethod(
             }
 
             # fit model
-            if (is.null(lib.size)) {
+            if (!is.numeric(lib.size)) {
                 form <- paste0("Y ~ N * X", form.adjustment.suffix)
             } else {
                 df.data <- cbind(df.data, lib.size = factor(lib.size))
@@ -285,7 +307,7 @@ dce.nb <- function(
     adjustment.type = "parents",
     p.method = "mean",
     test = "wald",
-    lib.size = NULL,
+    lib.size = FALSE,
     verbose = FALSE
 ) {
     dce(

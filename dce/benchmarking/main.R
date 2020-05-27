@@ -1,6 +1,7 @@
 library(tidyverse)
 library(magrittr)
 library(graph)
+library(naturalsort)
 
 devtools::load_all("..")
 
@@ -132,22 +133,23 @@ df.bench <- purrr::pmap_dfr(
       # generate data
       wt.X <- simulate_data(wt.graph, n = wt.samples, dist.dispersion = dispersion, dist.mean = dist.mean)
       mt.X <- simulate_data(mt.graph, n = mt.samples, dist.dispersion = dispersion, dist.mean = dist.mean)
-      pop <- 10000
-      X <- matrix(rnbinom(pop*(wt.samples+mt.samples), size = dispersion, mu = dist.mean), (wt.samples+mt.samples), pop)
+      
       # library size difference
+      pop <- 10000
+      X <- matrix(rnbinom((pop-node.num)*(wt.samples+mt.samples), size = dispersion, mu = dist.mean), (wt.samples+mt.samples), pop-node.num)
+      colnames(X) <- paste0("n", (node.num+1):pop)
       lib.size.gtn <- sample(c(1:10), nrow(X), replace = TRUE)
       wt.X <- wt.X*lib.size.gtn[seq_len(wt.samples)]
       mt.X <- mt.X*lib.size.gtn[(wt.samples+1):(wt.samples+mt.samples)]
       X <- X*lib.size.gtn
-      X <- cbind(rbind(wt.X, mt.X), X)
-      lib.size <- apply(X, 1, sum)
-      lib.size <- round(lib.size/min(lib.size))
 
       xt <- c(rep(0,nrow(wt.X)),rep(1,nrow(mt.X)))
       names(xt) <- "group"
       design <- model.matrix(~xt)
       dispersion.estimate <- estimateTheta(rbind(wt.X, mt.X), design = design)
       mean.estimate <- mean(rbind(wt.X, mt.X))
+      wt.X <- cbind(wt.X, X[seq_len(wt.samples),])
+      mt.X <- cbind(mt.X, X[(wt.samples+1):(wt.samples+mt.samples),])
 
 
       # sanity checks
@@ -176,8 +178,7 @@ df.bench <- purrr::pmap_dfr(
         mt.graph, mt.X,
         wt.graph.perturbed,
         beta.magnitude,
-        methods = methods,
-        lib.size = lib.size
+        methods = methods
       )
 
       df.edges <- res$edges
