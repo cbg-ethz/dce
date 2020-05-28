@@ -54,7 +54,8 @@ run.all.models <- function(
     res.dce <- dce::dce.nb(
       wt.graph.perturbed, wt.X, mt.X,
       adjustment.type = adjustment.type,
-      solver.args = solver.args
+      solver.args = solver.args,
+      lib.size = TRUE#, conservative = TRUE
     )
   } else {
     res.dce <- ground.truth
@@ -69,7 +70,7 @@ run.all.models <- function(
     res.dce.lr <- dce::dce.nb(
       wt.graph.perturbed, wt.X, mt.X,
       adjustment.type = adjustment.type,
-      solver.args = solver.args,#, test = "lr",
+      solver.args = solver.args, test = "lr",
       lib.size = TRUE
     )
   } else {

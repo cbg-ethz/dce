@@ -33,6 +33,7 @@ setGeneric(
         p.method = "mean",
         test = "wald",
         lib.size = FALSE,
+        conservative = FALSE,
         verbose = FALSE
     ) {
         standardGeneric("dce")
@@ -52,6 +53,7 @@ setMethod(
         p.method = "mean",
         test = "wald",
         lib.size = FALSE,
+        conservative = FALSE,
         verbose = FALSE
     ) {
         graph <- igraph::igraph.to.graphNEL(graph)
@@ -63,6 +65,7 @@ setMethod(
             p.method,
             test,
             lib.size,
+            conservative,
             verbose
         )
     }
@@ -79,6 +82,7 @@ setMethod(
         p.method = "mean",
         test = "wald",
         lib.size = FALSE,
+        conservative = FALSE,
         verbose = FALSE
     ) {
         dce(
@@ -89,6 +93,7 @@ setMethod(
             p.method,
             test,
             lib.size,
+            conservative,
             verbose
         )
     }
@@ -105,6 +110,7 @@ setMethod(
         p.method = "mean",
         test = "wald",
         lib.size = FALSE,
+        conservative = FALSE,
         verbose = FALSE
     ) {
         # preparations
@@ -126,6 +132,7 @@ setMethod(
             p.method,
             test,
             lib.size,
+            conservative,
             verbose
         )
     }
@@ -141,13 +148,14 @@ setMethod(
     p.method,
     test,
     lib.size,
+    conservative,
     verbose
 ) {
     # handle lib.size + filter data
     if (!is.numeric(lib.size)) {
         if (lib.size) {
             lib.size <- apply(rbind(df.expr.wt, df.expr.mt), 1, sum)
-            lib.size <- round(lib.size/min(lib.size))
+            lib.size <- round(lib.size/(10^min(round(log10(lib.size)))))
         }
     }
     df.expr.wt <- df.expr.wt[, which(colnames(df.expr.wt) %in% colnames(graph))]
@@ -194,9 +202,14 @@ setMethod(
             form.adjustment.suffix <- ""
             for (idx in valid.adjustment.set) {
                 name <- paste0("Z", idx)
+                if (conservative) {
+                    add <- " + "
+                } else {
+                    add <- " + N * "
+                }
                 form.adjustment.suffix <- paste0(
                     form.adjustment.suffix,
-                    " + N * ",
+                    add,
                     name
                 )
                 df.data[, name] <- c(df.expr.wt[, idx], df.expr.mt[, idx])
@@ -207,7 +220,7 @@ setMethod(
                 form <- paste0("Y ~ N * X", form.adjustment.suffix)
             } else {
                 df.data <- cbind(df.data, lib.size = factor(lib.size))
-                form <- paste0("Y ~ N * X + N : lib.size", form.adjustment.suffix)
+                form <- paste0("Y ~ N * X + N*lib.size", form.adjustment.suffix)
             }
 
             if (verbose) {
@@ -226,10 +239,10 @@ setMethod(
             pval.xn <- NA
 
             if (test == "lr") {
-                if (is.null(lib.size)) {
+                if (!is.numeric(lib.size)) {
                     form2 <- paste0("Y ~ N + X", form.adjustment.suffix)
                 } else {
-                    form2 <- paste0("Y ~ N + X + N : lib.size", form.adjustment.suffix)
+                    form2 <- paste0("Y ~ N + X + N*lib.size", form.adjustment.suffix)
                 }
 
                 if (verbose) {
@@ -308,6 +321,7 @@ dce.nb <- function(
     p.method = "mean",
     test = "wald",
     lib.size = FALSE,
+    conservative = FALSE,
     verbose = FALSE
 ) {
     dce(
@@ -317,6 +331,7 @@ dce.nb <- function(
         p.method,
         test,
         lib.size,
+        conservative,
         verbose
     )
 }

@@ -11,7 +11,7 @@ generate.random.graphs <- function(node.num, beta.magnitude, true.positives) {
 
   mt.graph <- resample_edge_weights(wt.graph, tp = true.positives,
                                     mineff = beta.magnitude,
-                                    maxeff = 0.5,
+                                    maxeff = 1,
                                     method = "exp")
 
   return(list(wt=wt.graph, mt=mt.graph))

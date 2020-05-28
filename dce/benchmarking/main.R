@@ -138,7 +138,8 @@ df.bench <- purrr::pmap_dfr(
       pop <- 10000
       X <- matrix(rnbinom((pop-node.num)*(wt.samples+mt.samples), size = dispersion, mu = dist.mean), (wt.samples+mt.samples), pop-node.num)
       colnames(X) <- paste0("n", (node.num+1):pop)
-      lib.size.gtn <- sample(c(1:10), nrow(X), replace = TRUE)
+      ptruncnorm <- dnorm(1:10,5.5,1)/(pnorm(11,5.5,1)-pnorm(0,5.5,1))
+      lib.size.gtn <- sample(1:10,nrow(X),replace=TRUE,prob=ptruncnorm)
       wt.X <- wt.X*lib.size.gtn[seq_len(wt.samples)]
       mt.X <- mt.X*lib.size.gtn[(wt.samples+1):(wt.samples+mt.samples)]
       X <- X*lib.size.gtn
@@ -150,6 +151,11 @@ df.bench <- purrr::pmap_dfr(
       mean.estimate <- mean(rbind(wt.X, mt.X))
       wt.X <- cbind(wt.X, X[seq_len(wt.samples),])
       mt.X <- cbind(mt.X, X[(wt.samples+1):(wt.samples+mt.samples),])
+      
+      # check how close we get to library size
+      lib.size <- apply(rbind(wt.X, mt.X), 1, sum)
+      lib.size <- round(lib.size/(10^min(round(log10(lib.size)))))
+      lib.size.stats <- cor(lib.size, lib.size.gtn)
 
 
       # sanity checks
@@ -266,7 +272,16 @@ df.bench <- purrr::pmap_dfr(
             rand=graph.density
           ) %>%
             mutate(type="graph.density"),
-
+          
+          data.frame(
+            cor=lib.size.stats,
+            pcor=lib.size.stats,
+            dce=lib.size.stats,
+            dce.lr=lib.size.stats,
+            rand=lib.size.stats
+          ) %>%
+            mutate(type="lib.size.stats"),
+          
           data.frame(
             cor=dce.stats$min,
             pcor=dce.stats$min,

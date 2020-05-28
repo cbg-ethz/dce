@@ -92,7 +92,18 @@ create.plots <- function(df.bench, plot.dir, varied.parameter) {
     theme_minimal(base_size=20) +
     theme(plot.title=element_text(hjust=0.5)) +
     ggsave(file.path(plot.dir, "benchmark_graph_features.pdf"))
-
+  
+  df.bench %>%
+    dplyr::filter(grepl("^lib.", type)) %>%
+    dplyr::select(dce, type, parameter, varied.parameter) %>%
+    ggplot(aes(x=parameter, y=dce, fill=type)) +
+    geom_boxplot() +
+    ggtitle(paste("Variable:", varied.parameter)) +
+    ylab("value") +
+    theme_minimal(base_size=20) +
+    theme(plot.title=element_text(hjust=0.5)) +
+    ggsave(file.path(plot.dir, "benchmark_lib_size_stats.pdf"))
+  
   df.bench %>%
     dplyr::filter(grepl("^dispersion.", type)) %>%
     dplyr::select(dce, type, parameter, varied.parameter) %>%
