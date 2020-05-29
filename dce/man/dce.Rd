@@ -12,6 +12,9 @@ dce(
   solver.args = list(method = "glm.dce.fit"),
   adjustment.type = "parents",
   p.method = "mean",
+  test = "wald",
+  lib.size = FALSE,
+  conservative = FALSE,
   verbose = FALSE
 )
 }
@@ -29,10 +32,18 @@ dce(
 \item{adjustment.type}{character string for the method to define
 the adjustment set Z for the regression}
 
-\item{p.method}{character string. "mean", "sum" for standard summary functions,
-"hmp" for harmonic mean,
-"test" for the selfcontained.test of package 'CombinePValue'
-or any method from package 'metap', e.g., "meanp" or "sump"}
+\item{p.method}{character string. "mean", "sum" for standard summary
+functions, "hmp" for harmonic mean, "test" for the selfcontained
+test of package 'CombinePValue' or any method from package 'metap',
+e.g., "meanp" or "sump".}
+
+\item{test}{either "wald" for testing significance with the
+wald test or "lr" for using a likelihood ratio test}
+
+\item{lib.size}{either a numeric vector of the same length as the
+sum of wild type and mutant samples or a logical. If TRUE, it is
+recommended that both data sets include not only the genes
+included in the graph but all genes available in the original data set.}
 
 \item{verbose}{logical for verbose output}
 }

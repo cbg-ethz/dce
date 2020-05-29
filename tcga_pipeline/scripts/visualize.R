@@ -1,5 +1,5 @@
 library(tidyverse)
-
+library(ggraph)
 library(dce)
 
 
@@ -11,7 +11,7 @@ geneid.map <- setNames(as.character(df.genes$SYMBOL), df.genes$ENSEMBL)
 geneid.map <- geneid.map[which(duplicated(names(geneid.map)) == FALSE)]
 
 # plot
-dce.abs.max <- max(sapply(res, function(x) { max(abs(x$dce)) }))
+dce.abs.max <- max(sapply(res, function(x) { max(abs(x$dce), na.rm = TRUE) }))
 custom.limits <- c(-dce.abs.max, dce.abs.max)
 
 p.list <- lapply(res, plot, nodename.map=geneid.map, edgescale.limits=custom.limits)

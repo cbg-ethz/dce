@@ -4,16 +4,19 @@
 \alias{resample_edge_weights}
 \title{Resample network edge weights}
 \usage{
-resample_edge_weights(g, lB = -1, uB = 1, tp = 1)
+resample_edge_weights(g, tp = 1, mineff = 1, maxeff = 2, method = "runif")
 }
 \arguments{
 \item{g}{original graph}
 
-\item{lB}{lower bound for new edge weights}
-
-\item{uB}{upper bound for new edge weights}
-
 \item{tp}{fraction of edge weights which will be modified}
+
+\item{mineff}{minimal differential effect size}
+
+\item{maxeff}{maximum effect effect size or standard deviation,
+if method is "gauss"}
+
+\item{method}{method for drawing the differential for the causal effects. can be "runif", "exp" or "gauss".}
 }
 \value{
 graph with new edge weights

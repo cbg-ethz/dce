@@ -4,7 +4,7 @@
 \alias{pcor}
 \title{robust partial correlation of column variables}
 \usage{
-pcor(x)
+pcor(x, method = "spearman")
 }
 \arguments{
 \item{x}{matrix}
