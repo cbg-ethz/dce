@@ -133,7 +133,7 @@ df.bench <- purrr::pmap_dfr(
       # generate data
       wt.X <- simulate_data(wt.graph, n = wt.samples, dist.dispersion = dispersion, dist.mean = dist.mean)
       mt.X <- simulate_data(mt.graph, n = mt.samples, dist.dispersion = dispersion, dist.mean = dist.mean)
-      
+
       # library size difference
       pop <- 10000
       X <- matrix(rnbinom((pop-node.num)*(wt.samples+mt.samples), size = dispersion, mu = dist.mean), (wt.samples+mt.samples), pop-node.num)
@@ -151,7 +151,7 @@ df.bench <- purrr::pmap_dfr(
       mean.estimate <- mean(rbind(wt.X, mt.X))
       wt.X <- cbind(wt.X, X[seq_len(wt.samples),])
       mt.X <- cbind(mt.X, X[(wt.samples+1):(wt.samples+mt.samples),])
-      
+
       # check how close we get to library size
       lib.size <- apply(rbind(wt.X, mt.X), 1, sum)
       lib.size <- round(lib.size/(10^min(round(log10(lib.size)))))
@@ -272,7 +272,7 @@ df.bench <- purrr::pmap_dfr(
             rand=graph.density
           ) %>%
             mutate(type="graph.density"),
-          
+
           data.frame(
             cor=lib.size.stats,
             pcor=lib.size.stats,
@@ -281,7 +281,7 @@ df.bench <- purrr::pmap_dfr(
             rand=lib.size.stats
           ) %>%
             mutate(type="lib.size.stats"),
-          
+
           data.frame(
             cor=dce.stats$min,
             pcor=dce.stats$min,
