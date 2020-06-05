@@ -528,6 +528,8 @@ glm.dce.nb.fit <- function(...) {
 #' @param x dce object
 #' @param nodename.map node names
 #' @param edge.colorscale.limits Limits for scale_edge_color_gradient2 (should contain 0). Useful to make plot comparable to others
+#' @param nodesize Node sizes
+#' @param labelsize Node label sizes
 #' @param ... additional parameters
 #' @author Martin Pirkl, Kim Philipp Jablonski
 #' @method plot dce
@@ -540,6 +542,7 @@ glm.dce.nb.fit <- function(...) {
 plot.dce <- function(
     x,
     nodename.map = NULL, edgescale.limits = NULL,
+    nodesize = 17, labelsize = 3,
     ...
 ) {
     coords.dot <- purrr::map_dfr(
@@ -557,7 +560,7 @@ plot.dce <- function(
         activate(nodes) %>%
         mutate(
             label=if(is.null(nodename.map)) .data$name else nodename.map[.data$name],
-            nodesize=17
+            nodesize=nodesize
         ) %>%
         activate(edges) %>%
         mutate(
@@ -582,7 +585,7 @@ plot.dce <- function(
             arrow=arrow(type="closed", length=unit(3, "mm"))
         ) +
         geom_node_circle(aes(r=.data$nodesize), color="black", fill="white") +
-        geom_node_text(aes(label=.data$label), size=3) +
+        geom_node_text(aes(label=.data$label), size=labelsize) +
         coord_fixed() +
         scale_edge_color_gradient2(
             low="red", mid="grey", high="blue",
