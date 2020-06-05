@@ -530,6 +530,7 @@ glm.dce.nb.fit <- function(...) {
 #' @param edge.colorscale.limits Limits for scale_edge_color_gradient2 (should contain 0). Useful to make plot comparable to others
 #' @param nodesize Node sizes
 #' @param labelsize Node label sizes
+#' @param show.edge.labels Whether to show edge labels (DCEs)
 #' @param use.symlog Scale edge colors using dce::symlog
 #' @param ... additional parameters
 #' @author Martin Pirkl, Kim Philipp Jablonski
@@ -544,7 +545,7 @@ plot.dce <- function(
     x,
     nodename.map = NULL, edgescale.limits = NULL,
     nodesize = 17, labelsize = 3,
-    use.symlog = FALSE,
+    show.edge.labels = FALSE, use.symlog = FALSE,
     ...
 ) {
     coords.dot <- purrr::map_dfr(
@@ -579,7 +580,7 @@ plot.dce <- function(
                 color=if(use.symlog) .data$dce.symlog else .data$dce,
                 alpha=abs(.data$dce),
                 width=abs(.data$dce),
-                # label=.data$label,
+                label=if(show.edge.labels) .data$label else NULL,
                 # start_cap = circle(.data$node1.nodesize, unit="native"), # uncomment once https://github.com/thomasp85/ggraph/pull/246 has been merged
                 end_cap = circle(.data$node2.nodesize, unit="native")
             ),
