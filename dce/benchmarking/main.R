@@ -84,12 +84,6 @@ if (sample.kegg) {
   replicate.count <- length(kegg.dag)
 }
 
-if (link.method == "log") {
-  link <- function(x, offset = 0) { exp(x + offset) }
-} else {
-  link <- negative.binomial.special()$linkfun
-}
-
 
 # run benchmark
 df.bench <- purrr::pmap_dfr(
