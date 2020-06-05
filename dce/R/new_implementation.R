@@ -559,6 +559,17 @@ plot.dce <- function(
         edgescale.limits <- c(-max(abs(x$dce), na.rm=TRUE), max(abs(x$dce), na.rm=TRUE))
     }
 
+    custom_breaks <- function(limits) {
+        eps <- min(abs(limits)) / 100 # without this offset the outer breaks are somtetimes not shown
+        breaks <- seq(limits[[1]] + eps, limits[[2]] - eps, length.out = 5)
+
+        if(min(abs(limits)) < 1) {
+            return(breaks)
+        } else {
+            return(round(breaks, 1))
+        }
+    }
+
     as_tbl_graph(as(x$graph, "graphNEL")) %>%
         activate(nodes) %>%
         mutate(
@@ -591,8 +602,9 @@ plot.dce <- function(
         geom_node_text(aes(label=.data$label), size=labelsize) +
         coord_fixed() +
         scale_edge_color_gradient2(
-            low="red", mid="grey", high="blue",
-            midpoint=0, limits=if(use.symlog) symlog(edgescale.limits) else edgescale.limits,
+            low="red", mid="grey", high="blue", midpoint=0,
+            limits=if(use.symlog) symlog(edgescale.limits) else edgescale.limits,
+            breaks=custom_breaks,
             name=if(use.symlog) "DCE (symlog)" else "DCE"
         ) +
         scale_edge_width(range=c(1, 3), limits=c(0, edgescale.limits[[2]]), guide=FALSE) +
