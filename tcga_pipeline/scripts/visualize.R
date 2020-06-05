@@ -14,7 +14,7 @@ geneid.map <- geneid.map[which(duplicated(names(geneid.map)) == FALSE)]
 dce.abs.max <- max(sapply(res, function(x) { max(abs(x$dce), na.rm = TRUE) }))
 custom.limits <- c(-dce.abs.max, dce.abs.max)
 
-p.list <- lapply(res, plot, nodename.map=geneid.map, edgescale.limits=custom.limits)
+p.list <- lapply(res, plot, nodename.map=geneid.map, edgescale.limits=custom.limits, use.symlog=TRUE)
 labels.list <- purrr::map2(names(p.list), res, ~ glue::glue("{.x} (Enrichment: {.y$pathway.pvalue})")) %>% unlist
 
 p <- cowplot::plot_grid(

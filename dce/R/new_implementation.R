@@ -530,6 +530,7 @@ glm.dce.nb.fit <- function(...) {
 #' @param edge.colorscale.limits Limits for scale_edge_color_gradient2 (should contain 0). Useful to make plot comparable to others
 #' @param nodesize Node sizes
 #' @param labelsize Node label sizes
+#' @param use.symlog Scale edge colors using dce::symlog
 #' @param ... additional parameters
 #' @author Martin Pirkl, Kim Philipp Jablonski
 #' @method plot dce
@@ -543,6 +544,7 @@ plot.dce <- function(
     x,
     nodename.map = NULL, edgescale.limits = NULL,
     nodesize = 17, labelsize = 3,
+    use.symlog = FALSE,
     ...
 ) {
     coords.dot <- purrr::map_dfr(
@@ -574,7 +576,7 @@ plot.dce <- function(
     ggraph(layout=coords.dot) + # "sugiyama"
         geom_edge_diagonal(
             aes(
-                color=.data$dce.symlog,
+                color=if(use.symlog) .data$dce.symlog else .data$dce,
                 alpha=abs(.data$dce),
                 width=abs(.data$dce),
                 # label=.data$label,
@@ -589,8 +591,8 @@ plot.dce <- function(
         coord_fixed() +
         scale_edge_color_gradient2(
             low="red", mid="grey", high="blue",
-            midpoint=0, limits=symlog(edgescale.limits),
-            name='DCE (symlog)'
+            midpoint=0, limits=if(use.symlog) symlog(edgescale.limits) else edgescale.limits,
+            name=if(use.symlog) "DCE (symlog)" else "DCE"
         ) +
         scale_edge_width(range=c(1, 3), limits=c(0, edgescale.limits[[2]]), guide=FALSE) +
         scale_edge_alpha(range=c(.1, 1), limits=c(0, edgescale.limits[[2]]), guide=FALSE) +
