@@ -42,7 +42,7 @@ create.plots <- function(df.bench, plot.dir, varied.parameter) {
       ggplot(aes(x=parameter, y=value, fill=variable)) +
       geom_boxplot() +
       ggtitle(paste("Variable:", varied.parameter)) +
-      ylab(glue::glue("{measure} (truth vs prediction)")) +
+      ylab(glue::glue("{measure}")) +
       theme_minimal(base_size=20) +
       theme(plot.title=element_text(hjust=0.5))
 
@@ -92,7 +92,7 @@ create.plots <- function(df.bench, plot.dir, varied.parameter) {
     theme_minimal(base_size=20) +
     theme(plot.title=element_text(hjust=0.5)) +
     ggsave(file.path(plot.dir, "benchmark_graph_features.pdf"))
-  
+
   df.bench %>%
     dplyr::filter(grepl("^lib.", type)) %>%
     dplyr::select(dce, type, parameter, varied.parameter) %>%
@@ -103,7 +103,7 @@ create.plots <- function(df.bench, plot.dir, varied.parameter) {
     theme_minimal(base_size=20) +
     theme(plot.title=element_text(hjust=0.5)) +
     ggsave(file.path(plot.dir, "benchmark_lib_size_stats.pdf"))
-  
+
   df.bench %>%
     dplyr::filter(grepl("^dispersion.", type)) %>%
     dplyr::select(dce, type, parameter, varied.parameter) %>%
