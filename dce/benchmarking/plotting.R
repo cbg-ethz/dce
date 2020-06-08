@@ -46,8 +46,10 @@ create.plots <- function(df.bench, plot.dir, varied.parameter) {
       theme_minimal(base_size=20) +
       theme(plot.title=element_text(hjust=0.5))
 
-    if (!(measure %in% c("mse"))) {
+    if (measure %in% c("correlation")) {
       p <- p + ylim(-1, 1)
+    } else if (measure %in% c("precision", "recall", "f1-score", "pr-auc", "roc-auc")) {
+      p <- p + ylim(0, 1)
     }
 
     ggsave(file.path(plot.dir, glue::glue("benchmark_{measure}.pdf")), plot = p)
