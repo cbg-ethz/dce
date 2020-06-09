@@ -15,7 +15,7 @@ rule all:
         expand(
             'plots/{project}/{project}.{pathway}.dce.pdf',
             project=config['projects'], pathway=config['pathways']),
-        expand('drugs/results_{pathway}.csv', pathway=config['pathways'])
+        expand('drugs/results_{project}_{pathway}.csv', project=config['projects'], pathway=config['pathways'])
 
 
 rule download_TCGA_data:
@@ -55,6 +55,7 @@ rule compute_differential_causal_effects:
         network_fname = 'kegg_data/{pathway}.edgelist.csv.gz'
     output:
         dce_fname = 'results/{project}/{project}.{pathway}.dce.rds',
+        csv_fname = 'results/{project}/{project}.{pathway}.dce.csv'
     script:
         'scripts/compute_dce.R'
 
@@ -72,6 +73,9 @@ rule visualize:
 
 rule discover_drugs:
     input:
+        csv_fname = 'results/{project}/{project}.{pathway}.dce.csv',
+        geneid_fname = 'kegg_data/{pathway}_geneids.csv',
+
         hetnet_nodes_fname = HTTP.remote(
             'https://github.com/hetio/hetionet/raw/master/hetnet/tsv/hetionet-v1.0-nodes.tsv',
             keep_local=True
@@ -81,7 +85,7 @@ rule discover_drugs:
             keep_local=True
         )[0]
     output:
-        result_fname = 'drugs/results_{pathway}.csv'
+        result_fname = 'drugs/results_{project}_{pathway}.csv'
     script:
         'scripts/drug_discovery.py'
 

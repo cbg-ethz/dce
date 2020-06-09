@@ -57,3 +57,12 @@ res <- purrr::map(tumor_stage_list, function (selected_tumor_stage) {
 
 # store result
 saveRDS(res, file=snakemake@output$dce_fname)
+
+purrr::imap_dfr(res, function(x, name) {
+  reshape2::melt(x$dce) %>%
+    rename(dce=value, source=Var1, target=Var2) %>%
+    mutate(dce.pvalue=reshape2::melt(x$dce.pvalue)$value) %>%
+    drop_na %>%
+    mutate(name = name)
+}) %>%
+  write_csv(snakemake@output$csv_fname)

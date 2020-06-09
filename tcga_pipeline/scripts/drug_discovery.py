@@ -3,7 +3,11 @@ import pandas as pd
 import KEGGutils as kg
 
 
-def main(pathway_id, nodes_fname, edges_fname, result_fname):
+def main(pathway_id, csv_fname, geneid_fname, nodes_fname, edges_fname, result_fname):
+    # read DCE data and more
+    df_dce = pd.read_csv(csv_fname)
+    df_geneids = pd.read_csv(geneid_fname)
+
     # read hetnet
     df_nodes = pd.read_csv(nodes_fname, sep='\t')
     df_edges = pd.read_csv(edges_fname, sep='\t')
@@ -13,6 +17,11 @@ def main(pathway_id, nodes_fname, edges_fname, result_fname):
     genes = {g.strip(' .')
              for e in pathway.genes.values()
              for g in e['description'].split(',')}
+
+    # map some IDs
+    ensembl2symbol = df_geneids.set_index('ENSEMBL').to_dict()['SYMBOL']
+    df_dce['source'] = df_dce['source'].map(ensembl2symbol)
+    df_dce['target'] = df_dce['target'].map(ensembl2symbol)
 
     # combine
     kegg_gene_idx = df_nodes.loc[df_nodes['name'].isin(genes), 'id'].to_list()
@@ -50,6 +59,8 @@ def main(pathway_id, nodes_fname, edges_fname, result_fname):
 if __name__ == '__main__':
     main(
         snakemake.wildcards.pathway,
+        snakemake.input.csv_fname,
+        snakemake.input.geneid_fname,
         snakemake.input.hetnet_nodes_fname,
         snakemake.input.hetnet_edges_fname,
         snakemake.output.result_fname)
