@@ -98,16 +98,16 @@ test_that("adjustment sets work", {
 
   graph <- dce::create_graph_from_dataframe(data.frame(
     from=c("A", "B"),
-    to=c("C", "C")
+    to=c("B", "C")
   ))
 
   expect_equal(
-    get.adjustment.set(as(graph, "matrix"), which(nodes(graph) == "A"), which(nodes(graph) == "B"), "parents"),
-    vector(mode="character")
+    get.adjustment.set(as(graph, "matrix"), which(nodes(graph) == "B"), which(nodes(graph) == "C"), "parents"),
+    c("A")
   )
   expect_equal(
     get.adjustment.set(as(graph, "matrix"), which(nodes(graph) == "A"), which(nodes(graph) == "B"), "minimal"),
-    c("C")
+    character(0)
   )
 })
 

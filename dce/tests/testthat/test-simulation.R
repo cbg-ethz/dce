@@ -19,7 +19,7 @@ test_that("simple propagation works", {
     to=c("B", "C")
   ), edge.weight=function() { 10 })
 
-  X <- simulate_data(graph, n=1000, dist.mean=42, link.log.base=1.1)
+  X <- simulate_data(graph, n=1000, dist.mean=42)
 
   # TODO: this is wrong
   expect_equal(
