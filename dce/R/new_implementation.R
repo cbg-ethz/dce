@@ -538,7 +538,7 @@ glm.dce.nb.fit <- function(...) {
 #' @return plot of dag and dces
 #' @export
 #' @import tidyverse ggraph purrr
-#' @importFrom ggplot2 aes theme element_rect arrow unit
+#' @importFrom ggplot2 aes theme element_rect arrow unit coord_fixed
 #' @importFrom tidygraph as_tbl_graph activate mutate
 #' @importFrom rlang .data
 plot.dce <- function(

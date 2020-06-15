@@ -39,43 +39,7 @@ compute_permutations <- function(normal, dn, tumor, dt, runs=10,
     }
     return(list(statistics = statistics, stats_edges = stats_edges))
 }
-#' Compute the true casual effects of a simulated dag
-#'
-#' This function takes a DAG with edgeweights as input and computes
-#' the causal effects of all nodes on all direct and indirect children in the
-#' DAG. Alternatively see pcalg::causalEffect for pairwise computation.
-#' @param g graphNEL object
-#' @param partial if FALSE computes the total causal effects and not just
-#' the partial edge effects
-#' @author Martin Pirkl
-#' @return matrix of causal effects
-#' @export
-#' @importFrom pcalg causalEffect
-#' @import graph tidyverse
-#' @importFrom expm %^%
-#' @examples
-#' graph.wt <- as(matrix(c(0,0,0,1,0,0,0,1,0), 3), "graphNEL")
-#' trueEffects(graph.wt)
-trueEffects <- function(g, partial = FALSE) {
-    ## n <- ncol(as(g, "matrix"))
-    ## te <- matrix(0, n, n)
-    ## for (i in seq_len(n-1)) {
-    ##     for (j in i:n) {
-    ##         te[i, j] <- causalEffect(g, j, i)
-    ##     }
-    ## }
-    ## return(te)
-    a <- as(g, "matrix")
-    if (partial) {
-        ae <- a
-    } else {
-        ae <- a
-        for (i in 2:nrow(a)) {
-            ae <- ae + a%^%i
-        }
-    }
-    return(ae)
-}
+
 
 #' Compute the causal effects
 #'

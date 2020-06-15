@@ -36,13 +36,6 @@ Load the package with the library function.
 ```{r}
 library(dce)
 
-library(tidyverse)
-library(purrr)
-
-library(graph)
-library(assertthat)
-
-
 set.seed(42)
 ```
 
@@ -52,11 +45,11 @@ First we generate a random wild type network and then resample
 its edge weights to generate the mutant network.
 
 ```{r}
-node.num <- 30
+node.num <- 10
 edge.prob <- .2
 
 graph.wt <- create_random_DAG(node.num, edge.prob, lB=c(0.5, 2), uB=c(0.5, 2))
-graph.mt <- resample_edge_weights(graph.wt, lB=c(0.5, 2), uB=c(0.5, 2))
+graph.mt <- resample_edge_weights(graph.wt)
 ```
 
 We can then simulate data for these two networks.
@@ -69,10 +62,7 @@ X.mt <- simulate_data(graph.mt)
 Finally, it is possible to compute differential causal effects.
 
 ```{r}
-res <- compute_differential_causal_effects(
-    graph.wt, X.wt,
-    graph.mt, X.mt
-)
+res <- dce.nb(graph.wt, X.wt, X.mt)
 
 print(res)
 ```

@@ -38,4 +38,13 @@ Imports:
     ggplot2,
     rlang,
     expm,
-    MASS
+    MASS,
+    CombinePValue,
+    aod,
+    edgeR,
+    epiNEM,
+    igraph,
+    metap,
+    mnem,
+    naturalsort,
+    ppcor
