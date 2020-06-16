@@ -21,7 +21,7 @@ res <- purrr::map(tumor_stage_list, function (selected_tumor_stage) {
     dplyr::filter(definition == "Solid Tissue Normal") %>%
     pull(barcode)
 
-  X.wt <- df.expr[genes, barcodes.wt] %>% t %>% as.data.frame
+  X.wt <- df.expr[, barcodes.wt] %>% t %>% as.data.frame
 
 
   # select experimental group
@@ -29,7 +29,7 @@ res <- purrr::map(tumor_stage_list, function (selected_tumor_stage) {
     dplyr::filter((definition == "Primary solid Tumor") & (tumor_stage == selected_tumor_stage)) %>%
     pull(barcode)
 
-  X.mt <- df.expr[genes, barcodes.mt] %>% t %>% as.data.frame
+  X.mt <- df.expr[, barcodes.mt] %>% t %>% as.data.frame
 
 
   # annoying fix for nodes without data (TODO: improve this)
@@ -49,7 +49,7 @@ res <- purrr::map(tumor_stage_list, function (selected_tumor_stage) {
 
   # compute DCEs
   dce::dce.nb(
-    graph, X.wt,X.mt
+    graph, X.wt,X.mt,lib.size=TRUE
   )
 }) %>%
   purrr::set_names(tumor_stage_list)
