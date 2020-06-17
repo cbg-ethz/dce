@@ -48,9 +48,7 @@ res <- purrr::map(tumor_stage_list, function (selected_tumor_stage) {
 
 
   # compute DCEs
-  dce::dce.nb(
-    graph, X.wt,X.mt,lib.size=TRUE
-  )
+  dce::dce.nb(graph, X.wt, X.mt, lib.size=TRUE)
 }) %>%
   purrr::set_names(tumor_stage_list)
 
