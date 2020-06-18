@@ -12,3 +12,41 @@ test_that("exponetial link function explodes mean", {
 
   expect_true(all(is.na(C)))
 })
+
+
+test_that("library size correction is useful", {
+  set.seed(42)
+  N <- 100
+  beta <- 1.6
+
+  # generate data
+  linkfun <- dce::negative.binomial.special()$linkfun
+  A <- rnbinom(N, size = 100, mu = 1000)
+  B <- rnbinom(N, size = 100, mu = linkfun(beta * A))
+
+  # make library size correction necessary
+  lib.factor <- sample(c(1, 2, 4, 8), 100, replace = TRUE)
+
+  A.s <- A * lib.factor
+  B.s <- B * lib.factor
+
+  bg <- matrix(rnbinom(1000 * N, size = 100, mu = 1000), 1000, N)
+  bg.s <- t(t(bg) * lib.factor)
+  lib.size <- apply(bg.s, 2, sum)
+
+  lib.size <- round(lib.size/(10^min(round(log10(lib.size)))))
+
+  # data overview
+  plot(data.frame(A=A, B=B, A.s=A.s, B.s=B.s))
+
+  # helper function
+  glm.fun <- function(...) {
+    dce::glm.nb.rob(..., method = "glm.dce.nb.fit", link = "identity")
+  }
+
+  # fit models
+  glm.fun(B ~ A) # works fine (no library size effect)
+  glm.fun(B.s ~ A.s) # yields wrong estimate
+  glm.fun(B.s ~ A.s + factor(lib.factor)) # works fine (but `lib.factor` is ground truth)
+  glm.fun(B.s ~ A.s + factor(lib.size)) # uses realistic library size correction and yields reasonable estimate
+})
