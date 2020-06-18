@@ -324,3 +324,116 @@ compute_enrichment <- function(
         return(list(p.value = p.value, p.edges = g.vec))
     }
 }
+#' Plot dce
+#'
+#' Wrapper function for mnem::plotDnf and epiNEM::HeatmapOP
+#' @param x object of class dce
+#' @param type "graph" or "heatmap"
+#' @param log if TRUE, applies log to dces
+#' @param scalefac scalar for scaling the dces
+#' @param edgecol optional
+#' @param edgewidth otpional
+#' @param genelabels named vector with names like the original names
+#' used in the dce object and values as subtitute names
+#' @param sort Colv and Rowv have to be set to FALSE;
+#' default sorting is by "name"; "strength" does sort for
+#' effects strength and "topo" does a topological sorting,
+#' alternatively a clusterx argument can be set to sort the rows/columns
+#' by the clustering of clusterx
+#' @param ... more arguments for mnem::plotDnf or epiNEM::HeatmapOP
+#' @importFrom mnem plotDnf
+#' @importFrom epiNEM HeatmapOP
+#' @export
+plotDce <- function(x, type = "graph", log = FALSE, scalefac = NULL,
+                    edgecol = NULL, edgewidth = NULL, genelabels = NULL,
+                    sort = "name", ...) {
+    if (type == "graph") {
+        graph <- x$graph
+        graph <- as(x$graph, "matrix")
+        graph1 <- which(graph == 1, arr.ind = TRUE)
+        graph <- apply(graph1, 1, function(x) {
+            y <- paste0(rownames(graph)[x[1]], "=", colnames(graph)[x[2]])
+            return(y)
+        })
+        tmp <- x$dce
+        tmp <- as.vector(tmp[which(tmp != 0)])
+        if (log) {
+            geq0 <- which(tmp > 0)
+            leq0 <- which(tmp < 0)
+            tmp[geq0] <- log(tmp[geq0] + 1)
+            tmp[leq0] <- -log(-tmp[leq0] + 1)
+        }
+        if (is.null(scalefac)) {
+            scalefac <- max(abs(tmp))
+        }
+        tmpBlue <- tmp/scalefac
+        tmpRed <- -tmp/scalefac
+        tmpBlue[which(tmpBlue < 0)] <- 0
+        tmpRed[which(tmpRed < 0)] <- 0
+        if (is.null(edgecol)) {
+            if (max(tmpRed) > 1) {
+                tmpRed2 <- tmpRed/max(tmpRed)
+            } else {
+                tmpRed2 <- tmpRed
+            }
+            if (max(tmpBlue) > 1) {
+                tmpBlue2 <- tmpBlue/max(tmpBlue)
+            } else {
+                tmpBlue2 <- tmpBlue
+            }
+            if (log) {
+                lowerbound <- 0
+            } else {
+                lowerbound <- 0.1
+            }
+            edgecol <- rgb(tmpRed2,0,tmpBlue2,apply(cbind(tmpBlue2+tmpRed2,
+                                                          lowerbound), 1, max))
+        }
+        if (is.null(edgewidth)) {
+            edgewidth <- apply(cbind(tmpBlue, tmpRed), 1, max)
+        }
+        mnem::plotDnf(graph, edgecol = edgecol,
+                      edgewidth = (edgewidth*9)+1, ...)
+    } else if (type == "heatmap") {
+        graph <- as(x$graph, "matrix")
+        tmp <- x$dce
+        NAidx <- which(is.na(tmp) == TRUE)
+        tmp[NAidx] <- 0
+        if (log) {
+            geq0 <- which(tmp > 0)
+            leq0 <- which(tmp < 0)
+            tmp[geq0] <- log(tmp[geq0] + 1)
+            tmp[leq0] <- -log(-tmp[leq0] + 1)
+        }
+        tmp <- tmp/scalefac
+        tmp[NAidx] <- NA
+        tmp <- tmp[order(rownames(tmp)), order(colnames(tmp))]
+        graph <- nem::transitive.closure(graph[order(rownames(graph)),
+                                               order(colnames(graph))],
+                                         mat = TRUE)
+        if (sort == "topo") {
+            topoord <- order(apply(graph, 1, sum) -
+                             apply(graph, 2, sum), decreasing = TRUE)
+            tmp <- tmp[topoord, topoord]
+        } else if (sort == "strength") {
+            strord <- order(apply(abs(tmp), 1, sum, na.rm = TRUE) -
+                            apply(abs(tmp), 2, sum, na.rm = TRUE),
+                            decreasing = TRUE)
+            tmp <- tmp[strord, strord]
+        }
+        if (!is.null(genelabels)) {
+            rownames(tmp) <-
+                unlist(lapply(rownames(tmp), function(x) {
+                    y <- genelabels[which(names(genelabels) == x)]
+                }))
+            colnames(tmp) <-
+                unlist(lapply(colnames(tmp), function(x) {
+                    y <- genelabels[which(names(genelabels) == x)]
+                }))
+        }
+        if (sort == "names") {
+            tmp <- tmp[order(rownames(tmp)), order(colnames(tmp))]
+        }
+        epiNEM::HeatmapOP(tmp, ...)
+    }
+}
