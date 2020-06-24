@@ -3,7 +3,7 @@ run.all.models <- function(
   mt.graph, mt.X,
   wt.graph.perturbed,
   beta.magnitude,
-  methods = c("cor", "pcor", "dce", "dce.lr", "rand"),
+  methods = c("cor", "pcor", "dce", "dce.lr", "rand", "causaldag"),
   lib.size = NULL
 ) {
   # for null model
@@ -81,6 +81,7 @@ run.all.models <- function(
   }
   time.dce.lr <- as.integer(difftime(Sys.time(), time.tmp, units = "secs"))
 
+  # null models
   time.tmp <- Sys.time()
   if ("rand" %in% methods) {
     tmp <- as(wt.graph.perturbed, "matrix") * NA
@@ -99,6 +100,59 @@ run.all.models <- function(
   }
   time.rand <- as.integer(difftime(Sys.time(), time.tmp, units = "secs"))
 
+  # other methods
+  time.tmp <- Sys.time()
+  if ("causaldag" %in% methods) {
+    # run causaldag
+    dname.tmp <- "tmp.causaldag/"
+
+    unlink(dname.tmp, recursive = TRUE)
+    dir.create(dname.tmp, recursive = TRUE)
+
+    write.csv(wt.X, file.path(dname.tmp, "X_wt.csv"), quote=FALSE)
+    write.csv(mt.X, file.path(dname.tmp, "X_mt.csv"), quote=FALSE)
+
+    cmd <- glue::glue("python3 execute_causaldag.py {dname.tmp}/X_wt.csv {dname.tmp}/X_mt.csv {dname.tmp}/difference_matrix.csv")
+    #print(cmd)
+    system(cmd)
+
+    if (file.exists(file.path(dname.tmp, "difference_matrix.csv"))) {
+      df.causaldag <- read.csv(file.path(dname.tmp, "difference_matrix.csv"))
+
+      rownames(df.causaldag) <- df.causaldag$X
+      df.causaldag <- subset(df.causaldag, select=-X)
+    } else {
+      df.causaldag <- NULL
+    }
+
+    unlink(dname.tmp, recursive = TRUE)
+
+    # extract results
+    if (is.null(df.causaldag)) {
+      # execution crashed
+      res.causaldag <- NULL # TODO: make this better
+      print("NOOOO")
+    } else {
+      # everything went fine
+      res.causaldag <- list(
+        dce = as.matrix(df.causaldag),
+        dce.pvalue = as.matrix(df.causaldag)
+      )
+
+      res.causaldag$dce.pvalue[res.causaldag$dce.pvalue != 0] <- 0.01 # something significant...
+      res.causaldag$dce.pvalue[res.causaldag$dce.pvalue == 0] <- 0.99
+
+      res.causaldag$dce[as(wt.graph.perturbed, "matrix") == 0] <- NA
+      res.causaldag$dce.pvalue[as(wt.graph.perturbed, "matrix") == 0] <- NA
+    }
+  } else {
+    res.causaldag <- ground.truth
+    res.causaldag$dce.pvalue <- ground.truth$dce*0
+    res.causaldag$dce[as(wt.graph.perturbed, "matrix") == 0] <- NA
+    res.causaldag$dce.pvalue[as(wt.graph.perturbed, "matrix") == 0] <- NA
+  }
+  time.causaldag <- as.integer(difftime(Sys.time(), time.tmp, units = "secs"))
+
   # gather results
   df.res <- data.frame(
     truth=as.vector(ground.truth$dce),
@@ -106,7 +160,8 @@ run.all.models <- function(
     pcor=as.vector(res.pcor$dce),
     dce=as.vector(res.dce$dce),
     dce.lr=as.vector(res.dce.lr$dce),
-    rand=as.vector(res.rand$dce)
+    rand=as.vector(res.rand$dce),
+    causaldag=as.vector(res.causaldag$dce)
   )
 
   df.pvalues <- data.frame(
@@ -115,7 +170,8 @@ run.all.models <- function(
     pcor=as.vector(res.pcor$dce.pvalue),
     dce=as.vector(res.dce$dce.pvalue),
     dce.lr=as.vector(res.dce.lr$dce.pvalue),
-    rand=as.vector(res.rand$dce.pvalue)
+    rand=as.vector(res.rand$dce.pvalue),
+    causaldag=as.vector(res.causaldag$dce.pvalue)
   )
 
   df.runtime <- data.frame(
@@ -123,7 +179,8 @@ run.all.models <- function(
     pcor=time.pcor,
     dce=time.dce,
     dce.lr=time.dce.lr,
-    rand=time.rand
+    rand=time.rand,
+    causaldag=time.causaldag
   )
 
   return(list(edges=df.res, pvalues=df.pvalues, runtime=df.runtime))

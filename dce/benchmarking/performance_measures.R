@@ -96,7 +96,8 @@ apply.performance.measure <- function(df, func, label, ...) {
       pcor=func(df, "pcor", ...),
       dce=func(df, "dce", ...),
       dce.lr=func(df, "dce.lr", ...),
-      rand=func(df, "rand", ...)
+      rand=func(df, "rand", ...),
+      causaldag=func(df, "causaldag", ...)
     ) %>%
       mutate(type=label)
   )

@@ -16,6 +16,7 @@ Benchmark DCE performance and runtime.
 
 Usage:
   main.R
+  main.R --variable NAME --values VALUES
   main.R --variable NAME --values VALUES --replicates INT --output STR
   main.R --variable NAME --values VALUES --append BOOL --replicates INT --link STR --output STR
 
@@ -103,7 +104,12 @@ df.bench <- purrr::pmap_dfr(
         dispersion={ dispersion <- parameter },
         adjustment.type={ adjustment.type <- parameter },
         perturb={ perturb <- parameter },
-        true.positives={ true.positives <- parameter }
+        true.positives={ true.positives <- parameter },
+
+        total.samples={
+          wt.samples <- round(parameter / 2)
+          mt.samples <- round(parameter / 2)
+        }
       )
 
       print(glue::glue("seed={rng.seed} node.num={node.num} wt.samples={wt.samples} mt.samples={mt.samples} beta.magnitude={beta.magnitude} dispersion={dispersion} adjustment.type={adjustment.type} perturb={perturb} true.positives={true.positives}"))
@@ -169,7 +175,7 @@ df.bench <- purrr::pmap_dfr(
 
 
       # run models
-      methods <- c("cor", "pcor", "dce", "dce.lr", "rand")
+      methods <- c("cor", "pcor", "dce", "dce.lr", "rand", "causaldag")
       if (node.num > 100) {
         methods <- c("cor", "dce", "rand")
       }
@@ -216,7 +222,11 @@ df.bench <- purrr::pmap_dfr(
           rand = case_when(
             pert.edge == orig.edge | pert.edge == 1 ~ rand,
             pert.edge != orig.edge ~ 1
-          )
+          ),
+          causaldag = case_when(
+            pert.edge == orig.edge | pert.edge == 1 ~ causaldag,
+            pert.edge != orig.edge ~ 1
+          ),
         )
 
       df.all %<>%
@@ -242,7 +252,8 @@ df.bench <- purrr::pmap_dfr(
             pcor=get_prediction_counts(df.edges$truth, df.edges$pcor),
             dce=get_prediction_counts(df.edges$truth, df.edges$dce),
             dce.lr=get_prediction_counts(df.edges$truth, df.edges$dce.lr),
-            rand=get_prediction_counts(df.edges$truth, df.edges$rand)
+            rand=get_prediction_counts(df.edges$truth, df.edges$rand),
+            causaldag=get_prediction_counts(df.edges$truth, df.edges$causaldag)
           ), .id="name") %>%
             column_to_rownames(var="name") %>%
             t %>%
@@ -258,12 +269,14 @@ df.bench <- purrr::pmap_dfr(
 
           df.runtime %>% mutate(type="runtime"),
 
+          # TODO: get rid of this repetitive pattern!!!
           data.frame(
             cor=graph.density,
             pcor=graph.density,
             dce=graph.density,
             dce.lr=graph.density,
-            rand=graph.density
+            rand=graph.density,
+            causaldag=graph.density
           ) %>%
             mutate(type="graph.density"),
 
@@ -272,7 +285,8 @@ df.bench <- purrr::pmap_dfr(
             pcor=lib.size.stats,
             dce=lib.size.stats,
             dce.lr=lib.size.stats,
-            rand=lib.size.stats
+            rand=lib.size.stats,
+            causaldag=lib.size.stats
           ) %>%
             mutate(type="lib.size.stats"),
 
@@ -281,7 +295,8 @@ df.bench <- purrr::pmap_dfr(
             pcor=dce.stats$min,
             dce=dce.stats$min,
             dce.lr=dce.stats$min,
-            rand=dce.stats$min
+            rand=dce.stats$min,
+            causaldag=dce.stats$min
           ) %>%
             mutate(type="dce.min"),
 
@@ -290,7 +305,8 @@ df.bench <- purrr::pmap_dfr(
             pcor=dce.stats$max,
             dce=dce.stats$max,
             dce.lr=dce.stats$max,
-            rand=dce.stats$max
+            rand=dce.stats$max,
+            causaldag=dce.stats$max
           ) %>%
             mutate(type="dce.max"),
 
@@ -299,7 +315,8 @@ df.bench <- purrr::pmap_dfr(
             pcor=dce.stats$median,
             dce=dce.stats$median,
             dce.lr=dce.stats$median,
-            rand=dce.stats$median
+            rand=dce.stats$median,
+            causaldag=dce.stats$median
           ) %>%
             mutate(type="dce.median"),
 
@@ -308,7 +325,8 @@ df.bench <- purrr::pmap_dfr(
             pcor=dce.stats$mean,
             dce=dce.stats$mean,
             dce.lr=dce.stats$mean,
-            rand=dce.stats$mean
+            rand=dce.stats$mean,
+            causaldag=dce.stats$mean
           ) %>%
             mutate(type="dce.mean"),
 
@@ -317,7 +335,8 @@ df.bench <- purrr::pmap_dfr(
             pcor=dispersion.estimate,
             dce=dispersion.estimate,
             dce.lr=dispersion.estimate,
-            rand=dispersion.estimate
+            rand=dispersion.estimate,
+            causaldag=dispersion.estimate
           ) %>%
             mutate(type="dispersion.estimate"),
 
@@ -326,7 +345,8 @@ df.bench <- purrr::pmap_dfr(
             pcor=mean.estimate,
             dce=mean.estimate,
             dce.lr=mean.estimate,
-            rand=mean.estimate
+            rand=mean.estimate,
+            causaldag=mean.estimate
           ) %>%
             mutate(type="mean.estimate"),
 
@@ -335,7 +355,8 @@ df.bench <- purrr::pmap_dfr(
             pcor=prevalence,
             dce=prevalence,
             dce.lr=prevalence,
-            rand=prevalence
+            rand=prevalence,
+            causaldag=prevalence
           ) %>%
             mutate(type="prevalence"),
 
