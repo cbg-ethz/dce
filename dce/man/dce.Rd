@@ -14,6 +14,7 @@ dce(
   p.method = "mean",
   test = "wald",
   lib.size = FALSE,
+  latent = 0,
   conservative = FALSE,
   verbose = FALSE
 )

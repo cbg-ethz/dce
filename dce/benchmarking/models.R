@@ -70,8 +70,9 @@ run.all.models <- function(
     res.dce.lr <- dce::dce.nb(
       wt.graph.perturbed, wt.X, mt.X,
       adjustment.type = adjustment.type,
-      solver.args = solver.args, test = "lr",
-      lib.size = TRUE
+      solver.args = solver.args,# test = "lr",
+      lib.size = TRUE,
+      latent = 1
     )
   } else {
     res.dce.lr <- ground.truth

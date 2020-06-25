@@ -9,7 +9,9 @@ simulate_data(
   n = 100,
   dist.mean = 1000,
   dist.dispersion = 100,
-  link = negative.binomial.special()$linkfun
+  link = negative.binomial.special()$linkfun,
+  pop.size = 100,
+  latent = 0
 )
 }
 \arguments{

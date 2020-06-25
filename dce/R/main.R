@@ -33,6 +33,7 @@ setGeneric(
         p.method = "mean",
         test = "wald",
         lib.size = FALSE,
+        latent = 0,
         conservative = FALSE,
         verbose = FALSE
     ) {
@@ -53,6 +54,7 @@ setMethod(
         p.method = "mean",
         test = "wald",
         lib.size = FALSE,
+        latent = 0,
         conservative = FALSE,
         verbose = FALSE
     ) {
@@ -65,6 +67,7 @@ setMethod(
             p.method,
             test,
             lib.size,
+            latent,
             conservative,
             verbose
         )
@@ -82,6 +85,7 @@ setMethod(
         p.method = "mean",
         test = "wald",
         lib.size = FALSE,
+        latent = 0,
         conservative = FALSE,
         verbose = FALSE
     ) {
@@ -93,6 +97,7 @@ setMethod(
             p.method,
             test,
             lib.size,
+            latent,
             conservative,
             verbose
         )
@@ -110,6 +115,7 @@ setMethod(
         p.method = "mean",
         test = "wald",
         lib.size = FALSE,
+        latent = 0,
         conservative = FALSE,
         verbose = FALSE
     ) {
@@ -132,6 +138,7 @@ setMethod(
             p.method,
             test,
             lib.size,
+            latent,
             conservative,
             verbose
         )
@@ -148,9 +155,20 @@ setMethod(
     p.method,
     test,
     lib.size,
+    latent,
     conservative,
     verbose
 ) {
+    # handle latent variables
+    if (latent > 0) {
+        pca.wt <- prcomp(df.expr.wt)
+        lat.wt <- pca.wt$x[, seq_len(latent), drop = FALSE]
+        colnames(lat.wt) <- paste0("H", seq_len(latent))
+        pca.mt <- prcomp(df.expr.mt)
+        lat.mt <- pca.mt$x[, seq_len(latent), drop = FALSE]
+        colnames(lat.mt) <- paste0("H", seq_len(latent))
+    }
+    
     # handle lib.size + filter data
     if (!is.numeric(lib.size)) {
         if (lib.size) {
@@ -221,6 +239,12 @@ setMethod(
             } else {
                 df.data <- cbind(df.data, lib.size = factor(lib.size))
                 form <- paste0("Y ~ N * X + N*lib.size", form.adjustment.suffix)
+            }
+            if (latent > 0) {
+                df.data <- cbind(df.data, rbind(lat.wt, lat.mt))
+                form <- paste0(form, " + ",
+                               paste(paste0("N*H", seq_len(latent)),
+                                     collapse = " + "))
             }
 
             if (verbose) {
@@ -321,6 +345,7 @@ dce.nb <- function(
     p.method = "mean",
     test = "wald",
     lib.size = FALSE,
+    latent = 0,
     conservative = FALSE,
     verbose = FALSE
 ) {
@@ -331,6 +356,7 @@ dce.nb <- function(
         p.method,
         test,
         lib.size,
+        latent,
         conservative,
         verbose
     )

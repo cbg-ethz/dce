@@ -131,26 +131,22 @@ df.bench <- purrr::pmap_dfr(
       dce.stats <- compute.dce.stats(wt.graph, mt.graph)
 
       # generate data
-      wt.X <- simulate_data(wt.graph, n = wt.samples, dist.dispersion = dispersion, dist.mean = dist.mean)
-      mt.X <- simulate_data(mt.graph, n = mt.samples, dist.dispersion = dispersion, dist.mean = dist.mean)
+      latent <- 0
+      pop.size <- 10000
+      wt.X <- simulate_data(wt.graph, n = wt.samples, dist.dispersion = dispersion, dist.mean = dist.mean, pop.size = pop.size, latent = latent)
+      mt.X <- simulate_data(mt.graph, n = mt.samples, dist.dispersion = dispersion, dist.mean = dist.mean, pop.size = pop.size, latent = latent)
 
       # library size difference
-      pop <- 10000
-      X <- matrix(rnbinom((pop-node.num)*(wt.samples+mt.samples), size = dispersion, mu = dist.mean), (wt.samples+mt.samples), pop-node.num)
-      colnames(X) <- paste0("n", (node.num+1):pop)
       ptruncnorm <- dnorm(1:10,5.5,1)/(pnorm(11,5.5,1)-pnorm(0,5.5,1))
-      lib.size.gtn <- sample(1:10,nrow(X),replace=TRUE,prob=ptruncnorm)
+      lib.size.gtn <- sample(1:10,nrow(wt.X)+nrow(mt.X),replace=TRUE,prob=ptruncnorm)
       wt.X <- wt.X*lib.size.gtn[seq_len(wt.samples)]
       mt.X <- mt.X*lib.size.gtn[(wt.samples+1):(wt.samples+mt.samples)]
-      X <- X*lib.size.gtn
 
       xt <- c(rep(0,nrow(wt.X)),rep(1,nrow(mt.X)))
       names(xt) <- "group"
       design <- model.matrix(~xt)
       dispersion.estimate <- estimateTheta(rbind(wt.X, mt.X), design = design)
       mean.estimate <- mean(rbind(wt.X, mt.X))
-      wt.X <- cbind(wt.X, X[seq_len(wt.samples),])
-      mt.X <- cbind(mt.X, X[(wt.samples+1):(wt.samples+mt.samples),])
 
       # check how close we get to library size
       lib.size <- apply(rbind(wt.X, mt.X), 1, sum)

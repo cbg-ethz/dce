@@ -285,7 +285,7 @@ resample_edge_weights <- function(g, tp = 1,
     changes <- floor((1-tp)*sum(g != 0))
     gbin <- g
     gbin[which(gbin != 0)] <- 1
-    gtr <- gtr2 <- nem::transitive.reduction(gbin)
+    gtr <- gtr2 <- mnem::transitive.reduction(gbin)
     diag(gtr) <- 1
     noedges <- 1
     start <- TRUE
