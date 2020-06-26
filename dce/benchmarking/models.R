@@ -110,8 +110,8 @@ run.all.models <- function(
     unlink(dname.tmp, recursive = TRUE)
     dir.create(dname.tmp, recursive = TRUE)
 
-    write.csv(wt.X, file.path(dname.tmp, "X_wt.csv"), quote=FALSE)
-    write.csv(mt.X, file.path(dname.tmp, "X_mt.csv"), quote=FALSE)
+    write.csv(wt.X[, nodes(wt.graph.perturbed)], file.path(dname.tmp, "X_wt.csv"), quote=FALSE)
+    write.csv(wt.X[, nodes(wt.graph.perturbed)], file.path(dname.tmp, "X_mt.csv"), quote=FALSE)
 
     cmd <- glue::glue("python3 execute_causaldag.py {dname.tmp}/X_wt.csv {dname.tmp}/X_mt.csv {dname.tmp}/difference_matrix.csv")
     #print(cmd)
