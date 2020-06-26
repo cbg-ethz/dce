@@ -1,3 +1,5 @@
+# note regarding precision, recall, f1-score computation: https://github.com/dice-group/gerbil/wiki/Precision,-Recall-and-F1-measure
+
 get.classification.counts <- function(df, col, alpha = 0.05) {
   # df.classification <- df %>%
   #   mutate_at(vars(-"truth"), ~ as.numeric(. <= alpha)) %>%
@@ -36,15 +38,47 @@ compute.mse <- function(df, col) {
 
 compute.precision <- function(df, col, alpha = .05) {
   c <- get.classification.counts(df, col, alpha = alpha)
+
+  if (c$tp == 0) {
+    if (c$fp == 0 && c$fn == 0) {
+      # "there are no results and we (correctly) identify none"
+      return(1)
+    }
+    # avoid dividing by 0
+    return(0)
+  }
+
   return(c$tp / (c$tp + c$fp))
 }
 
 compute.recall <- function(df, col, alpha = .05) {
   c <- get.classification.counts(df, col, alpha = alpha)
+
+  if (c$tp == 0) {
+    if (c$fp == 0 && c$fn == 0) {
+      # "there are no results and we (correctly) identify none"
+      return(1)
+    }
+    # avoid dividing by 0
+    return(0)
+  }
+
   return(c$tp / (c$tp + c$fn))
 }
 
 compute.f1score <- function(df, col, alpha = .05) {
+  # handle special case
+  c <- get.classification.counts(df, col, alpha = alpha)
+  if (c$tp == 0) {
+    if (c$fp == 0 && c$fn == 0) {
+      # "there are no results and we (correctly) identify none"
+      return(1)
+    }
+    # avoid dividing by 0
+    return(0)
+  }
+
+  # actual computation
   prec <- compute.precision(df, col, alpha = alpha)
   reca <- compute.recall(df, col, alpha = alpha)
 
