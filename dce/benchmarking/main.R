@@ -48,6 +48,7 @@ append <- FALSE
 
 perturb <- 0
 true.positives <- 0.5
+methods <- c("cor", "pcor", "dce", "dce.lr", "rand", "causaldag")
 
 
 # special parameters which can later be modified from commandline
@@ -171,10 +172,6 @@ df.bench <- purrr::pmap_dfr(
 
 
       # run models
-      methods <- c("cor", "pcor", "dce", "dce.lr", "rand", "causaldag")
-      if (node.num > 100) {
-        methods <- c("cor", "dce", "rand")
-      }
       res <- run.all.models(
         wt.graph, wt.X,
         mt.graph, mt.X,
@@ -197,33 +194,12 @@ df.bench <- purrr::pmap_dfr(
         df.pvalues
       )
 
-      df.all %<>%
-        mutate(
-          cor = case_when(
-            pert.edge == orig.edge | pert.edge == 1 ~ cor,
-            pert.edge != orig.edge ~ 1
-          ),
-          pcor = case_when(
-            pert.edge == orig.edge | pert.edge == 1 ~ pcor,
-            pert.edge != orig.edge ~ 1
-          ),
-          dce = case_when(
-            pert.edge == orig.edge | pert.edge == 1 ~ dce,
-            pert.edge != orig.edge ~ 1
-          ),
-          dce.lr = case_when(
-            pert.edge == orig.edge | pert.edge == 1 ~ dce.lr,
-            pert.edge != orig.edge ~ 1
-          ),
-          rand = case_when(
-            pert.edge == orig.edge | pert.edge == 1 ~ rand,
-            pert.edge != orig.edge ~ 1
-          ),
-          causaldag = case_when(
-            pert.edge == orig.edge | pert.edge == 1 ~ causaldag,
-            pert.edge != orig.edge ~ 1
-          ),
+      for (method in methods) {
+        df.all[[method]] <- case_when(
+          df.all$pert.edge == df.all$orig.edge | df.all$pert.edge == 1 ~ df.all[[method]],
+          df.all$pert.edge != df.all$orig.edge ~ 1
         )
+      }
 
       df.all %<>%
         dplyr::filter(orig.edge | pert.edge)
@@ -243,119 +219,33 @@ df.bench <- purrr::pmap_dfr(
             dplyr::select(-rowname, -truth) %>%
             mutate(type="correlation"),
 
-          bind_rows(list(
-            cor=get_prediction_counts(df.edges$truth, df.edges$cor),
-            pcor=get_prediction_counts(df.edges$truth, df.edges$pcor),
-            dce=get_prediction_counts(df.edges$truth, df.edges$dce),
-            dce.lr=get_prediction_counts(df.edges$truth, df.edges$dce.lr),
-            rand=get_prediction_counts(df.edges$truth, df.edges$rand),
-            causaldag=get_prediction_counts(df.edges$truth, df.edges$causaldag)
-          ), .id="name") %>%
+          purrr::map_dfr(methods, function(method) {
+            get_prediction_counts(df.edges$truth, df.edges[[method]]) %>%
+              mutate(name = method)
+          }) %>%
             column_to_rownames(var="name") %>%
             t %>%
             as.data.frame %>%
             rownames_to_column(var="type"),
 
-          apply.performance.measure(df.edges, compute.mse, "mse"),
-          apply.performance.measure(df.pvalues.mod, compute.precision, "precision"),
-          apply.performance.measure(df.pvalues.mod, compute.recall, "recall"),
-          apply.performance.measure(df.pvalues.mod, compute.f1score, "f1-score"),
-          apply.performance.measure(df.pvalues.mod, compute.prauc, "pr-auc"),
-          apply.performance.measure(df.pvalues.mod, compute.rocauc, "roc-auc"),
+          apply.performance.measure(df.edges, methods, compute.mse, "mse"),
+          apply.performance.measure(df.pvalues.mod, methods, compute.precision, "precision"),
+          apply.performance.measure(df.pvalues.mod, methods, compute.recall, "recall"),
+          apply.performance.measure(df.pvalues.mod, methods, compute.f1score, "f1-score"),
+          apply.performance.measure(df.pvalues.mod, methods, compute.prauc, "pr-auc"),
+          apply.performance.measure(df.pvalues.mod, methods, compute.rocauc, "roc-auc"),
 
           df.runtime %>% mutate(type="runtime"),
 
-          # TODO: get rid of this repetitive pattern!!!
-          data.frame(
-            cor=graph.density,
-            pcor=graph.density,
-            dce=graph.density,
-            dce.lr=graph.density,
-            rand=graph.density,
-            causaldag=graph.density
-          ) %>%
-            mutate(type="graph.density"),
-
-          data.frame(
-            cor=lib.size.stats,
-            pcor=lib.size.stats,
-            dce=lib.size.stats,
-            dce.lr=lib.size.stats,
-            rand=lib.size.stats,
-            causaldag=lib.size.stats
-          ) %>%
-            mutate(type="lib.size.stats"),
-
-          data.frame(
-            cor=dce.stats$min,
-            pcor=dce.stats$min,
-            dce=dce.stats$min,
-            dce.lr=dce.stats$min,
-            rand=dce.stats$min,
-            causaldag=dce.stats$min
-          ) %>%
-            mutate(type="dce.min"),
-
-          data.frame(
-            cor=dce.stats$max,
-            pcor=dce.stats$max,
-            dce=dce.stats$max,
-            dce.lr=dce.stats$max,
-            rand=dce.stats$max,
-            causaldag=dce.stats$max
-          ) %>%
-            mutate(type="dce.max"),
-
-          data.frame(
-            cor=dce.stats$median,
-            pcor=dce.stats$median,
-            dce=dce.stats$median,
-            dce.lr=dce.stats$median,
-            rand=dce.stats$median,
-            causaldag=dce.stats$median
-          ) %>%
-            mutate(type="dce.median"),
-
-          data.frame(
-            cor=dce.stats$mean,
-            pcor=dce.stats$mean,
-            dce=dce.stats$mean,
-            dce.lr=dce.stats$mean,
-            rand=dce.stats$mean,
-            causaldag=dce.stats$mean
-          ) %>%
-            mutate(type="dce.mean"),
-
-          data.frame(
-            cor=dispersion.estimate,
-            pcor=dispersion.estimate,
-            dce=dispersion.estimate,
-            dce.lr=dispersion.estimate,
-            rand=dispersion.estimate,
-            causaldag=dispersion.estimate
-          ) %>%
-            mutate(type="dispersion.estimate"),
-
-          data.frame(
-            cor=mean.estimate,
-            pcor=mean.estimate,
-            dce=mean.estimate,
-            dce.lr=mean.estimate,
-            rand=mean.estimate,
-            causaldag=mean.estimate
-          ) %>%
-            mutate(type="mean.estimate"),
-
-          data.frame(
-            cor=prevalence,
-            pcor=prevalence,
-            dce=prevalence,
-            dce.lr=prevalence,
-            rand=prevalence,
-            causaldag=prevalence
-          ) %>%
-            mutate(type="prevalence"),
-
+          methods %>% purrr::map_dfc(setNames, object = list(graph.density)) %>% mutate(type="graph.density"),
+          methods %>% purrr::map_dfc(setNames, object = list(lib.size.stats)) %>% mutate(type="lib.size.stats"),
+          methods %>% purrr::map_dfc(setNames, object = list(dce.stats$min)) %>% mutate(type="dce.min"),
+          methods %>% purrr::map_dfc(setNames, object = list(dce.stats$max)) %>% mutate(type="dce.max"),
+          methods %>% purrr::map_dfc(setNames, object = list(dce.stats$median)) %>% mutate(type="dce.median"),
+          methods %>% purrr::map_dfc(setNames, object = list(dce.stats$mean)) %>% mutate(type="dce.mean"),
+          methods %>% purrr::map_dfc(setNames, object = list(dispersion.estimate)) %>% mutate(type="dispersion.estimate"),
+          methods %>% purrr::map_dfc(setNames, object = list(mean.estimate)) %>% mutate(type="mean.estimate"),
+          methods %>% purrr::map_dfc(setNames, object = list(prevalence)) %>% mutate(type="prevalence")
         ) %>%
           mutate(parameter=parameter, varied.parameter=varied.parameter, rng.seed=rng.seed)
     },

@@ -123,16 +123,11 @@ compute.rocauc <- function(df, col, seq = 1000) {
   return(auc)
 }
 
-apply.performance.measure <- function(df, func, label, ...) {
-  return(
-    data.frame(
-      cor=func(df, "cor", ...),
-      pcor=func(df, "pcor", ...),
-      dce=func(df, "dce", ...),
-      dce.lr=func(df, "dce.lr", ...),
-      rand=func(df, "rand", ...),
-      causaldag=func(df, "causaldag", ...)
-    ) %>%
-      mutate(type=label)
-  )
+apply.performance.measure <- function(df, methods, func, label, ...) {
+  purrr::map_dfc(methods, function(method) {
+    tmp <- data.frame(func(df, method, ...))
+    names(tmp) <- method
+    tmp
+  }) %>%
+    mutate(type=label)
 }
