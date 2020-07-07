@@ -3,7 +3,7 @@ run.all.models <- function(
   mt.graph, mt.X,
   wt.graph.perturbed,
   beta.magnitude,
-  methods = c("cor", "pcor", "dce", "dce.lr", "rand", "causaldag"),
+  methods = NULL,
   lib.size = NULL
 ) {
   # for null model
@@ -19,7 +19,7 @@ run.all.models <- function(
 
   # correlations
   time.tmp <- Sys.time()
-  if ("cor" %in% methods) {
+  if (is.null(methods) || "cor" %in% methods) {
     res.cor <- list(dce = cor(mt.X.cor) - cor(wt.X.cor))
     res.cor$dce.pvalue <- pcor_perm(wt.X.cor, mt.X.cor, fun = cor)
   } else {
@@ -31,7 +31,7 @@ run.all.models <- function(
   time.cor <- as.integer(difftime(Sys.time(), time.tmp, units = "secs"))
 
   time.tmp <- Sys.time()
-  if ("pcor" %in% methods) {
+  if (is.null(methods) || "pcor" %in% methods) {
     res.pcor <- list(dce = pcor(mt.X.cor) - pcor(wt.X.cor))
     res.pcor$dce.pvalue <- pcor_perm(wt.X.cor, mt.X.cor, fun = pcor)
   } else {
@@ -50,7 +50,7 @@ run.all.models <- function(
   }
 
   time.tmp <- Sys.time()
-  if ("dce" %in% methods) {
+  if (is.null(methods) || "dce" %in% methods) {
     res.dce <- dce::dce.nb(
       wt.graph.perturbed, wt.X, mt.X,
       adjustment.type = adjustment.type,
@@ -66,7 +66,7 @@ run.all.models <- function(
   time.dce <- as.integer(difftime(Sys.time(), time.tmp, units = "secs"))
 
   time.tmp <- Sys.time()
-  if ("dce.lr" %in% methods) {
+  if (is.null(methods) || "dce.lr" %in% methods) {
     res.dce.lr <- dce::dce.nb(
       wt.graph.perturbed, wt.X, mt.X,
       adjustment.type = adjustment.type,
@@ -84,7 +84,7 @@ run.all.models <- function(
 
   # null models
   time.tmp <- Sys.time()
-  if ("rand" %in% methods) {
+  if (is.null(methods) || "rand" %in% methods) {
     tmp <- as(wt.graph.perturbed, "matrix") * NA
     tmp[which(as(wt.graph.perturbed, "matrix") != 0)] = (
       runif(sum(as(wt.graph.perturbed, "matrix") != 0), negweight.range[1], posweight.range[2]) -
@@ -103,7 +103,7 @@ run.all.models <- function(
 
   # other methods
   time.tmp <- Sys.time()
-  if ("causaldag" %in% methods) {
+  if (is.null(methods) || "causaldag" %in% methods) {
     # run causaldag
     dname.tmp <- "tmp.causaldag/"
 

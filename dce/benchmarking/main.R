@@ -17,7 +17,9 @@ Benchmark DCE performance and runtime.
 Usage:
   main.R
   main.R --variable NAME --values VALUES
+  main.R --variable NAME --values VALUES --methods STR
   main.R --variable NAME --values VALUES --replicates INT --output STR
+  main.R --variable NAME --values VALUES --replicates INT --output STR --methods STR
   main.R --variable NAME --values VALUES --append BOOL --replicates INT --link STR --output STR
 
 Options:
@@ -28,6 +30,7 @@ Options:
   --replicates INT Number of simulation runs [default: 100].
   --link STR       Either log or identity as link function [default: identity].
   --output STR     CSV File to store results in [default: benchmark_results.csv].
+  --methods STR    Which methods to benchmark [default: NULL].
 " -> doc
 
 arguments <- docopt::docopt(doc)
@@ -48,13 +51,13 @@ append <- FALSE
 
 perturb <- 0
 true.positives <- 0.5
-methods <- c("cor", "pcor", "dce", "dce.lr", "rand", "causaldag")
 
 
 # special parameters which can later be modified from commandline
 output.fname <- "benchmark_results.csv"
 replicate.count <- 100
 link.method <- "identity"
+methods <- NULL
 
 
 # parse parameters
@@ -66,6 +69,10 @@ parameter.list <- unlist(
 output.fname <- arguments$output
 replicate.count <- as.numeric(arguments$replicates)
 append <- as.logical(arguments$append)
+
+if (arguments$methods != "NULL") {
+  methods <- strsplit(arguments$methods, ",")[[1]]
+}
 
 link.method <- arguments$link
 if (link.method == "log") {
@@ -180,6 +187,10 @@ df.bench <- purrr::pmap_dfr(
         methods = methods
       )
 
+      if (is.null(methods)) {
+        methods <- colnames(res$runtime)
+      }
+
       df.edges <- res$edges
       df.pvalues <- res$pvalues
       df.runtime <- res$runtime
@@ -212,7 +223,7 @@ df.bench <- purrr::pmap_dfr(
       data.frame() %>%
         bind_rows(
           as.data.frame(
-            cor(df.edges, method="spearman", use="pairwise.complete.obs")
+            cor(df.edges[c("truth", methods)], method="spearman", use="pairwise.complete.obs")
           ) %>%
             rownames_to_column() %>%
             dplyr::filter(rowname == "truth") %>%
