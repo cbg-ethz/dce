@@ -82,6 +82,22 @@ run.all.models <- function(
   }
   time.dce.lr <- as.integer(difftime(Sys.time(), time.tmp, units = "secs"))
 
+  time.tmp <- Sys.time()
+  if (is.null(methods) || "dce.nolib" %in% methods) {
+    res.dce.nolib <- dce::dce.nb(
+      wt.graph.perturbed, wt.X, mt.X,
+      adjustment.type = adjustment.type,
+      solver.args = solver.args,
+      lib.size = FALSE
+    )
+  } else {
+    res.dce.nolib <- ground.truth
+    res.dce.nolib$dce.pvalue <- ground.truth$dce*0
+    res.dce.nolib$dce[as(wt.graph.perturbed, "matrix") == 0] <- NA
+    res.dce.nolib$dce.pvalue[as(wt.graph.perturbed, "matrix") == 0] <- NA
+  }
+  time.dce.nolib <- as.integer(difftime(Sys.time(), time.tmp, units = "secs"))
+
   # null models
   time.tmp <- Sys.time()
   if (is.null(methods) || "rand" %in% methods) {
@@ -161,6 +177,7 @@ run.all.models <- function(
     pcor=as.vector(res.pcor$dce),
     dce=as.vector(res.dce$dce),
     dce.lr=as.vector(res.dce.lr$dce),
+    dce.nolib=as.vector(res.dce.nolib$dce),
     rand=as.vector(res.rand$dce),
     causaldag=as.vector(res.causaldag$dce)
   )
@@ -171,6 +188,7 @@ run.all.models <- function(
     pcor=as.vector(res.pcor$dce.pvalue),
     dce=as.vector(res.dce$dce.pvalue),
     dce.lr=as.vector(res.dce.lr$dce.pvalue),
+    dce.nolib=as.vector(res.dce.nolib$dce.pvalue),
     rand=as.vector(res.rand$dce.pvalue),
     causaldag=as.vector(res.causaldag$dce.pvalue)
   )
@@ -180,6 +198,7 @@ run.all.models <- function(
     pcor=time.pcor,
     dce=time.dce,
     dce.lr=time.dce.lr,
+    dce.nolib=time.dce.nolib,
     rand=time.rand,
     causaldag=time.causaldag
   )
