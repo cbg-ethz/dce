@@ -51,6 +51,7 @@ append <- FALSE
 
 perturb <- 0
 true.positives <- 0.5
+lib.size.range <- 10
 
 
 # special parameters which can later be modified from commandline
@@ -145,8 +146,10 @@ df.bench <- purrr::pmap_dfr(
       mt.X <- simulate_data(mt.graph, n = mt.samples, dist.dispersion = dispersion, dist.mean = dist.mean, pop.size = pop.size, latent = latent)
 
       # library size difference
-      ptruncnorm <- dnorm(1:10,5.5,1)/(pnorm(11,5.5,1)-pnorm(0,5.5,1))
-      lib.size.gtn <- sample(1:10,nrow(wt.X)+nrow(mt.X),replace=TRUE,prob=ptruncnorm)
+      lib.size.mean <- (lib.size.range+1)/2
+      lib.size.sd <- lib.size.range/10
+      ptruncnorm <- dnorm(1:lib.size.range,lib.size.mean,lib.size.sd)/(pnorm(lib.size.range+1,lib.size.mean,lib.size.sd)-pnorm(0,lib.size.mean,lib.size.sd))
+      lib.size.gtn <- sample(1:lib.size.range,nrow(wt.X)+nrow(mt.X),replace=TRUE,prob=ptruncnorm)
       wt.X <- wt.X*lib.size.gtn[seq_len(wt.samples)]
       mt.X <- mt.X*lib.size.gtn[(wt.samples+1):(wt.samples+mt.samples)]
 
