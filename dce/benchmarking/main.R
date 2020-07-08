@@ -114,6 +114,7 @@ df.bench <- purrr::pmap_dfr(
         adjustment.type={ adjustment.type <- parameter },
         perturb={ perturb <- parameter },
         true.positives={ true.positives <- parameter },
+        lib.size.range={ lib.size.range <- parameter },
 
         total.samples={
           wt.samples <- round(parameter / 2)
@@ -121,7 +122,7 @@ df.bench <- purrr::pmap_dfr(
         }
       )
 
-      print(glue::glue("seed={rng.seed} node.num={node.num} wt.samples={wt.samples} mt.samples={mt.samples} beta.magnitude={beta.magnitude} dispersion={dispersion} adjustment.type={adjustment.type} perturb={perturb} true.positives={true.positives}"))
+      print(glue::glue("seed={rng.seed} node.num={node.num} wt.samples={wt.samples} mt.samples={mt.samples} beta.magnitude={beta.magnitude} dispersion={dispersion} adjustment.type={adjustment.type} perturb={perturb} true.positives={true.positives} lib.size.range={lib.size.range}"))
 
 
       # generate graphs
