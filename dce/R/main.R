@@ -168,14 +168,21 @@ setMethod(
         lat.mt <- pca.mt$x[, seq_len(latent), drop = FALSE]
         colnames(lat.mt) <- paste0("H", seq_len(latent))
     }
-    
-    # handle lib.size + filter data
+
+    # handle lib.size
     if (!is.numeric(lib.size)) {
         if (lib.size) {
             lib.size <- apply(rbind(df.expr.wt, df.expr.mt), 1, sum)
             lib.size <- round(lib.size/(10^min(round(log10(lib.size)))))
         }
     }
+
+    if (length(unique(lib.size)) == 1) {
+        print("Only single library size detected, disabling correction!")
+        lib.size <- FALSE
+    }
+
+    # subset expression data to pathway genes
     df.expr.wt <- df.expr.wt[, which(colnames(df.expr.wt) %in% colnames(graph))]
     df.expr.mt <- df.expr.mt[, which(colnames(df.expr.mt) %in% colnames(graph))]
 
