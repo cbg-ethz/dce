@@ -235,7 +235,8 @@ df.bench <- purrr::pmap_dfr(
             mutate(type="correlation"),
 
           purrr::map_dfr(methods, function(method) {
-            get_prediction_counts(df.edges$truth, df.edges[[method]]) %>%
+            get.classification.counts(df.pvalues.mod, method) %>%
+              as.data.frame %>%
               mutate(name = method)
           }) %>%
             column_to_rownames(var="name") %>%
