@@ -177,7 +177,7 @@ setMethod(
         }
     }
 
-    if (length(unique(lib.size)) == 1) {
+    if (length(unique(lib.size)) == 1 & lib.size[1] != FALSE) {
         print("Only single library size detected, disabling correction!")
         lib.size <- FALSE
     }
