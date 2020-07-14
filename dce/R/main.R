@@ -175,11 +175,11 @@ setMethod(
             lib.size <- apply(rbind(df.expr.wt, df.expr.mt), 1, sum)
             lib.size <- round(lib.size/(10^min(round(log10(lib.size)))))
         }
+    }
 
-        if (length(unique(lib.size)) == 1) {
-            print("Only single library size detected, disabling correction!")
-            lib.size <- FALSE
-        }
+    if (length(unique(lib.size)) == 1 & lib.size[1] != FALSE) {
+        print("Only single library size detected, disabling correction!")
+        lib.size <- FALSE
     }
 
     # subset expression data to pathway genes
