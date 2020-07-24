@@ -52,7 +52,7 @@ append <- FALSE
 
 perturb <- 0
 true.positives <- 0.5
-lib.size.range <- 1
+lib.size.range <- 10
 latent <- 0
 
 

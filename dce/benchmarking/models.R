@@ -78,8 +78,8 @@ run.all.models <- function(
       wt.graph.perturbed, wt.X, mt.X,
       adjustment.type = adjustment.type,
       effect.type = effect.type,
-      solver.args = solver.args, #test = "lr",
-      lib.size = TRUE, latent = 1
+      solver.args = solver.args, test = "lr",
+      lib.size = TRUE
     )
   } else {
     res.dce.lr <- ground.truth
@@ -96,7 +96,7 @@ run.all.models <- function(
       adjustment.type = adjustment.type,
       effect.type = effect.type,
       solver.args = solver.args,
-      lib.size = FALSE, latent = 1
+      lib.size = FALSE
     )
   } else {
     res.dce.nolib <- ground.truth
