@@ -69,9 +69,10 @@ propagate_gene_edges <- function(graph) {
 
         for (bridge.idx in igraph::neighbors(ig, target.idx, mode="out")) {
           bridge <- vertex.names[bridge.idx]
-          stopifnot(substr(bridge, start=0, stop=3) == "hsa")
 
-          ig <- igraph::add.edges(ig, c(source.idx, bridge.idx), weight=1)
+          if (substr(bridge, start=0, stop=3) == "hsa") {
+            ig <- igraph::add.edges(ig, c(source.idx, bridge.idx), weight=1)
+          }
         }
       }
     }
