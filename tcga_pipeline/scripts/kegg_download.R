@@ -86,7 +86,7 @@ if (dim(df.mapping.overlaps)[[1]] > 0) {
   # contraction leads to multiple edges between two nodes. Remove them
   g.con <- igraph::simplify(g.con)
 
-  # contraction place isolated node with empty name in graph. Remove it
+  # contraction places isolated node with empty name in graph. Remove it
   isolated.nodes = which(igraph::degree(g.con) == 0)
   g.con <- igraph::delete.vertices(g.con, isolated.nodes)
 
