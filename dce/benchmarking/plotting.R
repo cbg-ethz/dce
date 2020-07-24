@@ -152,7 +152,8 @@ tmp <- df.bench %>% pull(varied.parameter) %>% unique
 stopifnot(length(tmp) == 1)
 varied.parameter <- tmp[[1]]
 
-if (!(varied.parameter %in% c("adjustment.type", "theta.fixed"))) {
+
+if (!any(is.na(as.numeric(df.bench$parameter)))) {
   df.bench$parameter %<>% as.factor %>% fct_inseq
 }
 
