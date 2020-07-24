@@ -72,6 +72,8 @@ propagate_gene_edges <- function(graph) {
 
           if (substr(bridge, start=0, stop=3) == "hsa") {
             ig <- igraph::add.edges(ig, c(source.idx, bridge.idx), weight=1)
+          } else {
+            print(glue::glue("{bridge} is not a valid extension for edge {source}->{target}"))
           }
         }
       }
