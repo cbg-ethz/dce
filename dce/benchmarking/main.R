@@ -45,6 +45,7 @@ beta.magnitude <- 1
 dist.mean <- 100
 dispersion <- 1
 adjustment.type <- "parents"
+effect.type <- "total"
 
 sample.kegg <- FALSE
 append <- FALSE
@@ -52,6 +53,7 @@ append <- FALSE
 perturb <- 0
 true.positives <- 0.5
 lib.size.range <- 10
+latent <- 0
 
 
 # special parameters which can later be modified from commandline
@@ -112,9 +114,11 @@ df.bench <- purrr::pmap_dfr(
         beta.magnitude={ beta.magnitude <- parameter },
         dispersion={ dispersion <- parameter },
         adjustment.type={ adjustment.type <- parameter },
+        effect.type={ effect.type <- parameter },
         perturb={ perturb <- parameter },
         true.positives={ true.positives <- parameter },
         lib.size.range={ lib.size.range <- parameter },
+        latent={ latent <- parameter },
 
         total.samples={
           wt.samples <- round(parameter / 2)
@@ -122,7 +126,7 @@ df.bench <- purrr::pmap_dfr(
         }
       )
 
-      print(glue::glue("seed={rng.seed} node.num={node.num} wt.samples={wt.samples} mt.samples={mt.samples} beta.magnitude={beta.magnitude} dispersion={dispersion} adjustment.type={adjustment.type} perturb={perturb} true.positives={true.positives} lib.size.range={lib.size.range}"))
+      print(glue::glue("seed={rng.seed} node.num={node.num} wt.samples={wt.samples} mt.samples={mt.samples} beta.magnitude={beta.magnitude} dispersion={dispersion} adjustment.type={adjustment.type} effect.type={effect.type} perturb={perturb} true.positives={true.positives} lib.size.range={lib.size.range} latent={latent}"))
 
 
       # generate graphs
@@ -141,7 +145,6 @@ df.bench <- purrr::pmap_dfr(
       dce.stats <- compute.dce.stats(wt.graph, mt.graph)
 
       # generate data
-      latent <- 0
       pop.size <- 10000
       wt.X <- simulate_data(wt.graph, n = wt.samples, dist.dispersion = dispersion, dist.mean = dist.mean, pop.size = pop.size, latent = latent)
       mt.X <- simulate_data(mt.graph, n = mt.samples, dist.dispersion = dispersion, dist.mean = dist.mean, pop.size = pop.size, latent = latent)
@@ -188,7 +191,8 @@ df.bench <- purrr::pmap_dfr(
         mt.graph, mt.X,
         wt.graph.perturbed,
         beta.magnitude,
-        methods = methods
+        methods = methods,
+        effect.type = effect.type
       )
 
       if (is.null(methods)) {

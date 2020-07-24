@@ -4,14 +4,20 @@ run.all.models <- function(
   wt.graph.perturbed,
   beta.magnitude,
   methods = NULL,
-  lib.size = NULL
+  effect.type
 ) {
   # for null model
   negweight.range <- c(-beta.magnitude, 0)
   posweight.range <- c(0, beta.magnitude)
 
   # ground truth
-  ground.truth <- list(dce = trueEffects(mt.graph) - trueEffects(wt.graph))
+  if (effect.type == "direct") {
+      # direct effects:
+      ground.truth <- list(dce = as(mt.graph,"matrix") - as(wt.graph,"matrix"))
+  } else if (effect.type == "total") {
+      # total effects
+      ground.truth <- list(dce = trueEffects(mt.graph) - trueEffects(wt.graph))
+  }
   # reduce data for correlations
   graph <- as(wt.graph, "matrix")
   wt.X.cor <- wt.X[, seq_len(ncol(graph))]
@@ -54,6 +60,7 @@ run.all.models <- function(
     res.dce <- dce::dce.nb(
       wt.graph.perturbed, wt.X, mt.X,
       adjustment.type = adjustment.type,
+      effect.type = effect.type,
       solver.args = solver.args,
       lib.size = TRUE
     )
@@ -70,6 +77,7 @@ run.all.models <- function(
     res.dce.lr <- dce::dce.nb(
       wt.graph.perturbed, wt.X, mt.X,
       adjustment.type = adjustment.type,
+      effect.type = effect.type,
       solver.args = solver.args, test = "lr",
       lib.size = TRUE
     )
@@ -86,6 +94,7 @@ run.all.models <- function(
     res.dce.nolib <- dce::dce.nb(
       wt.graph.perturbed, wt.X, mt.X,
       adjustment.type = adjustment.type,
+      effect.type = effect.type,
       solver.args = solver.args,
       lib.size = FALSE
     )
