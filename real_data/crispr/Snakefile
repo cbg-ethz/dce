@@ -1,0 +1,56 @@
+configfile: 'config.yaml'
+workdir: config['workdir']
+
+
+rule all:
+    input:
+        'perturbation_analysis/all_genes',
+        expand(
+            'perturbation_analysis/per_gene/{gene}/',
+            gene=set([gene for gene, _ in config['pairs']])),
+        [f'dce_results/{gene}_{pathway}/' for gene, pathway in config['pairs']]
+
+
+rule retrieve_kegg_pathways:
+    output:
+        graph_files = expand(
+            'kegg_pathways/csv_files/{pathway}.csv',
+            pathway=set([pathway for _, pathway in config['pairs']]))
+    params:
+        pathways = set([pathway for _, pathway in config['pairs']])
+    script:
+        'scripts/retrieve_kegg_pathways.R'
+
+
+rule analyze_perturbed_genes:
+    input:
+        graph_files = expand(
+            'kegg_pathways/csv_files/{pathway}.csv',
+            pathway=set([pathway for _, pathway in config['pairs']]))
+    output:
+        out_dir = directory('perturbation_analysis/all_genes')
+    params:
+        perturbed_genes = set([gene for gene, _ in config['pairs']])
+    script:
+        'scripts/analyze_perturbed_genes.R'
+
+
+rule analyze_single_perturbed_gene:
+    input:
+        count_wt_file = srcdir('data/Counts_0_Ctrl.csv'),
+        count_mt_file = srcdir('data/Counts_{gene}.csv')
+    output:
+        out_dir = directory('perturbation_analysis/per_gene/{gene}/')
+    script:
+        'scripts/analyze_single_perturbed_gene.R'
+
+
+rule compute_dces:
+    input:
+        count_wt_file = srcdir('data/Counts_0_Ctrl.csv'),
+        count_mt_file = srcdir('data/Counts_{gene}.csv'),
+        graph_file = 'kegg_pathways/csv_files/{pathway}.csv'
+    output:
+        out_dir = directory('dce_results/{gene}_{pathway}/')
+    script:
+        'scripts/compute_dces.R'
