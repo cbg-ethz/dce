@@ -30,6 +30,7 @@ setGeneric(
         graph, df.expr.wt, df.expr.mt,
         solver = "glm2", solver.args = list(method = "glm.dce.fit"),
         adjustment.type = "parents",
+        effect.type = "total",
         p.method = "mean",
         test = "wald",
         lib.size = FALSE,
@@ -51,6 +52,7 @@ setMethod(
         graph, df.expr.wt, df.expr.mt,
         solver = "glm2", solver.args = list(method = "glm.dce.fit"),
         adjustment.type = "parents",
+        effect.type = "total",
         p.method = "mean",
         test = "wald",
         lib.size = FALSE,
@@ -64,6 +66,7 @@ setMethod(
             df.expr.wt, df.expr.mt,
             solver, solver.args,
             adjustment.type,
+            effect.type,
             p.method,
             test,
             lib.size,
@@ -82,6 +85,7 @@ setMethod(
         graph, df.expr.wt, df.expr.mt,
         solver = "glm2", solver.args = list(method = "glm.dce.fit"),
         adjustment.type = "parents",
+        effect.type = "total",
         p.method = "mean",
         test = "wald",
         lib.size = FALSE,
@@ -94,6 +98,7 @@ setMethod(
             df.expr.wt, df.expr.mt,
             solver, solver.args,
             adjustment.type,
+            effect.type,
             p.method,
             test,
             lib.size,
@@ -112,6 +117,7 @@ setMethod(
         graph, df.expr.wt, df.expr.mt,
         solver = "glm2", solver.args = list(method = "glm.dce.fit"),
         adjustment.type = "parents",
+        effect.type = "total",
         p.method = "mean",
         test = "wald",
         lib.size = FALSE,
@@ -135,6 +141,7 @@ setMethod(
             graph, df.expr.wt, df.expr.mt,
             solver, solver.args,
             adjustment.type,
+            effect.type,
             p.method,
             test,
             lib.size,
@@ -152,6 +159,7 @@ setMethod(
     graph, df.expr.wt, df.expr.mt,
     solver, solver.args,
     adjustment.type,
+    effect.type,
     p.method,
     test,
     lib.size,
@@ -167,6 +175,7 @@ setMethod(
         pca.mt <- prcomp(df.expr.mt)
         lat.mt <- pca.mt$x[, seq_len(latent), drop = FALSE]
         colnames(lat.mt) <- paste0("H", seq_len(latent))
+        lat.data <- rbind(lat.wt,lat.mt)
     }
 
     # handle lib.size
@@ -222,7 +231,9 @@ setMethod(
             )
 
             # incorporate adjustment set
-            valid.adjustment.set <- get.adjustment.set(graph, row, col, adjustment.type)
+            valid.adjustment.set <- get.adjustment.set(graph, row, col,
+                                                       adjustment.type,
+                                                       effect.type)
 
             form.adjustment.suffix <- ""
             for (idx in valid.adjustment.set) {
@@ -248,7 +259,7 @@ setMethod(
                 form <- paste0("Y ~ N * X + N*lib.size", form.adjustment.suffix)
             }
             if (latent > 0) {
-                df.data <- cbind(df.data, rbind(lat.wt, lat.mt))
+                df.data <- cbind(df.data, lat.data)
                 form <- paste0(form, " + ",
                                paste(paste0("N*H", seq_len(latent)),
                                      collapse = " + "))
@@ -349,6 +360,7 @@ dce.nb <- function(
     graph, df.expr.wt, df.expr.mt,
     solver.args = list(method = "glm.dce.nb.fit", link = "identity"),
     adjustment.type = "parents",
+    effect.type = "total",
     p.method = "mean",
     test = "wald",
     lib.size = FALSE,
@@ -360,6 +372,7 @@ dce.nb <- function(
         graph, df.expr.wt, df.expr.mt,
         solver = "glm.nb", solver.args = solver.args,
         adjustment.type,
+        effect.type,
         p.method,
         test,
         lib.size,
@@ -371,7 +384,8 @@ dce.nb <- function(
 
 
 #' @export
-get.adjustment.set <- function(graph, x, y, adjustment.type) {
+get.adjustment.set <- function(graph, x, y, adjustment.type = "parents",
+                               effect.type = "total") {
     check_parents <- function(g, x, y) {
         parents <- which(g[, x] == 1)
         gxy <- g
@@ -393,21 +407,27 @@ get.adjustment.set <- function(graph, x, y, adjustment.type) {
     switch(
         adjustment.type,
         parents = {
-            names(which(graph[, x] != 0))
+            set <- names(which(graph[, x] != 0))
         },
         minimal = {
             tmp <- pcalg::adjustment(graph, "dag", x, y, "minimal")
 
             if (length(tmp) > 0) {
-                rownames(graph)[tmp[[1]]]
+                set <- rownames(graph)[tmp[[1]]]
             } else {
-                vector(mode = "character")
+                set <- vector(mode = "character")
             }
         },
         parents_filtered = {
-            rownames(graph)[check_parents(graph, x, y)]
+            set <- rownames(graph)[check_parents(graph, x, y)]
         }
     )
+    if (effect.type == "direct") {
+        xkids <- names(which(graph[x, ] != 0))
+        xkids <- xkids[which(xkids != colnames(graph)[y])]
+        set <- c(set, xkids)
+    }
+    return(set)
 }
 
 
