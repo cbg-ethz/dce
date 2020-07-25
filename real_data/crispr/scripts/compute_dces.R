@@ -36,7 +36,7 @@ res$dce %>%
   rename(dce = value, source = Var1, target = Var2) %>%
   mutate(dce.pvalue = reshape2::melt(res$dce.pvalue)$value) %>%
   arrange(desc(abs(dce))) %>%
-  head(10) %>%
+  drop_na %>%
   write_csv(file.path(out.dir, "dce_list.csv"))
 
 
