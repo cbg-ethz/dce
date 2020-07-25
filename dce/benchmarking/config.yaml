@@ -2,6 +2,12 @@ script_replicates: 5
 rule_replicates: 20
 
 benchmarks:
+    # library size effects
+    - parameter: lib.size.range
+      values: [1, 5, 10]
+      methods: [dce, dce.nolib, dce.tpm]
+
+    # general performance
     - parameter: node.num
       values: [10, 50, 100]
       methods: null

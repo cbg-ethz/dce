@@ -106,6 +106,30 @@ run.all.models <- function(
   }
   time.dce.nolib <- as.integer(difftime(Sys.time(), time.tmp, units = "secs"))
 
+  time.tmp <- Sys.time()
+  if (is.null(methods) || "dce.tpm" %in% methods) {
+    compute.tpm <- function(counts, len.kb = 1) {
+      # TODO: is len.kb == 1 reasonable in our case?
+      rpk <- counts / len.kb
+      pm.scale <- rowSums(rpk) / 1e6
+      return(rpk / pm.scale)
+    }
+
+    res.dce.tpm <- dce::dce.nb(
+      wt.graph.perturbed, compute.tpm(wt.X), compute.tpm(mt.X),
+      adjustment.type = adjustment.type,
+      effect.type = effect.type,
+      solver.args = solver.args,
+      lib.size = FALSE
+    )
+  } else {
+    res.dce.tpm <- ground.truth
+    res.dce.tpm$dce.pvalue <- ground.truth$dce*0
+    res.dce.tpm$dce[as(wt.graph.perturbed, "matrix") == 0] <- NA
+    res.dce.tpm$dce.pvalue[as(wt.graph.perturbed, "matrix") == 0] <- NA
+  }
+  time.dce.tpm <- as.integer(difftime(Sys.time(), time.tmp, units = "secs"))
+
   # null models
   time.tmp <- Sys.time()
   if (is.null(methods) || "rand" %in% methods) {
@@ -186,6 +210,7 @@ run.all.models <- function(
     dce=as.vector(res.dce$dce),
     dce.lr=as.vector(res.dce.lr$dce),
     dce.nolib=as.vector(res.dce.nolib$dce),
+    dce.tpm=as.vector(res.dce.tpm$dce),
     rand=as.vector(res.rand$dce),
     causaldag=as.vector(res.causaldag$dce)
   )
@@ -197,6 +222,7 @@ run.all.models <- function(
     dce=as.vector(res.dce$dce.pvalue),
     dce.lr=as.vector(res.dce.lr$dce.pvalue),
     dce.nolib=as.vector(res.dce.nolib$dce.pvalue),
+    dce.tpm=as.vector(res.dce.tpm$dce.pvalue),
     rand=as.vector(res.rand$dce.pvalue),
     causaldag=as.vector(res.causaldag$dce.pvalue)
   )
@@ -207,6 +233,7 @@ run.all.models <- function(
     dce=time.dce,
     dce.lr=time.dce.lr,
     dce.nolib=time.dce.nolib,
+    dce.tpm=time.dce.tpm,
     rand=time.rand,
     causaldag=time.causaldag
   )
