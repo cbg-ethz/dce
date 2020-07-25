@@ -4,7 +4,9 @@ localrules: all, aggregate_replicates
 
 rule all:
     input:
-        expand('benchmarks/plots_{varied_param}/', varied_param=config['benchmarks'].keys())
+        expand(
+            'benchmarks/plots_{varied_param}/',
+            varied_param=[e['parameter'] for e in config['benchmarks']])
 
 
 rule run_benchmark:
@@ -17,12 +19,24 @@ rule run_benchmark:
     run:
         import sh
 
+        # select matching config information
+        cur = [e for e in config['benchmarks'] if e['parameter'] == wildcards.varied_param]
+        assert len(cur) == 1
+        cur = cur[0]
+
+        # select methods if needed
+        methods_arg = []
+        if cur['methods'] is not None:
+            methods_arg = ['--methods', ','.join(str(v) for v in cur['methods'])]
+
+        # execute benchmark script
         sh.Rscript(
             params.benchmark_script,
             '--variable', wildcards.varied_param,
-            '--values', config['benchmarks'][wildcards.varied_param],
+            '--values', ','.join(str(v) for v in cur['values']),
             '--replicates', config['script_replicates'],
             '--output', output.fname,
+            *methods_arg,
             _fg=True
         )
 

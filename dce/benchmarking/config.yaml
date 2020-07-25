@@ -2,10 +2,24 @@ script_replicates: 5
 rule_replicates: 20
 
 benchmarks:
-    node.num: '10,50,100'
-    mt.samples: '100,200,400'
-    beta.magnitude: '0.1,1,10'
-    dispersion: '10,100,1000'
-    adjustment.type: 'parents,minimal,parents_filtered'
-    perturb: '-0.5,-0.1,0,0.1,0.5'
-    true.positives: '0,0.25,0.5,0.75,1'
+    - parameter: node.num
+      values: [10, 50, 100]
+      methods: null
+    - parameter: mt.samples
+      values: [100, 200, 400]
+      methods: null
+    - parameter: beta.magnitude
+      values: [0.1, 1,10]
+      methods: null
+    - parameter: dispersion
+      values: [10, 100, 1000]
+      methods: null
+    - parameter: adjustment.type
+      values: [parents, minimal, parents_filtered]
+      methods: null
+    - parameter: perturb
+      values: [-0.5, -0.1, 0, 0.1, 0.5]
+      methods: null
+    - parameter: true.positives
+      values: [0, 0.25, 0.5, 0.75, 1]
+      methods: null
