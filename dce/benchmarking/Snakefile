@@ -5,13 +5,13 @@ localrules: all, aggregate_replicates
 rule all:
     input:
         expand(
-            'benchmarks/plots_{varied_param}/',
-            varied_param=[e['parameter'] for e in config['benchmarks']])
+            'benchmarks/plots_{benchmark}/',
+            benchmark=config['benchmarks'].keys())
 
 
 rule run_benchmark:
     output:
-        fname = 'benchmarks/replicates/bench_{varied_param}_{replicate}.csv'
+        fname = 'benchmarks/replicates/bench_{benchmark}_{replicate}.csv'
     params:
         benchmark_script = srcdir('main.R')
     resources:
@@ -20,9 +20,7 @@ rule run_benchmark:
         import sh
 
         # select matching config information
-        cur = [e for e in config['benchmarks'] if e['parameter'] == wildcards.varied_param]
-        assert len(cur) == 1
-        cur = cur[0]
+        cur = config['benchmarks'][wildcards.benchmark]
 
         # select methods if needed
         methods_arg = []
@@ -32,7 +30,7 @@ rule run_benchmark:
         # execute benchmark script
         sh.Rscript(
             params.benchmark_script,
-            '--variable', wildcards.varied_param,
+            '--variable', cur['parameter'],
             '--values', ','.join(str(v) for v in cur['values']),
             '--replicates', config['script_replicates'],
             '--output', output.fname,
@@ -44,11 +42,11 @@ rule run_benchmark:
 rule aggregate_replicates:
     input:
         fname_list = expand(
-            'benchmarks/replicates/bench_{varied_param}_{replicate}.csv',
+            'benchmarks/replicates/bench_{benchmark}_{replicate}.csv',
             replicate=list(range(config['rule_replicates'])),
             allow_missing=True)
     output:
-        fname = 'benchmarks/bench_{varied_param}.csv'
+        fname = 'benchmarks/bench_{benchmark}.csv'
     run:
         import pandas as pd
 
@@ -58,9 +56,9 @@ rule aggregate_replicates:
 
 rule plot_results:
     input:
-        fname = 'benchmarks/bench_{varied_param}.csv'
+        fname = 'benchmarks/bench_{benchmark}.csv'
     output:
-        outdir = directory('benchmarks/plots_{varied_param}/')
+        outdir = directory('benchmarks/plots_{benchmark}/')
     params:
         plotting_script = srcdir('plotting.R')
     run:
