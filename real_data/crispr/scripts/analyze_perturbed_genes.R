@@ -13,6 +13,10 @@ df.degree <- purrr::map_dfr(graph.files, function(fname) {
   graph <- igraph::graph.data.frame(read_csv(fname))
 
   genes <- intersect(igraph::vertex_attr(graph, "name"), perturbed.genes)
+  if (length(genes) == 0) {
+    return(data.frame())
+  }
+
   degree.all <- igraph::degree(graph, mode = "all")[genes]
   degree.out <- igraph::degree(graph, mode = "out")[genes]
   degree.in <- igraph::degree(graph, mode = "in")[genes]
