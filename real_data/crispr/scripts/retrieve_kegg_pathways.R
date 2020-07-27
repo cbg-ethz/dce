@@ -41,19 +41,19 @@ for (pw in pw.ids) {
     distinct(ENTREZID, .keep_all=TRUE) %>%
     mutate(KEGG = nodes(graph))
 
-  # identify nodes where KEGG ID has no ENSEMBL mapping
-  df.tmp$ENSEMBL[is.na(df.tmp$ENSEMBL)] <- paste0("undef_entrez", df.tmp$ENTREZID[is.na(df.tmp$ENSEMBL)])
+  # identify nodes where KEGG ID has no SYMBOL mapping
+  df.tmp$SYMBOL[is.na(df.tmp$SYMBOL)] <- paste0("undef_entrez", df.tmp$ENTREZID[is.na(df.tmp$SYMBOL)])
 
-  undef.count <- df.tmp %>% tally(grepl("undef", ENSEMBL)) %>% pull(n)
-  print(glue::glue("Fraction of KEGG nodes (genes) without Ensembl ID: {undef.count / dim(df.tmp)[1]}"))
+  undef.count <- df.tmp %>% tally(grepl("undef", SYMBOL)) %>% pull(n)
+  print(glue::glue("Fraction of KEGG nodes (genes) without Gene Symbol: {undef.count / dim(df.tmp)[1]}"))
 
-  # identify nodes where different KEGG IDs map to same Ensembl ID
+  # identify nodes where different KEGG IDs map to same Gene Symbol
   df.mapping.overlaps <- df.tmp %>%
-    group_by(ENSEMBL) %>%
+    group_by(SYMBOL) %>%
     dplyr::filter(n() > 1)
 
   if (dim(df.mapping.overlaps)[[1]] > 0) {
-    print("Multiple KEGG IDs map to same Ensembl ID:")
+    print("Multiple KEGG IDs map to same Gene Symbol:")
     print(df.mapping.overlaps)
 
     contraction.map <- df.mapping.overlaps %>%
