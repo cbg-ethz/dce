@@ -10,20 +10,48 @@ cur.gene <- snakemake@wildcards$gene
 out.dir <- snakemake@output$out_dir
 
 # expression histograms
-df.expr.wt <- read_csv(fname.expr.wt)
-df.expr.mt <- read_csv(fname.expr.mt)
+df.expr.wt <- read_csv(fname.expr.wt) %>% column_to_rownames("X1") %>% as.matrix
+df.expr.mt <- read_csv(fname.expr.mt) %>% column_to_rownames("X1") %>% as.matrix
+
+# aggregate isoforms, etc
+rownames(df.expr.wt) <- sub("[.-].*", "", rownames(df.expr.wt))
+df.expr.wt <- rowsum(df.expr.wt, rownames(df.expr.wt))
+
+rownames(df.expr.mt) <- sub("[.-].*", "", rownames(df.expr.mt))
+df.expr.mt <- rowsum(df.expr.mt, rownames(df.expr.mt))
+
+sum(grepl('\\.', rownames(df.expr.mt))) == 0
+
+# retrieve gene lengths
+mart <- biomaRt::useMart("ensembl", dataset="hsapiens_gene_ensembl")
+df.lens <- biomaRt::getBM(
+  attributes = c("hgnc_symbol", "start_position", "end_position"),
+  filters = "hgnc_symbol",
+  values = rownames(df.expr.mt),
+  mart = mart) %>%
+  distinct(hgnc_symbol, .keep_all = TRUE)
+df.lens$length <- df.lens$end_position - df.lens$start_position
+df.lens %>% head
+
+print(glue::glue("{length(setdiff(rownames(df.expr.mt), df.lens$hgnc_symbol))}/{length(rownames(df.expr.mt))} genes without entry in biomart"))
+
+genes <- intersect(df.lens$hgnc_symbol, rownames(df.expr.mt))
+gene.lengths <- unlist(split(df.lens$length, df.lens$hgnc_symbol))
+
+# compute TPMs
+compute.tpm <- function(counts, lens) {
+  len.kb <- lens / 1000
+  rpk <- counts / len.kb
+  pm.scale <- colSums(rpk) / 1e6
+  return(t(t(rpk) / pm.scale))
+}
+
+df.expr.wt <- compute.tpm(df.expr.wt[genes, ] + 1, gene.lengths[genes])
+df.expr.mt <- compute.tpm(df.expr.mt[genes, ] + 1, gene.lengths[genes])
 
 # perturbed gene
-expr.wt <- df.expr.wt %>%
-  dplyr::filter(X1 == cur.gene) %>%
-  dplyr::select(-X1) %>%
-  unlist %>%
-  as.numeric
-expr.mt <- df.expr.mt %>%
-  dplyr::filter(X1 == cur.gene) %>%
-  dplyr::select(-X1) %>%
-  unlist %>%
-  as.numeric
+expr.wt <- df.expr.wt[cur.gene, ]
+expr.mt <- df.expr.mt[cur.gene, ]
 
 data.frame(
   type = c(rep("WT", length(expr.wt)), rep("MT", length(expr.mt))),
@@ -38,14 +66,8 @@ data.frame(
 ggsave(file.path(out.dir, glue::glue("expression_histogram_{cur.gene}.pdf")))
 
 # all genes
-expr.wt.all <- df.expr.wt %>%
-  dplyr::select(-X1) %>%
-  unlist %>%
-  as.numeric
-expr.mt.all <- df.expr.mt %>%
-  dplyr::select(-X1) %>%
-  unlist %>%
-  as.numeric
+expr.wt.all <- df.expr.wt %>% as.numeric
+expr.mt.all <- df.expr.mt %>% as.numeric
 
 data.frame(
   type = c(rep("WT", length(expr.wt.all)), rep("MT", length(expr.mt.all))),
