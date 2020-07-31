@@ -16,6 +16,7 @@ stopifnot(all(snakemake@params$pathways %in% pw.ids))
 # download, process and store all of them
 target.dir <- strsplit(dirname(snakemake@output$graph_files[[1]]), "/")[[1]][[1]]
 dir.create(file.path(target.dir, "kgml_files"), recursive = TRUE)
+dir.create(file.path(target.dir, "csv_files"), recursive = TRUE)
 
 for (pw in pw.ids) {
   print(pw)
