@@ -38,21 +38,3 @@ res$dce %>%
   arrange(desc(abs(dce))) %>%
   drop_na %>%
   write_csv(file.path(out.dir, "dce_list.csv"))
-
-
-
-# par(mfrow = c(2,1))
-# hist(rowSums(X.wt), xlim=c(0, 70000))
-# hist(rowSums(X.mt), xlim=c(0, 70000))
-
-# dev.off()
-# lib.size <- apply(rbind(X.wt, X.mt), 1, sum)
-# lib.size <- round(lib.size/(10^min(round(log10(lib.size)))))
-# hist(lib.size)
-
-
-res$dce[, "DDIT3"][!is.na(res$dce[, "DDIT3"])]
-res$dce[, "ACTB"][!is.na(res$dce[, "ACTB"])]
-
-res$dce[, "ACTG1"][!is.na(res$dce[, "ACTG1"])]
-res$dce[, "BCL2L1"][!is.na(res$dce[, "BCL2L1"])]

@@ -1,5 +1,13 @@
+import os
+
+
 configfile: 'config.yaml'
 workdir: config['workdir']
+
+all_pathway_fnames = [e.path for e in os.scandir('kegg_pathways/csv_files/')]
+all_perturbed_genes = [e.name.split('.')[0].split('_')[-1]
+                       for e in os.scandir(srcdir('data/'))
+                       if e.name != 'Counts_0_Ctrl.csv']
 
 
 rule all:
@@ -7,7 +15,7 @@ rule all:
         'perturbation_analysis/all_genes',
         expand(
             'perturbation_analysis/per_gene/{gene}/',
-            gene=set([gene for gene, _ in config['pairs']])),
+            gene=all_perturbed_genes),
         [f'dce_results/{gene}_{pathway}/' for gene, pathway in config['pairs']]
 
 
@@ -30,7 +38,8 @@ rule analyze_perturbed_genes:
     output:
         out_dir = directory('perturbation_analysis/all_genes')
     params:
-        perturbed_genes = set([gene for gene, _ in config['pairs']])
+        all_pathways = all_pathway_fnames,
+        perturbed_genes = all_perturbed_genes
     script:
         'scripts/analyze_perturbed_genes.R'
 

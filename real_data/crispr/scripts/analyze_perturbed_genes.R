@@ -1,7 +1,8 @@
 library(tidyverse)
 
 
-graph.files <- snakemake@input$graph_files
+# parameters
+graph.files <- snakemake@params$all_pathways
 
 perturbed.genes <- snakemake@params$perturbed_genes
 
@@ -25,7 +26,7 @@ df.degree <- purrr::map_dfr(graph.files, function(fname) {
 }) %>%
   write_csv(file.path(out.dir, "perturbed_gene_statistics.csv"))
 
-df.degree %>% head
+df.degree %>% arrange(desc(degree.in)) %>% head
 
 ggplot(df.degree, aes(x=degree.in)) +
   geom_histogram() +

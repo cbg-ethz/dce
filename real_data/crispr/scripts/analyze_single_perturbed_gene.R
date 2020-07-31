@@ -22,15 +22,15 @@ df.expr.wt <- rowsum(df.expr.wt, rownames(df.expr.wt))
 rownames(df.expr.mt) <- sub("[.-].*", "", rownames(df.expr.mt))
 df.expr.mt <- rowsum(df.expr.mt, rownames(df.expr.mt))
 
+stopifnot(sum(grepl('\\.', rownames(df.expr.wt))) == 0)
 stopifnot(sum(grepl('\\.', rownames(df.expr.mt))) == 0)
 
 
 # normalize gene counts
-
 norm.method <- "deseq2" # c("raw", "tpm", "deseq2")
 
 if (norm.method == "raw") {
-  
+  # nothing to do
 } else if (norm.method == "tpm") {
   # retrieve gene lengths
   mart <- biomaRt::useMart("ensembl", dataset="hsapiens_gene_ensembl")

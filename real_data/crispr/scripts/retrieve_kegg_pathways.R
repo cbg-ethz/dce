@@ -10,8 +10,8 @@ library(org.Hs.eg.db)
 pw.data <- KEGGREST::keggList("pathway", "hsa")
 pw.ids <- sapply(names(pw.data), function(x) { strsplit(x, ":")[[1]][[2]] }, USE.NAMES = FALSE)
 
-# TODO: do this in a more elegant way
-pw.ids <- snakemake@params$pathways
+# make sure we retrieve (at least) all needed pathways
+stopifnot(all(snakemake@params$pathways %in% pw.ids))
 
 # download, process and store all of them
 target.dir <- strsplit(dirname(snakemake@output$graph_files[[1]]), "/")[[1]][[1]]
