@@ -4,7 +4,6 @@ import os
 configfile: 'config.yaml'
 workdir: config['workdir']
 
-all_pathway_fnames = [e.path for e in os.scandir('kegg_pathways/csv_files/')]
 all_perturbed_genes = [e.name.split('.')[0].split('_')[-1]
                        for e in os.scandir(srcdir('data/'))
                        if e.name != 'Counts_0_Ctrl.csv']
@@ -12,10 +11,8 @@ all_perturbed_genes = [e.name.split('.')[0].split('_')[-1]
 
 rule all:
     input:
-        'perturbation_analysis/all_genes',
-        expand(
-            'perturbation_analysis/per_gene/{gene}/',
-            gene=all_perturbed_genes),
+        'perturbation_analysis/all_genes/',
+        'perturbation_analysis/per_gene/expression_statistics.csv',
         [f'dce_results/{gene}_{pathway}/' for gene, pathway in config['pairs']]
 
 
@@ -36,9 +33,9 @@ rule analyze_perturbed_genes:
             'kegg_pathways/csv_files/{pathway}.csv',
             pathway=set([pathway for _, pathway in config['pairs']]))
     output:
-        out_dir = directory('perturbation_analysis/all_genes')
+        out_dir = directory('perturbation_analysis/all_genes/')
     params:
-        all_pathways = all_pathway_fnames,
+        all_pathways = lambda wildcards: [e.path for e in os.scandir('kegg_pathways/csv_files/')],
         perturbed_genes = all_perturbed_genes
     script:
         'scripts/analyze_perturbed_genes.R'
@@ -52,6 +49,21 @@ rule analyze_single_perturbed_gene:
         out_dir = directory('perturbation_analysis/per_gene/{gene}/')
     script:
         'scripts/analyze_single_perturbed_gene.R'
+
+
+rule aggregate_expression_statistics:
+    input:
+        dir_list = expand(
+            'perturbation_analysis/per_gene/{gene}/',
+            gene=all_perturbed_genes)
+    output:
+        fname = 'perturbation_analysis/per_gene/expression_statistics.csv'
+    run:
+        import pandas as pd
+
+        pd.concat(
+            [pd.read_csv(os.path.join(dname, 'expression_stats.csv')) for dname in input.dir_list]
+        ).to_csv(output.fname, index=False)
 
 
 rule compute_dces:

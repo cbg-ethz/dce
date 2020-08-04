@@ -112,3 +112,14 @@ data.frame(
   theme_minimal()
 
 ggsave(file.path(out.dir, glue::glue("expression_histogram_all_genes.pdf")))
+
+
+# save expression information
+data.frame(
+  perturbed.gene = cur.gene,
+  gene.mean.WT = mean(expr.wt),
+  gene.mean.MT = mean(expr.mt),
+  all.mean.WT = mean(expr.wt.all),
+  all.mean.MT = mean(expr.mt.all)
+) %>%
+  write_csv(file.path(out.dir, "expression_stats.csv"))
