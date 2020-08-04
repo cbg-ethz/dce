@@ -50,3 +50,25 @@ test_that("library size correction is useful", {
   glm.fun(B.s ~ A.s + factor(lib.factor)) # works fine (but `lib.factor` is ground truth)
   glm.fun(B.s ~ A.s + factor(lib.size)) # uses realistic library size correction and yields reasonable estimate
 })
+
+
+test_that("CRISPR-like intervention leads to non-zero DCE", {
+  set.seed(42)
+
+  graph.wt <- dce::create_graph_from_dataframe(
+    data.frame(
+      from=c("A", "B"),
+      to=c("B", "C")
+    ),
+    edge.weight = function() { 2 }
+  )
+  X.wt <- simulate_data(graph.wt, pop.size = 0)
+
+  X.mt <- X.wt
+  X.mt[, "B"] <- X.mt[, "B"] * 0.5
+
+  res <- dce::dce.nb(graph.wt, X.wt, X.mt)
+  res
+
+  expect_lt(res$dce["A", "B"], -0.1)
+})
