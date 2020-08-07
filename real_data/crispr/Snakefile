@@ -47,6 +47,8 @@ rule analyze_single_perturbed_gene:
         count_mt_file = srcdir('data/Counts_{gene}.csv')
     output:
         out_dir = directory('perturbation_analysis/per_gene/{gene}/')
+    resources:
+        mem_mb = 10_000
     script:
         'scripts/analyze_single_perturbed_gene.R'
 
@@ -73,5 +75,7 @@ rule compute_dces:
         graph_file = 'kegg_pathways/csv_files/{pathway}.csv'
     output:
         out_dir = directory('dce_results/{gene}_{pathway}/')
+    resources:
+        mem_mb = 5_000
     script:
         'scripts/compute_dces.R'
