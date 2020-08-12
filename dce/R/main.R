@@ -278,6 +278,7 @@ setMethod(
             # extract results
             coef.mat <- summary(fit)$coefficients
             coef.xn <- NA
+            stderr.xn <- NA
             pval.xn <- NA
 
             if (test == "lr") {
@@ -298,16 +299,19 @@ setMethod(
 
                 if (length(grep("N:X", rownames(coef.mat))) != 0) {
                     coef.xn <- coef.mat["N:X", "Estimate"]
+                    stderr.xn <- coef.mat["N:X", "Std. Error"]
                     pval.xn <- lmtest::lrtest(fit, fit2)[[5]][2]
                 }
             } else if (test == "wald" & length(grep("N:X", rownames(coef.mat))) != 0) {
                 coef.xn <- coef.mat["N:X", "Estimate"]
+                stderr.xn <- coef.mat["N:X", "Std. Error"]
                 pval.xn <- coef.mat["N:X", if (solver == "glm.nb") "Pr(>|z|)" else "Pr(>|t|)"]
             }
             data.frame(
                 row = row,
                 col = col,
                 dce = coef.xn,
+                stderr = stderr.xn,
                 p.value = pval.xn
             )
         }
@@ -319,6 +323,11 @@ setMethod(
     ))
     rownames(dce.mat) <- colnames(dce.mat) <- rownames(graph)
 
+    dce.stderr.mat <- as.matrix(Matrix::sparseMatrix(
+        res$row, res$col, x = res$stderr, dims = dim(graph)
+    ))
+    rownames(dce.stderr.mat) <- colnames(dce.stderr.mat) <- rownames(graph)
+
     dce.pvalue.mat <- as.matrix(Matrix::sparseMatrix(
         res$row, res$col, x = res$p.value, dims = dim(graph)
     ))
@@ -327,6 +336,9 @@ setMethod(
     # make uncomputed values NA
     diag(dce.mat) <- NA
     dce.mat[which(graph == 0)] <- NA
+
+    diag(dce.stderr.mat) <- NA
+    dce.stderr.mat[which(graph == 0)] <- NA
 
     diag(dce.pvalue.mat) <- NA
     dce.pvalue.mat[which(graph == 0)] <- NA
@@ -349,6 +361,7 @@ setMethod(
     structure(list(
         graph = graph,
         dce = dce.mat,
+        dce.stderr = dce.stderr.mat,
         dce.pvalue = dce.pvalue.mat,
         pathway.pvalue = pathway.pvalue
     ), class="dce")
