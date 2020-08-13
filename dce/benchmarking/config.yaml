@@ -19,7 +19,7 @@ benchmarks:
         methods: null
     beta.magnitude:
         parameter: beta.magnitude
-        values: [0.1, 1,10]
+        values: [0.1, 1, 10]
         methods: null
     dispersion:
         parameter: dispersion
@@ -28,7 +28,7 @@ benchmarks:
     adjustment.type:
         parameter: adjustment.type
         values: [parents, minimal, parents_filtered]
-        methods: null
+        methods: [dce]
     perturb:
         parameter: perturb
         values: [-0.5, -0.1, 0, 0.1, 0.5]
