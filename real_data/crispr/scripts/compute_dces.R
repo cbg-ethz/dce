@@ -31,10 +31,8 @@ saveRDS(res, file = file.path(out.dir, "dce.rds"))
 plot(res, labelsize=1)
 ggsave(file.path(out.dir, "network.pdf"), width=20, height=20)
 
-res$dce %>%
-  reshape2::melt(.) %>%
-  rename(dce = value, source = Var1, target = Var2) %>%
-  mutate(dce.pvalue = reshape2::melt(res$dce.pvalue)$value) %>%
+res %>%
+  as.data.frame %>%
   arrange(desc(abs(dce))) %>%
   drop_na %>%
   write_csv(file.path(out.dir, "dce_list.csv"))

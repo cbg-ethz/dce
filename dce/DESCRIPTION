@@ -20,7 +20,7 @@ Suggests:
     knitr,
     testthat (>= 2.1.0)
 VignetteBuilder: knitr
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1
 Imports:
     stats,
     graphics,
@@ -28,7 +28,6 @@ Imports:
     assertthat,
     graph,
     matlib,
-    nem,
     pcalg,
     purrr,
     tidyverse,
@@ -47,4 +46,5 @@ Imports:
     metap,
     mnem,
     naturalsort,
-    ppcor
+    ppcor,
+    glm2

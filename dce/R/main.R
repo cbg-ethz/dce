@@ -459,3 +459,14 @@ glm.solver <- function(form, df, solver, solver.args) {
     func.args <- c(list(formula = form, data = df), solver.args)
     do.call(solver.func, func.args)
 }
+
+
+#' @export
+#' @importFrom reshape2 melt
+as.data.frame.dce <- function(x) {
+    x$dce %>%
+        melt(.) %>%
+        rename(dce = value, source = Var1, target = Var2) %>%
+        mutate(dce.pvalue = melt(x$dce.pvalue)$value) %>%
+        mutate(dce.stderr = melt(x$dce.stderr)$value)
+}
