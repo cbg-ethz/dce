@@ -467,6 +467,6 @@ as.data.frame.dce <- function(x) {
     x$dce %>%
         melt(.) %>%
         rename(dce = value, source = Var1, target = Var2) %>%
-        mutate(dce.pvalue = melt(x$dce.pvalue)$value) %>%
-        mutate(dce.stderr = melt(x$dce.stderr)$value)
+        mutate(dce.stderr = melt(x$dce.stderr)$value) %>%
+        mutate(dce.pvalue = melt(x$dce.pvalue)$value)
 }
