@@ -42,12 +42,12 @@ if (norm.method == "raw") {
     distinct(hgnc_symbol, .keep_all = TRUE)
   df.lens$length <- df.lens$end_position - df.lens$start_position
   df.lens %>% head
-  
+
   print(glue::glue("{length(setdiff(rownames(df.expr.mt), df.lens$hgnc_symbol))}/{length(rownames(df.expr.mt))} genes without entry in biomart"))
-  
+
   genes <- intersect(df.lens$hgnc_symbol, rownames(df.expr.mt))
   gene.lengths <- unlist(split(df.lens$length, df.lens$hgnc_symbol))
-  
+
   # compute TPMs
   compute.tpm <- function(counts, lens) {
     len.kb <- lens / 1000
@@ -55,9 +55,9 @@ if (norm.method == "raw") {
     pm.scale <- colSums(rpk) / 1e6
     return(t(t(rpk) / pm.scale))
   }
-  
+
   df.expr.wt <- compute.tpm(df.expr.wt[genes, ] + 1, gene.lengths[genes])
-  df.expr.mt <- compute.tpm(df.expr.mt[genes, ] + 1, gene.lengths[genes]) 
+  df.expr.mt <- compute.tpm(df.expr.mt[genes, ] + 1, gene.lengths[genes])
 } else if (norm.method == "deseq2") {
   dds <- DESeq2::DESeqDataSetFromMatrix(
     countData = cbind(df.expr.wt, df.expr.mt),
@@ -66,13 +66,13 @@ if (norm.method == "raw") {
   )
   dds <- DESeq2::DESeq(dds)
   all.counts <- DESeq2::counts(dds, normalized = TRUE)
-  
+
   tmp.wt <- all.counts[, colnames(all.counts)[grepl("Ctrl", colnames(all.counts))]]
   tmp.mt <- all.counts[, colnames(all.counts)[grepl("^((?!Ctrl).)*$", colnames(all.counts), perl = TRUE)]]
-  
+
   stopifnot(all(dim(df.expr.wt) == dim(tmp.wt)))
   stopifnot(all(dim(df.expr.mt) == dim(tmp.mt)))
-  
+
   df.expr.wt <- tmp.wt
   df.expr.mt <- tmp.mt
 } else {
