@@ -76,6 +76,6 @@ rule compute_dces:
     output:
         out_dir = directory('dce_results/{gene}_{pathway}/')
     resources:
-        mem_mb = 5_000
+        mem_mb = 10_000
     script:
         'scripts/compute_dces.R'
