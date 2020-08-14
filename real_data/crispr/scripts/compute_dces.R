@@ -9,6 +9,7 @@ fname.expr.wt <- snakemake@input$count_wt_file
 fname.expr.mt <- snakemake@input$count_mt_file
 
 out.dir <- snakemake@output$out_dir
+appendix <- glue::glue("{snakemake@wildcards$pathway}_{snakemake@wildcards$gene}")
 
 # read data
 X.wt <- read_csv(fname.expr.wt) %>%
@@ -25,14 +26,14 @@ common.genes <- intersect(igraph::vertex_attr(graph, "name"), colnames(X.wt))
 #res <- dce::dce.nb(igraph::induced_subgraph(graph, common.genes), X.wt[, common.genes], X.mt[, common.genes])
 res <- dce::dce.nb(igraph::induced_subgraph(graph, common.genes), X.wt, X.mt, lib.size = TRUE)
 
-saveRDS(res, file = file.path(out.dir, "dce.rds"))
+saveRDS(res, file = file.path(out.dir, glue::glue("dce_{appendix}.rds")))
 
 # analyze results
 plot(res, labelsize=1)
-ggsave(file.path(out.dir, "network.pdf"), width=20, height=20)
+ggsave(file.path(out.dir, glue::glue("network_{appendix}.pdf")), width=20, height=20)
 
 res %>%
   as.data.frame %>%
   arrange(desc(abs(dce))) %>%
   drop_na %>%
-  write_csv(file.path(out.dir, "dce_list.csv"))
+  write_csv(file.path(out.dir, glue::glue("dce_list_{appendix}.csv")))
