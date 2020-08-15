@@ -4,7 +4,8 @@ run.all.models <- function(
   wt.graph.perturbed,
   beta.magnitude,
   methods = NULL,
-  effect.type
+  effect.type,
+  adjustment.type
 ) {
   # for null model
   negweight.range <- c(-beta.magnitude, 0)
