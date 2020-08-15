@@ -9,7 +9,9 @@ fname.expr.wt <- snakemake@input$count_wt_file
 fname.expr.mt <- snakemake@input$count_mt_file
 
 out.dir <- snakemake@output$out_dir
-appendix <- glue::glue("{snakemake@wildcards$pathway}_{snakemake@wildcards$gene}")
+
+perturbed.gene <- snakemake@wildcards$gene
+appendix <- glue::glue("{snakemake@wildcards$pathway}_{perturbed.gene}")
 
 # read data
 X.wt <- read_csv(fname.expr.wt) %>%
@@ -29,7 +31,7 @@ res <- dce::dce.nb(igraph::induced_subgraph(graph, common.genes), X.wt, X.mt, li
 saveRDS(res, file = file.path(out.dir, glue::glue("dce_{appendix}.rds")))
 
 # analyze results
-plot(res, labelsize=1)
+plot(res, labelsize=1, highlighted.nodes=c(perturbed.gene))
 ggsave(file.path(out.dir, glue::glue("network_{appendix}.pdf")), width=20, height=20)
 
 res %>%

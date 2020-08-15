@@ -9,13 +9,14 @@
 #' @param labelsize Node label sizes
 #' @param show.edge.labels Whether to show edge labels (DCEs)
 #' @param use.symlog Scale edge colors using dce::symlog
+#' @param highlighted.nodes List of nodes to highlight
 #' @param ... additional parameters
 #' @author Martin Pirkl, Kim Philipp Jablonski
 #' @method plot dce
 #' @return plot of dag and dces
 #' @export
 #' @import tidyverse ggraph purrr
-#' @importFrom ggplot2 aes theme element_rect arrow unit coord_fixed
+#' @importFrom ggplot2 aes theme element_rect arrow unit coord_fixed scale_fill_manual
 #' @importFrom tidygraph as_tbl_graph activate mutate
 #' @importFrom rlang .data
 plot.dce <- function(
@@ -23,6 +24,7 @@ plot.dce <- function(
     nodename.map = NULL, edgescale.limits = NULL,
     nodesize = 17, labelsize = 3,
     show.edge.labels = FALSE, use.symlog = FALSE,
+    highlighted.nodes = c(),
     ...
 ) {
     coords.dot <- purrr::map_dfr(
@@ -51,7 +53,8 @@ plot.dce <- function(
         activate(nodes) %>%
         mutate(
             label=if(is.null(nodename.map)) .data$name else nodename.map[.data$name],
-            nodesize=nodesize
+            nodesize=nodesize,
+            is.highlighted=.data$label %in% highlighted.nodes
         ) %>%
         activate(edges) %>%
         mutate(
@@ -75,9 +78,10 @@ plot.dce <- function(
             strength=0.5,
             arrow=arrow(type="closed", length=unit(3, "mm"))
         ) +
-        geom_node_circle(aes(r=.data$nodesize), color="black", fill="white") +
+        geom_node_circle(aes(r=.data$nodesize, fill=.data$is.highlighted), color="black") +
         geom_node_text(aes(label=.data$label), size=labelsize) +
         coord_fixed() +
+        scale_fill_manual(values=c("FALSE" = "white", "TRUE" = "red"), guide=FALSE) +
         scale_edge_color_gradient2(
             low="red", mid="grey", high="blue", midpoint=0,
             limits=if(use.symlog) symlog(edgescale.limits) else edgescale.limits,
