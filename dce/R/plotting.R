@@ -73,19 +73,20 @@ plot_network <- function(
             label=.data$dce %>% round(2) %>% as.character
         ) %>%
     ggraph(layout=coords.dot) + # "sugiyama"
+        geom_node_circle(aes(r=.data$nodesize, fill=.data$is.highlighted), color="black") +
         geom_edge_diagonal(
             aes(
                 color=if(use.symlog) .data$dce.symlog else .data$dce,
                 alpha=abs(.data$dce),
                 width=abs(.data$dce),
                 label=if(show.edge.labels) .data$label else NULL,
-                # start_cap = circle(.data$node1.nodesize, unit="native"), # uncomment once https://github.com/thomasp85/ggraph/pull/246 has been merged
-                end_cap = circle(.data$node2.nodesize, unit="native")
+                # proper caps can be used again when https://github.com/thomasp85/ggraph/issues/254 is fixed
+                # start_cap = circle(.data$node1.nodesize, unit="native"),
+                # end_cap = circle(.data$node2.nodesize, unit="native")
             ),
             strength=0.5,
             arrow=arrow(type="closed", length=unit(3, "mm"))
         ) +
-        geom_node_circle(aes(r=.data$nodesize, fill=.data$is.highlighted), color="black") +
         geom_node_text(aes(label=.data$label), size=labelsize) +
         coord_fixed() +
         scale_fill_manual(values=c("FALSE" = "white", "TRUE" = "red"), guide=FALSE) +
