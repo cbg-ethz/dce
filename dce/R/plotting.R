@@ -80,6 +80,7 @@ plot_network <- function(
                 alpha=abs(.data$dce),
                 width=abs(.data$dce),
                 label=if(show.edge.labels) .data$label else NULL,
+                linetype=is.na(.data$dce),
                 # proper caps can be used again when https://github.com/thomasp85/ggraph/issues/254 is fixed
                 # start_cap = circle(.data$node1.nodesize, unit="native"),
                 # end_cap = circle(.data$node2.nodesize, unit="native")
@@ -94,10 +95,12 @@ plot_network <- function(
             low="red", mid="grey", high="blue", midpoint=0,
             limits=if(use.symlog) symlog(edgescale.limits) else edgescale.limits,
             breaks=custom_breaks,
-            name=if(use.symlog) glue("{legend.title} (symlog)") else legend.title
+            name=if(use.symlog) glue("{legend.title} (symlog)") else legend.title,
+            na.value="black"
         ) +
-        scale_edge_width(range=c(1, 3), limits=c(0, edgescale.limits[[2]]), guide=FALSE) +
-        scale_edge_alpha(range=c(.1, 1), limits=c(0, edgescale.limits[[2]]), guide=FALSE) +
+        scale_edge_width(range=c(1, 3), limits=c(0, edgescale.limits[[2]]), guide=FALSE, na.value=1) +
+        scale_edge_alpha(range=c(.1, 1), limits=c(0, edgescale.limits[[2]]), guide=FALSE, na.value=1) +
+        scale_edge_linetype_manual(values=c("FALSE" = "solid", "TRUE" = "dashed"), guide=FALSE) +
         theme(
             panel.background=element_rect(fill="white"),
             # legend.position="none"
