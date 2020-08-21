@@ -6,14 +6,15 @@
 \usage{
 dce(
   graph,
-  df.expr.wt,
-  df.expr.mt,
+  df_expr_wt,
+  df_expr_mt,
   solver = "glm2",
-  solver.args = list(method = "glm.dce.fit"),
-  adjustment.type = "parents",
-  p.method = "mean",
+  solver_args = list(method = "glm.dce.fit"),
+  adjustment_type = "parents",
+  effect_type = "total",
+  p_method = "mean",
   test = "wald",
-  lib.size = FALSE,
+  lib_size = FALSE,
   latent = 0,
   conservative = FALSE,
   verbose = FALSE
@@ -22,18 +23,20 @@ dce(
 \arguments{
 \item{graph}{valid object defining a directed acyclic graph}
 
-\item{df.expr.wt}{data frame with wild type expression values}
+\item{df_expr_wt}{data frame with wild type expression values}
 
-\item{df.expr.mt}{data from with mutation type expression values}
+\item{df_expr_mt}{data from with mutation type expression values}
 
 \item{solver}{character with name of solver function}
 
-\item{solver.args}{additional arguments for the solver function}
+\item{solver_args}{additional arguments for the solver function}
 
-\item{adjustment.type}{character string for the method to define
+\item{adjustment_type}{character string for the method to define
 the adjustment set Z for the regression}
 
-\item{p.method}{character string. "mean", "sum" for standard summary
+\item{effect_type}{method of computing causal effects}
+
+\item{p_method}{character string. "mean", "sum" for standard summary
 functions, "hmp" for harmonic mean, "test" for the selfcontained
 test of package 'CombinePValue' or any method from package 'metap',
 e.g., "meanp" or "sump".}
@@ -41,7 +44,7 @@ e.g., "meanp" or "sump".}
 \item{test}{either "wald" for testing significance with the
 wald test or "lr" for using a likelihood ratio test}
 
-\item{lib.size}{either a numeric vector of the same length as the
+\item{lib_size}{either a numeric vector of the same length as the
 sum of wild type and mutant samples or a logical. If TRUE, it is
 recommended that both data sets include not only the genes
 included in the graph but all genes available in the original data set.}

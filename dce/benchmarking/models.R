@@ -58,12 +58,12 @@ run.all.models <- function(
 
   time.tmp <- Sys.time()
   if (is.null(methods) || "dce" %in% methods) {
-    res.dce <- dce::dce.nb(
+    res.dce <- dce::dce_nb(
       wt.graph.perturbed, wt.X, mt.X,
-      adjustment.type = adjustment.type,
-      effect.type = effect.type,
-      solver.args = solver.args,
-      lib.size = TRUE
+      adjustment_type = adjustment.type,
+      effect_type = effect.type,
+      solver_args = solver.args,
+      lib_size = TRUE
     )
   } else {
     res.dce <- ground.truth
@@ -75,12 +75,12 @@ run.all.models <- function(
 
   time.tmp <- Sys.time()
   if (is.null(methods) || "dce.lr" %in% methods) {
-    res.dce.lr <- dce::dce.nb(
+    res.dce.lr <- dce::dce_nb(
       wt.graph.perturbed, wt.X, mt.X,
-      adjustment.type = adjustment.type,
-      effect.type = effect.type,
-      solver.args = solver.args, test = "lr",
-      lib.size = TRUE
+      adjustment_type = adjustment.type,
+      effect_type = effect.type,
+      solver_args = solver.args, test = "lr",
+      lib_size = TRUE
     )
   } else {
     res.dce.lr <- ground.truth
@@ -92,12 +92,12 @@ run.all.models <- function(
 
   time.tmp <- Sys.time()
   if (is.null(methods) || "dce.nolib" %in% methods) {
-    res.dce.nolib <- dce::dce.nb(
+    res.dce.nolib <- dce::dce_nb(
       wt.graph.perturbed, wt.X, mt.X,
-      adjustment.type = adjustment.type,
-      effect.type = effect.type,
-      solver.args = solver.args,
-      lib.size = FALSE
+      adjustment_type = adjustment.type,
+      effect_type = effect.type,
+      solver_args = solver.args,
+      lib_size = FALSE
     )
   } else {
     res.dce.nolib <- ground.truth
@@ -116,12 +116,12 @@ run.all.models <- function(
       return(rpk / pm.scale)
     }
 
-    res.dce.tpm <- dce::dce.nb(
+    res.dce.tpm <- dce::dce_nb(
       wt.graph.perturbed, compute.tpm(wt.X), compute.tpm(mt.X),
-      adjustment.type = adjustment.type,
-      effect.type = effect.type,
-      solver.args = solver.args,
-      lib.size = FALSE
+      adjustment_type = adjustment.type,
+      effect_type = effect.type,
+      solver_args = solver.args,
+      lib_size = FALSE
     )
   } else {
     res.dce.tpm <- ground.truth

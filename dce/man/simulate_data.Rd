@@ -7,19 +7,19 @@
 simulate_data(
   graph,
   n = 100,
-  dist.mean = 1000,
-  dist.dispersion = 100,
+  dist_mean = 1000,
+  dist_dispersion = 100,
   link = negative.binomial.special()$linkfun,
-  pop.size = 100,
+  pop_size = 100,
   latent = 0
 )
 }
 \arguments{
 \item{n}{Number of samples}
 
-\item{dist.mean}{distribution mean as numeric}
+\item{dist_mean}{distribution mean as numeric}
 
-\item{dist.dispersion}{distribution dispersion
+\item{dist_dispersion}{distribution dispersion
 (actually dispersion^-1) as a scalar}
 
 \item{dag}{Graph to simulate on}

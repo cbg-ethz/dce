@@ -4,33 +4,12 @@
 \alias{plot.dce}
 \title{Plot dce object}
 \usage{
-\method{plot}{dce}(
-  x,
-  nodename.map = NULL,
-  edgescale.limits = NULL,
-  nodesize = 17,
-  labelsize = 3,
-  show.edge.labels = FALSE,
-  use.symlog = FALSE,
-  ...
-)
+\method{plot}{dce}(x, ...)
 }
 \arguments{
 \item{x}{dce object}
 
-\item{nodename.map}{node names}
-
-\item{nodesize}{Node sizes}
-
-\item{labelsize}{Node label sizes}
-
-\item{show.edge.labels}{Whether to show edge labels (DCEs)}
-
-\item{use.symlog}{Scale edge colors using dce::symlog}
-
-\item{...}{additional parameters}
-
-\item{edge.colorscale.limits}{Limits for scale_edge_color_gradient2 (should contain 0). Useful to make plot comparable to others}
+\item{...}{Parameters passed to dce::plot_network}
 }
 \value{
 plot of dag and dces

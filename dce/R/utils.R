@@ -5,7 +5,7 @@
 #' @param fun function to compute the statistic, e.g., cor or pcor
 pcor_perm <- function(x, y, iter = 1000, fun = pcor, method = "spearman") {
     z <- fun(y) - fun(x)
-    p <- z*0
+    p <- z * 0
     for (i in seq_len(iter)) {
         xp <- x[, sample(seq_len(ncol(x)), ncol(x))]
         yp <- y[, sample(seq_len(ncol(y)), ncol(y))]
@@ -13,7 +13,7 @@ pcor_perm <- function(x, y, iter = 1000, fun = pcor, method = "spearman") {
         idx <- which(abs(zp) >= abs(z))
         p[idx] <- p[idx] + 1
     }
-    p <- p/iter
+    p <- p / iter
     return(p)
 }
 
@@ -22,7 +22,7 @@ pcor_perm <- function(x, y, iter = 1000, fun = pcor, method = "spearman") {
 #'
 #' @param g graphNEL object
 #' @export
-as.adjmat <- function(g) {
+as_adjmat <- function(g) {
     adj <- as(g, "matrix")
     for (p in names(g@edgeData@data)) {
         a <- gsub("\\|.*", "", p)
@@ -46,8 +46,8 @@ pcor <- function(x, method = "spearman") {
                        "matlib::Ginv instead."))
         omega <- cor(x, method = method)
         p <- Gsolve(omega)
-        pdiag <- diag(p)%*%t(diag(p))
-        rho <- -p/(pdiag^0.5)
+        pdiag <- diag(p) %*% t(diag(p))
+        rho <- -p / (pdiag^0.5)
         diag(rho) <- 1
         rho[which(is.na(rho) | is.infinite(rho))] <- 0
     } else {
@@ -78,34 +78,36 @@ pcor <- function(x, method = "spearman") {
 g2dag <- function(g, tc = FALSE) {
     ord <- order(apply(g, 1, sum) - apply(g, 2, sum), decreasing = 1)
     g <- g[ord, ord]
-    cyc <- intersect(which(g+t(g) > 1), which(lower.tri(g) == TRUE))
+    cyc <- intersect(which(g + t(g) > 1), which(lower.tri(g) == TRUE))
     g[cyc] <- 0
     diag(g) <- 1
     g2 <- g
-    g0 <- g*0
+    g0 <- g * 0
     epiNEM::HeatmapOP(g, Colv = 0, Rowv = 0)
     for (i in seq_len(nrow(g))) {
-        g2 <- g2%*%g
+        g2 <- g2 %*% g
         g2[which(g2 > 0)] <- 1
         ord <- order(apply(g2, 1, sum) - apply(g2, 2, sum), decreasing = 1)
         g2 <- g2[ord, ord]
         g <- g[ord, ord]
-        cyc <- intersect(which(g2+t(g2) > 1), which(lower.tri(g2) == TRUE))
+        cyc <- intersect(which(g2 + t(g2) > 1), which(lower.tri(g2) == TRUE))
         g2[cyc] <- 0
-        if (all(g0 == g2)) { break() }
+        if (all(g0 == g2)) {
+            break
+        }
         g0 <- g2
         epiNEM::HeatmapOP(g2, Colv = 0, Rowv = 0)
     }
     if (!tc) {
         print(g)
-        g3 <- g2*0
+        g3 <- g2 * 0
         g3[which(g2 == 1 & g == 1)] <- 1
         for (e in which(g == 1 & g3 == 0)) {
-            for (a in 1:ncol(g)) {
-                b <- e - a*nrow(g)
+            for (a in seq_len(ncol(g))) {
+                b <- e - a * nrow(g)
                 if (b < 0) {
-                    b <- e - (a-1)*nrow(g)
-                    break()
+                    b <- e - (a - 1) * nrow(g)
+                    break
                 }
             }
             print(e)
@@ -117,7 +119,7 @@ g2dag <- function(g, tc = FALSE) {
             g4 <- mytc(g3)
             ord <- order(apply(g4, 1, sum) - apply(g4, 2, sum), decreasing = 1)
             g4 <- g4[ord, ord]
-            if (any(g2+t(g2) > 1)) {
+            if (any(g2 + t(g2) > 1)) {
                 g3[a, b] <- 0
             }
         }
@@ -131,7 +133,7 @@ g2dag <- function(g, tc = FALSE) {
 #' @noRd
 Gsolve <- function(a, b=NULL, ...) {
     if (!is.null(b)) {
-        x <- t(solve(diag(1, nrow(a)), matlib::Ginv(a, ...)%*%b))
+        x <- t(solve(diag(1, nrow(a)), matlib::Ginv(a, ...) %*% b))
     } else {
         x <- matlib::Ginv(a, ...)
     }
@@ -182,10 +184,10 @@ get_prediction_counts <- function(truth, inferred, cutoff = 0.5) {
     )
 
     return(data.frame(
-        true.positive=tp,
-        false.positive=fp,
-        true.negative=tn,
-        false.negative=fn
+        true.positive = tp,
+        false.positive = fp,
+        true.negative = tn,
+        false.negative = fn
     ))
 }
 
@@ -197,17 +199,17 @@ get_prediction_counts <- function(truth, inferred, cutoff = 0.5) {
 #' @param prob Probability of creating an edge
 #' @param lB Lower bound for edge weights
 #' @param uB Upper bound for edge weights
-#' @param node.labels Node labels
+#' @param node_labels Node labels
 #' @author Martin Pirkl
 #' @return graph
 #' @export
 #' @importFrom methods new
 #' @examples
 #' dag <- create_random_DAG(30, 0.2)
-create_random_DAG <- function (
+create_random_DAG <- function(
     n, prob,
     lB = -1, uB = 1,
-    node.labels = paste0("n", as.character(seq_len(n)))
+    node_labels = paste0("n", as.character(seq_len(n)))
 ) {
     stopifnot(
         n >= 2, is.numeric(prob), length(prob) == 1, 0 <= prob, prob <= 1,
@@ -255,10 +257,10 @@ create_random_DAG <- function (
     edL[[n - 1]] <- list(edges = edgeList, weights = weightList)
     if (nmbEdges > 0) {
         edL[[n]] <- list(edges = integer(0), weights = numeric(0))
-        names(edL) <- node.labels
-        new("graphNEL", nodes = node.labels, edgeL = edL, edgemode = "directed")
+        names(edL) <- node_labels
+        new("graphNEL", nodes = node_labels, edgeL = edL, edgemode = "directed")
     }
-    else new("graphNEL", nodes = node.labels, edgemode = "directed")
+    else new("graphNEL", nodes = node_labels, edgemode = "directed")
 }
 
 
@@ -282,7 +284,7 @@ resample_edge_weights <- function(g, tp = 1,
                                   method = "runif") {
     gold <- g
     g <- as(g, "matrix")
-    changes <- floor((1-tp)*sum(g != 0))
+    changes <- floor((1 - tp) * sum(g != 0))
     gbin <- g
     gbin[which(gbin != 0)] <- 1
     gtr <- gtr2 <- mnem::transitive.reduction(gbin)
@@ -290,7 +292,7 @@ resample_edge_weights <- function(g, tp = 1,
     noedges <- 1
     start <- TRUE
     keep <- NULL
-    while(changes > 0 & sum(gtr2) != 0 | start) {
+    while (changes > 0 & sum(gtr2) != 0 | start) {
         start <- FALSE
         if (changes == 1 & sum(gtr2) == 1) {
             keep <- c(keep, which(gtr2 == 1))
@@ -303,7 +305,7 @@ resample_edge_weights <- function(g, tp = 1,
         diag(gtr2) <- 1
         gtr2[noedges] <- 1
         gtr2[keep] <- 1
-        gtr2 <- gtr2%*%gtr
+        gtr2 <- gtr2 %*% gtr
         gtr2[which(gtr2 > 0)] <- 1
         noedges <- which(gbin == 0 & gtr2 == 1)
         gtr2[noedges] <- 0
@@ -316,19 +318,19 @@ resample_edge_weights <- function(g, tp = 1,
         die <- sample(c(0,1), 1)
         if (die) {
             if (method == "runif") {
-                effnew <- runif(1, eff+mineff, eff+maxeff)
+                effnew <- runif(1, eff + mineff, eff + maxeff)
             } else if (method == "gauss") {
-                effnew <- eff+mineff+abs(rnorm(1, 0, maxeff))
+                effnew <- eff + mineff + abs(rnorm(1, 0, maxeff))
             } else if (method == "exp") {
-                effnew <- eff+mineff+rexp(1, maxeff)
+                effnew <- eff + mineff + rexp(1, maxeff)
             }
         } else {
             if (method == "runif") {
-                effnew <- runif(1, eff-maxeff, eff-mineff)
+                effnew <- runif(1, eff - maxeff, eff - mineff)
             } else if (method == "gauss") {
-                effnew <- eff-mineff-abs(rnorm(1, 0, maxeff))
+                effnew <- eff - mineff - abs(rnorm(1, 0, maxeff))
             } else if (method == "exp") {
-                effnew <- eff-mineff-rexp(1, maxeff)
+                effnew <- eff - mineff - rexp(1, maxeff)
             }
         }
         return(effnew)
@@ -338,7 +340,7 @@ resample_edge_weights <- function(g, tp = 1,
     edges <- which(gbin == 1, arr.ind = TRUE)
     for (i in seq(nrow(edges))) {
         edge <- paste0(rownames(gbin)[edges[i, 1]], "|", rownames(gbin)[edges[i, 2]])
-        gold@edgeData@data[[edge]]$weight <- g[edges[i, 1],edges[i, 2]]
+        gold@edgeData@data[[edge]]$weight <- g[edges[i, 1], edges[i, 2]]
     }
     return(gold)
 }
@@ -382,13 +384,13 @@ estimateTheta <- function(data, ...) {
     if (ncol(data) < 5) {
         mus <- apply(data, 2, mean)
         sigmas <- apply(data, 2, sd)
-        thetas <- mus^2/(sigmas^2 - mus)
+        thetas <- mus^2 / (sigmas^2 - mus)
         theta <- mean(thetas)
     } else {
-        y <- edgeR::DGEList(counts=t(data))
+        y <- edgeR::DGEList(counts = t(data))
         y <- edgeR::calcNormFactors(y)
         y <- edgeR::estimateDisp(y, ...)
-        theta <- 1/y$common.dispersion
+        theta <- 1 / y$common.dispersion
     }
     return(theta)
 }
@@ -401,7 +403,7 @@ make.log.link <- function(base=exp(1)) {
         linkinv=function(eta) { base**(eta) },
         mu.eta=function(eta) { base**(eta) },
         valideta=function(eta) { TRUE }
-    ), class="link-glm")
+    ), class = "link-glm")
 }
 
 
@@ -437,7 +439,7 @@ trueEffects <- function(g, partial = FALSE) {
     } else {
         ae <- a
         for (i in 2:nrow(a)) {
-            ae <- ae + a%^%i
+            ae <- ae + a %^% i
         }
     }
     return(ae)

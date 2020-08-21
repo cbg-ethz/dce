@@ -58,10 +58,12 @@ glm.dce.nb.fit <- function(...) {
 #'
 #' fixes a bug, if theta estimation breaks
 #' see ?MASS::glm.nb for argument values
-glm.nb.rob <- function (formula, data, weights, subset, na.action, start = NULL,
+glm.nb.rob <- function (
+    formula, data, weights, subset, na.action, start = NULL,
     etastart, mustart, control = glm.control(...), method = "glm.fit",
     model = TRUE, x = FALSE, y = TRUE, contrasts = NULL, ...,
-    init.theta, link = log)
+    init.theta, link = log
+)
 {
     loglik <- function(n, th, mu, y, w) sum(w * (lgamma(th +
         y) - lgamma(th) - lgamma(y + 1) + th * log(th) + y *

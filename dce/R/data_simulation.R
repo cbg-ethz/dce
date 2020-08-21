@@ -3,8 +3,8 @@
 #' Generate data for given DAG.
 #' @param dag Graph to simulate on
 #' @param n Number of samples
-#' @param dist.mean distribution mean as numeric
-#' @param dist.dispersion distribution dispersion
+#' @param dist_mean distribution mean as numeric
+#' @param dist_dispersion distribution dispersion
 #' (actually dispersion^-1) as a scalar
 #' @return graph
 #' @export
@@ -18,9 +18,9 @@ setGeneric(
     "simulate_data",
     function(
         graph, n = 100,
-        dist.mean = 1000, dist.dispersion = 100,
+        dist_mean = 1000, dist_dispersion = 100,
         link = negative.binomial.special()$linkfun,
-        pop.size = 100, latent = 0
+        pop_size = 100, latent = 0
     ) {
         standardGeneric("simulate_data")
     },
@@ -34,17 +34,18 @@ setMethod(
     signature = signature(graph = "igraph"),
     function(
         graph, n = 100,
-        dist.mean = 1000, dist.dispersion = 100,
+        dist_mean = 1000, dist_dispersion = 100,
         link = negative.binomial.special()$linkfun,
-        pop.size = 100, latent = 0
+        pop_size = 100, latent = 0
     ) {
+        edge_attrs <- igraph::edge_attr_names(graph)
         simulate_data(
             as(igraph::as_adjacency_matrix(
                 graph,
-                attr = if ("weight" %in% igraph::edge_attr_names(graph)) "weight" else NULL
+                attr = if ("weight" %in% edge_attrs) "weight" else NULL
             ), "matrix"),
-            n, dist.mean, dist.dispersion,
-            link, pop.size, latent
+            n, dist_mean, dist_dispersion,
+            link, pop_size, latent
         )
     }
 )
@@ -55,14 +56,14 @@ setMethod(
     signature = signature(graph = "graphNEL"),
     function(
         graph, n = 100,
-        dist.mean = 1000, dist.dispersion = 100,
+        dist_mean = 1000, dist_dispersion = 100,
         link = negative.binomial.special()$linkfun,
-        pop.size = 100, latent = 0
+        pop_size = 100, latent = 0
     ) {
         simulate_data(
             as(graph, "matrix"),
-            n, dist.mean, dist.dispersion,
-            link, pop.size, latent
+            n, dist_mean, dist_dispersion,
+            link, pop_size, latent
         )
     }
 )
@@ -73,28 +74,28 @@ setMethod(
     signature = signature(graph = "matrix"),
     function(
         graph, n = 100,
-        dist.mean = 1000, dist.dispersion = 100,
+        dist_mean = 1000, dist_dispersion = 100,
         link = negative.binomial.special()$linkfun,
-        pop.size = 100, latent = 0
+        pop_size = 100, latent = 0
     ) {
         start <- 2
         p <- dim(graph)[[1]]
         if (latent > 0) {
-            H1 <- matrix(runif(p*latent, -1, 1),latent,p)
-            H0 <- matrix(0,p+latent,latent)
-            graph <- cbind(H0,rbind(H1,graph))
-            start <- latent+1
+            H1 <- matrix(runif(p * latent, -1, 1), latent, p)
+            H0 <- matrix(0, p + latent, latent)
+            graph <- cbind(H0, rbind(H1, graph))
+            start <- latent + 1
             p <- dim(graph)[[1]]
         }
 
         # sanity checks
         stopifnot(p >= 2)
 
-        nonzero.idx <- which(graph != 0, arr.ind = TRUE)
+        nonzero_idx <- which(graph != 0, arr.ind = TRUE)
         if (
-            (nrow(nonzero.idx) > 0) &&
+            (nrow(nonzero_idx) > 0) &&
             (
-                any(nonzero.idx[, 2] - nonzero.idx[, 1] < 0) ||
+                any(nonzero_idx[, 2] - nonzero_idx[, 1] < 0) ||
                 any(diag(graph) != 0)
             )
         ) {
@@ -103,8 +104,8 @@ setMethod(
 
         # setup data
         X <- matrix(rnbinom(n * p,
-                            size = dist.dispersion,
-                            mu = dist.mean),
+                            size = dist_dispersion,
+                            mu = dist_mean),
                     nrow = n, ncol = p)
         colnames(X) <- colnames(graph)
 
@@ -119,25 +120,25 @@ setMethod(
             X[, j] <- rnbinom(n, size = Inf, mu = mu)
           }
         }
-        if (pop.size > p & latent == 0) {
-            Y <- matrix(rnbinom(n * (pop.size-p),
-                                size = dist.dispersion,
-                                mu = dist.mean),
-                        nrow = n, ncol = pop.size-p)
-            colnames(Y) <- paste0("n", (p+1):pop.size)
+        if (pop_size > p & latent == 0) {
+            Y <- matrix(rnbinom(n * (pop_size - p),
+                                size = dist_dispersion,
+                                mu = dist_mean),
+                        nrow = n, ncol = pop_size - p)
+            colnames(Y) <- paste0("n", (p + 1):pop_size)
             X <- cbind(X, Y)
-        } else if (pop.size > 0 & latent > 0) {
-            H <- matrix(runif(latent*(pop.size-p+latent),-1,1),latent,pop.size-p+latent)
-            Y <- X[,seq_len(latent),drop=FALSE]%*%H
+        } else if (pop_size > 0 & latent > 0) {
+            H <- matrix(runif(latent * (pop_size - p + latent), -1, 1), latent, pop_size - p + latent)
+            Y <- X[, seq_len(latent), drop = FALSE] %*% H
             Y <- apply(Y, 2, function(x) {
                 y <- rnbinom(n, size = Inf, mu = link(x, offset = 1))
                 return(y)
             })
-            colnames(Y) <- paste0("n", (p+1-latent):pop.size)
+            colnames(Y) <- paste0("n", (p + 1 - latent):pop_size)
             X <- cbind(X, Y)
         }
         if (latent > 0) {
-            X <- X[,-seq_len(latent),drop=FALSE]
+            X <- X[, -seq_len(latent), drop = FALSE]
         }
         return(X)
     }

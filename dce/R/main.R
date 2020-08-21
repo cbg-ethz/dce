@@ -2,19 +2,20 @@
 #'
 #' Main function to compute differential causal effects and its enrichment
 #' @param graph valid object defining a directed acyclic graph
-#' @param df.expr.wt data frame with wild type expression values
-#' @param df.expr.mt data from with mutation type expression values
+#' @param df_expr_wt data frame with wild type expression values
+#' @param df_expr_mt data from with mutation type expression values
 #' @param solver character with name of solver function
-#' @param solver.args additional arguments for the solver function
-#' @param adjustment.type character string for the method to define
+#' @param solver_args additional arguments for the solver function
+#' @param adjustment_type character string for the method to define
 #' the adjustment set Z for the regression
-#' @param p.method character string. "mean", "sum" for standard summary
+#' @param effect_type method of computing causal effects
+#' @param p_method character string. "mean", "sum" for standard summary
 #' functions, "hmp" for harmonic mean, "test" for the selfcontained
 #' test of package 'CombinePValue' or any method from package 'metap',
 #' e.g., "meanp" or "sump".
 #' @param test either "wald" for testing significance with the
 #' wald test or "lr" for using a likelihood ratio test
-#' @param lib.size either a numeric vector of the same length as the
+#' @param lib_size either a numeric vector of the same length as the
 #' sum of wild type and mutant samples or a logical. If TRUE, it is
 #' recommended that both data sets include not only the genes
 #' included in the graph but all genes available in the original data set.
@@ -27,13 +28,13 @@
 setGeneric(
     "dce",
     function(
-        graph, df.expr.wt, df.expr.mt,
-        solver = "glm2", solver.args = list(method = "glm.dce.fit"),
-        adjustment.type = "parents",
-        effect.type = "total",
-        p.method = "mean",
+        graph, df_expr_wt, df_expr_mt,
+        solver = "glm2", solver_args = list(method = "glm.dce.fit"),
+        adjustment_type = "parents",
+        effect_type = "total",
+        p_method = "mean",
         test = "wald",
-        lib.size = FALSE,
+        lib_size = FALSE,
         latent = 0,
         conservative = FALSE,
         verbose = FALSE
@@ -44,32 +45,33 @@ setGeneric(
 )
 
 
-setOldClass("igraph") # "igraph" is not a formal S4 class, make it compatible with `signature` call
+# "igraph" is not a formal S4 class, make it compatible with `signature` call
+setOldClass("igraph")
 setMethod(
     "dce",
     signature = signature(graph = "igraph"),
     function(
-        graph, df.expr.wt, df.expr.mt,
-        solver = "glm2", solver.args = list(method = "glm.dce.fit"),
-        adjustment.type = "parents",
-        effect.type = "total",
-        p.method = "mean",
+        graph, df_expr_wt, df_expr_mt,
+        solver = "glm2", solver_args = list(method = "glm.dce.fit"),
+        adjustment_type = "parents",
+        effect_type = "total",
+        p_method = "mean",
         test = "wald",
-        lib.size = FALSE,
+        lib_size = FALSE,
         latent = 0,
         conservative = FALSE,
         verbose = FALSE
     ) {
         graph <- igraph::igraph.to.graphNEL(graph)
         dce(
-            as.adjmat(graph),
-            df.expr.wt, df.expr.mt,
-            solver, solver.args,
-            adjustment.type,
-            effect.type,
-            p.method,
+            as_adjmat(graph),
+            df_expr_wt, df_expr_mt,
+            solver, solver_args,
+            adjustment_type,
+            effect_type,
+            p_method,
             test,
-            lib.size,
+            lib_size,
             latent,
             conservative,
             verbose
@@ -82,26 +84,26 @@ setMethod(
     "dce",
     signature = signature(graph = "graphNEL"),
     function(
-        graph, df.expr.wt, df.expr.mt,
-        solver = "glm2", solver.args = list(method = "glm.dce.fit"),
-        adjustment.type = "parents",
-        effect.type = "total",
-        p.method = "mean",
+        graph, df_expr_wt, df_expr_mt,
+        solver = "glm2", solver_args = list(method = "glm.dce.fit"),
+        adjustment_type = "parents",
+        effect_type = "total",
+        p_method = "mean",
         test = "wald",
-        lib.size = FALSE,
+        lib_size = FALSE,
         latent = 0,
         conservative = FALSE,
         verbose = FALSE
     ) {
         dce(
-            as.adjmat(graph),
-            df.expr.wt, df.expr.mt,
-            solver, solver.args,
-            adjustment.type,
-            effect.type,
-            p.method,
+            as_adjmat(graph),
+            df_expr_wt, df_expr_mt,
+            solver, solver_args,
+            adjustment_type,
+            effect_type,
+            p_method,
             test,
-            lib.size,
+            lib_size,
             latent,
             conservative,
             verbose
@@ -114,13 +116,13 @@ setMethod(
     "dce",
     signature = signature(graph = "matrix"),
     function(
-        graph, df.expr.wt, df.expr.mt,
-        solver = "glm2", solver.args = list(method = "glm.dce.fit"),
-        adjustment.type = "parents",
-        effect.type = "total",
-        p.method = "mean",
+        graph, df_expr_wt, df_expr_mt,
+        solver = "glm2", solver_args = list(method = "glm.dce.fit"),
+        adjustment_type = "parents",
+        effect_type = "total",
+        p_method = "mean",
         test = "wald",
-        lib.size = FALSE,
+        lib_size = FALSE,
         latent = 0,
         conservative = FALSE,
         verbose = FALSE
@@ -129,22 +131,22 @@ setMethod(
         graph[graph != 0] <- 1 # ignore edge weights
 
         # validate input
-        if (!all(colnames(graph) %in% colnames(df.expr.wt))) {
+        if (!all(colnames(graph) %in% colnames(df_expr_wt))) {
             stop("Not all nodes have expression vector in WT data")
         }
-        if (!all(colnames(graph) %in% colnames(df.expr.mt))) {
+        if (!all(colnames(graph) %in% colnames(df_expr_mt))) {
             stop("Not all nodes have expression vector in MT data")
         }
 
         # fit model
         .dce(
-            graph, df.expr.wt, df.expr.mt,
-            solver, solver.args,
-            adjustment.type,
-            effect.type,
-            p.method,
+            graph, df_expr_wt, df_expr_mt,
+            solver, solver_args,
+            adjustment_type,
+            effect_type,
+            p_method,
             test,
-            lib.size,
+            lib_size,
             latent,
             conservative,
             verbose
@@ -156,48 +158,48 @@ setMethod(
 #' @importFrom naturalsort naturalorder
 #' @noRd
 .dce <- function(
-    graph, df.expr.wt, df.expr.mt,
-    solver, solver.args,
-    adjustment.type,
-    effect.type,
-    p.method,
+    graph, df_expr_wt, df_expr_mt,
+    solver, solver_args,
+    adjustment_type,
+    effect_type,
+    p_method,
     test,
-    lib.size,
+    lib_size,
     latent,
     conservative,
     verbose
 ) {
     # handle latent variables
     if (latent > 0) {
-        pca.wt <- prcomp(df.expr.wt)
-        lat.wt <- pca.wt$x[, seq_len(latent), drop = FALSE]
-        colnames(lat.wt) <- paste0("H", seq_len(latent))
-        pca.mt <- prcomp(df.expr.mt)
-        lat.mt <- pca.mt$x[, seq_len(latent), drop = FALSE]
+        pca_wt <- prcomp(df_expr_wt)
+        lat_wt <- pca_wt$x[, seq_len(latent), drop = FALSE]
+        colnames(lat_wt) <- paste0("H", seq_len(latent))
+        pca_mt <- prcomp(df_expr_mt)
+        lat_mt <- pca_mt$x[, seq_len(latent), drop = FALSE]
         colnames(lat.mt) <- paste0("H", seq_len(latent))
-        lat.data <- rbind(lat.wt,lat.mt)
+        lat_data <- rbind(lat_wt, lat_mt)
     }
 
-    # handle lib.size
-    if (!is.numeric(lib.size)) {
-        if (lib.size) {
-            lib.size <- apply(rbind(df.expr.wt, df.expr.mt), 1, sum)
-            lib.size <- round(lib.size/(10^min(round(log10(lib.size)))))
+    # handle lib_size
+    if (!is.numeric(lib_size)) {
+        if (lib_size) {
+            lib_size <- apply(rbind(df_expr_wt, df_expr_mt), 1, sum)
+            lib_size <- round(lib_size / (10^min(round(log10(lib_size)))))
         }
     }
 
-    if (length(unique(lib.size)) == 1 & lib.size[1] != FALSE) {
+    if (length(unique(lib_size)) == 1 & lib_size[1] != FALSE) {
         print("Only single library size detected, disabling correction!")
-        lib.size <- FALSE
+        lib_size <- FALSE
     }
 
     # subset expression data to pathway genes
-    df.expr.wt <- df.expr.wt[, which(colnames(df.expr.wt) %in% colnames(graph))]
-    df.expr.mt <- df.expr.mt[, which(colnames(df.expr.mt) %in% colnames(graph))]
+    df_expr_wt <- df_expr_wt[, which(colnames(df_expr_wt) %in% colnames(graph))]
+    df_expr_mt <- df_expr_mt[, which(colnames(df_expr_mt) %in% colnames(graph))]
 
     # ensure the data and graph have the same order of genes
-    df.expr.wt <- df.expr.wt[, naturalorder(colnames(df.expr.wt))]
-    df.expr.mt <- df.expr.mt[, naturalorder(colnames(df.expr.mt))]
+    df_expr_wt <- df_expr_wt[, naturalorder(colnames(df_expr_wt))]
+    df_expr_mt <- df_expr_mt[, naturalorder(colnames(df_expr_mt))]
     graph <- graph[naturalorder(rownames(graph)), naturalorder(colnames(graph))]
 
     # handle empty graph (no edges)
@@ -206,14 +208,14 @@ setMethod(
             graph = graph,
             dce = graph * NA,
             dce.pvalue = graph * NA,
-            pathway.pvalue = NA
-        ), class="dce"))
+            pathway_pvalue = NA
+        ), class = "dce"))
     }
 
     # compute DCEs
     res <- purrr::pmap_dfr(
         as.data.frame(which(graph != 0, arr.ind = TRUE)),
-        function (row, col) {
+        function(row, col) {
             if (row == col) {
                 return(data.frame(
                     row = row,
@@ -224,171 +226,182 @@ setMethod(
             }
 
             # concatenate data
-            df.data <- data.frame(
-                X = c(df.expr.wt[, row], df.expr.mt[, row]),
-                Y = c(df.expr.wt[, col], df.expr.mt[, col]),
-                N = c(rep(0, dim(df.expr.wt)[[1]]), rep(1, dim(df.expr.mt)[[1]]))
+            df_data <- data.frame(
+                X = c(
+                    df_expr_wt[, row],
+                    df_expr_mt[, row]
+                ),
+                Y = c(
+                    df_expr_wt[, col],
+                    df_expr_mt[, col]
+                ),
+                N = c(
+                    rep(0, dim(df_expr_wt)[[1]]),
+                    rep(1, dim(df_expr_mt)[[1]])
+                )
             )
 
             # incorporate adjustment set
-            valid.adjustment.set <- get.adjustment.set(graph, row, col,
-                                                       adjustment.type,
-                                                       effect.type)
+            valid_adjustment_set <- get_adjustment_set(
+                graph, row, col,
+                adjustment_type,
+                effect_type
+            )
 
-            form.adjustment.suffix <- ""
-            for (idx in valid.adjustment.set) {
+            form_adjustment_suffix <- ""
+            for (idx in valid_adjustment_set) {
                 name <- paste0("Z", idx)
                 if (conservative) {
                     add <- " + "
                 } else {
                     add <- " + N * "
                 }
-                form.adjustment.suffix <- paste0(
-                    form.adjustment.suffix,
+                form_adjustment_suffix <- paste0(
+                    form_adjustment_suffix,
                     add,
                     name
                 )
-                df.data[, name] <- c(df.expr.wt[, idx], df.expr.mt[, idx])
+                df_data[, name] <- c(df_expr_wt[, idx], df_expr_mt[, idx])
             }
 
             # fit model
-            if (!is.numeric(lib.size)) {
-                form <- paste0("Y ~ N * X", form.adjustment.suffix)
+            if (!is.numeric(lib_size)) {
+                form <- paste0("Y ~ N * X", form_adjustment_suffix)
             } else {
-                df.data <- cbind(df.data, lib.size = factor(lib.size))
-                form <- paste0("Y ~ N * X + N*lib.size", form.adjustment.suffix)
+                df_data <- cbind(df_data, lib_size = factor(lib_size))
+                form <- paste0("Y ~ N * X + N*lib_size", form_adjustment_suffix)
             }
             if (latent > 0) {
-                df.data <- cbind(df.data, lat.data)
+                df_data <- cbind(df_data, lat_data)
                 form <- paste0(form, " + ",
                                paste(paste0("N*H", seq_len(latent)),
                                      collapse = " + "))
             }
 
             if (verbose) {
-                print(df.data %>% head)
+                print(df_data %>% head)
                 print(form)
             }
 
-            fit <- glm.solver(
-                form = form, df = df.data,
-                solver = solver, solver.args = solver.args
+            fit <- glm_solver(
+                form = form, df = df_data,
+                solver = solver, solver_args = solver_args
             )
 
             # extract results
-            coef.mat <- summary(fit)$coefficients
-            coef.xn <- NA
-            stderr.xn <- NA
-            pval.xn <- NA
+            coef_mat <- summary(fit)$coefficients
+            coef_xn <- NA
+            stderr_xn <- NA
+            pval_xn <- NA
 
             if (test == "lr") {
-                if (!is.numeric(lib.size)) {
-                    form2 <- paste0("Y ~ N + X", form.adjustment.suffix)
+                if (!is.numeric(lib_size)) {
+                    form2 <- paste0("Y ~ N + X", form_adjustment_suffix)
                 } else {
-                    form2 <- paste0("Y ~ N + X + N*lib.size", form.adjustment.suffix)
+                    form2 <- paste0("Y ~ N + X + N*lib_size", form_adjustment_suffix)
                 }
 
                 if (verbose) {
                     print(form2)
                 }
 
-                fit2 <- glm.solver(
-                    form = form2, df = df.data,
-                    solver = solver, solver.args = solver.args
+                fit2 <- glm_solver(
+                    form = form2, df = df_data,
+                    solver = solver, solver_args = solver_args
                 )
 
-                if (length(grep("N:X", rownames(coef.mat))) != 0) {
-                    coef.xn <- coef.mat["N:X", "Estimate"]
-                    stderr.xn <- coef.mat["N:X", "Std. Error"]
-                    pval.xn <- lmtest::lrtest(fit, fit2)[[5]][2]
+                if (length(grep("N:X", rownames(coef_mat))) != 0) {
+                    coef_xn <- coef_mat["N:X", "Estimate"]
+                    stderr_xn <- coef_mat["N:X", "Std. Error"]
+                    pval_xn <- lmtest::lrtest(fit, fit2)[[5]][2]
                 }
-            } else if (test == "wald" & length(grep("N:X", rownames(coef.mat))) != 0) {
-                coef.xn <- coef.mat["N:X", "Estimate"]
-                stderr.xn <- coef.mat["N:X", "Std. Error"]
-                pval.xn <- coef.mat["N:X", if (solver == "glm.nb") "Pr(>|z|)" else "Pr(>|t|)"]
+            } else if (test == "wald" & length(grep("N:X", rownames(coef_mat))) != 0) {
+                coef_xn <- coef_mat["N:X", "Estimate"]
+                stderr_xn <- coef_mat["N:X", "Std. Error"]
+                pval_xn <- coef_mat["N:X", if (solver == "glm.nb") "Pr(>|z|)" else "Pr(>|t|)"]
             }
             data.frame(
                 row = row,
                 col = col,
-                dce = coef.xn,
-                stderr = stderr.xn,
-                p.value = pval.xn
+                dce = coef_xn,
+                stderr = stderr_xn,
+                p.value = pval_xn
             )
         }
     )
 
     # process result
-    dce.mat <- as.matrix(Matrix::sparseMatrix(
+    dce_mat <- as.matrix(Matrix::sparseMatrix(
         res$row, res$col, x = res$dce, dims = dim(graph)
     ))
-    rownames(dce.mat) <- colnames(dce.mat) <- rownames(graph)
+    rownames(dce_mat) <- colnames(dce_mat) <- rownames(graph)
 
-    dce.stderr.mat <- as.matrix(Matrix::sparseMatrix(
+    dce_stderr_mat <- as.matrix(Matrix::sparseMatrix(
         res$row, res$col, x = res$stderr, dims = dim(graph)
     ))
-    rownames(dce.stderr.mat) <- colnames(dce.stderr.mat) <- rownames(graph)
+    rownames(dce_stderr_mat) <- colnames(dce_stderr_mat) <- rownames(graph)
 
-    dce.pvalue.mat <- as.matrix(Matrix::sparseMatrix(
+    dce_pvalue_mat <- as.matrix(Matrix::sparseMatrix(
         res$row, res$col, x = res$p.value, dims = dim(graph)
     ))
-    rownames(dce.pvalue.mat) <- colnames(dce.pvalue.mat) <- rownames(graph)
+    rownames(dce_pvalue_mat) <- colnames(dce_pvalue_mat) <- rownames(graph)
 
     # make uncomputed values NA
-    diag(dce.mat) <- NA
-    dce.mat[which(graph == 0)] <- NA
+    diag(dce_mat) <- NA
+    dce_mat[which(graph == 0)] <- NA
 
-    diag(dce.stderr.mat) <- NA
-    dce.stderr.mat[which(graph == 0)] <- NA
+    diag(dce_stderr_mat) <- NA
+    dce_stderr_mat[which(graph == 0)] <- NA
 
-    diag(dce.pvalue.mat) <- NA
-    dce.pvalue.mat[which(graph == 0)] <- NA
+    diag(dce_pvalue_mat) <- NA
+    dce_pvalue_mat[which(graph == 0)] <- NA
 
     # compute overall pathway enrichment
-    tmp <- dce.pvalue.mat[!is.na(dce.pvalue.mat)]
+    tmp <- dce_pvalue_mat[!is.na(dce_pvalue_mat)]
     tmp[tmp == 0] <- min(tmp[tmp != 0])
-    if (p.method == "hmp") {
-        pathway.pvalue <- as.numeric(harmonicmeanp::p.hmp(tmp, L = length(tmp)))
-    } else if (p.method == "test") {
-        pathway.pvalue <- CombinePValue::selfcontained.test(tmp, weight=NA)[[1]]
-    } else if (p.method %in% c("mean", "median", "sum", "max", "min")) {
-        pathway.pvalue <- do.call(p.method, list(x=tmp))
+    if (p_method == "hmp") {
+        pathway_pvalue <- as.numeric(harmonicmeanp::p.hmp(tmp, L = length(tmp)))
+    } else if (p_method == "test") {
+        pathway_pvalue <- CombinePValue::selfcontained.test(tmp, weight = NA)[[1]]
+    } else if (p_method %in% c("mean", "median", "sum", "max", "min")) {
+        pathway_pvalue <- do.call(p_method, list(x = tmp))
     } else {
         require(metap)
-        pathway.pvalue <- do.call(p.method, list(p=tmp))$p
+        pathway_pvalue <- do.call(p_method, list(p = tmp))$p
     }
 
     # return appropriate object
     structure(list(
         graph = graph,
-        dce = dce.mat,
-        dce.stderr = dce.stderr.mat,
-        dce.pvalue = dce.pvalue.mat,
-        pathway.pvalue = pathway.pvalue
-    ), class="dce")
+        dce = dce_mat,
+        dce.stderr = dce_stderr_mat,
+        dce.pvalue = dce_pvalue_mat,
+        pathway_pvalue = pathway_pvalue
+    ), class = "dce")
 }
 
 
 #' @export
-dce.nb <- function(
-    graph, df.expr.wt, df.expr.mt,
-    solver.args = list(method = "glm.dce.nb.fit", link = "identity"),
-    adjustment.type = "parents",
-    effect.type = "total",
-    p.method = "mean",
+dce_nb <- function(
+    graph, df_expr_wt, df_expr_mt,
+    solver_args = list(method = "glm.dce.nb.fit", link = "identity"),
+    adjustment_type = "parents",
+    effect_type = "total",
+    p_method = "mean",
     test = "wald",
-    lib.size = FALSE,
+    lib_size = FALSE,
     latent = 0,
     conservative = FALSE,
     verbose = FALSE
 ) {
     dce(
-        graph, df.expr.wt, df.expr.mt,
-        solver = "glm.nb", solver.args = solver.args,
-        adjustment.type,
-        effect.type,
-        p.method,
+        graph, df_expr_wt, df_expr_mt,
+        solver = "glm.nb", solver_args = solver_args,
+        adjustment_type,
+        effect_type,
+        p_method,
         test,
-        lib.size,
+        lib_size,
         latent,
         conservative,
         verbose
@@ -397,8 +410,10 @@ dce.nb <- function(
 
 
 #' @export
-get.adjustment.set <- function(graph, x, y, adjustment.type = "parents",
-                               effect.type = "total") {
+get_adjustment_set <- function(
+    graph, x, y,
+    adjustment_type = "parents", effect_type = "total"
+) {
     check_parents <- function(g, x, y) {
         parents <- which(g[, x] == 1)
         gxy <- g
@@ -418,7 +433,7 @@ get.adjustment.set <- function(graph, x, y, adjustment.type = "parents",
         return(minset)
     }
     switch(
-        adjustment.type,
+        adjustment_type,
         parents = {
             set <- names(which(graph[, x] != 0))
         },
@@ -435,7 +450,7 @@ get.adjustment.set <- function(graph, x, y, adjustment.type = "parents",
             set <- rownames(graph)[check_parents(graph, x, y)]
         }
     )
-    if (effect.type == "direct") {
+    if (effect_type == "direct") {
         xkids <- names(which(graph[x, ] != 0))
         xkids <- xkids[which(xkids != colnames(graph)[y])]
         set <- c(set, xkids)
@@ -445,19 +460,19 @@ get.adjustment.set <- function(graph, x, y, adjustment.type = "parents",
 
 
 #' @export
-glm.solver <- function(form, df, solver, solver.args) {
-    solver.func <- switch(
+glm_solver <- function(form, df, solver, solver_args) {
+    solver_func <- switch(
         solver,
         "glm2" = glm2::glm2,
         "glm.nb" = glm.nb.rob,
         "mle" = glm.mle.new
     )
-    if (is.null(solver.func)) {
+    if (is.null(solver_func)) {
         stop(paste("Invalid solver", solver))
     }
 
-    func.args <- c(list(formula = form, data = df), solver.args)
-    do.call(solver.func, func.args)
+    func_args <- c(list(formula = form, data = df), solver_args)
+    do.call(solver_func, func_args)
 }
 
 

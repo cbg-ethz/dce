@@ -9,7 +9,7 @@ create_random_DAG(
   prob,
   lB = -1,
   uB = 1,
-  node.labels = paste0("n", as.character(seq_len(n)))
+  node_labels = paste0("n", as.character(seq_len(n)))
 )
 }
 \arguments{
@@ -21,7 +21,7 @@ create_random_DAG(
 
 \item{uB}{Upper bound for edge weights}
 
-\item{node.labels}{Node labels}
+\item{node_labels}{Node labels}
 }
 \value{
 graph

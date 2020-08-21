@@ -15,7 +15,7 @@ genes <- intersect(graph::nodes(graph), rownames(df.expr))
 # compute stuff
 tumor_stage_list <- c("stage i", "stage ii", "stage iii")
 
-res <- purrr::map(tumor_stage_list, function (selected_tumor_stage) {
+res <- purrr::map(tumor_stage_list, function(selected_tumor_stage) {
   # select control group
   barcodes.wt <- df.classi %>%
     dplyr::filter(definition == "Solid Tissue Normal") %>%
@@ -48,18 +48,17 @@ res <- purrr::map(tumor_stage_list, function (selected_tumor_stage) {
 
 
   # compute DCEs
-  dce::dce.nb(graph, X.wt, X.mt, lib.size=TRUE)
+  dce::dce_nb(graph, X.wt, X.mt, lib_size = TRUE)
 }) %>%
   purrr::set_names(tumor_stage_list)
 
 
 # store result
-saveRDS(res, file=snakemake@output$dce_fname)
+saveRDS(res, file = snakemake@output$dce_fname)
 
 purrr::imap_dfr(res, function(x, name) {
-  reshape2::melt(x$dce) %>%
-    rename(dce=value, source=Var1, target=Var2) %>%
-    mutate(dce.pvalue=reshape2::melt(x$dce.pvalue)$value) %>%
+  x %>%
+    as.data.frame %>%
     drop_na %>%
     mutate(name = name)
 }) %>%

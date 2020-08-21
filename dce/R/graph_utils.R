@@ -1,15 +1,15 @@
 #' @export
 create_graph_from_dataframe <- function(
-  df.graph,
-  edge.weight=function() { runif(1, 0.5, 2) }
+  df_graph,
+  edge_weight = function() { runif(1, 0.5, 2) }
 ) {
-  g <- tidygraph::as_tbl_graph(df.graph)
+  g <- tidygraph::as_tbl_graph(df_graph)
   ig <- igraph::as.igraph(g)
   graph <- igraph::igraph.to.graphNEL(ig)
 
   w <- graph@edgeData@data
-  for (i in 1:length(w)) {
-    w[[i]]$weight <- edge.weight()
+  for (i in seq_len(length(w))) {
+    w[[i]]$weight <- edge_weight()
   }
   graph@edgeData@data <- w
 
@@ -20,25 +20,26 @@ create_graph_from_dataframe <- function(
 #' @noRd
 graph_union_two <- function(graph1, graph2) {
   # create union
-  graph.m <- igraph::union(
+  graph_m <- igraph::union(
     igraph::igraph.from.graphNEL(graph1),
     igraph::igraph.from.graphNEL(graph2)
   )
 
   # merge edge weight attributes (if needed)
-  if (is.null(igraph::get.edge.attribute(graph.m, "weight"))) {
-    attr1 <- igraph::get.edge.attribute(graph.m, "weight_1")
-    attr2 <- igraph::get.edge.attribute(graph.m, "weight_2")
+  if (is.null(igraph::get.edge.attribute(graph_m, "weight"))) {
+    attr1 <- igraph::get.edge.attribute(graph_m, "weight_1")
+    attr2 <- igraph::get.edge.attribute(graph_m, "weight_2")
     tmp <- igraph::set.edge.attribute(
-      graph.m, "weight",
+      graph_m, "weight",
       value = ifelse(is.na(attr1), attr2, attr1)
     )
 
-    # remove superfluous weight attributes (may cause errors on later conversions)
+    # remove superfluous weight attributes
+    # (may cause errors on later conversions)
     tmp <- igraph::remove.edge.attribute(tmp, "weight_1")
     tmp <- igraph::remove.edge.attribute(tmp, "weight_2")
   } else {
-    tmp <- graph.m
+    tmp <- graph_m
   }
 
   # return result
@@ -56,37 +57,39 @@ graph_union <- function(graph_list) {
 propagate_gene_edges <- function(graph) {
   # propagate edges
   ig <- igraph::igraph.from.graphNEL(graph)
-  vertex.names <- igraph::vertex_attr(ig, "name")
+  vertex_names <- igraph::vertex_attr(ig, "name")
 
-  for (source.idx in igraph::V(ig)) {
-    source <- vertex.names[source.idx]
+  for (source_idx in igraph::V(ig)) {
+    source <- vertex_names[source_idx]
 
-    for (target.idx in igraph::neighbors(ig, source.idx, mode="out")) {
-      target <- vertex.names[target.idx]
+    for (target_idx in igraph::neighbors(ig, source_idx, mode = "out")) {
+      target <- vertex_names[target_idx]
 
-      if (substr(target, start=0, stop=3) != "hsa") {
+      if (substr(target, start = 0, stop = 3) != "hsa") {
         # source is not connected to gene
 
-        for (bridge.idx in igraph::neighbors(ig, target.idx, mode="out")) {
-          bridge <- vertex.names[bridge.idx]
+        for (bridge_idx in igraph::neighbors(ig, target_idx, mode = "out")) {
+          bridge <- vertex_names[bridge_idx]
 
-          if (substr(bridge, start=0, stop=3) == "hsa") {
-            if (!igraph::are.connected(ig, source.idx, bridge.idx)) {
-              ig <- igraph::add.edges(ig, c(source.idx, bridge.idx), weight=1)
+          if (substr(bridge, start = 0, stop = 3) == "hsa") {
+            if (!igraph::are.connected(ig, source_idx, bridge_idx)) {
+              ig <- igraph::add.edges(ig, c(source_idx, bridge_idx), weight = 1)
             }
           } else {
-            print(glue::glue("{bridge} is not a valid extension for edge {source}->{target}"))
+            print(glue::glue(
+              "{bridge} is not a valid extension for edge {source}->{target}"
+            ))
           }
         }
       }
     }
   }
 
-  graph.prop <- igraph::igraph.to.graphNEL(ig)
+  graph_prop <- igraph::igraph.to.graphNEL(ig)
 
   # remove non-gene nodes
-  hsa.nodes <- Filter(function(x) { substr(x, 0, 3) == "hsa" }, nodes(graph.prop))
-  graph.filter <- graph::subGraph(hsa.nodes, graph.prop)
+  hsa_nodes <- Filter(function(x) { substr(x, 0, 3) == "hsa" }, nodes(graph_prop))
+  graph_filter <- graph::subGraph(hsa_nodes, graph_prop)
 
-  return(graph.filter)
+  return(graph_filter)
 }

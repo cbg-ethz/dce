@@ -108,17 +108,17 @@ df.bench <- purrr::pmap_dfr(
 
       switch(
         varied.parameter,
-        node.num={ node.num <- parameter },
-        wt.samples={ wt.samples <- parameter },
-        mt.samples={ mt.samples <- parameter },
-        beta.magnitude={ beta.magnitude <- parameter },
-        dispersion={ dispersion <- parameter },
-        adjustment.type={ adjustment.type <- parameter },
-        effect.type={ effect.type <- parameter },
-        perturb={ perturb <- parameter },
-        true.positives={ true.positives <- parameter },
-        lib.size.range={ lib.size.range <- parameter },
-        latent={ latent <- parameter },
+        node.num = { node.num <- parameter },
+        wt.samples = { wt.samples <- parameter },
+        mt.samples = { mt.samples <- parameter },
+        beta.magnitude = { beta.magnitude <- parameter },
+        dispersion = { dispersion <- parameter },
+        adjustment.type = { adjustment.type <- parameter },
+        effect.type = { effect.type <- parameter },
+        perturb = { perturb <- parameter },
+        true.positives = { true.positives <- parameter },
+        lib.size.range = { lib.size.range <- parameter },
+        latent = { latent <- parameter },
 
         total.samples={
           wt.samples <- round(parameter / 2)
@@ -146,8 +146,8 @@ df.bench <- purrr::pmap_dfr(
 
       # generate data
       pop.size <- 10000
-      wt.X <- simulate_data(wt.graph, n = wt.samples, dist.dispersion = dispersion, dist.mean = dist.mean, pop.size = pop.size, latent = latent)
-      mt.X <- simulate_data(mt.graph, n = mt.samples, dist.dispersion = dispersion, dist.mean = dist.mean, pop.size = pop.size, latent = latent)
+      wt.X <- simulate_data(wt.graph, n = wt.samples, dist_dispersion = dispersion, dist_mean = dist.mean, pop_size = pop.size, latent = latent)
+      mt.X <- simulate_data(mt.graph, n = mt.samples, dist_dispersion = dispersion, dist_mean = dist.mean, pop_size = pop.size, latent = latent)
 
       # library size difference
       lib.size.mean <- (lib.size.range+1)/2
@@ -209,8 +209,8 @@ df.bench <- purrr::pmap_dfr(
       #  * if edge exists only in original graph (but not in perturbed one), it should be a false negative if truth != 0
       #  * for performance evaluation use all entries with edge in original or perturbed graph
       df.all <- bind_cols(
-        data.frame(orig.edge=as.numeric(as.vector(as(wt.graph, "matrix")) != 0)),
-        data.frame(pert.edge=as.numeric(as.vector(as(wt.graph.perturbed, "matrix")) != 0)),
+        data.frame(orig.edge = as.numeric(as.vector(as(wt.graph, "matrix")) != 0)),
+        data.frame(pert.edge = as.numeric(as.vector(as(wt.graph.perturbed, "matrix")) != 0)),
         df.pvalues
       )
 
@@ -232,22 +232,22 @@ df.bench <- purrr::pmap_dfr(
       data.frame() %>%
         bind_rows(
           as.data.frame(
-            cor(df.edges[c("truth", methods)], method="spearman", use="pairwise.complete.obs")
+            cor(df.edges[c("truth", methods)], method = "spearman", use = "pairwise.complete.obs")
           ) %>%
             rownames_to_column() %>%
             dplyr::filter(rowname == "truth") %>%
             dplyr::select(-rowname, -truth) %>%
-            mutate(type="correlation"),
+            mutate(type = "correlation"),
 
           purrr::map_dfr(methods, function(method) {
             get.classification.counts(df.pvalues.mod, method) %>%
               as.data.frame %>%
               mutate(name = method)
           }) %>%
-            column_to_rownames(var="name") %>%
+            column_to_rownames(var = "name") %>%
             t %>%
             as.data.frame %>%
-            rownames_to_column(var="type"),
+            rownames_to_column(var = "type"),
 
           apply.performance.measure(df.edges, methods, compute.mse, "mse"),
           apply.performance.measure(df.pvalues.mod, methods, compute.precision, "precision"),
@@ -256,19 +256,19 @@ df.bench <- purrr::pmap_dfr(
           apply.performance.measure(df.pvalues.mod, methods, compute.prauc, "pr-auc"),
           apply.performance.measure(df.pvalues.mod, methods, compute.rocauc, "roc-auc"),
 
-          df.runtime %>% mutate(type="runtime"),
+          df.runtime %>% mutate(type = "runtime"),
 
-          methods %>% purrr::map_dfc(setNames, object = list(graph.density)) %>% mutate(type="graph.density"),
-          methods %>% purrr::map_dfc(setNames, object = list(lib.size.stats)) %>% mutate(type="lib.size.stats"),
-          methods %>% purrr::map_dfc(setNames, object = list(dce.stats$min)) %>% mutate(type="dce.min"),
-          methods %>% purrr::map_dfc(setNames, object = list(dce.stats$max)) %>% mutate(type="dce.max"),
-          methods %>% purrr::map_dfc(setNames, object = list(dce.stats$median)) %>% mutate(type="dce.median"),
-          methods %>% purrr::map_dfc(setNames, object = list(dce.stats$mean)) %>% mutate(type="dce.mean"),
-          methods %>% purrr::map_dfc(setNames, object = list(dispersion.estimate)) %>% mutate(type="dispersion.estimate"),
-          methods %>% purrr::map_dfc(setNames, object = list(mean.estimate)) %>% mutate(type="mean.estimate"),
-          methods %>% purrr::map_dfc(setNames, object = list(prevalence)) %>% mutate(type="prevalence")
+          methods %>% purrr::map_dfc(setNames, object = list(graph.density)) %>% mutate(type = "graph.density"),
+          methods %>% purrr::map_dfc(setNames, object = list(lib.size.stats)) %>% mutate(type = "lib.size.stats"),
+          methods %>% purrr::map_dfc(setNames, object = list(dce.stats$min)) %>% mutate(type = "dce.min"),
+          methods %>% purrr::map_dfc(setNames, object = list(dce.stats$max)) %>% mutate(type = "dce.max"),
+          methods %>% purrr::map_dfc(setNames, object = list(dce.stats$median)) %>% mutate(type = "dce.median"),
+          methods %>% purrr::map_dfc(setNames, object = list(dce.stats$mean)) %>% mutate(type = "dce.mean"),
+          methods %>% purrr::map_dfc(setNames, object = list(dispersion.estimate)) %>% mutate(type = "dispersion.estimate"),
+          methods %>% purrr::map_dfc(setNames, object = list(mean.estimate)) %>% mutate(type = "mean.estimate"),
+          methods %>% purrr::map_dfc(setNames, object = list(prevalence)) %>% mutate(type = "prevalence")
         ) %>%
-          mutate(parameter=parameter, varied.parameter=varied.parameter, rng.seed=rng.seed)
+          mutate(parameter = parameter, varied.parameter = varied.parameter, rng.seed = rng.seed)
     },
     otherwise = NULL,
     quiet = FALSE
