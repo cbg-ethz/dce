@@ -61,17 +61,26 @@ rule analyze_single_perturbed_gene:
 
 rule aggregate_expression_statistics:
     input:
-        dir_list = expand(
-            'perturbation_analysis/per_gene/{gene}/{treatment}/',
-            gene=all_perturbed_genes, treatment=treatment_list)
+        dir_list = [f'perturbation_analysis/per_gene/{study}/{gene}/{treatment}/'
+                    for study, gene, pathway in config['cases']
+                    for treatment in treatment_list]
     output:
         fname = 'perturbation_analysis/per_gene/expression_statistics.csv'
     run:
         import pandas as pd
 
-        pd.concat(
-            [pd.read_csv(os.path.join(dname, 'expression_stats.csv')) for dname in input.dir_list]
-        ).to_csv(output.fname, index=False)
+        df_list = []
+        for dname in input.dir_list:
+            tmp = pd.read_csv(os.path.join(dname, 'expression_stats.csv'))
+
+            parts = dname.split('/')
+            tmp['study'] = parts[2]
+            assert tmp['perturbed.gene'].iloc[0] == parts[3]
+            tmp['treatment'] = parts[4]
+
+            df_list.append(tmp)
+
+        pd.concat(df_list).to_csv(output.fname, index=False)
 
 
 rule compute_dces:
