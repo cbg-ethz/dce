@@ -1,5 +1,8 @@
 workdir: pipeline_run
 
 pairs:
-    - [DDIT3, hsa04210]
-    - [EIF2S1, hsa04210]
+    - [ATF6, hsa04141]
+    - [ERN1, hsa04210]
+    - [ERN1, hsa04141]
+    - [EIF2AK3, hsa04210]
+    - [EIF2AK3, hsa04141]

@@ -5,10 +5,11 @@ library(tidyverse)
 
 # locate data
 fname.graph <- snakemake@input$graph_file
-fname.expr.wt <- snakemake@input$count_wt_file
+fname.expr.wt <- snakemake@params$count_wt_file
 fname.expr.mt <- snakemake@input$count_mt_file
 
 out.dir <- snakemake@output$out_dir
+dir.create(out.dir, recursive = TRUE)
 
 perturbed.gene <- snakemake@wildcards$gene
 appendix <- glue::glue("{snakemake@wildcards$pathway}_{perturbed.gene}")

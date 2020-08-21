@@ -2,7 +2,7 @@ library(tidyverse)
 
 
 # gather parameters
-fname.expr.wt <- snakemake@input$count_wt_file
+fname.expr.wt <- snakemake@params$count_wt_file
 fname.expr.mt <- snakemake@input$count_mt_file
 
 cur.gene <- snakemake@wildcards$gene

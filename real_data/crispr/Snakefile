@@ -4,16 +4,20 @@ import os
 configfile: 'config.yaml'
 workdir: config['workdir']
 
-all_perturbed_genes = [e.name.split('.')[0].split('_')[-1]
-                       for e in os.scandir(srcdir('data/'))
-                       if e.name != 'Counts_0_Ctrl.csv']
+base_dir = srcdir('.')  # `srcdir` in params returns `None`
+all_perturbed_genes = list({e.name.split('.')[0].split('_')[1]
+                            for e in os.scandir(srcdir('data/'))
+                            if 'Ctrl' not in e.name})
+treatment_list = [1, 2, 3]
 
 
 rule all:
     input:
         'perturbation_analysis/all_genes/',
         'perturbation_analysis/per_gene/expression_statistics.csv',
-        [f'dce_results/{gene}_{pathway}/' for gene, pathway in config['pairs']]
+        [f'dce_results/{gene}_{pathway}/{treatment}'
+         for gene, pathway in config['pairs']
+         for treatment in treatment_list]
 
 
 rule retrieve_kegg_pathways:
@@ -43,10 +47,11 @@ rule analyze_perturbed_genes:
 
 rule analyze_single_perturbed_gene:
     input:
-        count_wt_file = srcdir('data/Counts_0_Ctrl.csv'),
-        count_mt_file = srcdir('data/Counts_{gene}.csv')
+        count_mt_file = srcdir('data/Counts_{gene}_{treatment}.csv')
     output:
-        out_dir = directory('perturbation_analysis/per_gene/{gene}/')
+        out_dir = directory('perturbation_analysis/per_gene/{gene}/{treatment}/')
+    params:
+        count_wt_file = lambda wildcards: f'{base_dir}/data/Counts_Ctrl_Epi_{wildcards.treatment}.csv'
     resources:
         mem_mb = 10_000
     script:
@@ -56,8 +61,8 @@ rule analyze_single_perturbed_gene:
 rule aggregate_expression_statistics:
     input:
         dir_list = expand(
-            'perturbation_analysis/per_gene/{gene}/',
-            gene=all_perturbed_genes)
+            'perturbation_analysis/per_gene/{gene}/{treatment}/',
+            gene=all_perturbed_genes, treatment=treatment_list)
     output:
         fname = 'perturbation_analysis/per_gene/expression_statistics.csv'
     run:
@@ -70,11 +75,12 @@ rule aggregate_expression_statistics:
 
 rule compute_dces:
     input:
-        count_wt_file = srcdir('data/Counts_0_Ctrl.csv'),
-        count_mt_file = srcdir('data/Counts_{gene}.csv'),
+        count_mt_file = srcdir('data/Counts_{gene}_{treatment}.csv'),
         graph_file = 'kegg_pathways/csv_files/{pathway}.csv'
     output:
-        out_dir = directory('dce_results/{gene}_{pathway}/')
+        out_dir = directory('dce_results/{gene}_{pathway}/{treatment}')
+    params:
+        count_wt_file = lambda wildcards: f'{base_dir}/data/Counts_Ctrl_Epi_{wildcards.treatment}.csv'
     resources:
         mem_mb = 10_000
     script:
