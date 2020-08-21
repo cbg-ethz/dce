@@ -1,9 +1,10 @@
 workdir: pipeline_run
 
-pairs:
-    - [ATF6, hsa04141]
-    - [ERN1, hsa04210]
-    - [ERN1, hsa04141]
-    - [EIF2AK3, hsa04210]
-    - [EIF2AK3, hsa04141]
-    - ["ATF6,EIF2AK3", hsa04141]
+cases:
+    - [epistasis, ATF6, hsa04141]
+    - [epistasis, ERN1, hsa04210]
+    - [epistasis, ERN1, hsa04141]
+    - [epistasis, EIF2AK3, hsa04210]
+    - [epistasis, EIF2AK3, hsa04141]
+    - [epistasis, "ATF6,EIF2AK3", hsa04141]
+    - [main, EIF2S1, hsa04141]
