@@ -13,12 +13,6 @@ all_perturbed_genes = list({e.name.split('.')[0].split('_')[1]
 treatment_list = [1, 2, 3]
 
 
-def get_wt_count_matrix(wildcards):
-    return os.path.join(
-        base_dir, 'data', wildcards.study,
-        f'Counts_Ctrl_{wildcards.treatment}.csv')
-
-
 rule all:
     input:
         'perturbation_analysis/all_genes/',
@@ -55,7 +49,7 @@ rule analyze_perturbed_genes:
 
 rule analyze_single_perturbed_gene:
     input:
-        count_wt_file = get_wt_count_matrix,
+        count_wt_file = srcdir('data/{study}/Counts_Ctrl_{treatment}.csv'),
         count_mt_file = srcdir('data/{study}/Counts_{gene}_{treatment}.csv')
     output:
         out_dir = directory('perturbation_analysis/per_gene/{study}/{gene}/{treatment}/')
@@ -82,7 +76,7 @@ rule aggregate_expression_statistics:
 
 rule compute_dces:
     input:
-        count_wt_file = get_wt_count_matrix,
+        count_wt_file = srcdir('data/{study}/Counts_Ctrl_{treatment}.csv'),
         count_mt_file = srcdir('data/{study}/Counts_{gene}_{treatment}.csv'),
         graph_file = 'kegg_pathways/csv_files/{pathway}.csv'
     output:
