@@ -9,6 +9,12 @@ perturbed.genes <- snakemake@params$perturbed_genes
 out.dir <- snakemake@output$out_dir
 dir.create(out.dir) # shouldn't snakemake do this automatically?
 
+# handle multiple knockouts
+perturbed.genes %<>%
+  purrr::map(~ strsplit(., ",")[[1]]) %>%
+  unlist %>%
+  unique
+
 # degree distribution
 df.degree <- purrr::map_dfr(graph.files, function(fname) {
   graph <- igraph::graph.data.frame(read_csv(fname))

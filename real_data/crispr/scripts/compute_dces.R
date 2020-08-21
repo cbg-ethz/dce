@@ -32,7 +32,7 @@ res <- dce::dce.nb(igraph::induced_subgraph(graph, common.genes), X.wt, X.mt, li
 saveRDS(res, file = file.path(out.dir, glue::glue("dce_{appendix}.rds")))
 
 # analyze results
-plot(res, labelsize=1, highlighted.nodes=c(perturbed.gene))
+plot(res, labelsize=1, highlighted.nodes=strsplit(perturbed.gene, ",")[[1]])
 ggsave(file.path(out.dir, glue::glue("network_{appendix}.pdf")), width=20, height=20)
 
 res %>%

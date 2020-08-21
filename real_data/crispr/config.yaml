@@ -6,3 +6,4 @@ pairs:
     - [ERN1, hsa04141]
     - [EIF2AK3, hsa04210]
     - [EIF2AK3, hsa04141]
+    - ["ATF6,EIF2AK3", hsa04141]

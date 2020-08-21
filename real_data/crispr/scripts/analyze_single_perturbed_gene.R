@@ -81,20 +81,22 @@ if (norm.method == "raw") {
 
 
 # perturbed gene
-expr.wt <- df.expr.wt[cur.gene, ]
-expr.mt <- df.expr.mt[cur.gene, ]
+for (gene in strsplit(cur.gene, ",")[[1]]) {
+  expr.wt <- df.expr.wt[gene, ]
+  expr.mt <- df.expr.mt[gene, ]
 
-data.frame(
-  type = c(rep("WT", length(expr.wt)), rep("MT", length(expr.mt))),
-  expression = c(expr.wt, expr.mt)
-) %>%
-  ggplot(aes(x = expression, fill = type)) +
-    geom_histogram() +
-    scale_y_log10() +
-    ggtitle(glue::glue("Gene: {cur.gene}")) +
-    theme_minimal()
+  data.frame(
+    type = c(rep("WT", length(expr.wt)), rep("MT", length(expr.mt))),
+    expression = c(expr.wt, expr.mt)
+  ) %>%
+    ggplot(aes(x = expression, fill = type)) +
+      geom_histogram() +
+      scale_y_log10() +
+      ggtitle(glue::glue("Gene: {gene}")) +
+      theme_minimal()
 
-ggsave(file.path(out.dir, glue::glue("expression_histogram_{cur.gene}.pdf")))
+  ggsave(file.path(out.dir, glue::glue("expression_histogram_{gene}.pdf")))
+}
 
 
 # all genes
@@ -117,8 +119,8 @@ ggsave(file.path(out.dir, glue::glue("expression_histogram_all_genes.pdf")))
 # save expression information
 data.frame(
   perturbed.gene = cur.gene,
-  gene.mean.WT = mean(expr.wt),
-  gene.mean.MT = mean(expr.mt),
+  gene.mean.WT = mean(expr.wt), # is only last gene
+  gene.mean.MT = mean(expr.mt), # is only last gene
   all.mean.WT = mean(expr.wt.all),
   all.mean.MT = mean(expr.mt.all)
 ) %>%
