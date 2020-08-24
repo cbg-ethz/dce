@@ -281,6 +281,7 @@ setMethod(
             if (verbose) {
                 print(df_data %>% head)
                 print(form)
+                cat("\n")
             }
 
             fit <- glm_solver(
