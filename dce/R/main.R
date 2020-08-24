@@ -259,7 +259,7 @@ setMethod(
                 form_adjustment_suffix <- paste0(
                     form_adjustment_suffix,
                     add,
-                    name
+                    "`", name, "`"
                 )
                 df_data[, name] <- c(df_expr_wt[, idx], df_expr_mt[, idx])
             }
