@@ -18,6 +18,13 @@ target.dir <- strsplit(dirname(snakemake@output$graph_files[[1]]), "/")[[1]][[1]
 dir.create(file.path(target.dir, "kgml_files"), recursive = TRUE)
 dir.create(file.path(target.dir, "csv_files"), recursive = TRUE)
 
+# pathway meta information
+KEGGREST::keggList("pathway", "hsa") %>%
+  stack %>%
+  transmute(id = ind, description = values) %>%
+  write_csv(file.path(target.dir, "pathway_info.csv"))
+
+# download pathways
 for (pw in pw.ids) {
   print(pw)
 
