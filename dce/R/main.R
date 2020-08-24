@@ -250,7 +250,7 @@ setMethod(
 
             form_adjustment_suffix <- ""
             for (idx in valid_adjustment_set) {
-                name <- paste0("Z", idx)
+                name <- paste0("Z_", idx)
                 if (conservative) {
                     add <- " + "
                 } else {
