@@ -35,6 +35,7 @@ rule retrieve_kegg_pathways:
 
 rule analyze_perturbed_genes:
     input:
+        count_wt_file = srcdir('data/main/Counts_Ctrl_1.csv'),
         graph_files = expand(
             'kegg_pathways/csv_files/{pathway}.csv',
             pathway=set([pathway for _, _, pathway in config['cases']]))
