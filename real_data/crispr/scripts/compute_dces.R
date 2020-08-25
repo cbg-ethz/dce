@@ -37,6 +37,6 @@ ggsave(file.path(out.dir, glue::glue("network_{appendix}.pdf")), width=20, heigh
 
 res %>%
   as.data.frame %>%
-  arrange(dce.pvalue) %>%
+  arrange(dce_pvalue) %>%
   drop_na %>%
   write_csv(file.path(out.dir, glue::glue("dce_list_{appendix}.csv")))

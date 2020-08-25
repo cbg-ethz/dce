@@ -207,7 +207,7 @@ setMethod(
         return(structure(list(
             graph = graph,
             dce = graph * NA,
-            dce.pvalue = graph * NA,
+            dce_pvalue = graph * NA,
             pathway_pvalue = NA
         ), class = "dce"))
     }
@@ -221,7 +221,7 @@ setMethod(
                     row = row,
                     col = col,
                     dce = NA,
-                    p.value = NA
+                    p_value = NA
                 ))
             }
 
@@ -326,7 +326,7 @@ setMethod(
                 col = col,
                 dce = coef_xn,
                 stderr = stderr_xn,
-                p.value = pval_xn
+                p_value = pval_xn
             )
         }
     )
@@ -343,7 +343,7 @@ setMethod(
     rownames(dce_stderr_mat) <- colnames(dce_stderr_mat) <- rownames(graph)
 
     dce_pvalue_mat <- as.matrix(Matrix::sparseMatrix(
-        res$row, res$col, x = res$p.value, dims = dim(graph)
+        res$row, res$col, x = res$p_value, dims = dim(graph)
     ))
     rownames(dce_pvalue_mat) <- colnames(dce_pvalue_mat) <- rownames(graph)
 
@@ -375,8 +375,8 @@ setMethod(
     structure(list(
         graph = graph,
         dce = dce_mat,
-        dce.stderr = dce_stderr_mat,
-        dce.pvalue = dce_pvalue_mat,
+        dce_stderr = dce_stderr_mat,
+        dce_pvalue = dce_pvalue_mat,
         pathway_pvalue = pathway_pvalue
     ), class = "dce")
 }
@@ -483,6 +483,6 @@ as.data.frame.dce <- function(x) {
     x$dce %>%
         melt(.) %>%
         rename(dce = value, source = Var1, target = Var2) %>%
-        mutate(dce.stderr = melt(x$dce.stderr)$value) %>%
-        mutate(dce.pvalue = melt(x$dce.pvalue)$value)
+        mutate(dce_stderr = melt(x$dce_stderr)$value) %>%
+        mutate(dce_pvalue = melt(x$dce_pvalue)$value)
 }
