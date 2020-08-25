@@ -221,6 +221,7 @@ setMethod(
                     row = row,
                     col = col,
                     dce = NA,
+                    stderr = NA,
                     p_value = NA
                 ))
             }
