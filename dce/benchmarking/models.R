@@ -5,7 +5,8 @@ run.all.models <- function(
   beta.magnitude,
   methods = NULL,
   effect.type,
-  adjustment.type
+  adjustment.type,
+  latent
 ) {
   # for null model
   negweight.range <- c(-beta.magnitude, 0)
@@ -28,25 +29,25 @@ run.all.models <- function(
   time.tmp <- Sys.time()
   if (is.null(methods) || "cor" %in% methods) {
     res.cor <- list(dce = cor(mt.X.cor) - cor(wt.X.cor))
-    res.cor$dce.pvalue <- pcor_perm(wt.X.cor, mt.X.cor, fun = cor)
+    res.cor$dce_pvalue <- pcor_perm(wt.X.cor, mt.X.cor, fun = cor)
   } else {
     res.cor <- ground.truth
-    res.cor$dce.pvalue <- ground.truth$dce*0
+    res.cor$dce_pvalue <- ground.truth$dce*0
   }
   res.cor$dce[as(wt.graph.perturbed, "matrix") == 0] <- NA
-  res.cor$dce.pvalue[as(wt.graph.perturbed, "matrix") == 0] <- NA
+  res.cor$dce_pvalue[as(wt.graph.perturbed, "matrix") == 0] <- NA
   time.cor <- as.integer(difftime(Sys.time(), time.tmp, units = "secs"))
 
   time.tmp <- Sys.time()
   if (is.null(methods) || "pcor" %in% methods) {
     res.pcor <- list(dce = pcor(mt.X.cor) - pcor(wt.X.cor))
-    res.pcor$dce.pvalue <- pcor_perm(wt.X.cor, mt.X.cor, fun = pcor)
+    res.pcor$dce_pvalue <- pcor_perm(wt.X.cor, mt.X.cor, fun = pcor)
   } else {
     res.pcor <- ground.truth
-    res.pcor$dce.pvalue <- ground.truth$dce*0
+    res.pcor$dce_pvalue <- ground.truth$dce*0
   }
   res.pcor$dce[as(wt.graph.perturbed, "matrix") == 0] <- NA
-  res.pcor$dce.pvalue[as(wt.graph.perturbed, "matrix") == 0] <- NA
+  res.pcor$dce_pvalue[as(wt.graph.perturbed, "matrix") == 0] <- NA
   time.pcor <- as.integer(difftime(Sys.time(), time.tmp, units = "secs"))
 
   # differential causal effects
@@ -67,11 +68,48 @@ run.all.models <- function(
     )
   } else {
     res.dce <- ground.truth
-    res.dce$dce.pvalue <- ground.truth$dce*0
+    res.dce$dce_pvalue <- ground.truth$dce*0
     res.dce$dce[as(wt.graph.perturbed, "matrix") == 0] <- NA
-    res.dce$dce.pvalue[as(wt.graph.perturbed, "matrix") == 0] <- NA
+    res.dce$dce_pvalue[as(wt.graph.perturbed, "matrix") == 0] <- NA
   }
   time.dce <- as.integer(difftime(Sys.time(), time.tmp, units = "secs"))
+    
+  time.tmp <- Sys.time()
+  if (is.null(methods) || "dce.log" %in% methods) {
+    solver.args.log <- list(method = "glm.fit", family = gaussian)
+    res.dce.log <- dce::dce(
+      wt.graph.perturbed, log(wt.X+1), log(mt.X+1),
+      solver = "glm2",
+      adjustment_type = adjustment.type,
+      effect_type = effect.type,
+      solver_args = solver.args.log,
+      lib_size = TRUE
+    )
+  } else {
+    res.dce.log <- ground.truth
+    res.dce.log$dce_pvalue <- ground.truth$dce*0
+    res.dce.log$dce[as(wt.graph.perturbed, "matrix") == 0] <- NA
+    res.dce.log$dce_pvalue[as(wt.graph.perturbed, "matrix") == 0] <- NA
+  }
+  time.dce.log <- as.integer(difftime(Sys.time(), time.tmp, units = "secs"))
+
+  time.tmp <- Sys.time()
+  if (is.null(methods) || "dce.latent" %in% methods) {
+    res.dce.latent <- dce::dce_nb(
+      wt.graph.perturbed, wt.X, mt.X,
+      adjustment_type = adjustment.type,
+      effect_type = effect.type,
+      solver_args = solver.args,
+      lib_size = TRUE,
+      latent = latent
+    )
+  } else {
+    res.dce.latent <- ground.truth
+    res.dce.latent$dce_pvalue <- ground.truth$dce*0
+    res.dce.latent$dce[as(wt.graph.perturbed, "matrix") == 0] <- NA
+    res.dce.latent$dce_pvalue[as(wt.graph.perturbed, "matrix") == 0] <- NA
+  }
+  time.dce.latent <- as.integer(difftime(Sys.time(), time.tmp, units = "secs"))
 
   time.tmp <- Sys.time()
   if (is.null(methods) || "dce.lr" %in% methods) {
@@ -84,9 +122,9 @@ run.all.models <- function(
     )
   } else {
     res.dce.lr <- ground.truth
-    res.dce.lr$dce.pvalue <- ground.truth$dce*0
+    res.dce.lr$dce_pvalue <- ground.truth$dce*0
     res.dce.lr$dce[as(wt.graph.perturbed, "matrix") == 0] <- NA
-    res.dce.lr$dce.pvalue[as(wt.graph.perturbed, "matrix") == 0] <- NA
+    res.dce.lr$dce_pvalue[as(wt.graph.perturbed, "matrix") == 0] <- NA
   }
   time.dce.lr <- as.integer(difftime(Sys.time(), time.tmp, units = "secs"))
 
@@ -101,9 +139,9 @@ run.all.models <- function(
     )
   } else {
     res.dce.nolib <- ground.truth
-    res.dce.nolib$dce.pvalue <- ground.truth$dce*0
+    res.dce.nolib$dce_pvalue <- ground.truth$dce*0
     res.dce.nolib$dce[as(wt.graph.perturbed, "matrix") == 0] <- NA
-    res.dce.nolib$dce.pvalue[as(wt.graph.perturbed, "matrix") == 0] <- NA
+    res.dce.nolib$dce_pvalue[as(wt.graph.perturbed, "matrix") == 0] <- NA
   }
   time.dce.nolib <- as.integer(difftime(Sys.time(), time.tmp, units = "secs"))
 
@@ -125,11 +163,37 @@ run.all.models <- function(
     )
   } else {
     res.dce.tpm <- ground.truth
-    res.dce.tpm$dce.pvalue <- ground.truth$dce*0
+    res.dce.tpm$dce_pvalue <- ground.truth$dce*0
     res.dce.tpm$dce[as(wt.graph.perturbed, "matrix") == 0] <- NA
-    res.dce.tpm$dce.pvalue[as(wt.graph.perturbed, "matrix") == 0] <- NA
+    res.dce.tpm$dce_pvalue[as(wt.graph.perturbed, "matrix") == 0] <- NA
   }
   time.dce.tpm <- as.integer(difftime(Sys.time(), time.tmp, units = "secs"))
+
+  time.tmp <- Sys.time()
+  if (is.null(methods) || "dce.tpmlog" %in% methods) {
+    compute.tpm <- function(counts, len.kb = 1) {
+      # TODO: is len.kb == 1 reasonable in our case?
+      rpk <- counts / len.kb
+      pm.scale <- rowSums(rpk) / 1e6
+      return(rpk / pm.scale)
+    }
+
+    solver.args.log <- list(method = "glm.fit", family = gaussian)
+    res.dce.tpmlog <- dce::dce(
+      wt.graph.perturbed, log(compute.tpm(wt.X)+1), log(compute.tpm(mt.X)+1),
+      solver = "glm2",
+      adjustment_type = adjustment.type,
+      effect_type = effect.type,
+      solver_args = solver.args.log,
+      lib_size = FALSE
+    )
+  } else {
+    res.dce.tpmlog <- ground.truth
+    res.dce.tpmlog$dce_pvalue <- ground.truth$dce*0
+    res.dce.tpmlog$dce[as(wt.graph.perturbed, "matrix") == 0] <- NA
+    res.dce.tpmlog$dce_pvalue[as(wt.graph.perturbed, "matrix") == 0] <- NA
+  }
+  time.dce.tpmlog <- as.integer(difftime(Sys.time(), time.tmp, units = "secs"))
 
   # null models
   time.tmp <- Sys.time()
@@ -141,12 +205,12 @@ run.all.models <- function(
     )
     tmp.pvals <- as(wt.graph.perturbed, "matrix") * NA
     tmp.pvals[which(as(wt.graph.perturbed, "matrix") != 0)] <- runif(sum(as(wt.graph.perturbed, "matrix") != 0), 0, 1)
-    res.rand <- list(dce = tmp, dce.pvalue = tmp.pvals)
+    res.rand <- list(dce = tmp, dce_pvalue = tmp.pvals)
   } else {
     res.rand <- ground.truth
-    res.rand$dce.pvalue <- ground.truth$dce*0
+    res.rand$dce_pvalue <- ground.truth$dce*0
     res.rand$dce[as(wt.graph.perturbed, "matrix") == 0] <- NA
-    res.rand$dce.pvalue[as(wt.graph.perturbed, "matrix") == 0] <- NA
+    res.rand$dce_pvalue[as(wt.graph.perturbed, "matrix") == 0] <- NA
   }
   time.rand <- as.integer(difftime(Sys.time(), time.tmp, units = "secs"))
 
@@ -186,20 +250,20 @@ run.all.models <- function(
       # everything went fine
       res.causaldag <- list(
         dce = as.matrix(df.causaldag),
-        dce.pvalue = as.matrix(df.causaldag)
+        dce_pvalue = as.matrix(df.causaldag)
       )
 
-      res.causaldag$dce.pvalue[res.causaldag$dce.pvalue != 0] <- 0.01 # something significant...
-      res.causaldag$dce.pvalue[res.causaldag$dce.pvalue == 0] <- 0.99
+      res.causaldag$dce_pvalue[res.causaldag$dce_pvalue != 0] <- 0.01 # something significant...
+      res.causaldag$dce_pvalue[res.causaldag$dce_pvalue == 0] <- 0.99
 
       res.causaldag$dce[as(wt.graph.perturbed, "matrix") == 0] <- NA
-      res.causaldag$dce.pvalue[as(wt.graph.perturbed, "matrix") == 0] <- NA
+      res.causaldag$dce_pvalue[as(wt.graph.perturbed, "matrix") == 0] <- NA
     }
   } else {
     res.causaldag <- ground.truth
-    res.causaldag$dce.pvalue <- ground.truth$dce*0
+    res.causaldag$dce_pvalue <- ground.truth$dce*0
     res.causaldag$dce[as(wt.graph.perturbed, "matrix") == 0] <- NA
-    res.causaldag$dce.pvalue[as(wt.graph.perturbed, "matrix") == 0] <- NA
+    res.causaldag$dce_pvalue[as(wt.graph.perturbed, "matrix") == 0] <- NA
   }
   time.causaldag <- as.integer(difftime(Sys.time(), time.tmp, units = "secs"))
 
@@ -209,32 +273,41 @@ run.all.models <- function(
     cor=as.vector(res.cor$dce),
     pcor=as.vector(res.pcor$dce),
     dce=as.vector(res.dce$dce),
+    dce.log=as.vector(res.dce.log$dce),
+    dce.latent=as.vector(res.dce.latent$dce),
     dce.lr=as.vector(res.dce.lr$dce),
     dce.nolib=as.vector(res.dce.nolib$dce),
     dce.tpm=as.vector(res.dce.tpm$dce),
+    dce.tpmlog=as.vector(res.dce.tpmlog$dce),
     rand=as.vector(res.rand$dce),
     causaldag=as.vector(res.causaldag$dce)
   )
 
   df.pvalues <- data.frame(
     truth=as.vector(ground.truth$dce),
-    cor=as.vector(res.cor$dce.pvalue),
-    pcor=as.vector(res.pcor$dce.pvalue),
-    dce=as.vector(res.dce$dce.pvalue),
-    dce.lr=as.vector(res.dce.lr$dce.pvalue),
-    dce.nolib=as.vector(res.dce.nolib$dce.pvalue),
-    dce.tpm=as.vector(res.dce.tpm$dce.pvalue),
-    rand=as.vector(res.rand$dce.pvalue),
-    causaldag=as.vector(res.causaldag$dce.pvalue)
+    cor=as.vector(res.cor$dce_pvalue),
+    pcor=as.vector(res.pcor$dce_pvalue),
+    dce=as.vector(res.dce$dce_pvalue),
+    dce.log=as.vector(res.dce.log$dce_pvalue),
+    dce.latent=as.vector(res.dce.latent$dce_pvalue),
+    dce.lr=as.vector(res.dce.lr$dce_pvalue),
+    dce.nolib=as.vector(res.dce.nolib$dce_pvalue),
+    dce.tpm=as.vector(res.dce.tpm$dce_pvalue),
+    dce.tpmlog=as.vector(res.dce.tpmlog$dce_pvalue),
+    rand=as.vector(res.rand$dce_pvalue),
+    causaldag=as.vector(res.causaldag$dce_pvalue)
   )
 
   df.runtime <- data.frame(
     cor=time.cor,
     pcor=time.pcor,
     dce=time.dce,
+    dce.log=time.dce.log,
+    dce.latent=time.dce.latent,
     dce.lr=time.dce.lr,
     dce.nolib=time.dce.nolib,
     dce.tpm=time.dce.tpm,
+    dce.tpmlog=time.dce.tpmlog,
     rand=time.rand,
     causaldag=time.causaldag
   )

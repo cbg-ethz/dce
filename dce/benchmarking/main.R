@@ -193,7 +193,8 @@ df.bench <- purrr::pmap_dfr(
         beta.magnitude,
         methods = methods,
         effect.type = effect.type,
-        adjustment.type = adjustment.type
+        adjustment.type = adjustment.type,
+        latent = latent
       )
 
       if (is.null(methods)) {
