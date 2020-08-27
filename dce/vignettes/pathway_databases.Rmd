@@ -1,6 +1,5 @@
 ---
-title: "Simulations: Differential causal effects for pathway enrichment \n
-Simulations of differential causal effects between two groups."
+title: "Overview of pathway network databases"
 author: "Kim Jablonski, Martin Pirkl"
 date: "`r Sys.Date()`"
 graphics: yes
@@ -24,7 +23,7 @@ knitr::opts_chunk$set(
 
 Install the package with the Bioconductor manager package.
 
-```{r, eval=FALSE}
+```{r, eval = FALSE}
 if (!requireNamespace("BiocManager", quietly = TRUE)) {
     install.packages("BiocManager")
 }
@@ -34,43 +33,39 @@ BiocManager::install("dce")
 Load the package with the library function.
 
 ```{r}
+library(tidyverse)
+
 library(dce)
 
 set.seed(42)
 ```
 
-# Simple example
-
-First we generate a random wild type network and then resample
-its edge weights to generate the mutant network.
-
 ```{r}
-node_num <- 10
-edge_prob <- .2
+df_info <- get_pathway_info(
+    database_list=c("kegg", "biocarta", "nci", "panther", "pharmgkb"), # only use "small" databases in this example
+    include_network_statistics = TRUE
+)
 
-graph_wt <- create_random_DAG(node_num, edge_prob, lB=c(0.5, 2), uB=c(0.5, 2))
-graph_mt <- resample_edge_weights(graph_wt)
+df_info %>%
+    head
 ```
 
-We can then simulate data for these two networks.
+# Pathway database overview
+
+We provide access to the following topological pathway databases using [graphite](https://bioconductor.org/packages/release/bioc/html/graphite.html):
 
 ```{r}
-X_wt <- simulate_data(graph_wt)
-X_mt <- simulate_data(graph_mt)
+df_info %>%
+  count(database) %>%
+  arrange(desc(n))
 ```
 
-Finally, it is possible to compute differential causal effects.
-
 ```{r}
-res <- dce_nb(graph_wt, X_wt, X_mt)
-
-print(res)
-```
-
-The result can be visualized.
-
-```{r}
-plot(res)
+df_info %>%
+  ggplot(aes(x = node_num)) +
+    geom_histogram() +
+    facet_wrap(~ database, scales = "free") +
+    theme_minimal()
 ```
 
 # Session information
@@ -80,7 +75,3 @@ sessionInfo()
 ```
 
 # References:
-
-* Taruttis et al
-* Matthuis et al
-* ...

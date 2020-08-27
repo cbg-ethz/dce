@@ -15,7 +15,6 @@ perturbed.genes %<>%
   purrr::map(~ strsplit(., ",")[[1]]) %>%
   unlist %>%
   unique
-print(perturbed.genes)
 
 # degree distribution
 df.degree <- purrr::map_dfr(graph.files, function(fname) {
@@ -64,7 +63,14 @@ df.counts <- purrr::map_dfr(graph.files, function(fname) {
   common_genes <- intersect(pathway_nodes, rownames(df.expr.wt))
 
   df.sub <- df.expr.wt[common_genes, ]
-  gene_medians <- matrixStats::rowMedians(df.sub)
+  if (is.null(dim(df.sub))) {
+    # only a single gene was selected
+    stopifnot(length(common_genes) == 1)
+    
+    gene_medians <- median(df.sub)
+  } else {
+    gene_medians <- matrixStats::rowMedians(df.sub)
+  }
 
   good_counts <- sum(gene_medians > 1)
   good_count_fraction <- good_counts / length(gene_medians)

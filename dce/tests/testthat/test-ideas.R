@@ -60,12 +60,12 @@ test_that("CRISPR-like intervention leads to non-zero DCE", {
       from = c("A", "B"),
       to = c("B", "C")
     ),
-    edge.weight = function() { 2 }
+    edge_weight = function() { 2 }
   )
-  X_wt <- simulate_data(graph_wt, pop.size = 0)
+  X_wt <- simulate_data(graph_wt, pop_size = 0)
 
   X_mt <- X_wt
-  X_mt[, "B"] <- X_mt[, "B"] * 0.5
+  X_mt[, "B"] <- X_mt[, "B"] * 0.3
 
   res <- dce::dce_nb(graph_wt, X_wt, X_mt)
   res

@@ -47,4 +47,5 @@ Imports:
     mnem,
     naturalsort,
     ppcor,
-    glm2
+    glm2,
+    graphite

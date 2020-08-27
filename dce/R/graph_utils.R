@@ -93,3 +93,13 @@ propagate_gene_edges <- function(graph) {
 
   return(graph_filter)
 }
+
+
+#' @export
+graph2df <- function(graph) {
+  graph %>%
+    igraph::igraph.from.graphNEL(.) %>%
+    igraph::get.edgelist(.) %>%
+    as.data.frame %>%
+    dplyr::rename(source = V1, sink = V2)
+}
