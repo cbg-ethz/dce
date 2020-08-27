@@ -411,6 +411,7 @@ dce_nb <- function(
 }
 
 
+#' @importFrom mnem transitive.closure
 #' @export
 get_adjustment_set <- function(
     graph, x, y,
@@ -420,7 +421,7 @@ get_adjustment_set <- function(
         parents <- which(g[, x] == 1)
         gxy <- g
         gxy[parents, x] <- 0
-        gxy <- nem::transitive.closure(gxy, mat = TRUE)
+        gxy <- mnem::transitive.closure(gxy, mat = TRUE)
         grandparents <- unlist(lapply(parents, function(u) {
             v <- which(gxy[, u] == 1)
             w <- any(gxy[v, y] == 1)
