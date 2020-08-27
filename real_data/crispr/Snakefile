@@ -22,27 +22,27 @@ rule all:
          for treatment in treatment_list]
 
 
-rule retrieve_kegg_pathways:
+rule retrieve_pathways:
     output:
         graph_files = expand(
-            'kegg_pathways/csv_files/{pathway}.csv',
+            'pathways/csv_files/{pathway}.csv',
             pathway=set([pathway for _, _, pathway in config['cases']]))
     params:
         pathways = set([pathway for _, _, pathway in config['cases']])
     script:
-        'scripts/retrieve_kegg_pathways.R'
+        'scripts/retrieve_pathways.R'
 
 
 rule analyze_perturbed_genes:
     input:
         count_wt_file = srcdir('data/main/Counts_Ctrl_1.csv'),
         graph_files = expand(
-            'kegg_pathways/csv_files/{pathway}.csv',
+            'pathways/csv_files/{pathway}.csv',
             pathway=set([pathway for _, _, pathway in config['cases']]))
     output:
         out_dir = directory('perturbation_analysis/all_genes/')
     params:
-        all_pathways = lambda wildcards: [e.path for e in os.scandir('kegg_pathways/csv_files/')],
+        all_pathways = lambda wildcards: [e.path for e in os.scandir('pathways/csv_files/')],
         perturbed_genes = all_perturbed_genes
     script:
         'scripts/analyze_perturbed_genes.R'
@@ -88,7 +88,7 @@ rule compute_dces:
     input:
         count_wt_file = srcdir('data/{study}/Counts_Ctrl_{treatment}.csv'),
         count_mt_file = srcdir('data/{study}/Counts_{gene}_{treatment}.csv'),
-        graph_file = 'kegg_pathways/csv_files/{pathway}.csv'
+        graph_file = 'pathways/csv_files/{pathway}.csv'
     output:
         out_dir = directory('dce_results/{study}/{gene}_{pathway}/{treatment}')
     resources:

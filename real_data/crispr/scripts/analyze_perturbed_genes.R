@@ -66,7 +66,7 @@ df.counts <- purrr::map_dfr(graph.files, function(fname) {
   if (is.null(dim(df.sub))) {
     # only a single gene was selected
     stopifnot(length(common_genes) == 1)
-    
+
     gene_medians <- median(df.sub)
   } else {
     gene_medians <- matrixStats::rowMedians(df.sub)
