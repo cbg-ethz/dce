@@ -130,6 +130,12 @@ setMethod(
         # preparations
         graph[graph != 0] <- 1 # ignore edge weights
 
+        # detect cycles in DAG
+        graph <- topologically_ordering(graph)
+        if (any(graph[lower.tri(graph)] == 1)) {
+            warning("Cycle(s) detected in network")
+        }
+
         # validate input
         if (!all(colnames(graph) %in% colnames(df_expr_wt))) {
             stop("Not all nodes have expression vector in WT data")

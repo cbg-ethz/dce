@@ -103,3 +103,13 @@ graph2df <- function(graph) {
     as.data.frame %>%
     dplyr::rename(source = V1, sink = V2)
 }
+
+
+#' @export
+topologically_ordering <- function(adja_mat) {
+  ord <- order(
+    apply(adja_mat, 1, sum) - apply(adja_mat, 2, sum),
+    decreasing = 1
+  )
+  adja_mat[ord, ord]
+}
