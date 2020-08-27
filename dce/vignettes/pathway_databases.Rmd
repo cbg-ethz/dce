@@ -4,6 +4,7 @@ author: "Kim Jablonski, Martin Pirkl"
 date: "`r Sys.Date()`"
 graphics: yes
 output: BiocStyle::pdf_document
+bibliography: bibliography.bib
 vignette: >
     %\VignetteIndexEntry{dce}
     %\VignetteEngine{knitr::knitr}
@@ -52,7 +53,7 @@ df_info %>%
 
 # Pathway database overview
 
-We provide access to the following topological pathway databases using [graphite](https://bioconductor.org/packages/release/bioc/html/graphite.html):
+We provide access to the following topological pathway databases using graphite [@sales2012graphite]:
 
 ```{r}
 df_info %>%
