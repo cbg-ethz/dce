@@ -43,12 +43,13 @@ set.seed(42)
 
 ```{r}
 df_info <- get_pathway_info(
-    database_list=c("kegg", "biocarta", "nci", "panther", "pharmgkb"), # only use "small" databases in this example
-    include_network_statistics = TRUE
+  database_list = c("kegg", "biocarta", "nci", "panther", "pharmgkb"), # only use "small" databases in this example
+  include_network_statistics = TRUE
 )
 
 df_info %>%
-    head
+  head %>%
+  knitr::kable()
 ```
 
 # Pathway database overview
@@ -58,7 +59,8 @@ We provide access to the following topological pathway databases using graphite 
 ```{r}
 df_info %>%
   count(database) %>%
-  arrange(desc(n))
+  arrange(desc(n)) %>%
+  knitr::kable()
 ```
 
 ```{r}
