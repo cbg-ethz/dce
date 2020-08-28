@@ -5,14 +5,14 @@
 #' @param include_network_statistics Compute some useful statistics per pathway. Takes longer!
 #' @importFrom glue glue
 #' @importFrom purrr pmap_dfr map_dfr
-#' @importFrom graphite pathways convertIdentifiers pathwayId pathwayTitle pathwayGraph
+#' @importFrom graphite pathwayDatabases pathways pathwayId pathwayTitle pathwayGraph
 #' @export
 get_pathway_info <- function(
   query_species = "hsapiens", database_list = NULL,
   include_network_statistics = FALSE
 ) {
   if (is.null(database_list)) {
-    database_list <- pathwayDatabases() %>%
+    database_list <- graphite::pathwayDatabases() %>%
       filter(species == query_species) %>%
       pull(database)
   }
@@ -20,17 +20,17 @@ get_pathway_info <- function(
   database_list %>%
     purrr::map_dfr(function(database) {
       print(glue::glue("Processing {database}"))
-      db <- pathways(query_species, database)
+      db <- graphite::pathways(query_species, database)
 
       purrr::map_dfr(as.list(db), function(pw) {
         tmp <- data.frame(
           database = database,
-          id = pathwayId(pw),
-          name = pathwayTitle(pw)
+          id = graphite::pathwayId(pw),
+          name = graphite::pathwayTitle(pw)
         )
 
         if (include_network_statistics) {
-          graph <- pathwayGraph(pw, which = "proteins")
+          graph <- graphite::pathwayGraph(pw, which = "proteins")
 
           tmp$node_num <- length(nodes(graph))
           tmp$edge_num <- length(edges(graph))
@@ -48,14 +48,14 @@ get_pathway_info <- function(
 #' @param database_list Which databases to query. Query all if `NULL`.
 #' @importFrom glue glue
 #' @importFrom purrr map
-#' @importFrom graphite pathways convertIdentifiers pathwayId pathwayTitle pathwayGraph
+#' @importFrom graphite pathwayDatabases pathways convertIdentifiers pathwayId pathwayTitle pathwayGraph
 #' @export
 get_pathways <- function(
   query_species = "hsapiens", database_list = NULL,
   remove_empty_pathways = TRUE
 ) {
   if (is.null(database_list)) {
-    database_list <- pathwayDatabases() %>%
+    database_list <- graphite::pathwayDatabases() %>%
       filter(species == query_species) %>%
       pull(database)
   }
@@ -64,12 +64,12 @@ get_pathways <- function(
     purrr::map(function(database) {
       print(glue::glue("Processing {database}"))
 
-      db <- pathways(query_species, database)
-      db_symbol <- convertIdentifiers(db, "SYMBOL")
+      db <- graphite::pathways(query_species, database)
+      db_symbol <- graphite::convertIdentifiers(db, "SYMBOL")
 
       graph_list <- purrr::map(as.list(db_symbol), function(pw) {
         # remove "SYMBOL:" prefix
-        graph <- pathwayGraph(pw, which = "proteins")
+        graph <- graphite::pathwayGraph(pw, which = "proteins")
         if (length(nodes(graph)) != 0) {
           nodes(graph) <- sapply(nodes(graph), function(x) {
             strsplit(x, ":")[[1]][[2]]
@@ -82,8 +82,8 @@ get_pathways <- function(
 
         list(
           database = database,
-          id = pathwayId(pw),
-          name = pathwayTitle(pw),
+          id = graphite::pathwayId(pw),
+          name = graphite::pathwayTitle(pw),
           graph = graph
         )
       }) %>%
