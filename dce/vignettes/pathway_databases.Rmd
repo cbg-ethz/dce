@@ -48,7 +48,6 @@ df_info <- get_pathway_info(
 )
 
 df_info %>%
-  head %>%
   knitr::kable()
 ```
 
