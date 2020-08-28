@@ -1,5 +1,12 @@
 workdir: pipeline_run
 
+databases:
+    - kegg
+    - biocarta
+    - nci
+    - panther
+    - pharmgkb
+
 cases:
     - [epistasis, ATF6, hsa04141]
     - [epistasis, ERN1, hsa04210]

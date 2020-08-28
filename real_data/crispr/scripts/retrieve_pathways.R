@@ -7,7 +7,7 @@ library(tidyverse)
 target_dir <- strsplit(dirname(snakemake@output$graph_files[[1]]), "/")[[1]][[1]]
 dir.create(file.path(target_dir, "csv_files"), recursive = TRUE)
 
-database_list <- c("kegg", "biocarta", "pharmgkb")
+database_list <- snakemake@config$databases
 
 # pathway meta information
 df_info <- dce::get_pathway_info(database_list = database_list) %>%
