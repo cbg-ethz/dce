@@ -27,7 +27,7 @@ common.genes <- intersect(igraph::vertex_attr(graph, "name"), colnames(X.wt))
 
 # compute DCEs
 #res <- dce::dce_nb(igraph::induced_subgraph(graph, common.genes), X.wt[, common.genes], X.mt[, common.genes])
-res <- dce::dce_nb(igraph::induced_subgraph(graph, common.genes), X.wt, X.mt, lib.size = TRUE)
+res <- dce::dce_nb(igraph::induced_subgraph(graph, common.genes), X.wt, X.mt, lib_size = TRUE)
 
 saveRDS(res, file = file.path(out.dir, glue::glue("dce_{appendix}.rds")))
 
