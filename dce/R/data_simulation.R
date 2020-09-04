@@ -20,7 +20,7 @@ setGeneric(
         graph, n = 100,
         dist_mean = 1000, dist_dispersion = 100,
         link = negative.binomial.special()$linkfun,
-        pop_size = 100, latent = 0
+        pop_size = 0, latent = 0
     ) {
         standardGeneric("simulate_data")
     },
@@ -36,7 +36,7 @@ setMethod(
         graph, n = 100,
         dist_mean = 1000, dist_dispersion = 100,
         link = negative.binomial.special()$linkfun,
-        pop_size = 100, latent = 0
+        pop_size = 0, latent = 0
     ) {
         edge_attrs <- igraph::edge_attr_names(graph)
         simulate_data(
@@ -58,7 +58,7 @@ setMethod(
         graph, n = 100,
         dist_mean = 1000, dist_dispersion = 100,
         link = negative.binomial.special()$linkfun,
-        pop_size = 100, latent = 0
+        pop_size = 0, latent = 0
     ) {
         simulate_data(
             as(graph, "matrix"),
@@ -76,7 +76,7 @@ setMethod(
         graph, n = 100,
         dist_mean = 1000, dist_dispersion = 100,
         link = negative.binomial.special()$linkfun,
-        pop_size = 100, latent = 0
+        pop_size = 0, latent = 0
     ) {
         start <- 2
         p <- dim(graph)[[1]]
