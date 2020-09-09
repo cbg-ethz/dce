@@ -69,7 +69,19 @@ plot_network <- function(
             label = if (is.null(nodename_map)) .data$name else nodename_map[.data$name],
             nodesize = nodesize,
             is.highlighted = .data$label %in% highlighted_nodes
-        ) %>%
+        ) %T>%
+        with({
+            label_list <- as_tibble(.)$label
+            extra_nodes <- setdiff(highlighted_nodes, label_list)
+
+            if (length(extra_nodes) > 0) {
+                label_str <- glue::glue_collapse(extra_nodes, sep = ", ")
+                warning(
+                    glue::glue("Invalid highlighted nodes: {label_str}"),
+                    call. = FALSE
+                )
+            }
+        }) %>%
         activate(edges) %>%
         mutate(
             dce = pmap_dbl(
