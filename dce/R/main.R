@@ -177,10 +177,10 @@ setMethod(
 ) {
     # handle latent variables
     if (latent > 0) {
-        pca_wt <- prcomp(df_expr_wt)
+        pca_wt <- prcomp(scale(df_expr_wt))
         lat_wt <- pca_wt$x[, seq_len(latent), drop = FALSE]
         colnames(lat_wt) <- paste0("H", seq_len(latent))
-        pca_mt <- prcomp(df_expr_mt)
+        pca_mt <- prcomp(scale(df_expr_mt))
         lat_mt <- pca_mt$x[, seq_len(latent), drop = FALSE]
         colnames(lat.mt) <- paste0("H", seq_len(latent))
         lat_data <- rbind(lat_wt, lat_mt)
