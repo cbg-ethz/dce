@@ -394,16 +394,21 @@ dce_nb <- function(
 
     # compute overall pathway enrichment
     tmp <- dce_pvalue_mat[!is.na(dce_pvalue_mat)]
-    tmp[tmp == 0] <- min(tmp[tmp != 0])
-    if (p_method == "hmp") {
-        pathway_pvalue <- as.numeric(harmonicmeanp::p.hmp(tmp, L = length(tmp)))
-    } else if (p_method == "test") {
-        pathway_pvalue <- CombinePValue::selfcontained.test(tmp, weight = NA)[[1]]
-    } else if (p_method %in% c("mean", "median", "sum", "max", "min")) {
-        pathway_pvalue <- do.call(p_method, list(x = tmp))
+    if ((length(tmp) > 0) && (sum(tmp != 0) == 0)) {
+        # there are non-NA p-values, but all are zero
+        pathway_pvalue <- 0
     } else {
-        require(metap)
-        pathway_pvalue <- do.call(p_method, list(p = tmp))$p
+        tmp[tmp == 0] <- min(tmp[tmp != 0])
+        if (p_method == "hmp") {
+            pathway_pvalue <- as.numeric(harmonicmeanp::p.hmp(tmp, L = length(tmp)))
+        } else if (p_method == "test") {
+            pathway_pvalue <- CombinePValue::selfcontained.test(tmp, weight = NA)[[1]]
+        } else if (p_method %in% c("mean", "median", "sum", "max", "min")) {
+            pathway_pvalue <- do.call(p_method, list(x = tmp))
+        } else {
+            require(metap)
+            pathway_pvalue <- do.call(p_method, list(p = tmp))$p
+        }
     }
 
     # return appropriate object
