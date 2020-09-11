@@ -55,20 +55,45 @@ test_that("library size correction is useful", {
 test_that("CRISPR-like intervention leads to non-zero DCE", {
   set.seed(42)
 
+
+  # positive beta leads to negative DCE
+  beta <- 2
   graph_wt <- dce::create_graph_from_dataframe(
     data.frame(
       from = c("A", "B"),
       to = c("B", "C")
     ),
-    edge_weight = function() { 2 }
+    edge_weight = function() { beta }
   )
-  X_wt <- simulate_data(graph_wt, pop_size = 0)
+  X_wt <- simulate_data(graph_wt, n = 100)
 
   X_mt <- X_wt
-  X_mt[, "B"] <- X_mt[, "B"] * 0.3
+  X_mt[, "B"] <- X_mt[, "B"] * 0.5
+  X_mt[, "C"] <- rnbinom(100, size = Inf, mu = dce::negative.binomial.special()$linkfun(X_mt[, "B"] * beta))
 
   res <- dce::dce_nb(graph_wt, X_wt, X_mt)
   res
 
-  expect_lt(res$dce["A", "B"], -0.1)
+  expect_lt(res$dce["A", "B"], 0)
+
+
+  # negative beta leads to positiv DCE
+  beta <- -2
+  graph_wt <- dce::create_graph_from_dataframe(
+    data.frame(
+      from = c("A", "B"),
+      to = c("B", "C")
+    ),
+    edge_weight = function() { beta }
+  )
+  X_wt <- simulate_data(graph_wt, n = 100)
+
+  X_mt <- X_wt
+  X_mt[, "B"] <- X_mt[, "B"] * 0.5
+  X_mt[, "C"] <- rnbinom(100, size = Inf, mu = dce::negative.binomial.special()$linkfun(X_mt[, "B"] * beta))
+
+  res <- dce::dce_nb(graph_wt, X_wt, X_mt)
+  res
+
+  expect_gt(res$dce["A", "B"], 0)
 })
