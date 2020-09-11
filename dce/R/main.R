@@ -475,6 +475,12 @@ get_adjustment_set <- function(
 
 #' @export
 glm_solver <- function(form, df, solver, solver_args) {
+    # lm solver
+    if (solver == "lm") {
+        return(lm(formula = form, data = df))
+    }
+
+    # glm solver
     solver_func <- switch(
         solver,
         "glm2" = glm2::glm2,

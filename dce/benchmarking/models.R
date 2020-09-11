@@ -73,7 +73,7 @@ run.all.models <- function(
     res.dce$dce_pvalue[as(wt.graph.perturbed, "matrix") == 0] <- NA
   }
   time.dce <- as.integer(difftime(Sys.time(), time.tmp, units = "secs"))
-    
+
   time.tmp <- Sys.time()
   if (is.null(methods) || "dce.log" %in% methods) {
     solver.args.log <- list(method = "glm.fit", family = gaussian)
@@ -195,6 +195,23 @@ run.all.models <- function(
   }
   time.dce.tpmlog <- as.integer(difftime(Sys.time(), time.tmp, units = "secs"))
 
+  time.tmp <- Sys.time()
+  if (is.null(methods) || "dce.lm" %in% methods) {
+    res.dce.lm <- dce::dce(
+      wt.graph.perturbed, wt.X, mt.X,
+      solver = "lm",
+      adjustment_type = adjustment.type,
+      effect_type = effect.type,
+      lib_size = TRUE
+    )
+  } else {
+    res.dce.lm <- ground.truth
+    res.dce.lm$dce_pvalue <- ground.truth$dce*0
+    res.dce.lm$dce[as(wt.graph.perturbed, "matrix") == 0] <- NA
+    res.dce.lm$dce_pvalue[as(wt.graph.perturbed, "matrix") == 0] <- NA
+  }
+  time.dce.lm <- as.integer(difftime(Sys.time(), time.tmp, units = "secs"))
+
   # null models
   time.tmp <- Sys.time()
   if (is.null(methods) || "rand" %in% methods) {
@@ -279,6 +296,7 @@ run.all.models <- function(
     dce.nolib=as.vector(res.dce.nolib$dce),
     dce.tpm=as.vector(res.dce.tpm$dce),
     dce.tpmlog=as.vector(res.dce.tpmlog$dce),
+    dce.lm=as.vector(res.dce.lm$dce),
     rand=as.vector(res.rand$dce),
     causaldag=as.vector(res.causaldag$dce)
   )
@@ -294,6 +312,7 @@ run.all.models <- function(
     dce.nolib=as.vector(res.dce.nolib$dce_pvalue),
     dce.tpm=as.vector(res.dce.tpm$dce_pvalue),
     dce.tpmlog=as.vector(res.dce.tpmlog$dce_pvalue),
+    dce.lm=as.vector(res.dce.lm$dce_pvalue),
     rand=as.vector(res.rand$dce_pvalue),
     causaldag=as.vector(res.causaldag$dce_pvalue)
   )
@@ -308,6 +327,7 @@ run.all.models <- function(
     dce.nolib=time.dce.nolib,
     dce.tpm=time.dce.tpm,
     dce.tpmlog=time.dce.tpmlog,
+    dce.lm=time.dce.lm,
     rand=time.rand,
     causaldag=time.causaldag
   )

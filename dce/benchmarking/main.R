@@ -18,6 +18,7 @@ Usage:
   main.R
   main.R --variable NAME --values VALUES
   main.R --variable NAME --values VALUES --methods STR
+  main.R --variable NAME --values VALUES --replicates INT --methods STR
   main.R --variable NAME --values VALUES --replicates INT --output STR
   main.R --variable NAME --values VALUES --replicates INT --output STR --methods STR
   main.R --variable NAME --values VALUES --append BOOL --replicates INT --link STR --output STR
@@ -102,7 +103,7 @@ df.bench <- purrr::pmap_dfr(
   list(parameter=rep(parameter.list, each=replicate.count), index=rep(seq_len(replicate.count), length(parameter.list))),
   purrr::possibly(
     function(parameter, index) {
-      # handle parametrization
+      # handle parameterization
       rng.seed <- seed.list[index]
       set.seed(rng.seed)
 
