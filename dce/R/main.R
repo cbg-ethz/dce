@@ -487,6 +487,7 @@ glm_solver <- function(form, df, solver, solver_args) {
 
 #' @export
 #' @importFrom reshape2 melt
+#' @importFrom dplyr rename mutate
 as.data.frame.dce <- function(x) {
     x$dce %>%
         melt(.) %>%
