@@ -71,7 +71,7 @@ plot_network <- function(
             is.highlighted = .data$label %in% highlighted_nodes
         ) %T>%
         with({
-            label_list <- as_tibble(.)$label
+            label_list <- as.data.frame(.)$label
             extra_nodes <- setdiff(highlighted_nodes, label_list)
 
             if (length(extra_nodes) > 0) {
