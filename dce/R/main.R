@@ -161,6 +161,34 @@ setMethod(
 )
 
 
+#' @export
+dce_nb <- function(
+    graph, df_expr_wt, df_expr_mt,
+    solver_args = list(method = "glm.dce.nb.fit", link = "identity"),
+    adjustment_type = "parents",
+    effect_type = "total",
+    p_method = "mean",
+    test = "wald",
+    lib_size = FALSE,
+    latent = 0,
+    conservative = FALSE,
+    verbose = FALSE
+) {
+    dce(
+        graph, df_expr_wt, df_expr_mt,
+        solver = "glm.nb", solver_args = solver_args,
+        adjustment_type,
+        effect_type,
+        p_method,
+        test,
+        lib_size,
+        latent,
+        conservative,
+        verbose
+    )
+}
+
+
 #' @importFrom naturalsort naturalorder
 #' @noRd
 .dce <- function(
@@ -386,34 +414,6 @@ setMethod(
         dce_pvalue = dce_pvalue_mat,
         pathway_pvalue = pathway_pvalue
     ), class = "dce")
-}
-
-
-#' @export
-dce_nb <- function(
-    graph, df_expr_wt, df_expr_mt,
-    solver_args = list(method = "glm.dce.nb.fit", link = "identity"),
-    adjustment_type = "parents",
-    effect_type = "total",
-    p_method = "mean",
-    test = "wald",
-    lib_size = FALSE,
-    latent = 0,
-    conservative = FALSE,
-    verbose = FALSE
-) {
-    dce(
-        graph, df_expr_wt, df_expr_mt,
-        solver = "glm.nb", solver_args = solver_args,
-        adjustment_type,
-        effect_type,
-        p_method,
-        test,
-        lib_size,
-        latent,
-        conservative,
-        verbose
-    )
 }
 
 
