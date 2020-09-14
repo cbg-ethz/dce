@@ -36,6 +36,16 @@ plot_network <- function(
         value_matrix <- adja_matrix
     }
 
+    if (is.null(rownames(adja_matrix)) || is.null(colnames(adja_matrix))) {
+        warning(
+            "Not nodenames set, using dummy names...",
+            call. = FALSE
+        )
+
+        node_names <- seq_len(dim(adja_matrix)[[1]])
+        rownames(adja_matrix) <- colnames(adja_matrix) <- node_names
+    }
+
     # compute node coordinates
     tmp <- adja_matrix
     tmp[tmp != 0] <- 1
