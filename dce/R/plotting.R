@@ -20,6 +20,7 @@
 #' @importFrom ggplot2 aes theme element_rect arrow unit coord_fixed scale_fill_manual
 #' @importFrom tidygraph as_tbl_graph activate mutate
 #' @importFrom rlang .data
+#' @importFrom igraph graph_from_adjacency_matrix
 plot_network <- function(
     adja_matrix,
     nodename_map = NULL, edgescale_limits = NULL,
@@ -30,13 +31,18 @@ plot_network <- function(
     value_matrix = NULL,
     ...
 ) {
+    # sanitize input
     if (is.null(value_matrix)) {
         value_matrix <- adja_matrix
     }
 
+    # compute node coordinates
+    tmp <- adja_matrix
+    tmp[tmp != 0] <- 1
+
     coords_dot <- purrr::map_dfr(
         Rgraphviz::agopen(
-            as(adja_matrix, "graphNEL"),
+            as(tmp, "graphNEL"),
             name = "foo",
             layoutType = "dot"
         )@AgNode,
@@ -45,6 +51,7 @@ plot_network <- function(
         }
     )
 
+    # handle scale setup
     if (is.null(edgescale_limits)) {
         edgescale_limits <- c(
             -max(abs(value_matrix), na.rm = TRUE),
@@ -63,7 +70,10 @@ plot_network <- function(
         }
     }
 
-    as_tbl_graph(as(adja_matrix, "graphNEL")) %>%
+    # create plot
+    as_tbl_graph(igraph::graph_from_adjacency_matrix(
+        adja_matrix, weighted = TRUE
+    )) %>%
         activate(nodes) %>%
         mutate(
             label = if (is.null(nodename_map)) .data$name else nodename_map[.data$name],
