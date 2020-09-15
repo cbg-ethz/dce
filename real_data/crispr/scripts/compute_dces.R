@@ -44,7 +44,10 @@ res %>%
 res %>%
   as.data.frame %>%
   drop_na %>%
-  mutate(edge = paste0(source, "->", target), affected = (source == perturbed.gene | target == perturbed.gene)) %>%
+  mutate(
+    edge = paste0(source, "->", target),
+    affected = (source %in% strsplit(perturbed.gene, ",")[[1]] | target %in% strsplit(perturbed.gene, ",")[[1]])
+  ) %>%
 EnhancedVolcano::EnhancedVolcano(
   .,
   lab = .$edge, selectLab = filter(., .$affected)$edge,
