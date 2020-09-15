@@ -17,9 +17,7 @@ rule all:
     input:
         'perturbation_analysis/all_genes/',
         'perturbation_analysis/per_gene/expression_statistics.csv',
-        [f'dce_results/{study}/{gene}_{pathway}/{treatment}'
-         for study, gene, pathway in config['cases']
-         for treatment in treatment_list]
+        'performance/results/'
 
 
 rule retrieve_pathways:
@@ -95,3 +93,42 @@ rule compute_dces:
         mem_mb = 10_000
     script:
         'scripts/compute_dces.R'
+
+
+rule aggregate_dce_lists:
+    input:
+        dir_list = [f'dce_results/{study}/{gene}_{pathway}/{treatment}'
+                    for study, gene, pathway in config['cases']
+                    for treatment in treatment_list]
+    output:
+        fname = 'performance/dce_lists.csv'
+    run:
+        import pandas as pd
+        from tqdm import tqdm
+
+        df_list = []
+        for dir_ in tqdm(input.dir_list):
+            _, study, perturbation, treatment = dir_.split('/')
+            gene, pathway = perturbation.split('_')
+
+            fname = os.path.join(dir_, f'dce_list_{pathway}_{gene}.csv')
+
+            tmp = pd.read_csv(fname)
+            tmp['study'] = study
+            tmp['treatment'] = treatment
+            tmp['perturbed_gene'] = gene
+            tmp['pathway'] = pathway
+
+            df_list.append(tmp)
+
+        df = pd.concat(df_list)
+        df.to_csv(output.fname, index=False)
+
+
+rule compute_performance:
+    input:
+        fname = 'performance/dce_lists.csv'
+    output:
+        out_dir = directory('performance/results/')
+    script:
+        'scripts/compute_performance.py'
