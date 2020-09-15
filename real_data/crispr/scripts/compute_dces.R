@@ -32,14 +32,16 @@ res <- dce::dce_nb(igraph::induced_subgraph(graph, common.genes), X.wt, X.mt, li
 saveRDS(res, file = file.path(out.dir, glue::glue("dce_{appendix}.rds")))
 
 # analyze results
-plot(res, labelsize = 1, highlighted_nodes = strsplit(perturbed.gene, ",")[[1]])
-ggsave(file.path(out.dir, glue::glue("network_{appendix}.pdf")), width = 20, height = 20)
-
 res %>%
   as.data.frame %>%
+  mutate(pathway_edge = melt(res$graph)$value) %>%
+  filter(pathway_edge == 1) %>%
+  select(-pathway_edge) %>%
   arrange(dce_pvalue) %>%
-  drop_na %>%
   write_csv(file.path(out.dir, glue::glue("dce_list_{appendix}.csv")))
+
+plot(res, labelsize = 1, highlighted_nodes = strsplit(perturbed.gene, ",")[[1]])
+ggsave(file.path(out.dir, glue::glue("network_{appendix}.pdf")), width = 20, height = 20)
 
 res %>%
   as.data.frame %>%
