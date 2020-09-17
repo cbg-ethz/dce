@@ -3,12 +3,11 @@ library(tidyverse)
 
 # parameters
 fname.expr.wt <- snakemake@input$count_wt_file
-graph.files <- snakemake@params$all_pathways
+graph.files <- snakemake@input$graph_files
 
 perturbed.genes <- snakemake@params$perturbed_genes
 
 out.dir <- snakemake@output$out_dir
-dir.create(out.dir) # shouldn't snakemake do this automatically?
 
 # handle multiple knockouts
 perturbed.genes %<>%

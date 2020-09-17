@@ -31,6 +31,9 @@ def main(fname, out_dir):
             print(f'Skipping {idx}, no true positives...')
             continue
 
+        # TODO: find better way of handling NAs
+        group.dropna(inplace=True)
+
         # compute performance measures
         precision_list, recall_list, pr_thresholds = precision_recall_curve(group['true_effect'], group['dce_pvalue'])
         fpr_list, tpr_list, roc_thresholds = roc_curve(group['true_effect'], group['dce_pvalue'])

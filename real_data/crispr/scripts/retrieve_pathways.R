@@ -4,7 +4,7 @@ library(tidyverse)
 
 
 # parameters
-target_dir <- strsplit(dirname(snakemake@output$graph_files[[1]]), "/")[[1]][[1]]
+target_dir <- snakemake@output$pathway_dir
 dir.create(file.path(target_dir, "csv_files"), recursive = TRUE)
 
 database_list <- snakemake@config$databases
@@ -12,9 +12,6 @@ database_list <- snakemake@config$databases
 # pathway meta information
 df_info <- dce::get_pathway_info(database_list = database_list) %>%
   write_csv(file.path(target_dir, "pathway_info.csv"))
-
-# make sure we retrieve (at least) all needed pathways
-stopifnot(all(snakemake@params$pathways %in% str_remove(df_info$id, ":")))
 
 # download pathways
 options(Ncpus = 4)

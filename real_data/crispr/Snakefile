@@ -4,15 +4,49 @@ import os
 configfile: 'config.yaml'
 workdir: config['workdir']
 
-base_dir = srcdir('.')  # `srcdir` in params returns `None`
-study_list = os.listdir(srcdir('data/'))
-all_perturbed_genes = list({e.name.split('.')[0].split('_')[1]
-                            for data_dir in os.scandir(srcdir('data/'))
-                            for e in os.scandir(data_dir)
-                            if 'Ctrl' not in e.name})
-treatment_list = [1, 2, 3]
+
+# gather input configuration
+case_list = []
+all_perturbed_genes = set()
+for study_entry in os.scandir(srcdir('data/')):
+    study = study_entry.name
+
+    for counts_entry in os.scandir(study_entry):
+        if 'Ctrl' in counts_entry.name:
+            continue
+
+        _, gene, treatment = counts_entry.name.split('.')[0].split('_')
+
+        case_list.append((study, gene, treatment))
+        all_perturbed_genes.add(gene)
 
 
+# helper functions
+def aggregate_pathway_files(wildcards):
+    checkpoint_output = checkpoints.retrieve_pathways.get(**wildcards).output.pathway_dir
+
+    pathway_list = glob_wildcards(
+        os.path.join(checkpoint_output, 'csv_files/{pathway}.csv')
+    ).pathway
+
+    return expand(
+        os.path.join(checkpoint_output, 'csv_files/{pathway}.csv'),
+        pathway=pathway_list)
+
+
+def aggregate_dce_results(wildcards):
+    checkpoint_output = checkpoints.retrieve_pathways.get(**wildcards).output.pathway_dir
+
+    pathway_list = glob_wildcards(
+        os.path.join(checkpoint_output, 'csv_files/{pathway}.csv')
+    ).pathway
+
+    return [f'dce_results/{pathway}/{gene}/{study}/{treatment}/'
+            for study, gene, treatment in case_list
+            for pathway in pathway_list]
+
+
+# rules
 rule all:
     input:
         'perturbation_analysis/all_genes/',
@@ -20,27 +54,20 @@ rule all:
         'performance/results/'
 
 
-rule retrieve_pathways:
+checkpoint retrieve_pathways:
     output:
-        graph_files = expand(
-            'pathways/csv_files/{pathway}.csv',
-            pathway=set([pathway for _, _, pathway in config['cases']]))
-    params:
-        pathways = set([pathway for _, _, pathway in config['cases']])
+        pathway_dir = directory('pathways/')
     script:
         'scripts/retrieve_pathways.R'
 
 
 rule analyze_perturbed_genes:
     input:
-        count_wt_file = srcdir('data/main/Counts_Ctrl_1.csv'),
-        graph_files = expand(
-            'pathways/csv_files/{pathway}.csv',
-            pathway=set([pathway for _, _, pathway in config['cases']]))
+        count_wt_file = srcdir('data/epistasis/Counts_Ctrl_1.csv'),
+        graph_files = aggregate_pathway_files
     output:
         out_dir = directory('perturbation_analysis/all_genes/')
     params:
-        all_pathways = lambda wildcards: [e.path for e in os.scandir('pathways/csv_files/')],
         perturbed_genes = all_perturbed_genes
     script:
         'scripts/analyze_perturbed_genes.R'
@@ -61,8 +88,7 @@ rule analyze_single_perturbed_gene:
 rule aggregate_expression_statistics:
     input:
         dir_list = [f'perturbation_analysis/per_gene/{study}/{gene}/{treatment}/'
-                    for study, gene, pathway in config['cases']
-                    for treatment in treatment_list]
+                    for study, gene, treatment in case_list]
     output:
         fname = 'perturbation_analysis/per_gene/expression_statistics.csv'
     run:
@@ -88,7 +114,7 @@ rule compute_dces:
         count_mt_file = srcdir('data/{study}/Counts_{gene}_{treatment}.csv'),
         graph_file = 'pathways/csv_files/{pathway}.csv'
     output:
-        out_dir = directory('dce_results/{study}/{gene}_{pathway}/{treatment}')
+        out_dir = directory('dce_results/{pathway}/{gene}/{study}/{treatment}/')
     resources:
         mem_mb = 10_000
     script:
@@ -97,9 +123,7 @@ rule compute_dces:
 
 rule aggregate_dce_lists:
     input:
-        dir_list = [f'dce_results/{study}/{gene}_{pathway}/{treatment}'
-                    for study, gene, pathway in config['cases']
-                    for treatment in treatment_list]
+        dir_list = aggregate_dce_results
     output:
         fname = 'performance/dce_lists.csv'
     run:
@@ -108,9 +132,7 @@ rule aggregate_dce_lists:
 
         df_list = []
         for dir_ in tqdm(input.dir_list):
-            _, study, perturbation, treatment = dir_.split('/')
-            gene, pathway = perturbation.split('_')
-
+            _, pathway, gene, study, treatment, _ = dir_.split('/')
             fname = os.path.join(dir_, f'dce_list_{pathway}_{gene}.csv')
 
             tmp = pd.read_csv(fname)
