@@ -10,4 +10,5 @@ bsub \
 snakemake \
   --profile lsf \
   -pr \
+  -j 100 \
   "$@"
