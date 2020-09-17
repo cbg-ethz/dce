@@ -58,5 +58,6 @@ EnhancedVolcano::EnhancedVolcano(
   drawConnectors = TRUE,
   title = NULL, subtitle = NULL,
   xlab = bquote("DCE"), ylab = bquote(~-Log[10]~italic(pvalue)),
+  legendLabels = c("NS", "DCE", "p-value", "p-value and DCE")
 )
 ggsave(file.path(out.dir, glue::glue("volcanoplot_{appendix}.pdf")), width = 10, height = 10)
