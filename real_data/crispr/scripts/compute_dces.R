@@ -11,8 +11,9 @@ fname.expr.mt <- snakemake@input$count_mt_file
 out.dir <- snakemake@output$out_dir
 dir.create(out.dir, recursive = TRUE)
 
+pathway <- snakemake@wildcards$pathway
 perturbed.gene <- snakemake@wildcards$gene
-appendix <- glue::glue("{snakemake@wildcards$pathway}_{perturbed.gene}")
+appendix <- glue::glue("{pathway}_{perturbed.gene}")
 
 # read data
 X.wt <- read_csv(fname.expr.wt) %>%
@@ -56,7 +57,7 @@ EnhancedVolcano::EnhancedVolcano(
   x = "dce", y = "dce_pvalue",
   pCutoff = .05, FCcutoff = 1,
   drawConnectors = TRUE,
-  title = NULL, subtitle = NULL,
+  title = glue::glue("{pathway}: {perturbed.gene}"), subtitle = NULL,
   xlab = bquote("DCE"), ylab = bquote(~-Log[10]~italic(pvalue)),
   legendLabels = c("NS", "DCE", "p-value", "p-value and DCE")
 )
