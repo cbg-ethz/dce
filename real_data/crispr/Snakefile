@@ -1,5 +1,7 @@
 import os
 
+import pandas as pd
+
 
 configfile: 'config.yaml'
 workdir: config['workdir']
@@ -37,13 +39,20 @@ def aggregate_pathway_files(wildcards):
 def aggregate_dce_results(wildcards):
     checkpoint_output = checkpoints.retrieve_pathways.get(**wildcards).output.pathway_dir
 
-    pathway_list = glob_wildcards(
-        os.path.join(checkpoint_output, 'csv_files/{pathway}.csv')
-    ).pathway
+    pathway_template = os.path.join(checkpoint_output, 'csv_files/{pathway}.csv')
+    pathway_list = glob_wildcards(pathway_template).pathway
 
-    return [f'dce_results/{pathway}/{gene}/{study}/{treatment}/'
-            for study, gene, treatment in case_list
-            for pathway in pathway_list]
+    file_list = []
+    for pathway in pathway_list:
+        fname = pathway_template.format(pathway=pathway)
+        df = pd.read_csv(fname)
+
+        for study, gene, treatment in case_list:
+            # check if perturbed gene occurs in pathway
+            if gene in df['source'].values or gene in df['sink'].values:
+                file_list.append(f'dce_results/{pathway}/{gene}/{study}/{treatment}/')
+
+    return file_list
 
 
 # rules
