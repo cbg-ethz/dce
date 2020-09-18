@@ -17,7 +17,7 @@
 #' @export
 #' @import tidyverse ggraph purrr
 #' @importFrom glue glue
-#' @importFrom ggplot2 aes theme element_rect arrow unit coord_fixed scale_fill_manual
+#' @importFrom ggplot2 aes theme element_rect arrow unit coord_fixed scale_fill_manual waiver
 #' @importFrom tidygraph as_tbl_graph activate mutate
 #' @importFrom rlang .data
 #' @importFrom igraph graph_from_adjacency_matrix
@@ -70,6 +70,10 @@ plot_network <- function(
     }
 
     custom_breaks <- function(limits) {
+        if (any(is.infinite(limits))) {
+            return(ggplot2::waiver())
+        }
+
         eps <- min(abs(limits)) / 100 # without this offset the outer breaks are somtetimes not shown
         breaks <- seq(limits[[1]] + eps, limits[[2]] - eps, length.out = 5)
 
