@@ -63,7 +63,7 @@ rule all:
     input:
         'perturbation_analysis/all_genes/',
         'perturbation_analysis/per_gene/expression_statistics.csv',
-        'performance/results/'
+        'performance/plots/'
 
 
 checkpoint retrieve_pathways:
@@ -166,3 +166,12 @@ rule compute_performance:
         out_dir = directory('performance/results/')
     script:
         'scripts/compute_performance.py'
+
+
+rule plot_performance:
+    input:
+        dname = 'performance/results/'
+    output:
+        out_dir = directory('performance/plots/')
+    script:
+        'scripts/plot_performance.py'
