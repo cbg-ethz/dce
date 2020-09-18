@@ -50,7 +50,7 @@ def main(fname, out_dir):
 
         plt.figure()
         cm = confusion_matrix(group['true_effect'], group['dce_pvalue'] < .05)
-        sns.heatmap(cm, annot=True, square=True)
+        sns.heatmap(cm, annot=True, fmt='d', square=True)
         plt.xlabel('Predicted label')
         plt.ylabel('True label')
         plt.tight_layout()
