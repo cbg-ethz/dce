@@ -44,21 +44,23 @@ res %>%
 plot(res, labelsize = 1, highlighted_nodes = strsplit(perturbed.gene, ",")[[1]])
 ggsave(file.path(out.dir, glue::glue("network_{appendix}.pdf")), width = 20, height = 20)
 
-res %>%
+df_volcano <- res %>%
   as.data.frame %>%
   drop_na %>%
   mutate(
     edge = paste0(source, "->", target),
     affected = (source %in% strsplit(perturbed.gene, ",")[[1]] | target %in% strsplit(perturbed.gene, ",")[[1]])
-  ) %>%
-EnhancedVolcano::EnhancedVolcano(
-  .,
-  lab = .$edge, selectLab = filter(., .$affected)$edge,
-  x = "dce", y = "dce_pvalue",
-  pCutoff = .05, FCcutoff = 1,
-  drawConnectors = TRUE,
-  title = glue::glue("{pathway}: {perturbed.gene}"), subtitle = NULL,
-  xlab = bquote("DCE"), ylab = bquote(~-Log[10]~italic(pvalue)),
-  legendLabels = c("NS", "DCE", "p-value", "p-value and DCE")
-)
-ggsave(file.path(out.dir, glue::glue("volcanoplot_{appendix}.pdf")), width = 10, height = 10)
+  )
+if (dim(df_volcano)[[1]] > 0) {
+  EnhancedVolcano::EnhancedVolcano(
+    df_volcano,
+    lab = df_volcano$edge, selectLab = filter(df_volcano, df_volcano$affected)$edge,
+    x = "dce", y = "dce_pvalue",
+    pCutoff = .05, FCcutoff = 1,
+    drawConnectors = TRUE,
+    title = glue::glue("{pathway}: {perturbed.gene}"), subtitle = NULL,
+    xlab = bquote("DCE"), ylab = bquote(~-Log[10]~italic(pvalue)),
+    legendLabels = c("NS", "DCE", "p-value", "p-value and DCE")
+  )
+  ggsave(file.path(out.dir, glue::glue("volcanoplot_{appendix}.pdf")), width = 10, height = 10)
+}
