@@ -46,10 +46,11 @@ def aggregate_dce_results(wildcards):
     for pathway in pathway_list:
         fname = pathway_template.format(pathway=pathway)
         df = pd.read_csv(fname)
+        pathway_nodes = set(df['source']) | set(df['sink'])
 
         for study, gene, treatment in case_list:
-            # check if perturbed gene occurs in pathway
-            if gene in df['source'].values or gene in df['sink'].values:
+            # check if perturbed genes occur in pathway
+            if set(gene.split(',')) & pathway_nodes:
                 file_list.append(f'dce_results/{pathway}/{gene}/{study}/{treatment}/')
 
     return file_list
