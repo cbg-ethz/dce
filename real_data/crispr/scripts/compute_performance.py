@@ -23,72 +23,80 @@ def main(fname, out_dir):
     plot_dir.mkdir()
 
     tmp = []
-    for idx, group in tqdm(df.groupby([
-        'study', 'treatment', 'perturbed_gene', 'pathway'
-    ])):
-        # sanity checks
-        if group['true_effect'].sum() == 0:
-            print(f'Skipping {idx}, no true positives...')
-            continue
+    for pathway, group_pathway in tqdm(df.groupby('pathway')):
+        s = 2
+        fig_roc, ax_roc = plt.subplots(figsize=(s * 8, s * 6))
+        fig_pr, ax_pr = plt.subplots(figsize=(s * 8, s * 6))
 
-        # TODO: find better way of handling NAs
-        group.dropna(inplace=True)
+        for idx, group in tqdm(group_pathway.groupby([
+            'study', 'treatment', 'perturbed_gene'
+        ]), leave=False):
+            # sanity checks
+            if group['true_effect'].sum() == 0:
+                print(f'[{pathway}] Skipping {idx}, no true positives...')
+                continue
 
-        # compute performance measures
-        precision_list, recall_list, pr_thresholds = precision_recall_curve(group['true_effect'], group['dce_pvalue'])
-        fpr_list, tpr_list, roc_thresholds = roc_curve(group['true_effect'], group['dce_pvalue'])
+            # TODO: find better way of handling NAs
+            group.dropna(inplace=True)
 
-        roc_auc = auc(fpr_list, tpr_list)
-        pr_auc = auc(recall_list, precision_list)
+            # compute performance measures
+            precision_list, recall_list, pr_thresholds = precision_recall_curve(group['true_effect'], group['dce_pvalue'])
+            fpr_list, tpr_list, roc_thresholds = roc_curve(group['true_effect'], group['dce_pvalue'])
 
-        ap_score = average_precision_score(group['true_effect'], group['dce_pvalue'])
+            roc_auc = auc(fpr_list, tpr_list)
+            pr_auc = auc(recall_list, precision_list)
 
-        f1_score_ = f1_score(group['true_effect'], group['dce_pvalue'] < .05)
+            ap_score = average_precision_score(group['true_effect'], group['dce_pvalue'])
 
-        # plots
-        app = '_'.join(str(e) for e in idx)
+            f1_score_ = f1_score(group['true_effect'], group['dce_pvalue'] < .05)
 
-        plt.figure()
-        cm = confusion_matrix(group['true_effect'], group['dce_pvalue'] < .05)
-        sns.heatmap(cm, annot=True, fmt='d', square=True)
-        plt.xlabel('Predicted label')
-        plt.ylabel('True label')
-        plt.tight_layout()
-        plt.savefig(plot_dir / f'confusion_matrix_{app}.pdf')
+            # plots
+            app = '_'.join(str(e) for e in idx)
 
-        plt.figure(figsize=(8, 6))
-        plt.plot(fpr_list, tpr_list)
-        plt.plot([0, 1], [0, 1], color='grey', ls='dashed')
-        plt.xlabel('FPR')
-        plt.ylabel('TPR')
-        plt.title(f'ROC-AUC: {roc_auc:.2}')
-        plt.tight_layout()
-        plt.savefig(plot_dir / f'roc_curce_{app}.pdf')
+            plt.figure()
+            cm = confusion_matrix(group['true_effect'], group['dce_pvalue'] < .05)
+            sns.heatmap(cm, annot=True, fmt='d', square=True)
+            plt.xlabel('Predicted label')
+            plt.ylabel('True label')
+            plt.tight_layout()
+            plt.savefig(plot_dir / f'confusion_matrix_{pathway}_{app}.pdf')
 
-        plt.figure(figsize=(8, 6))
-        plt.plot(recall_list, precision_list)
-        plt.xlabel('Recall')
-        plt.ylabel('Precision')
-        plt.title(f'PR-AUC: {pr_auc:.2}')
-        plt.tight_layout()
-        plt.savefig(plot_dir / f'pr_curve_{app}.pdf')
+            ax_roc.plot(
+                fpr_list, tpr_list,
+                label=f'{app} ({roc_auc:.2})')
+            ax_pr.plot(
+                recall_list, precision_list,
+                label=f'{app} ({pr_auc:.2})')
+
+            # store results
+            study, treatment, perturbed_gene = idx
+            tmp.append({
+                'pathway': pathway,
+                'perturbed_gene': perturbed_gene,
+                'study': study,
+                'treatment': treatment,
+
+                'roc_auc': roc_auc,
+                'pr_auc': pr_auc,
+                'ap_score': ap_score,
+                'f1_score': f1_score_
+            })
+
+        # finalize figures
+        ax_roc.plot([0, 1], [0, 1], color='grey', ls='dashed')
+        ax_roc.set_xlabel('FPR')
+        ax_roc.set_ylabel('TPR')
+        ax_roc.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+        fig_roc.tight_layout()
+        fig_roc.savefig(plot_dir / f'roc_curce_{pathway}.pdf')
+
+        ax_pr.set_xlabel('Recall')
+        ax_pr.set_ylabel('Precision')
+        ax_pr.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+        fig_pr.tight_layout()
+        fig_pr.savefig(plot_dir / f'pr_curve_{pathway}.pdf')
 
         plt.close('all')
-
-        # store results
-        study, treatment, perturbed_gene, pathway = idx
-        tmp.append({
-            'study': study,
-            'treatment': treatment,
-            'perturbed_gene': perturbed_gene,
-            'pathway': pathway,
-
-            'roc_auc': roc_auc,
-            'pr_auc': pr_auc,
-            'ap_score': ap_score,
-            'f1_score': f1_score_
-
-        })
 
     df_perf = pd.DataFrame(tmp)
     df_perf.to_csv(out_dir / 'measures.csv', index=False)
