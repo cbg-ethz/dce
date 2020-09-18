@@ -73,6 +73,8 @@ def main(fname, out_dir):
         plt.tight_layout()
         plt.savefig(plot_dir / f'pr_curve_{app}.pdf')
 
+        plt.close('all')
+
         # store results
         study, treatment, perturbed_gene, pathway = idx
         tmp.append({
