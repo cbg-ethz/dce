@@ -10,9 +10,11 @@ def main(dname, out_dir):
     df = pd.read_csv(dname / 'measures.csv').set_index(['study', 'treatment', 'perturbed_gene', 'pathway'])
 
     # general overview
-    plt.figure(figsize = (8, 6))
+    plt.figure(figsize=(8, 6))
 
-    sns.boxplot(data=pd.melt(df), x='variable', y='value')
+    sns.boxplot(
+        data=pd.melt(df.drop(columns=['optimal_roc_threshold'])),
+        x='variable', y='value')
 
     plt.xlabel('Performance measure')
     plt.ylabel('Score')

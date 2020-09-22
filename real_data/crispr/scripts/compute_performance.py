@@ -51,13 +51,16 @@ def main(fname, out_dir):
 
             ap_score = average_precision_score(group['true_effect'], edge_score)
 
-            f1_score_ = f1_score(group['true_effect'], group['dce_pvalue'] < .05)
+            # choose some "optimal" threshold
+            thres_opt = roc_thresholds[abs(tpr_list - (1 - fpr_list)).argmin()]
+
+            f1_score_ = f1_score(group['true_effect'], edge_score >= thres_opt)
 
             # plots
             app = '_'.join(str(e) for e in idx)
 
             plt.figure()
-            cm = confusion_matrix(group['true_effect'], group['dce_pvalue'] < .05)
+            cm = confusion_matrix(group['true_effect'], edge_score >= thres_opt)
             sns.heatmap(cm, annot=True, fmt='d', square=True)
             plt.xlabel('Predicted label')
             plt.ylabel('True label')
@@ -82,7 +85,9 @@ def main(fname, out_dir):
                 'roc_auc': roc_auc,
                 'pr_auc': pr_auc,
                 'ap_score': ap_score,
-                'f1_score': f1_score_
+                'f1_score': f1_score_,
+
+                'optimal_roc_threshold': thres_opt
             })
 
         # finalize figures
