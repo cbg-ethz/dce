@@ -40,13 +40,16 @@ def main(fname, out_dir):
             group.dropna(inplace=True)
 
             # compute performance measures
-            precision_list, recall_list, pr_thresholds = precision_recall_curve(group['true_effect'], group['dce_pvalue'])
-            fpr_list, tpr_list, roc_thresholds = roc_curve(group['true_effect'], group['dce_pvalue'])
+            #edge_score = group['dce_pvalue']
+            edge_score = abs(group['dce'])
+
+            precision_list, recall_list, pr_thresholds = precision_recall_curve(group['true_effect'], edge_score)
+            fpr_list, tpr_list, roc_thresholds = roc_curve(group['true_effect'], edge_score)
 
             roc_auc = auc(fpr_list, tpr_list)
             pr_auc = auc(recall_list, precision_list)
 
-            ap_score = average_precision_score(group['true_effect'], group['dce_pvalue'])
+            ap_score = average_precision_score(group['true_effect'], edge_score)
 
             f1_score_ = f1_score(group['true_effect'], group['dce_pvalue'] < .05)
 
