@@ -355,7 +355,16 @@ dce_nb <- function(
                 coef_xn <- coef_mat["N:X", "Estimate"]
                 stderr_xn <- coef_mat["N:X", "Std. Error"]
                 pval_xn <- coef_mat["N:X", if (solver == "glm.nb") "Pr(>|z|)" else "Pr(>|t|)"]
+            } else if (test == "vcovHC" & length(grep("N:X", rownames(coef_mat))) != 0) {
+                coef_xn <- coef_mat["N:X", "Estimate"]
+                stderr_xn <- coef_mat["N:X", "Std. Error"]
+
+                robust <- lmtest::coeftest(
+                    fit, vcov = sandwich::vcovHC(fit, type = "HC0")
+                )
+                pval_xn <- robust["N:X", "Pr(>|t|)"]
             }
+
             data.frame(
                 row = row,
                 col = col,
