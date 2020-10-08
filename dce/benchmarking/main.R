@@ -8,7 +8,7 @@ devtools::load_all("..")
 source("helper_functions.R")
 source("models.R")
 source("performance_measures.R")
-
+source("LDGM.R")
 
 # parse commandline arguments
 "

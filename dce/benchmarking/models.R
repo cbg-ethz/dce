@@ -229,6 +229,18 @@ run.all.models <- function(
     res.dce.lm.vcovHC$dce_pvalue[as(wt.graph.perturbed, "matrix") == 0] <- NA
   }
   time.dce.lm.vcovHC <- as.integer(difftime(Sys.time(), time.tmp, units = "secs"))
+
+  # LDGM
+  time.tmp <- Sys.time()
+  if (is.null(methods) || "LDGM" %in% methods) {
+    res.ldgm <- LDGM(wt.X.cor,mt.X.cor)
+  } else {
+    res.ldgm <- ground.truth
+    res.ldgm$dce_pvalue <- ground.truth$dce*0
+    res.ldgm$dce[as(wt.graph.perturbed, "matrix") == 0] <- NA
+    res.ldgm$dce_pvalue[as(wt.graph.perturbed, "matrix") == 0] <- NA
+  }
+  time.ldgm <- as.integer(difftime(Sys.time(), time.tmp, units = "secs"))
     
   # null models
   time.tmp <- Sys.time()
@@ -316,6 +328,7 @@ run.all.models <- function(
     dce.tpmlog=as.vector(res.dce.tpmlog$dce),
     dce.lm=as.vector(res.dce.lm$dce),
     dce.lm.vcovHC=as.vector(res.dce.lm.vcovHC$dce),
+    dce.ldgm=as.vector(res.ldgm),
     rand=as.vector(res.rand$dce),
     causaldag=as.vector(res.causaldag$dce)
   )
@@ -333,6 +346,7 @@ run.all.models <- function(
     dce.tpmlog=as.vector(res.dce.tpmlog$dce_pvalue),
     dce.lm=as.vector(res.dce.lm$dce_pvalue),
     dce.lm.vcovHC=as.vector(res.dce.lm.vcovHC$dce_pvalue),
+    dce.ldgm=as.vector(abs(res.ldgm)),
     rand=as.vector(res.rand$dce_pvalue),
     causaldag=as.vector(res.causaldag$dce_pvalue)
   )
@@ -349,6 +363,7 @@ run.all.models <- function(
     dce.tpmlog=time.dce.tpmlog,
     dce.lm=time.dce.lm,
     dce.lm.vcovHC=time.dce.lm.vcovHC,
+    dce.ldgm=time.ldgm,
     rand=time.rand,
     causaldag=time.causaldag
   )
