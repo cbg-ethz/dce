@@ -10,8 +10,11 @@ LDGM <- function(wt.X,mt.X) {
 
     theta.f <- paste0("Theta.",runif(1),".csv")
     system(paste0("matlab -batch \"Sigma1 = readmatrix('",wt.f,"'); Sigma2 = readmatrix('",mt.f,"'); lambda = 0.26924; cd('LDGM'); Theta = differential_graph(Sigma1,Sigma2,lambda); writematrix(Theta,'",theta.f,"'); exit\""))
+    Theta <- as(read.csv(paste0("LDGM/",theta.f),header=FALSE),"matrix")
 
-    Theta <- read.csv(paste0("LDGM/",theta.f),header=FALSE)
+    ## Theta.z <- solve(Theta)
+    ## Theta.z <- 0.5*(1+Theta.z)/(1-Theta.z)
+    
     system(paste0("rm ", wt.f, " ", mt.f, " LDGM/", theta.f))
-    return(Theta)
+    return(list(dce=Theta,dce_pvalue=abs(Theta)))
 }

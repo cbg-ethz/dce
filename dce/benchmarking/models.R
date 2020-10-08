@@ -265,7 +265,7 @@ run.all.models <- function(
   time.tmp <- Sys.time()
   if (is.null(methods) || "causaldag" %in% methods) {
     # run causaldag
-    dname.tmp <- "tmp.causaldag/"
+    dname.tmp <- paste0("tmp.",runif(1),".causaldag/")
 
     unlink(dname.tmp, recursive = TRUE)
     dir.create(dname.tmp, recursive = TRUE)
@@ -328,7 +328,7 @@ run.all.models <- function(
     dce.tpmlog=as.vector(res.dce.tpmlog$dce),
     dce.lm=as.vector(res.dce.lm$dce),
     dce.lm.vcovHC=as.vector(res.dce.lm.vcovHC$dce),
-    dce.ldgm=as.vector(res.ldgm),
+    ldgm=as.vector(res.ldgm$dce),
     rand=as.vector(res.rand$dce),
     causaldag=as.vector(res.causaldag$dce)
   )
@@ -346,7 +346,7 @@ run.all.models <- function(
     dce.tpmlog=as.vector(res.dce.tpmlog$dce_pvalue),
     dce.lm=as.vector(res.dce.lm$dce_pvalue),
     dce.lm.vcovHC=as.vector(res.dce.lm.vcovHC$dce_pvalue),
-    dce.ldgm=as.vector(abs(res.ldgm)),
+    ldgm=as.vector(res.ldgm$dce_pvalue),
     rand=as.vector(res.rand$dce_pvalue),
     causaldag=as.vector(res.causaldag$dce_pvalue)
   )
@@ -363,7 +363,7 @@ run.all.models <- function(
     dce.tpmlog=time.dce.tpmlog,
     dce.lm=time.dce.lm,
     dce.lm.vcovHC=time.dce.lm.vcovHC,
-    dce.ldgm=time.ldgm,
+    ldgm=time.ldgm,
     rand=time.rand,
     causaldag=time.causaldag
   )
