@@ -9,9 +9,9 @@ LDGM <- function(wt.X,mt.X) {
     write.table(mt.LC,file=mt.f,row.names=FALSE,col.names=FALSE,sep=",")
 
     theta.f <- paste0("Theta.",runif(1),".csv")
-    system(paste0("matlab -batch \"Sigma1 = readmatrix('wt.LC.temp.txt'); Sigma2 = readmatrix('mt.LC.temp.txt'); lambda = 0.26924; cd('LDGM'); Theta = differential_graph(Sigma1,Sigma2,lambda); writematrix(Theta,",theta.f,"); exit\""))
+    system(paste0("matlab -batch \"Sigma1 = readmatrix('",wt.f,"'); Sigma2 = readmatrix('",mt.f,"'); lambda = 0.26924; cd('LDGM'); Theta = differential_graph(Sigma1,Sigma2,lambda); writematrix(Theta,'",theta.f,"'); exit\""))
 
-    Theta <- read.csv(paste0("LDGM/",theta.f))
-    system(paste0("rm ", wt.f, " ", mt.f, " ", theta.f))
+    Theta <- read.csv(paste0("LDGM/",theta.f),header=FALSE)
+    system(paste0("rm ", wt.f, " ", mt.f, " LDGM/", theta.f))
     return(Theta)
 }
