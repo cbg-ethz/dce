@@ -233,7 +233,7 @@ run.all.models <- function(
   # LDGM
   time.tmp <- Sys.time()
   if (is.null(methods) || "LDGM" %in% methods) {
-    res.ldgm <- LDGM(wt.X.cor,mt.X.cor)
+    res.ldgm <- LDGM(log(compute.tpm(wt.X.cor)+1),log(compute.tpm(mt.X.cor)+1))
   } else {
     res.ldgm <- ground.truth
     res.ldgm$dce_pvalue <- ground.truth$dce*0
