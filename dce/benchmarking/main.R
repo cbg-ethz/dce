@@ -5,10 +5,17 @@ library(naturalsort)
 
 devtools::load_all("..")
 
+lapply(list.files("../R/"),function(x) {
+    if (!(x %in% c(".",".."))) {
+        source(paste0("../R/",x))
+    }
+})
+
 source("helper_functions.R")
 source("models.R")
 source("performance_measures.R")
 source("LDGM.R")
+source("FastGGM.R")
 
 # parse commandline arguments
 "
