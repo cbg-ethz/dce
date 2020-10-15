@@ -107,6 +107,12 @@ graph2df <- function(graph) {
 
 #' @export
 topologically_ordering <- function(adja_mat) {
+  # graph <- igraph::graph_from_adjacency_matrix(adja_mat)
+  # stopifnot(igraph::is_dag(graph))
+  #
+  # nodes_sorted <- igraph::topo_sort(graph)
+  # adja_mat[nodes_sorted, nodes_sorted]
+
   ord <- order(
     apply(adja_mat, 1, sum) - apply(adja_mat, 2, sum),
     decreasing = 1
