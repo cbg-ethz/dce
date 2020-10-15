@@ -11,14 +11,21 @@ test_that("solver argument works", {
   rownames(graph_mt) <- colnames(graph_mt) <- node_names
   X_mt <- simulate_data(graph_mt)
 
+  custom_solver <- function (formula, data) {
+    fit <- lm(formula = formula, data = data)
+    summary(fit)$coefficients
+  }
+
   res.1 <- dce::dce(graph_wt, X_wt, X_mt, solver = "lm")
   res.2 <- dce::dce(graph_wt, X_wt, X_mt, solver = lm)
-  res.3 <- dce::dce(graph_wt, X_wt, X_mt, solver = "glm2")
-  res.4 <- dce::dce(graph_wt, X_wt, X_mt, solver = glm2::glm2)
+  res.3 <- dce::dce(graph_wt, X_wt, X_mt, solver = custom_solver)
+  res.4 <- dce::dce(graph_wt, X_wt, X_mt, solver = "glm2")
+  res.5 <- dce::dce(graph_wt, X_wt, X_mt, solver = glm2::glm2)
 
   expect_equal(res.1, res.2)
-  expect_equal(res.1, res.3, tolerance = 0.1)
-  expect_equal(res.3, res.4)
+  expect_equal(res.2, res.3)
+  expect_equal(res.3, res.4, tolerance = 0.1)
+  expect_equal(res.4, res.5)
 })
 
 

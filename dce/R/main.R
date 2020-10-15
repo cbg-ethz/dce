@@ -325,7 +325,13 @@ dce_nb <- function(
             )
 
             # extract results
-            coef_mat <- summary(fit)$coefficients
+            if (is.matrix(fit)) {
+                # better support for custom solver functions
+                coef_mat <- fit
+            } else {
+                coef_mat <- summary(fit)$coefficients
+            }
+
             coef_xn <- NA
             stderr_xn <- NA
             pval_xn <- NA
