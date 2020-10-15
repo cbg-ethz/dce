@@ -354,7 +354,7 @@ dce_nb <- function(
             } else if (test == "wald" & length(grep("N:X", rownames(coef_mat))) != 0) {
                 coef_xn <- coef_mat["N:X", "Estimate"]
                 stderr_xn <- coef_mat["N:X", "Std. Error"]
-                pval_xn <- coef_mat["N:X", if (solver == "glm.nb") "Pr(>|z|)" else "Pr(>|t|)"]
+                pval_xn <- coef_mat["N:X", if (as.character(quote(solver)) == "glm.nb") "Pr(>|z|)" else "Pr(>|t|)"]
             } else if (test == "vcovHC" & length(grep("N:X", rownames(coef_mat))) != 0) {
                 coef_xn <- coef_mat["N:X", "Estimate"]
                 stderr_xn <- coef_mat["N:X", "Std. Error"]
@@ -484,6 +484,11 @@ get_adjustment_set <- function(
 
 #' @export
 glm_solver <- function(form, df, solver, solver_args) {
+    # handle general functions
+    if (is.function(solver)) {
+        return(solver(formula = form, data = df))
+    }
+
     # lm solver
     if (solver == "lm") {
         return(lm(formula = form, data = df))
