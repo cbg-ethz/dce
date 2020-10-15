@@ -11,21 +11,21 @@ test_that("solver argument works", {
   rownames(graph_mt) <- colnames(graph_mt) <- node_names
   X_mt <- simulate_data(graph_mt)
 
-  custom_solver <- function (formula, data) {
+  custom_solver <- function(formula, data) {
     fit <- lm(formula = formula, data = data)
     summary(fit)$coefficients
   }
 
-  res.1 <- dce::dce(graph_wt, X_wt, X_mt, solver = "lm")
-  res.2 <- dce::dce(graph_wt, X_wt, X_mt, solver = lm)
-  res.3 <- dce::dce(graph_wt, X_wt, X_mt, solver = custom_solver)
-  res.4 <- dce::dce(graph_wt, X_wt, X_mt, solver = "glm2")
-  res.5 <- dce::dce(graph_wt, X_wt, X_mt, solver = glm2::glm2)
+  res_1 <- dce::dce(graph_wt, X_wt, X_mt, solver = "lm")
+  res_2 <- dce::dce(graph_wt, X_wt, X_mt, solver = lm)
+  res_3 <- dce::dce(graph_wt, X_wt, X_mt, solver = custom_solver)
+  res_4 <- dce::dce(graph_wt, X_wt, X_mt, solver = "glm2")
+  res_5 <- dce::dce(graph_wt, X_wt, X_mt, solver = glm2::glm2)
 
-  expect_equal(res.1, res.2)
-  expect_equal(res.2, res.3)
-  expect_equal(res.3, res.4, tolerance = 0.1)
-  expect_equal(res.4, res.5)
+  expect_equal(res_1, res_2)
+  expect_equal(res_2, res_3)
+  expect_equal(res_3, res_4, tolerance = 0.1)
+  expect_equal(res_4, res_5)
 })
 
 
@@ -72,7 +72,6 @@ test_that("negative beta can be recovered", {
 
 test_that("igraph input works", {
   set.seed(42)
-  devtools::load_all("/Users/kimja/university/PhD/projects/causal_pathways/dce/")
 
   graph <- igraph::make_tree(3, children = 3, mode = "out")
   graph_wt <- igraph::set.edge.attribute(graph, name = "weight", value = 1)
@@ -84,7 +83,10 @@ test_that("igraph input works", {
   res <- dce::dce_nb(graph, X_wt, X_mt)
   res
 
-  expect_equal(as.vector(res$dce), c(NA, NA, NA, 1.4, NA, NA, 1.4, NA, NA), tolerance = 0.1)
+  expect_equal(
+    as.vector(res$dce), c(NA, NA, NA, 1.4, NA, NA, 1.4, NA, NA),
+    tolerance = 0.1
+  )
 })
 
 
@@ -133,11 +135,19 @@ test_that("adjustment sets work", {
   ))
 
   expect_equal(
-    get_adjustment_set(as(graph, "matrix"), which(nodes(graph) == "B"), which(nodes(graph) == "C"), "parents"),
+    get_adjustment_set(
+      as(graph, "matrix"),
+      which(nodes(graph) == "B"), which(nodes(graph) == "C"),
+      "parents"
+    ),
     c("A")
   )
   expect_equal(
-    get_adjustment_set(as(graph, "matrix"), which(nodes(graph) == "A"), which(nodes(graph) == "B"), "minimal"),
+    get_adjustment_set(
+      as(graph, "matrix"),
+      which(nodes(graph) == "A"), which(nodes(graph) == "B"),
+      "minimal"
+    ),
     character(0)
   )
 })

@@ -3,21 +3,24 @@
 #' Generic function which plots any adjacency matrix (assumes DAG)
 #' @param adja_matrix Adjacency matrix of network
 #' @param nodename_map node names
-#' @param edge.colorscale.limits Limits for scale_edge_color_gradient2 (should contain 0). Useful to make plot comparable to others
+#' @param edge.colorscale.limits Limits for scale_edge_color_gradient2
+#'        (should contain 0). Useful to make plot comparable to others
 #' @param nodesize Node sizes
 #' @param labelsize Node label sizes
 #' @param show_edge_labels Whether to show edge labels (DCEs)
 #' @param use_symlog Scale edge colors using dce::symlog
 #' @param highlighted_nodes List of nodes to highlight
 #' @param legend_title Title of edge weight legend
-#' @param value_matrix Optional matrix of edge weights if different from adjacency matrix
+#' @param value_matrix Optional matrix of edge weights if different
+#'        from adjacency matrix
 #' @param ... additional parameters
 #' @author Martin Pirkl, Kim Philipp Jablonski
 #' @return plot of dag and dces
 #' @export
 #' @import tidyverse ggraph purrr
 #' @importFrom glue glue
-#' @importFrom ggplot2 aes theme element_rect arrow unit coord_fixed scale_fill_manual waiver
+#' @importFrom ggplot2 aes theme element_rect arrow unit
+#'             coord_fixed scale_fill_manual waiver
 #' @importFrom tidygraph as_tbl_graph activate mutate
 #' @importFrom rlang .data
 #' @importFrom igraph graph_from_adjacency_matrix
@@ -74,7 +77,8 @@ plot_network <- function(
             return(ggplot2::waiver())
         }
 
-        eps <- min(abs(limits)) / 100 # without this offset the outer breaks are somtetimes not shown
+        # without this offset the outer breaks are somtetimes not shown
+        eps <- min(abs(limits)) / 100
         breaks <- seq(limits[[1]] + eps, limits[[2]] - eps, length.out = 5)
 
         if (min(abs(limits)) < 1) {
@@ -90,16 +94,16 @@ plot_network <- function(
     )) %>%
         activate(nodes) %>%
         mutate(
-            label = if (is.null(nodename_map)) .data$name else nodename_map[.data$name],
+            label = if (is.null(nodename_map)) .data$name else nodename_map[.data$name],  # nolint
             nodesize = nodesize,
             is.highlighted = .data$label %in% highlighted_nodes
         ) %T>%
         with({
-            label_list <- as.data.frame(.)$label
+            label_list <- as.data.frame(.)$label  # nolint
             extra_nodes <- setdiff(highlighted_nodes, label_list)
 
             if (length(extra_nodes) > 0) {
-                label_str <- glue::glue_collapse(extra_nodes, sep = ", ")
+                label_str <- glue::glue_collapse(extra_nodes, sep = ", ")  # nolint
                 warning(
                     glue::glue("Invalid highlighted nodes: {label_str}"),
                     call. = FALSE
@@ -110,7 +114,7 @@ plot_network <- function(
         mutate(
             dce = pmap_dbl(
                 list(.data$from, .data$to),
-                function(f, t) { value_matrix[f, t] }
+                function(f, t) value_matrix[f, t]
             ),
             dce.symlog = symlog(dce),
             label = .data$dce %>% round(2) %>% as.character
@@ -127,9 +131,9 @@ plot_network <- function(
                 width = abs(.data$dce),
                 label = if (show_edge_labels) .data$label else NULL,
                 linetype = is.na(.data$dce),
-                # proper caps can be used again when https://github.com/thomasp85/ggraph/issues/254 is fixed
-                # start_cap = circle(.data$node1.nodesize, unit="native"),
-                # end_cap = circle(.data$node2.nodesize, unit="native")
+                # proper caps can be used again when https://github.com/thomasp85/ggraph/issues/254 is fixed  # nolint
+                # start_cap = circle(.data$node1.nodesize, unit="native"),  # nolint
+                # end_cap = circle(.data$node2.nodesize, unit="native")  # nolint
             ),
             strength = 0.5,
             arrow = arrow(type = "closed", length = unit(3, "mm"))
@@ -141,9 +145,9 @@ plot_network <- function(
         ) +
         scale_edge_color_gradient2(
             low = "red", mid = "grey", high = "blue", midpoint = 0,
-            limits = if (use_symlog) symlog(edgescale_limits) else edgescale_limits,
+            limits = if (use_symlog) symlog(edgescale_limits) else edgescale_limits,  # nolint
             breaks = custom_breaks,
-            name = if (use_symlog) glue("{legend_title} (symlog)") else legend_title,
+            name = if (use_symlog) glue("{legend_title} (symlog)") else legend_title,  # nolint
             na.value = "black"
         ) +
         scale_edge_width(
@@ -161,8 +165,7 @@ plot_network <- function(
             guide = FALSE
         ) +
         theme(
-            panel.background = element_rect(fill = "white"),
-            # legend.position = "none"
+            panel.background = element_rect(fill = "white")
         )
 }
 

@@ -128,7 +128,10 @@ setMethod(
             colnames(Y) <- paste0("n", (p + 1):pop_size)
             X <- cbind(X, Y)
         } else if (pop_size > 0 & latent > 0) {
-            H <- matrix(runif(latent * (pop_size - p + latent), -1, 1), latent, pop_size - p + latent)
+            H <- matrix(
+                runif(latent * (pop_size - p + latent), -1, 1),
+                latent, pop_size - p + latent
+            )
             Y <- X[, seq_len(latent), drop = FALSE] %*% H
             Y <- apply(Y, 2, function(x) {
                 y <- rnbinom(n, size = Inf, mu = link(x, offset = 1))

@@ -2,10 +2,9 @@
 #'
 #' @param query_species For which species
 #' @param database_list Which databases to query. Query all if `NULL`.
-#' @param include_network_statistics Compute some useful statistics per pathway. Takes longer!
-#' @importFrom glue glue
-#' @importFrom purrr pmap_dfr map_dfr
-#' @importFrom graphite pathwayDatabases pathways pathwayId pathwayTitle pathwayGraph
+#' @param include_network_statistics Compute some useful statistics
+#'        per pathway. Takes longer!
+#' @import graphite graph glue purrr
 #' @export
 get_pathway_info <- function(
   query_species = "hsapiens", database_list = NULL,
@@ -32,8 +31,8 @@ get_pathway_info <- function(
         if (include_network_statistics) {
           graph <- graphite::pathwayGraph(pw, which = "proteins")
 
-          tmp$node_num <- length(nodes(graph))
-          tmp$edge_num <- length(edges(graph))
+          tmp$node_num <- length(graph::nodes(graph))
+          tmp$edge_num <- length(graph::edges(graph))
         }
 
         return(tmp)
@@ -46,9 +45,7 @@ get_pathway_info <- function(
 #'
 #' @param query_species For which species
 #' @param database_list Which databases to query. Query all if `NULL`.
-#' @importFrom glue glue
-#' @importFrom purrr map
-#' @importFrom graphite pathwayDatabases pathways convertIdentifiers pathwayId pathwayTitle pathwayGraph
+#' @import graphite glue purrr
 #' @export
 get_pathways <- function(
   query_species = "hsapiens", database_list = NULL,

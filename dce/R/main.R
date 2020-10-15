@@ -232,9 +232,10 @@ dce_nb <- function(
     df_expr_mt <- df_expr_mt[, which(colnames(df_expr_mt) %in% colnames(graph))]
 
     # ensure the data and graph have the same order of genes
-    df_expr_wt <- df_expr_wt[, naturalorder(colnames(df_expr_wt))]
-    df_expr_mt <- df_expr_mt[, naturalorder(colnames(df_expr_mt))]
-    graph <- graph[naturalorder(rownames(graph)), naturalorder(colnames(graph))]
+    ordered_nodes <- naturalorder(colnames(df_expr_wt))  # nolint
+    df_expr_wt <- df_expr_wt[, ordered_nodes]
+    df_expr_mt <- df_expr_mt[, ordered_nodes]
+    graph <- graph[ordered_nodes, ordered_nodes]
 
     # handle empty graph (no edges)
     if (sum(graph) == 0) {
@@ -314,7 +315,7 @@ dce_nb <- function(
             }
 
             if (verbose) {
-                print(df_data %>% head)
+                print(head(df_data))
                 print(form)
                 cat("\n")
             }
@@ -340,7 +341,10 @@ dce_nb <- function(
                 if (!is.numeric(lib_size)) {
                     form2 <- paste0("Y ~ N + X", form_adjustment_suffix)
                 } else {
-                    form2 <- paste0("Y ~ N + X + N*lib_size", form_adjustment_suffix)
+                    form2 <- paste0(
+                        "Y ~ N + X + N*lib_size",
+                        form_adjustment_suffix
+                    )
                 }
 
                 if (verbose) {
@@ -357,11 +361,22 @@ dce_nb <- function(
                     stderr_xn <- coef_mat["N:X", "Std. Error"]
                     pval_xn <- lmtest::lrtest(fit, fit2)[[5]][2]
                 }
-            } else if (test == "wald" & length(grep("N:X", rownames(coef_mat))) != 0) {
+            } else if (
+                test == "wald" &
+                length(grep("N:X", rownames(coef_mat))) != 0
+            ) {
                 coef_xn <- coef_mat["N:X", "Estimate"]
                 stderr_xn <- coef_mat["N:X", "Std. Error"]
-                pval_xn <- coef_mat["N:X", if (as.character(quote(solver)) == "glm.nb") "Pr(>|z|)" else "Pr(>|t|)"]
-            } else if (test == "vcovHC" & length(grep("N:X", rownames(coef_mat))) != 0) {
+
+                solver_name <- as.character(quote(solver))
+                pval_xn <- coef_mat[
+                    "N:X",
+                    if (solver_name == "glm.nb") "Pr(>|z|)" else "Pr(>|t|)"
+                ]
+            } else if (
+                test == "vcovHC" &
+                length(grep("N:X", rownames(coef_mat))) != 0
+            ) {
                 coef_xn <- coef_mat["N:X", "Estimate"]
                 stderr_xn <- coef_mat["N:X", "Std. Error"]
 
@@ -415,9 +430,13 @@ dce_nb <- function(
     } else {
         tmp[tmp == 0] <- min(tmp[tmp != 0])
         if (p_method == "hmp") {
-            pathway_pvalue <- as.numeric(harmonicmeanp::p.hmp(tmp, L = length(tmp)))
+            pathway_pvalue <- as.numeric(harmonicmeanp::p.hmp(
+                tmp, L = length(tmp)
+            ))
         } else if (p_method == "test") {
-            pathway_pvalue <- CombinePValue::selfcontained.test(tmp, weight = NA)[[1]]
+            pathway_pvalue <- CombinePValue::selfcontained.test(
+                tmp, weight = NA
+            )[[1]]
         } else if (p_method %in% c("mean", "median", "sum", "max", "min")) {
             pathway_pvalue <- do.call(p_method, list(x = tmp))
         } else {

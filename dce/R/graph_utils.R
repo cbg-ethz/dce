@@ -1,7 +1,7 @@
 #' @export
 create_graph_from_dataframe <- function(
   df_graph,
-  edge_weight = function() { runif(1, 0.5, 2) }
+  edge_weight = function() runif(1, 0.5, 2)
 ) {
   g <- tidygraph::as_tbl_graph(df_graph)
   ig <- igraph::as.igraph(g)
@@ -60,8 +60,6 @@ propagate_gene_edges <- function(graph) {
   vertex_names <- igraph::vertex_attr(ig, "name")
 
   for (source_idx in igraph::V(ig)) {
-    source <- vertex_names[source_idx]
-
     for (target_idx in igraph::neighbors(ig, source_idx, mode = "out")) {
       target <- vertex_names[target_idx]
 
@@ -76,6 +74,7 @@ propagate_gene_edges <- function(graph) {
               ig <- igraph::add.edges(ig, c(source_idx, bridge_idx), weight = 1)
             }
           } else {
+            source <- vertex_names[source_idx]  # nolint
             print(glue::glue(
               "{bridge} is not a valid extension for edge {source}->{target}"
             ))
@@ -88,7 +87,10 @@ propagate_gene_edges <- function(graph) {
   graph_prop <- igraph::igraph.to.graphNEL(ig)
 
   # remove non-gene nodes
-  hsa_nodes <- Filter(function(x) { substr(x, 0, 3) == "hsa" }, nodes(graph_prop))
+  hsa_nodes <- Filter(
+    function(x) substr(x, 0, 3) == "hsa",
+    graph::nodes(graph_prop)
+  )
   graph_filter <- graph::subGraph(hsa_nodes, graph_prop)
 
   return(graph_filter)
@@ -106,16 +108,18 @@ graph2df <- function(graph) {
 
 
 #' @export
-topologically_ordering <- function(adja_mat) {
-  # graph <- igraph::graph_from_adjacency_matrix(adja_mat)
-  # stopifnot(igraph::is_dag(graph))
-  #
-  # nodes_sorted <- igraph::topo_sort(graph)
-  # adja_mat[nodes_sorted, nodes_sorted]
+topologically_ordering <- function(adja_mat, alt = FALSE) {
+  if (alt) {
+    graph <- igraph::graph_from_adjacency_matrix(adja_mat)
+    stopifnot(igraph::is_dag(graph))
 
-  ord <- order(
-    apply(adja_mat, 1, sum) - apply(adja_mat, 2, sum),
-    decreasing = 1
-  )
-  adja_mat[ord, ord]
+    nodes_sorted <- igraph::topo_sort(graph)
+    return(adja_mat[nodes_sorted, nodes_sorted])
+  } else {
+    ord <- order(
+      apply(adja_mat, 1, sum) - apply(adja_mat, 2, sum),
+      decreasing = 1
+    )
+    return(adja_mat[ord, ord])
+  }
 }
