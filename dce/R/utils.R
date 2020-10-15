@@ -279,7 +279,7 @@ create_random_DAG <- function(
 #' @examples
 #' graph.wt <- as(matrix(c(0,0,0,1,0,0,0,1,0), 3), "graphNEL")
 #' graph.mt <- resample_edge_weights(graph.wt)
-resample_edge_weights <- function(g, tp = 1,
+resample_edge_weights <- function(g, tp = 0.5,
                                   mineff = 1, maxeff = 2,
                                   method = "runif") {
     gold <- g
