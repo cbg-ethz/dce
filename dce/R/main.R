@@ -368,10 +368,9 @@ dce_nb <- function(
                 coef_xn <- coef_mat["N:X", "Estimate"]
                 stderr_xn <- coef_mat["N:X", "Std. Error"]
 
-                solver_name <- as.character(quote(solver))
                 pval_xn <- coef_mat[
                     "N:X",
-                    if (solver_name == "glm.nb") "Pr(>|z|)" else "Pr(>|t|)"
+                    if (solver == "glm.nb") "Pr(>|z|)" else "Pr(>|t|)"
                 ]
             } else if (
                 test == "vcovHC" &
