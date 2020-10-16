@@ -43,7 +43,8 @@ res %>%
   write_csv(file.path(out.dir, glue::glue("dce_list_{appendix}.csv")))
 
 # network plot
-plot(res, labelsize = 1, highlighted_nodes = strsplit(perturbed.gene, ",")[[1]])
+plot(res, labelsize = 1, highlighted_nodes = strsplit(perturbed.gene, ",")[[1]]) +
+  ggtitle(glue::glue("{pathway}: {perturbed.gene}"))
 ggsave(file.path(out.dir, glue::glue("network_{appendix}.pdf")), width = 20, height = 20)
 
 # volcano plot
