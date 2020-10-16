@@ -76,7 +76,7 @@ res %>%
   purrr::pmap_dfr(function (source, target, dce, dce_stderr, dce_pvalue) {
     dist <- igraph::distances(
       graph_sub,
-      which(igraph::V(graph_sub)$name == perturbed.gene),
+      which(igraph::V(graph_sub)$name %in% strsplit(perturbed.gene, ",")[[1]]),
       which(igraph::V(graph_sub)$name %in% c(as.character(source), as.character(target))),
       mode = "all"
     ) %>%
