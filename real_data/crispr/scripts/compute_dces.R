@@ -30,9 +30,10 @@ common.genes <- intersect(igraph::vertex_attr(graph, "name"), colnames(X.wt))
 #res <- dce::dce_nb(igraph::induced_subgraph(graph, common.genes), X.wt[, common.genes], X.mt[, common.genes])
 res <- dce::dce_nb(igraph::induced_subgraph(graph, common.genes), X.wt, X.mt, lib_size = TRUE)
 
+# save raw results
 saveRDS(res, file = file.path(out.dir, glue::glue("dce_{appendix}.rds")))
 
-# analyze results
+# save results as dataframe
 res %>%
   as.data.frame %>%
   mutate(pathway_edge = melt(res$graph)$value) %>%
@@ -41,9 +42,11 @@ res %>%
   arrange(dce_pvalue) %>%
   write_csv(file.path(out.dir, glue::glue("dce_list_{appendix}.csv")))
 
+# network plot
 plot(res, labelsize = 1, highlighted_nodes = strsplit(perturbed.gene, ",")[[1]])
 ggsave(file.path(out.dir, glue::glue("network_{appendix}.pdf")), width = 20, height = 20)
 
+# volcano plot
 df_volcano <- res %>%
   as.data.frame %>%
   drop_na %>%
@@ -64,3 +67,28 @@ if (dim(df_volcano)[[1]] > 0) {
   )
   ggsave(file.path(out.dir, glue::glue("volcanoplot_{appendix}.pdf")), width = 10, height = 10)
 }
+
+# p-value/network distance plot
+graph_sub <- igraph::induced_subgraph(graph, common.genes)
+res %>%
+  as.data.frame %>%
+  drop_na %>%
+  purrr::pmap_dfr(function (source, target, dce, dce_stderr, dce_pvalue) {
+    dist <- igraph::distances(
+      graph_sub,
+      which(igraph::V(graph_sub)$name == perturbed.gene),
+      which(igraph::V(graph_sub)$name %in% c(as.character(source), as.character(target))),
+      mode = "all"
+    ) %>%
+      min
+
+    data.frame(source = source, target = target, dce = dce, dce_pvalue = dce_pvalue, distance = dist)
+  }) %>%
+  filter(!is.infinite(distance)) %>%
+ggplot(aes(x = dce_pvalue, y = distance, color = dce)) +
+  geom_point() +
+  xlab("DCE p-value") +
+  ylab("Graph distance perturbed-gene to DCE-edge") +
+  ggtitle(glue::glue("{pathway}: {perturbed.gene}")) +
+  theme_minimal()
+ggsave(file.path(out.dir, glue::glue("network_distances_{appendix}.pdf")), width = 8, height = 6)
