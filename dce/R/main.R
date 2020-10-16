@@ -232,10 +232,9 @@ dce_nb <- function(
     df_expr_mt <- df_expr_mt[, which(colnames(df_expr_mt) %in% colnames(graph))]
 
     # ensure the data and graph have the same order of genes
-    ordered_nodes <- naturalorder(colnames(df_expr_wt))  # nolint
-    df_expr_wt <- df_expr_wt[, ordered_nodes]
-    df_expr_mt <- df_expr_mt[, ordered_nodes]
-    graph <- graph[ordered_nodes, ordered_nodes]
+    df_expr_wt <- df_expr_wt[, naturalorder(colnames(df_expr_wt))]
+    df_expr_mt <- df_expr_mt[, naturalorder(colnames(df_expr_mt))]
+    graph <- graph[naturalorder(rownames(graph)), naturalorder(colnames(graph))]
 
     # handle empty graph (no edges)
     if (sum(graph) == 0) {
