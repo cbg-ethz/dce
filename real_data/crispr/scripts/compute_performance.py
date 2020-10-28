@@ -69,9 +69,11 @@ def main(fname, out_dir):
 
             ax_roc.plot(
                 fpr_list, tpr_list,
+                '-o',
                 label=f'{app} ({roc_auc:.2})')
             ax_pr.plot(
                 recall_list, precision_list,
+                '-o',
                 label=f'{app} ({pr_auc:.2})')
 
             # store results
