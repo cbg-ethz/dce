@@ -131,9 +131,8 @@ plot_network <- function(
                 width = abs(.data$dce),
                 label = if (show_edge_labels) .data$label else NULL,
                 linetype = is.na(.data$dce),
-                # proper caps can be used again when https://github.com/thomasp85/ggraph/issues/254 is fixed  # nolint
-                # start_cap = circle(.data$node1.nodesize, unit="native"),  # nolint
-                # end_cap = circle(.data$node2.nodesize, unit="native")  # nolint
+                start_cap = circle(.data$node1.nodesize, unit = "native"),
+                end_cap = circle(.data$node2.nodesize, unit = "native")
             ),
             strength = 0.5,
             arrow = arrow(type = "closed", length = unit(3, "mm"))
