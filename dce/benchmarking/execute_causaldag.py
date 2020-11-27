@@ -15,7 +15,11 @@ def main(X_wt, X_mt, fname_out):
     # inference
     p = X_wt_trans.shape[1]
 
-    difference_matrix = causaldag.dci(X_wt_trans, X_mt_trans, difference_ug=list(itertools.combinations(range(p), 2)))
+    # difference_matrix = causaldag.dci(
+    difference_matrix, _ = causaldag.dci_stability_selection(
+        X_wt_trans, X_mt_trans,
+        difference_ug=list(itertools.combinations(range(p), 2))
+    )
 
     # extract differential edges
     # ddag_edges = set(zip(*np.where(difference_matrix != 0)))
