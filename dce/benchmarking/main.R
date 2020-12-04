@@ -68,7 +68,7 @@ latent <- 0
 output.fname <- "benchmark_results.csv"
 replicate.count <- 100
 link.method <- "identity"
-methods <- NULL
+methods <- c("cor","pcor","dce.lm.tpm","fggm","rand")
 
 
 # parse parameters
@@ -168,7 +168,7 @@ df.bench <- purrr::pmap_dfr(
       xt <- c(rep(0,nrow(wt.X)),rep(1,nrow(mt.X)))
       names(xt) <- "group"
       design <- model.matrix(~xt)
-      dispersion.estimate <- estimateTheta(rbind(wt.X, mt.X), design = design)
+      dispersion.estimate <- NA # estimateTheta(rbind(wt.X, mt.X), design = design)
       mean.estimate <- mean(rbind(wt.X, mt.X))
 
       # check how close we get to library size

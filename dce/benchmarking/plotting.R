@@ -73,8 +73,8 @@ create.plots <- function(df.bench, plot.dir, varied.parameter) {
 
   df.bench %>%
     dplyr::filter(grepl("^dce.", type)) %>%
-    dplyr::select(dce, type, parameter, varied.parameter) %>%
-    ggplot(aes(x=parameter, y=dce, fill=type)) +
+    dplyr::select(cor, type, parameter, varied.parameter, cor) %>%
+    ggplot(aes(x=parameter, y=cor, fill=type)) +
     scale_y_continuous(trans = 'log10') +
     # scale_y_log10() +
     geom_boxplot() +
@@ -86,8 +86,8 @@ create.plots <- function(df.bench, plot.dir, varied.parameter) {
 
   df.bench %>%
     dplyr::filter(grepl("^graph.", type)) %>%
-    dplyr::select(dce, type, parameter, varied.parameter) %>%
-    ggplot(aes(x=parameter, y=dce, fill=type)) +
+    dplyr::select(cor, type, parameter, varied.parameter) %>%
+    ggplot(aes(x=parameter, y=cor, fill=type)) +
     geom_boxplot() +
     ggtitle(paste("Variable:", varied.parameter)) +
     ylab("value") +
@@ -97,8 +97,8 @@ create.plots <- function(df.bench, plot.dir, varied.parameter) {
 
   df.bench %>%
     dplyr::filter(grepl("^lib.", type)) %>%
-    dplyr::select(dce, type, parameter, varied.parameter) %>%
-    ggplot(aes(x=parameter, y=dce, fill=type)) +
+    dplyr::select(cor, type, parameter, varied.parameter) %>%
+    ggplot(aes(x=parameter, y=cor, fill=type)) +
     geom_boxplot() +
     ggtitle(paste("Variable:", varied.parameter)) +
     ylab("value") +
@@ -108,8 +108,8 @@ create.plots <- function(df.bench, plot.dir, varied.parameter) {
 
   df.bench %>%
     dplyr::filter(grepl("^dispersion.", type)) %>%
-    dplyr::select(dce, type, parameter, varied.parameter) %>%
-    ggplot(aes(x=parameter, y=dce, fill=type)) +
+    dplyr::select(cor, type, parameter, varied.parameter) %>%
+    ggplot(aes(x=parameter, y=cor, fill=type)) +
     geom_boxplot() +
     ggtitle(paste("Variable:", varied.parameter)) +
     ylab("value") +
@@ -119,8 +119,8 @@ create.plots <- function(df.bench, plot.dir, varied.parameter) {
 
   df.bench %>%
     dplyr::filter(grepl("^mean.", type)) %>%
-    dplyr::select(dce, type, parameter, varied.parameter) %>%
-    ggplot(aes(x=parameter, y=dce, fill=type)) +
+    dplyr::select(cor, type, parameter, varied.parameter) %>%
+    ggplot(aes(x=parameter, y=cor, fill=type)) +
     geom_boxplot() +
     ggtitle(paste("Variable:", varied.parameter)) +
     ylab("value") +
@@ -130,8 +130,8 @@ create.plots <- function(df.bench, plot.dir, varied.parameter) {
 
   df.bench %>%
     dplyr::filter(grepl("^prevalence$", type)) %>%
-    dplyr::select(dce, type, parameter, varied.parameter) %>%
-    ggplot(aes(x=parameter, y=dce, fill=type)) +
+    dplyr::select(cor, type, parameter, varied.parameter) %>%
+    ggplot(aes(x=parameter, y=cor, fill=type)) +
     geom_boxplot() +
     ggtitle(paste("Variable:", varied.parameter)) +
     ylab("value") +
