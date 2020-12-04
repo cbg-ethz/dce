@@ -68,7 +68,7 @@ latent <- 0
 output.fname <- "benchmark_results.csv"
 replicate.count <- 100
 link.method <- "identity"
-methods <- c("cor","pcor","dce.lm.tpm","fggm","rand")
+methods <- NULL
 
 
 # parse parameters

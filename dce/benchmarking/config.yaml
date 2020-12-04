@@ -12,28 +12,28 @@ benchmarks:
     node.num:
         parameter: node.num
         values: [10, 50, 100]
-        methods: null
+        methods: [cor, pcor, dce.lm.tpm, fggm,rand]
     mt.samples:
         parameter: mt.samples
         values: [100, 200, 400]
-        methods: null
+        methods: [cor, pcor, dce.lm.tpm, fggm,rand]
     beta.magnitude:
         parameter: beta.magnitude
         values: [0.1, 1, 10]
-        methods: null
+        methods: [cor, pcor, dce.lm.tpm, fggm,rand]
     dispersion:
         parameter: dispersion
         values: [10, 100, 1000]
-        methods: null
+        methods: [cor, pcor, dce.lm.tpm, fggm,rand]
     adjustment.type:
         parameter: adjustment.type
         values: [parents, minimal, parents_filtered]
-        methods: [dce]
+        methods: [dce.lm.tpm]
     perturb:
         parameter: perturb
         values: [-0.5, -0.1, 0, 0.1, 0.5]
-        methods: null
+        methods: [cor, pcor, dce.lm.tpm, fggm,rand]
     true.positives:
         parameter: true.positives
         values: [0, 0.25, 0.5, 0.75, 1]
-        methods: null
+        methods: [cor, pcor, dce.lm.tpm, fggm,rand]
