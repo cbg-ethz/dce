@@ -64,7 +64,8 @@ rule all:
     input:
         'perturbation_analysis/all_genes/',
         'perturbation_analysis/per_gene/expression_statistics.csv',
-        'performance/plots/'
+        'performance/plots/',
+        'aggregated_statistics/plots/'
 
 
 checkpoint retrieve_pathways:
@@ -138,7 +139,7 @@ rule aggregate_dce_lists:
     input:
         dir_list = aggregate_dce_results
     output:
-        fname = 'performance/dce_lists.csv'
+        fname = 'aggregated_statistics/dce_lists.csv'
     run:
         import pandas as pd
         from tqdm import tqdm
@@ -160,9 +161,18 @@ rule aggregate_dce_lists:
         df.to_csv(output.fname, index=False)
 
 
+rule aggregated_statistics:
+    input:
+        fname = 'aggregated_statistics/dce_lists.csv'
+    output:
+        out_dir = directory('aggregated_statistics/plots/')
+    script:
+        'scripts/aggregated_statistics.R'
+
+
 rule compute_performance:
     input:
-        fname = 'performance/dce_lists.csv'
+        fname = 'aggregated_statistics/dce_lists.csv'
     output:
         out_dir = directory('performance/results/')
     script:
