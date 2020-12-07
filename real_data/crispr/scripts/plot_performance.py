@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 
 
 def main(dname, out_dir):
+    out_dir.mkdir(parents=True, exist_ok=True)
     df = pd.read_csv(dname / 'measures.csv').set_index(['study', 'treatment', 'perturbed_gene', 'pathway'])
 
     # general overview

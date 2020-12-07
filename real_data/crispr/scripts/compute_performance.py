@@ -15,12 +15,13 @@ from tqdm import tqdm
 
 
 def main(fname, out_dir):
+    out_dir.mkdir(parents=True, exist_ok=True)
     df = pd.read_csv(fname)
     # df['true_effect'] = (df['perturbed_gene'] == df['source']) | (df['perturbed_gene'] == df['target'])
     df['true_effect'] = df.apply(lambda x: x['source'] in x['perturbed_gene'].split(',') or x['target'] in x['perturbed_gene'].split(','), axis=1)
 
     plot_dir = out_dir / 'plots'
-    plot_dir.mkdir()
+    plot_dir.mkdir(parents=True, exist_ok=True)
 
     tmp = []
     for pathway, group_pathway in tqdm(df.groupby('pathway')):

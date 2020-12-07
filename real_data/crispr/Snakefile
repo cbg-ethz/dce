@@ -145,7 +145,7 @@ rule aggregate_dce_lists:
 
         df_list = []
         for dir_ in tqdm(input.dir_list):
-            _, pathway, gene, study, treatment, _ = dir_.split('/')
+            _, pathway, gene, study, treatment = dir_.split('/')
             fname = os.path.join(dir_, f'dce_list_{pathway}_{gene}.csv')
 
             tmp = pd.read_csv(fname)
