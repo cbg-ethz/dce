@@ -444,3 +444,20 @@ trueEffects <- function(g, partial = FALSE) {
     }
     return(ae)
 }
+
+
+#' Estimate number of latent confounders.
+#'
+#' This function looks at the knee point of a scree plot.
+estimate_latent_confounder_count <- function(X) {
+    fit_pca <- prcomp(scale(X))
+
+    scree <- fit_pca$sdev
+    values <- seq(length(scree))
+
+    d1 <- diff(scree) / diff(values) # first derivative
+    d2 <- diff(d1) / diff(values[-1]) # second derivative
+    idx <- which.max(abs(d2))
+
+    return(idx)
+}

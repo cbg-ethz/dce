@@ -204,6 +204,16 @@ dce_nb <- function(
     verbose
 ) {
     # handle latent variables
+    if (is.logical(latent) && latent) {
+        latent <- estimate_latent_confounder_count(
+            cbind(df_expr_wt, df_expr_mt)
+        )
+
+        if (verbose) {
+            print(glue::glue("Estimated {latent} latent confounders"))
+        }
+    }
+
     if (latent > 0) {
         pca_wt <- prcomp(scale(df_expr_wt))
         lat_wt <- pca_wt$x[, seq_len(latent), drop = FALSE]
