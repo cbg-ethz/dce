@@ -210,7 +210,7 @@ dce_nb <- function(
         colnames(lat_wt) <- paste0("H", seq_len(latent))
         pca_mt <- prcomp(scale(df_expr_mt))
         lat_mt <- pca_mt$x[, seq_len(latent), drop = FALSE]
-        colnames(lat.mt) <- paste0("H", seq_len(latent))
+        colnames(lat_mt) <- paste0("H", seq_len(latent))
         lat_data <- rbind(lat_wt, lat_mt)
     }
 
