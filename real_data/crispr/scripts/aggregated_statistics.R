@@ -23,7 +23,7 @@ ggplot(aes(x = as.factor(distance), y = abs(dce))) +
   geom_boxplot() +
   scale_y_log10() +
   xlab("Graph distance: perturbed-gene to DCE-edge") +
-  ylab("DCE (only >0.5)") +
+  ylab("abs(DCE) (only >0.5)") +
   ylim(0.5, max(abs(df_all$dce))) +
   facet_wrap(~ study) +
   theme_minimal()
