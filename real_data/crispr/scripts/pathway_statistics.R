@@ -10,11 +10,13 @@ perturbed.genes <- snakemake@params$perturbed_genes
 out.dir <- snakemake@output$out_dir
 dir.create(out.dir, recursive = TRUE)
 
+
 # handle multiple knockouts
 perturbed.genes %<>%
   purrr::map(~ strsplit(., ",")[[1]]) %>%
   unlist %>%
   unique
+
 
 # degree distribution
 df.degree <- purrr::map_dfr(graph.files, function(fname) {
@@ -47,6 +49,7 @@ ggplot(df.degree, aes(x = degree.in)) +
   theme_minimal()
 ggsave(file.path(out.dir, "indegree_distribution.pdf"))
 
+
 # count distribution
 df.expr.wt <- read_csv(fname.expr.wt) %>% column_to_rownames("X1") %>% as.matrix
 
@@ -62,16 +65,17 @@ df.counts <- purrr::map_dfr(graph.files, function(fname) {
   pathway_nodes <- igraph::vertex_attr(graph, "name")
   common_genes <- intersect(pathway_nodes, rownames(df.expr.wt))
 
-  df.sub <- df.expr.wt[common_genes, ]
-  if (is.null(dim(df.sub))) {
+  df_sub <- df.expr.wt[common_genes, ]
+  if (is.null(dim(df_sub))) {
     # only a single gene was selected
     stopifnot(length(common_genes) == 1)
 
-    gene_medians <- median(df.sub)
+    gene_medians <- median(df_sub)
   } else {
-    gene_medians <- matrixStats::rowMedians(df.sub)
+    gene_medians <- matrixStats::rowMedians(df_sub)
   }
 
+  median_count <- median(gene_medians)
   good_counts <- sum(gene_medians > 1)
   good_count_fraction <- good_counts / length(gene_medians)
 
@@ -79,6 +83,7 @@ df.counts <- purrr::map_dfr(graph.files, function(fname) {
     pathway = pathway.name,
     pathway_size = length(pathway_nodes),
     pathway_countmatrix_overlap = length(common_genes),
+    median_count = median_count,
     good_counts = good_counts,
     good_count_fraction = good_count_fraction
   )
