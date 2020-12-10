@@ -65,7 +65,7 @@ rule all:
         'pathway_statistics/',
         'perturbation_analysis/expression_statistics.csv',
         'performance/plots/',
-        'aggregated_statistics/plots/'
+        'aggregated_statistics/details/'
 
 
 checkpoint retrieve_pathways:
@@ -165,7 +165,7 @@ rule aggregated_statistics:
     input:
         fname = 'aggregated_statistics/dce_lists.csv'
     output:
-        out_dir = directory('aggregated_statistics/plots/')
+        out_dir = directory('aggregated_statistics/details/')
     script:
         'scripts/aggregated_statistics.R'
 

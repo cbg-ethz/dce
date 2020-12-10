@@ -19,7 +19,8 @@ df_all %>%
 df_cov <- df_all %>%
   group_by(study, treatment, perturbed_gene, pathway) %>%
   summarize(dce_na_fraction = sum(is.na(dce)) / n()) %>%
-  arrange(dce_na_fraction)
+  arrange(dce_na_fraction) %>%
+  write_csv(file.path(out_dir, glue::glue("pathway_coverage.csv")))
 
 df_cov %>%
   head
