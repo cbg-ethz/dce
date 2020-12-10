@@ -71,6 +71,8 @@ rule all:
 checkpoint retrieve_pathways:
     output:
         pathway_dir = directory('pathways/')
+    resources:
+        mem_mb = 5_000
     script:
         'scripts/retrieve_pathways.R'
 
