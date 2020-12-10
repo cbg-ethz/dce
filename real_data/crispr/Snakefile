@@ -62,8 +62,8 @@ localrules: all, aggregate_expression_statistics, aggregate_dce_lists
 
 rule all:
     input:
-        'perturbation_analysis/all_genes/',
-        'perturbation_analysis/per_gene/expression_statistics.csv',
+        'pathway_statistics/',
+        'perturbation_analysis/expression_statistics.csv',
         'performance/plots/',
         'aggregated_statistics/plots/'
 
@@ -75,16 +75,16 @@ checkpoint retrieve_pathways:
         'scripts/retrieve_pathways.R'
 
 
-rule analyze_perturbed_genes:
+rule pathway_statistics:
     input:
         count_wt_file = srcdir('data/epistasis/Counts_Ctrl_1.csv'),
         graph_files = aggregate_pathway_files
     output:
-        out_dir = directory('perturbation_analysis/all_genes/')
+        out_dir = directory('pathway_statistics/')
     params:
         perturbed_genes = all_perturbed_genes
     script:
-        'scripts/analyze_perturbed_genes.R'
+        'scripts/pathway_statistics.R'
 
 
 rule analyze_single_perturbed_gene:
@@ -92,7 +92,7 @@ rule analyze_single_perturbed_gene:
         count_wt_file = srcdir('data/{study}/Counts_Ctrl_{treatment}.csv'),
         count_mt_file = srcdir('data/{study}/Counts_{gene}_{treatment}.csv')
     output:
-        out_dir = directory('perturbation_analysis/per_gene/{study}/{gene}/{treatment}/')
+        out_dir = directory('perturbation_analysis/{study}/{gene}/{treatment}/')
     resources:
         mem_mb = 10_000
     script:
@@ -101,10 +101,10 @@ rule analyze_single_perturbed_gene:
 
 rule aggregate_expression_statistics:
     input:
-        dir_list = [f'perturbation_analysis/per_gene/{study}/{gene}/{treatment}/'
+        dir_list = [f'perturbation_analysis/{study}/{gene}/{treatment}/'
                     for study, gene, treatment in case_list]
     output:
-        fname = 'perturbation_analysis/per_gene/expression_statistics.csv'
+        fname = 'perturbation_analysis/expression_statistics.csv'
     run:
         import pandas as pd
 
