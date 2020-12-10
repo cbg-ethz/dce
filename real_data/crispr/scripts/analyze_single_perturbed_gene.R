@@ -27,7 +27,7 @@ stopifnot(sum(grepl('\\.', rownames(df.expr.mt))) == 0)
 
 
 # normalize gene counts
-norm.method <- "deseq2" # c("raw", "tpm", "deseq2")
+norm.method <- "raw" # c("raw", "tpm", "deseq2")
 
 if (norm.method == "raw") {
   # nothing to do
