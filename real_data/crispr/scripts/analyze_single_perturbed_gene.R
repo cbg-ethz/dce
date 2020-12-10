@@ -8,6 +8,7 @@ fname.expr.mt <- snakemake@input$count_mt_file
 cur.gene <- snakemake@wildcards$gene
 
 out.dir <- snakemake@output$out_dir
+dir.create(out.dir, recursive = TRUE)
 
 
 # expression histograms

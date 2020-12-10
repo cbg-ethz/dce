@@ -8,6 +8,7 @@ graph.files <- snakemake@input$graph_files
 perturbed.genes <- snakemake@params$perturbed_genes
 
 out.dir <- snakemake@output$out_dir
+dir.create(out.dir, recursive = TRUE)
 
 # handle multiple knockouts
 perturbed.genes %<>%
