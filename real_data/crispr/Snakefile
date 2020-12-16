@@ -40,7 +40,19 @@ def aggregate_dce_results(wildcards):
     checkpoint_output = checkpoints.retrieve_pathways.get(**wildcards).output.pathway_dir
 
     pathway_template = os.path.join(checkpoint_output, 'csv_files/{pathway}.csv')
-    pathway_list = glob_wildcards(pathway_template).pathway
+    pw_stats = (pd.read_csv('pathway_statistics/pathway_statistics.csv')
+                  .set_index('pathway')
+                  .to_dict(orient='index'))
+
+    pathway_list = []
+    # pathway_list = glob_wildcards(pathway_template).pathway
+
+    for pw, stats in pw_stats.items():
+        if (
+            stats['pathway_node_size'] >= config['pathway_constraints']['min_pathway_node_size']
+            and stats['pathway_edge_size'] <= config['pathway_constraints']['max_pathway_edge_size']
+        ):
+            pathway_list.append(pw)
 
     file_list = []
     for pathway in pathway_list:
@@ -139,7 +151,8 @@ rule compute_dces:
 
 rule aggregate_dce_lists:
     input:
-        dir_list = aggregate_dce_results
+        dir_list = aggregate_dce_results,
+        pw_stats_dir = 'pathway_statistics/'
     output:
         fname = 'aggregated_statistics/dce_lists.csv'
     run:
