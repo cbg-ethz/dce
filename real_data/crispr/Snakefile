@@ -39,8 +39,11 @@ def aggregate_pathway_files(wildcards):
 def aggregate_dce_results(wildcards):
     checkpoint_output = checkpoints.retrieve_pathways.get(**wildcards).output.pathway_dir
 
+    pw_stats_dir = checkpoints.pathway_statistics.get(**wildcards).output.out_dir
+    pw_stats_fname = os.path.join(pw_stats_dir, 'pathway_statistics.csv')
+
     pathway_template = os.path.join(checkpoint_output, 'csv_files/{pathway}.csv')
-    pw_stats = (pd.read_csv('pathway_statistics/pathway_statistics.csv')
+    pw_stats = (pd.read_csv(pw_stats_fname)
                   .set_index('pathway')
                   .to_dict(orient='index'))
 
@@ -89,7 +92,7 @@ checkpoint retrieve_pathways:
         'scripts/retrieve_pathways.R'
 
 
-rule pathway_statistics:
+checkpoint pathway_statistics:
     input:
         count_wt_file = srcdir('data/epistasis/Counts_Ctrl_1.csv'),
         graph_files = aggregate_pathway_files
@@ -151,8 +154,7 @@ rule compute_dces:
 
 rule aggregate_dce_lists:
     input:
-        dir_list = aggregate_dce_results,
-        pw_stats_dir = 'pathway_statistics/'
+        dir_list = aggregate_dce_results
     output:
         fname = 'aggregated_statistics/dce_lists.csv'
     run:
