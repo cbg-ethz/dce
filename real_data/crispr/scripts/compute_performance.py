@@ -32,13 +32,13 @@ def main(fname, out_dir):
         for idx, group in tqdm(group_pathway.groupby([
             'study', 'treatment', 'perturbed_gene'
         ]), leave=False):
+            # TODO: find better way of handling NAs
+            group.dropna(inplace=True)
+
             # sanity checks
             if group['true_effect'].sum() == 0:
                 print(f'[{pathway}] Skipping {idx}, no true positives...')
                 continue
-
-            # TODO: find better way of handling NAs
-            group.dropna(inplace=True)
 
             # compute performance measures
             #edge_score = group['dce_pvalue']
