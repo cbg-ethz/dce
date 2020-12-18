@@ -195,10 +195,10 @@ get_prediction_counts <- function(truth, inferred, cutoff = 0.5) {
 #' Create random DAG (topologically ordered)
 #'
 #' Creates a DAG according to given parameters.
-#' @param n Number of nodes
+#' @param node_num Number of nodes
 #' @param prob Probability of creating an edge
-#' @param lB Lower bound for edge weights
-#' @param uB Upper bound for edge weights
+#' @param eff_min Lower bound for edge weights
+#' @param eff_max Upper bound for edge weights
 #' @param node_labels Node labels
 #' @author Martin Pirkl
 #' @return graph
@@ -207,60 +207,28 @@ get_prediction_counts <- function(truth, inferred, cutoff = 0.5) {
 #' @examples
 #' dag <- create_random_DAG(30, 0.2)
 create_random_DAG <- function(
-    n, prob,
-    lB = -1, uB = 1,
-    node_labels = paste0("n", as.character(seq_len(n)))
+    node_num, prob,
+    eff_min = -1, eff_max = 1,
+    node_labels = paste0("n", as.character(seq_len(node_num)))
 ) {
     stopifnot(
-        n >= 2, is.numeric(prob), length(prob) == 1, 0 <= prob, prob <= 1,
-        is.numeric(lB), is.numeric(uB), lB <= uB
+        node_num >= 2, is.numeric(prob), length(prob) == 1, 0 <= prob, prob <= 1,
+        is.numeric(eff_min), is.numeric(eff_max), eff_min <= eff_max
     )
-    if (length(uB) == 1) { uB <- c(0, uB) }
-    if (length(lB) == 1) { lB <- c(lB, 0) }
-    if (lB[1] - lB[2] == 0) {
-        lB <- uB
-    }
-    if (uB[1] - uB[2] == 0) {
-        uB <- lB
-    }
-    edL <- vector("list", n)
-    nmbEdges <- 0L
-    for (i in seq_len(n - 2)) {
-        listSize <- rbinom(1, n - i, prob)
-        nmbEdges <- nmbEdges + listSize
-        edgeList <- sample(seq(i + 1, n), size = listSize)
-        posedges <- sample(
-            seq_len(length(edgeList)), ceiling(length(edgeList)/2)
-        )
-        negedges <- seq_len(length(edgeList))[-posedges]
-        weightList <- numeric(length(edgeList))
-        weightList[posedges] <- runif(
-            length(posedges), min = uB[1], max = uB[2]
-        )
-        if (length(negedges) > 0) {
-            weightList[negedges] <- runif(
-                length(negedges), min = lB[1], max = lB[2]
-            )
-        }
-        edL[[i]] <- list(edges = edgeList, weights = weightList)
-    }
-    listSize <- rbinom(1, 1, prob)
-    if (listSize > 0) {
-        nmbEdges <- nmbEdges + 1
-        edgeList <- n
-        weightList <- sample(c(runif(1, min = lB[1], max = lB[2]), runif(1, min = uB[1], max = uB[2])), 1)
-    }
-    else {
-        edgeList <- integer(0)
-        weightList <- numeric(0)
-    }
-    edL[[n - 1]] <- list(edges = edgeList, weights = weightList)
-    if (nmbEdges > 0) {
-        edL[[n]] <- list(edges = integer(0), weights = numeric(0))
-        names(edL) <- node_labels
-        new("graphNEL", nodes = node_labels, edgeL = edL, edgemode = "directed")
-    }
-    else new("graphNEL", nodes = node_labels, edgemode = "directed")
+
+    # create (directed) adjacency matrix
+    tmp <- matrix(rbinom(node_num * node_num, 1, prob), node_num, node_num)
+    tmp[lower.tri(tmp)] <- 0
+
+    # assign effects
+    tmp[tmp != 0] <- runif(sum(tmp != 0), min = eff_min, max = eff_max)
+
+    # set node labels
+    rownames(tmp) <- colnames(tmp) <- node_labels
+
+    igraph::as_graphnel(
+        igraph::graph_from_adjacency_matrix(tmp, weighted = TRUE)
+    )
 }
 
 
