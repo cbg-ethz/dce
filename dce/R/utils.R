@@ -219,6 +219,7 @@ create_random_DAG <- function(
     # create (directed) adjacency matrix
     mat <- matrix(rbinom(node_num * node_num, 1, prob), node_num, node_num)
     mat[lower.tri(mat)] <- 0
+    diag(mat) <- 0
 
     # assign effects
     mat[mat != 0] <- runif(sum(mat != 0), min = eff_min, max = eff_max)
