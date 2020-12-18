@@ -31,7 +31,7 @@ df_stats <- purrr::map_dfr(graph_files, function(fname) {
       sink = col_character()
     )
   ))
-  pathway_name <- strsplit(basename(fname), "\\.")[[1]][[1]]
+  pathway_name <- tools::file_path_sans_ext(basename(fname))
 
   # pathway graph properties
   mean_degree <- mean(igraph::degree(graph, mode = "all"))
