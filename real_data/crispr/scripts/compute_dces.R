@@ -96,6 +96,7 @@ if (dim(df_volcano)[[1]] > 0) {
 # p-value/network distance plot
 df_final %>%
   filter(!is.infinite(distance)) %>%
+  drop_na %>%
 ggplot(aes(x = -log10(dce_pvalue), y = distance, color = dce)) +
   geom_point() +
   xlab("-log10(DCE p-value)") +
