@@ -217,17 +217,24 @@ create_random_DAG <- function(
     )
 
     # create (directed) adjacency matrix
-    tmp <- matrix(rbinom(node_num * node_num, 1, prob), node_num, node_num)
-    tmp[lower.tri(tmp)] <- 0
+    mat <- matrix(rbinom(node_num * node_num, 1, prob), node_num, node_num)
+    mat[lower.tri(mat)] <- 0
 
     # assign effects
-    tmp[tmp != 0] <- runif(sum(tmp != 0), min = eff_min, max = eff_max)
+    mat[mat != 0] <- runif(sum(mat != 0), min = eff_min, max = eff_max)
 
     # set node labels
-    rownames(tmp) <- colnames(tmp) <- node_labels
+    rownames(mat) <- colnames(mat) <- node_labels
 
+    # topologically sort graph
+    nodes_sorted <- igraph::topo_sort(
+        igraph::graph_from_adjacency_matrix(mat, weighted = TRUE)
+    )
+    mat <- mat[nodes_sorted, nodes_sorted]
+
+    # return graph
     igraph::as_graphnel(
-        igraph::graph_from_adjacency_matrix(tmp, weighted = TRUE)
+        igraph::graph_from_adjacency_matrix(mat, weighted = TRUE)
     )
 }
 
