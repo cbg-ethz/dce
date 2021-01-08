@@ -1,3 +1,11 @@
+compute.tpm <- function(counts, len.kb = 1) {
+  # TODO: is len.kb == 1 reasonable in our case?
+  rpk <- counts / len.kb
+  pm.scale <- rowSums(rpk) / 1e6
+  return(rpk / pm.scale)
+}
+
+
 run.all.models <- function(
   wt.graph, wt.X,
   mt.graph, mt.X,
@@ -211,7 +219,7 @@ run.all.models <- function(
     res.dce.lm$dce_pvalue[as(wt.graph.perturbed, "matrix") == 0] <- NA
   }
   time.dce.lm <- as.integer(difftime(Sys.time(), time.tmp, units = "secs"))
-  
+
   time.tmp <- Sys.time()
   if (is.null(methods) || "dce.lm.tpm" %in% methods) {
     res.dce.lm.tpm <- dce(
@@ -228,7 +236,7 @@ run.all.models <- function(
     res.dce.lm.tpm$dce_pvalue[as(wt.graph.perturbed, "matrix") == 0] <- NA
   }
   time.dce.lm.tpm <- as.integer(difftime(Sys.time(), time.tmp, units = "secs"))
-  
+
   time.tmp <- Sys.time()
   if (is.null(methods) || "dce.lm.vcovHC" %in% methods) {
     res.dce.lm.vcovHC <- dce(
@@ -261,7 +269,7 @@ run.all.models <- function(
     res.ldgm$dce_pvalue[as(wt.graph.perturbed, "matrix") == 0] <- NA
   }
   time.ldgm <- as.integer(difftime(Sys.time(), time.tmp, units = "secs"))
-    
+
   # Diff with FastGGM
   time.tmp <- Sys.time()
   if (is.null(methods) || "fggm" %in% methods) {
@@ -273,7 +281,7 @@ run.all.models <- function(
     res.fggm$dce_pvalue[as(wt.graph.perturbed, "matrix") == 0] <- NA
   }
   time.fggm <- as.integer(difftime(Sys.time(), time.tmp, units = "secs"))
-    
+
   # null models
   time.tmp <- Sys.time()
   if (is.null(methods) || "rand" %in% methods) {
