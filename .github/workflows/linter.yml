@@ -23,9 +23,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
           VALIDATE_BASH: true
-          VALIDATE_MARKDOWN: true
+          # VALIDATE_MARKDOWN: true
           VALIDATE_PYTHON_BLACK: true
-          VALIDATE_PYTHON_FLAKE8: true
+          # VALIDATE_PYTHON_FLAKE8: true
           VALIDATE_R: true
-          VALIDATE_SNAKEMAKE_LINT: true
-          VALIDATE_SNAKEMAKE_SNAKEFMT: true
+          # VALIDATE_SNAKEMAKE_LINT: true
+          # VALIDATE_SNAKEMAKE_SNAKEFMT: true
