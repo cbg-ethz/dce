@@ -3,7 +3,7 @@
 #' Generic function which plots any adjacency matrix (assumes DAG)
 #' @param adja_matrix Adjacency matrix of network
 #' @param nodename_map node names
-#' @param edge.colorscale.limits Limits for scale_edge_color_gradient2
+#' @param edgescale_limits Limits for scale_edge_color_gradient2
 #'        (should contain 0). Useful to make plot comparable to others
 #' @param nodesize Node sizes
 #' @param labelsize Node label sizes
