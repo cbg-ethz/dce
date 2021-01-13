@@ -21,7 +21,7 @@
 #' @importFrom glue glue
 #' @importFrom ggplot2 aes theme element_rect arrow unit
 #'             coord_fixed scale_fill_manual waiver
-#' @importFrom tidygraph as_tbl_graph activate mutate
+#' @importFrom tidygraph as_tbl_graph activate mutate .N
 #' @importFrom rlang .data
 #' @importFrom igraph graph_from_adjacency_matrix
 plot_network <- function(
@@ -114,7 +114,22 @@ plot_network <- function(
         mutate(
             dce = pmap_dbl(
                 list(.data$from, .data$to),
-                function(f, t) value_matrix[f, t]
+                function(from_id, to_id) {
+                    from_name <- .N()$name[from_id]
+                    to_name <- .N()$name[to_id]
+
+                    if (
+                        !(from_name %in% rownames(value_matrix)) ||
+                        !(to_name %in% colnames(value_matrix))
+                    ) {
+                        stop(paste0(
+                            "Edge ", from_name, "->", to_name,
+                            " has no weight in value matrix."
+                        ))
+                    }
+
+                    value_matrix[from_name, to_name]
+                }
             ),
             dce.symlog = symlog(dce),
             label = .data$dce %>% round(2) %>% as.character
