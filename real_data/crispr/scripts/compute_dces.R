@@ -109,10 +109,24 @@ graph_sub <- igraph::induced_subgraph(graph, common.genes)
 
 df_final <- res %>%
   as.data.frame %>%
+
+  # add competing methods
+  mutate(cor = melt(res_cor$dce)$value) %>%
+  mutate(cor_pvalue = melt(res_cor$dce_pvalue)$value) %>%
+  mutate(pcor = melt(res_pcor$dce)$value) %>%
+  mutate(pcor_pvalue = melt(res_pcor$dce_pvalue)$value) %>%
+
+  # retain only values on pathway edges
   mutate(pathway_edge = melt(res$graph)$value) %>%
   filter(pathway_edge == 1) %>%
   select(-pathway_edge) %>%
-  purrr::pmap_dfr(function(source, target, dce, dce_stderr, dce_pvalue) {
+
+  # compute additional properties
+  purrr::pmap_dfr(function(
+    source, target,
+    dce, dce_stderr, dce_pvalue,
+    cor, cor_pvalue, pcor, pcor_pvalue
+  ) {
     dist <- igraph::distances(
       graph_sub,
       which(igraph::V(graph_sub)$name %in% strsplit(perturbed.gene, ",")[[1]]),
@@ -124,9 +138,12 @@ df_final <- res %>%
     data.frame(
       source = source, target = target,
       dce = dce, dce_stderr = dce_stderr, dce_pvalue = dce_pvalue,
+      cor = cor, cor_pvalue = cor_pvalue, pcor = pcor, pcor_pvalue = pcor_pvalue,
       distance = dist
     )
   }) %>%
+
+  # format output
   arrange(dce_pvalue)
 
 # save results as dataframe
