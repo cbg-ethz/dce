@@ -95,7 +95,7 @@ p <- cowplot::plot_grid(
 )
 p
 cowplot::save_plot(
-  filename = file.path(out.dir, glue::glue("method_comparison_{appendix}.rds")),
+  filename = file.path(out.dir, glue::glue("method_comparison_{appendix}.pdf")),
   plot = p,
   nrow = 3, ncol = 2,
   base_height = 8, base_asp = 1, limitsize = FALSE
