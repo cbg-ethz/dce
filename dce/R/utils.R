@@ -53,6 +53,9 @@ pcor <- function(x, method = "spearman") {
     } else {
         rho <- rho$estimate
     }
+
+    rownames(rho) <- colnames(rho) <- colnames(x)
+
     return(rho)
 }
 
