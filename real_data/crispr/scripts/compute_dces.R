@@ -34,6 +34,63 @@ res <- dce::dce(
   lib_size = FALSE, latent = 0
 )
 
+# run competing models
+res.cor <- list(dce = cor(X.mt[, common.genes]) - cor(X.wt[, common.genes]))
+res.cor$dce_pvalue <- dce::pcor_perm(X.wt[, common.genes], X.mt[, common.genes], fun = cor)
+
+res.pcor <- list(dce = dce::pcor(X.mt[, common.genes]) - dce::pcor(X.wt[, common.genes]))
+res.pcor$dce_pvalue <- dce::pcor_perm(X.wt[, common.genes], X.mt[, common.genes], fun = dce::pcor)
+
+# plot method comparison
+p <- cowplot::plot_grid(
+  plot_network(
+    res$graph, value_matrix = res$dce,
+    legend_title = "DCE",
+    labelsize = 1, highlighted_nodes = strsplit(perturbed.gene, ",")[[1]]
+  ),
+  plot_network(
+    res$graph, value_matrix = -log10(res$dce_pvalue),
+    legend_title = "DCE p-value (-log)",
+    edgescale_limits = c(0, max(-log10(res$dce_pvalue), na.rm = TRUE)),
+    labelsize = 1, highlighted_nodes = strsplit(perturbed.gene, ",")[[1]]
+  ),
+  plot_network(
+    res$graph, value_matrix = res.cor$dce,
+    legend_title = "Corr",
+    labelsize = 1, highlighted_nodes = strsplit(perturbed.gene, ",")[[1]]
+  ),
+  plot_network(
+    res$graph, value_matrix = -log10(res.cor$dce_pvalue),
+    legend_title = "Corr p-value (-log)",
+    edgescale_limits = c(0, max(-log10(res.cor$dce_pvalue), na.rm = TRUE)),
+    labelsize = 1, highlighted_nodes = strsplit(perturbed.gene, ",")[[1]]
+  ),
+  plot_network(
+    res$graph, value_matrix = res.pcor$dce,
+    legend_title = "P-Corr",
+    labelsize = 1, highlighted_nodes = strsplit(perturbed.gene, ",")[[1]]
+  ),
+  plot_network(
+    res$graph, value_matrix = -log10(res.pcor$dce_pvalue),
+    legend_title = "P-Corr p-value (-log)",
+    edgescale_limits = c(0, max(-log10(res.pcor$dce_pvalue), na.rm = TRUE)),
+    labelsize = 1, highlighted_nodes = strsplit(perturbed.gene, ",")[[1]]
+  ),
+  nrow = 3, ncol = 2,
+  labels = c(
+    "DCE", "DCE p-value",
+    "Corr", "Corr p-value",
+    "P-Corr", "P-Corr p-value"
+  )
+)
+p
+cowplot::save_plot(
+  filename = file.path(out.dir, glue::glue("method_comparison_{appendix}.rds")),
+  plot = p,
+  nrow = 3, ncol = 2,
+  base_height = 8, base_asp = 1, limitsize = FALSE
+)
+
 # save raw results
 saveRDS(res, file = file.path(out.dir, glue::glue("dce_{appendix}.rds")))
 
