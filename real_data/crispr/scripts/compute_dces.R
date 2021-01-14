@@ -35,11 +35,21 @@ res <- dce::dce(
 )
 
 # run competing models
-res.cor <- list(dce = cor(X.mt[, common.genes]) - cor(X.wt[, common.genes]))
-res.cor$dce_pvalue <- dce::pcor_perm(X.wt[, common.genes], X.mt[, common.genes], fun = cor)
+res_cor <- list(
+  dce = cor(X.mt[, common.genes]) - cor(X.wt[, common.genes])
+)
+res_cor$dce_pvalue <- dce::pcor_perm(
+  X.wt[, common.genes], X.mt[, common.genes],
+  fun = cor
+)
 
-res.pcor <- list(dce = dce::pcor(X.mt[, common.genes]) - dce::pcor(X.wt[, common.genes]))
-res.pcor$dce_pvalue <- dce::pcor_perm(X.wt[, common.genes], X.mt[, common.genes], fun = dce::pcor)
+res_pcor <- list(
+  dce = dce::pcor(X.mt[, common.genes]) - dce::pcor(X.wt[, common.genes])
+)
+res_pcor$dce_pvalue <- dce::pcor_perm(
+  X.wt[, common.genes], X.mt[, common.genes],
+  fun = dce::pcor
+)
 
 # plot method comparison
 p <- cowplot::plot_grid(
@@ -55,25 +65,25 @@ p <- cowplot::plot_grid(
     labelsize = 1, highlighted_nodes = strsplit(perturbed.gene, ",")[[1]]
   ),
   plot_network(
-    res$graph, value_matrix = res.cor$dce,
+    res$graph, value_matrix = res_cor$dce,
     legend_title = "Corr",
     labelsize = 1, highlighted_nodes = strsplit(perturbed.gene, ",")[[1]]
   ),
   plot_network(
-    res$graph, value_matrix = -log10(res.cor$dce_pvalue),
+    res$graph, value_matrix = -log10(res_cor$dce_pvalue),
     legend_title = "Corr p-value (-log)",
-    edgescale_limits = c(0, max(-log10(res.cor$dce_pvalue), na.rm = TRUE)),
+    edgescale_limits = c(0, max(-log10(res_cor$dce_pvalue), na.rm = TRUE)),
     labelsize = 1, highlighted_nodes = strsplit(perturbed.gene, ",")[[1]]
   ),
   plot_network(
-    res$graph, value_matrix = res.pcor$dce,
+    res$graph, value_matrix = res_pcor$dce,
     legend_title = "P-Corr",
     labelsize = 1, highlighted_nodes = strsplit(perturbed.gene, ",")[[1]]
   ),
   plot_network(
-    res$graph, value_matrix = -log10(res.pcor$dce_pvalue),
+    res$graph, value_matrix = -log10(res_pcor$dce_pvalue),
     legend_title = "P-Corr p-value (-log)",
-    edgescale_limits = c(0, max(-log10(res.pcor$dce_pvalue), na.rm = TRUE)),
+    edgescale_limits = c(0, max(-log10(res_pcor$dce_pvalue), na.rm = TRUE)),
     labelsize = 1, highlighted_nodes = strsplit(perturbed.gene, ",")[[1]]
   ),
   nrow = 3, ncol = 2,
