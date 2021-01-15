@@ -53,12 +53,15 @@ def aggregate_dce_results(wildcards):
     pathway_list = []
     # pathway_list = glob_wildcards(pathway_template).pathway
 
-    for pw, stats in pw_stats.items():
-        if (
-            stats['pathway_node_size'] >= config['pathway_constraints']['min_pathway_node_size']
-            and stats['pathway_edge_size'] <= config['pathway_constraints']['max_pathway_edge_size']
-        ):
-            pathway_list.append(pw)
+    if config['pathway_list'] is None:
+        for pw, stats in pw_stats.items():
+            if (
+                stats['pathway_node_size'] >= config['pathway_constraints']['min_pathway_node_size']
+                and stats['pathway_edge_size'] <= config['pathway_constraints']['max_pathway_edge_size']
+            ):
+                pathway_list.append(pw)
+    else:
+        pathway_list = config['pathway_list']
 
     file_list = []
     for pathway in pathway_list:

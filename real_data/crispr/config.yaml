@@ -1,5 +1,6 @@
 workdir: pipeline_run
 
+pathway_list: null  # pathway_constraints is ignored if non-null
 pathway_constraints:
     min_pathway_node_size: 5
     max_pathway_edge_size: 1000
