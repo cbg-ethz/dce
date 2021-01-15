@@ -155,13 +155,6 @@ run.all.models <- function(
 
   time.tmp <- Sys.time()
   if (is.null(methods) || "dce.tpm" %in% methods) {
-    compute.tpm <- function(counts, len.kb = 1) {
-      # TODO: is len.kb == 1 reasonable in our case?
-      rpk <- counts / len.kb
-      pm.scale <- rowSums(rpk) / 1e6
-      return(rpk / pm.scale)
-    }
-
     res.dce.tpm <- dce::dce_nb(
       wt.graph.perturbed, compute.tpm(wt.X), compute.tpm(mt.X),
       adjustment_type = adjustment.type,
@@ -179,13 +172,6 @@ run.all.models <- function(
 
   time.tmp <- Sys.time()
   if (is.null(methods) || "dce.tpmlog" %in% methods) {
-    compute.tpm <- function(counts, len.kb = 1) {
-      # TODO: is len.kb == 1 reasonable in our case?
-      rpk <- counts / len.kb
-      pm.scale <- rowSums(rpk) / 1e6
-      return(rpk / pm.scale)
-    }
-
     solver.args.log <- list(method = "glm.fit", family = gaussian)
     res.dce.tpmlog <- dce::dce(
       wt.graph.perturbed, log(compute.tpm(wt.X)+1), log(compute.tpm(mt.X)+1),
