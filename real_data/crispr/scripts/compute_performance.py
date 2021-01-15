@@ -14,6 +14,13 @@ from sklearn.metrics import (
 from tqdm import tqdm
 
 
+def compute_roc(class_prob, true_class):
+    fpr_list, tpr_list, roc_thresholds = roc_curve(true_class, class_prob)
+    roc_auc = auc(fpr_list, tpr_list)
+
+    return fpr_list, tpr_list, roc_auc
+
+
 def main(fname, out_dir):
     out_dir.mkdir(parents=True, exist_ok=True)
     df = pd.read_csv(fname)
@@ -32,6 +39,8 @@ def main(fname, out_dir):
         for idx, group in tqdm(group_pathway.groupby([
             'study', 'treatment', 'perturbed_gene'
         ]), leave=False):
+            study, treatment, perturbed_gene = idx
+
             # TODO: find better way of handling NAs
             group.dropna(inplace=True)
 
@@ -68,7 +77,7 @@ def main(fname, out_dir):
             plt.tight_layout()
             plt.savefig(plot_dir / f'confusion_matrix_{pathway}_{app}.pdf')
 
-            ax_roc.plot(
+            base_line, = ax_roc.plot(
                 fpr_list, tpr_list,
                 '-o',
                 label=f'{app} ({roc_auc:.2})')
@@ -77,9 +86,34 @@ def main(fname, out_dir):
                 '-o',
                 label=f'{app} ({pr_auc:.2})')
 
+            # competing methods
+            method_columns = ['cor']#, 'pcor']
+
+            for method in method_columns:
+                fpr, tpr, auc_val = compute_roc(group[method], group['true_effect'])
+
+                cur_color = base_line.get_color()
+                ax_roc.plot(
+                    fpr, tpr,
+                    's:',
+                    label=f'[{method}] {app} ({auc_val:.2})',
+                    color=cur_color)
+
+                tmp.append({
+                    'method': method,
+
+                    'pathway': pathway,
+                    'perturbed_gene': perturbed_gene,
+                    'study': study,
+                    'treatment': treatment,
+
+                    'roc_auc': auc_val
+                })
+
             # store results
-            study, treatment, perturbed_gene = idx
             tmp.append({
+                'method': 'dce',
+
                 'pathway': pathway,
                 'perturbed_gene': perturbed_gene,
                 'study': study,
