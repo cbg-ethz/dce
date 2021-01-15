@@ -4,6 +4,10 @@ pathway_constraints:
     min_pathway_node_size: 5
     max_pathway_edge_size: 1000
 
+studies:
+    - epistasis
+    - main
+
 databases:
     - kegg
     - biocarta

@@ -13,6 +13,9 @@ all_perturbed_genes = set()
 for study_entry in os.scandir(srcdir('data/')):
     study = study_entry.name
 
+    if study not in config['studies']:
+        continue
+
     for counts_entry in os.scandir(study_entry):
         if 'Ctrl' in counts_entry.name:
             continue
