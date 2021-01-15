@@ -106,6 +106,8 @@ checkpoint pathway_statistics:
         out_dir = directory('pathway_statistics/')
     params:
         perturbed_genes = all_perturbed_genes
+    resources:
+        mem_mb = 10_000
     script:
         'scripts/pathway_statistics.R'
 
