@@ -87,7 +87,7 @@ def main(fname, out_dir):
                 label=f'{app} ({pr_auc:.2})')
 
             # competing methods
-            method_columns = ['cor']#, 'pcor']
+            method_columns = ['cor', 'pcor']
 
             for method in method_columns:
                 fpr, tpr, auc_val = compute_roc(group[method], group['true_effect'])
