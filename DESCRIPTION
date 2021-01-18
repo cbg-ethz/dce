@@ -16,6 +16,9 @@ biocViews:
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
+Suggests:
+    knitr,
+    testthat (>= 2.1.0)
 VignetteBuilder: knitr
 RoxygenNote: 7.1.1
 Imports:
@@ -47,5 +50,4 @@ Imports:
     glm2,
     graphite,
     reshape2,
-    knitr,
-    testthat
+    formatR
