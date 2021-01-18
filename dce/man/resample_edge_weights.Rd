@@ -4,7 +4,7 @@
 \alias{resample_edge_weights}
 \title{Resample network edge weights}
 \usage{
-resample_edge_weights(g, tp = 1, mineff = 1, maxeff = 2, method = "runif")
+resample_edge_weights(g, tp = 0.5, mineff = 1, maxeff = 2, method = "runif")
 }
 \arguments{
 \item{g}{original graph}

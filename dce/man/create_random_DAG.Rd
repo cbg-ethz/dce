@@ -5,21 +5,21 @@
 \title{Create random DAG (topologically ordered)}
 \usage{
 create_random_DAG(
-  n,
+  node_num,
   prob,
-  lB = -1,
-  uB = 1,
-  node_labels = paste0("n", as.character(seq_len(n)))
+  eff_min = -1,
+  eff_max = 1,
+  node_labels = paste0("n", as.character(seq_len(node_num)))
 )
 }
 \arguments{
-\item{n}{Number of nodes}
+\item{node_num}{Number of nodes}
 
 \item{prob}{Probability of creating an edge}
 
-\item{lB}{Lower bound for edge weights}
+\item{eff_min}{Lower bound for edge weights}
 
-\item{uB}{Upper bound for edge weights}
+\item{eff_max}{Upper bound for edge weights}
 
 \item{node_labels}{Node labels}
 }

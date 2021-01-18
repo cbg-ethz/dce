@@ -10,7 +10,7 @@ simulate_data(
   dist_mean = 1000,
   dist_dispersion = 100,
   link = negative.binomial.special()$linkfun,
-  pop_size = 100,
+  pop_size = 0,
   latent = 0
 )
 }
