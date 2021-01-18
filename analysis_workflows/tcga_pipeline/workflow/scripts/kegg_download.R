@@ -5,6 +5,8 @@ library(Rgraphviz) # for `layoutGraph`
 
 library(org.Hs.eg.db)
 
+devtools::load_all("../../")
+
 
 # load KEGG pathway
 pw.id <- snakemake@wildcards$pathway
