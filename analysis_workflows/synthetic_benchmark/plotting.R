@@ -8,11 +8,13 @@ Benchmark DCE performance and runtime.
 Usage:
   plotting.R
   plotting.R --input STR --output STR
+  plotting.R --input STR --output STR --methods STR
 
 Options:
   -h --help     Show this screen.
   --input STR   CSV file to read data from [default: benchmark_results.csv].
   --output STR  Directory to store plots in [default: plots/].
+  --methods STR    Which methods to plot separated by commas, e.g., cor,pcor [default: NULL].
 " -> doc
 
 arguments <- docopt::docopt(doc)
@@ -21,11 +23,13 @@ arguments <- docopt::docopt(doc)
 # setup environment
 input.fname <- "benchmark_results.csv"
 target.dir <- "plots/"
+methods <- NULL
 
 input.fname <- arguments$input
 target.dir <- arguments$output
+methods <- unlist(strsplit(arguments$methods,','))
 
-print(glue::glue("{input.fname} -> {target.dir}"))
+print(glue::glue("{input.fname} -> {target.dir} (methods)"))
 
 
 # helper functions
@@ -147,6 +151,17 @@ if (!dir.exists(target.dir)) {
 }
 
 df.bench <- read_csv(input.fname)
+if (!is.null(methods)) {
+    df.bench <- df.bench[,colnames(df.bench) %in% c(methods,'type','parameter','varied.parameter','rng.seed')]
+}
+
+# check amount of runs and NAs
+print('runs:')
+print(table(df.bench$parameter[df.bench$type=='correlation']))
+print('dce NAs for correlation:')
+print(summary(df.bench$dce.lm.tpm[df.bench$type=='correlation']))
+print('dce NAs for roc-auc:')
+print(summary(df.bench$dce.lm.tpm[df.bench$type=='roc-auc']))
 
 tmp <- df.bench %>% pull(varied.parameter) %>% unique
 stopifnot(length(tmp) == 1)
