@@ -48,4 +48,5 @@ Imports:
     naturalsort,
     ppcor,
     glm2,
-    graphite
+    graphite,
+    reshape2
