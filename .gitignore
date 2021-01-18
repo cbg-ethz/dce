@@ -2,6 +2,7 @@
 *.DS_Store
 
 # R
+packrat/lib*/
 .Rproj.user
 .Rhistory
 .RData
@@ -9,4 +10,5 @@
 
 # misc
 .snakemake
-tcga_pipeline/pipeline_run/*
+doc
+Meta

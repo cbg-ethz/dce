@@ -1,1 +1,9 @@
 ^\.github$
+
+^packrat/
+^\.Rprofile$
+^.*\.Rproj$
+^\.Rproj\.user$
+
+^doc$
+^Meta$
