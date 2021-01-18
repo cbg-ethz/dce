@@ -3,19 +3,19 @@ test_that("union works", {
     g1 <- create_graph_from_dataframe(data.frame(
       from = c("A"),
       to = c("B")
-    ), edge.weight = function() { 0.5 })
+    ), edge_weight = function() { 0.5 })
     g2 <- create_graph_from_dataframe(data.frame(
       from = c("A"),
       to = c("C")
-    ), edge.weight = function() { 1 })
+    ), edge_weight = function() { 1 })
     g3 <- create_graph_from_dataframe(data.frame(
       from = c("X"),
       to = c("Y")
-    ), edge.weight = function() { -4 })
+    ), edge_weight = function() { -4 })
     g4 <- create_graph_from_dataframe(data.frame(
       from = c("Y"),
       to = c("A")
-    ), edge.weight = function() { 6 })
+    ), edge_weight = function() { 6 })
 
     # compute union
     g_union <- graph_union(c(g1, g2, g3, g4))
@@ -48,17 +48,13 @@ test_that("DAG sampling works", {
   set.seed(42)
 
   # initial graph
-  graph <- dce::create_random_DAG(100, prob = 0.5, lB = c(-7, -4), uB = c(2, 3))
+  graph <- dce::create_random_DAG(100, prob = 0.5, eff_min = -4, eff_max = 3)
   mat <- as(graph, "matrix")
 
   expect_equal(dim(mat), c(100, 100))
-  for (w in mat[mat < 0]) {
-    expect_lte(w, -4)
-    expect_gte(w, -7)
-  }
-  for (w in mat[mat > 0]) {
+  for (w in mat) {
     expect_lte(w, 3)
-    expect_gte(w, 2)
+    expect_gte(w, -4)
   }
 
   # resampled graph
@@ -66,12 +62,8 @@ test_that("DAG sampling works", {
   mat_s <- as(graph_s, "matrix")
 
   expect_equal(dim(mat_s), c(100, 100))
-  for (w in mat_s[mat_s < 0]) {
-    expect_lte(w, -4)
-    expect_gte(w, -7)
-  }
-  for (w in mat_s[mat_s > 0]) {
+  for (w in mat_s) {
     expect_lte(w, 7)
-    expect_gte(w, 4)
+    expect_gte(w, 0)
   }
 })

@@ -2,8 +2,7 @@ test_that("general idea works", {
   set.seed(42)
 
   # create pathway
-  graph <- as(dce::create_random_DAG(n = 20, prob = .2), "matrix")
-  # dce::plot_network(graph)
+  graph <- as(dce::create_random_DAG(node_num = 20, prob = .2), "matrix")
 
   # generate data
   X <- simulate_data(graph, n = 10000, latent = 0)
@@ -23,11 +22,11 @@ test_that("general idea works", {
 
   # account for confounding
   fit_pca = prcomp(scale(X_confounded))
-  # plot(fit_pca)
-  # plot(fit_pca$sdev)
-  fit_scores = fit_pca$x[, 1:latent_count]
+  plot(fit_pca$sdev)
+  fit_scores <- fit_pca$x[, 1:latent_count]
 
-  df_confounded_pca = cbind(df_confounded, fit_scores)
+  df_confounded_pca <- cbind(df_confounded, fit_scores)
+  df_confounded_pca %>% head
 
   # fit models
   fit <- lm(paste0(node_name ,' ~ .'), data = df)
@@ -35,8 +34,30 @@ test_that("general idea works", {
   fit_confounded_pca <- lm(paste0(node_name ,'~ .'), data = df_confounded_pca)
 
   # evaluate results
-  graph[parent_set, node_name]
-  coef(fit)[-1]
-  coef(fit_confounded)[-1]
-  coef(fit_confounded_pca)[-1] # c(-1, -6:-9)
+  true_value <- graph[parent_set, node_name]
+  names(true_value) <- parent_set
+
+  expect_equal(true_value, coef(fit)[parent_set], tolerance = 1e-2)
+  expect_false(isTRUE(all.equal(true_value, coef(fit_confounded)[parent_set], tolerance = 1e-2)))
+  expect_equal(true_value, coef(fit_confounded_pca)[parent_set], tolerance = 1e-2)
+})
+
+
+test_that("deconfounding can improve fit", {
+  set.seed(42)
+
+  graph_wt <- dce::create_random_DAG(node_num = 10, prob = .8)
+  X_wt <- simulate_data(graph_wt, n = 10000, latent = 10)
+
+  graph_mt <- dce::resample_edge_weights(graph_wt)
+  X_mt <- simulate_data(graph_mt, n = 10000, latent = 10)
+
+  res <- dce::dce(graph_wt, X_wt, X_mt, solver = "lm", latent=TRUE)
+
+  res %>%
+    as.data.frame %>%
+    mutate(truth = as.vector(dce::trueEffects(graph_mt)) - as.vector(dce::trueEffects(graph_wt))) %>%
+    dplyr::select(dce, truth)
+
+  # TODO: test result
 })

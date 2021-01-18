@@ -1,14 +1,13 @@
-library(tidyverse)
-
-test_that("exponetial link function explodes mean", {
+test_that("exponential link function explodes mean", {
   set.seed(42)
-  beta <- 0.1
+  beta <- 0.2
 
   A <- rnbinom(100, size = 100, mu = 1000)
   B <- rnbinom(100, size = 100, mu = exp(A * beta))
   C <- rnbinom(100, size = 100, mu = exp(B * beta))
 
-  data.frame(A=A, B=B, C=C) %>% summarize_all(list(mean))
+  data.frame(A = A, B = B, C = C) %>%
+    summarize_all(list(mean))
 
   expect_true(all(is.na(C)))
 })
@@ -52,9 +51,28 @@ test_that("library size correction is useful", {
 })
 
 
-test_that("CRISPR-like intervention leads to non-zero DCE", {
+test_that("transitive edges can affect total pathway enrichment", {
   set.seed(42)
 
+  node_names <- c("A", "B")
+
+  graph_wt <- matrix(c(0, 0, 1e-42, 0), 2, 2)
+  rownames(graph_wt) <- colnames(graph_wt) <- node_names
+  X_wt <- simulate_data(graph_wt)
+
+  graph_mt <- matrix(c(0, 0, .2, 0), 2, 2)
+  rownames(graph_mt) <- colnames(graph_mt) <- node_names
+  X_mt <- simulate_data(graph_mt)
+
+  res <- dce::dce_nb(graph_wt, X_wt, X_mt)
+  res
+
+  # TODO: finish this
+})
+
+
+test_that("CRISPR-like intervention leads to non-zero DCE", {
+  set.seed(42)
 
   # positive beta leads to negative DCE
   beta <- 2
@@ -72,12 +90,15 @@ test_that("CRISPR-like intervention leads to non-zero DCE", {
   X_mt[, "C"] <- rnbinom(100, size = Inf, mu = dce::negative.binomial.special()$linkfun(X_mt[, "B"] * beta))
 
   res <- dce::dce_nb(graph_wt, X_wt, X_mt)
-  res
+  res %>%
+    as.data.frame
+
+  plot(res)
 
   expect_lt(res$dce["A", "B"], 0)
 
 
-  # negative beta leads to positiv DCE
+  # negative beta leads to positive DCE
   beta <- -2
   graph_wt <- dce::create_graph_from_dataframe(
     data.frame(
@@ -93,7 +114,10 @@ test_that("CRISPR-like intervention leads to non-zero DCE", {
   X_mt[, "C"] <- rnbinom(100, size = Inf, mu = dce::negative.binomial.special()$linkfun(X_mt[, "B"] * beta))
 
   res <- dce::dce_nb(graph_wt, X_wt, X_mt)
-  res
+  res %>%
+    as.data.frame
+
+  plot(res)
 
   expect_gt(res$dce["A", "B"], 0)
 })
