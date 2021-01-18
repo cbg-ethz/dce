@@ -1,39 +1,34 @@
 ---
-title: "Simulations: Differential causal effects for pathway enrichment \n
-Simulations of differential causal effects between two groups."
+title: "Simple usage example"
 author: "Kim Jablonski, Martin Pirkl"
 date: "`r Sys.Date()`"
 graphics: yes
 output: BiocStyle::pdf_document
+bibliography: bibliography.bib
 vignette: >
-    %\VignetteIndexEntry{dce}
+    %\VignetteIndexEntry{Simple usage example}
     %\VignetteEngine{knitr::knitr}
     %\VignetteEncoding{UTF-8}
 ---
 
 # Introduction
 
-# Installation and loading
+## Load required packages
 ```{r global_options, include=FALSE}
 knitr::opts_chunk$set(
-    message=FALSE, out.width="\\textwidth", fig.align="center",
-    strip.white=TRUE, warning=FALSE, tidy=TRUE,
-    fig.height = 4, fig.width = 8, error=FALSE
+  message=FALSE, out.width="\\textwidth", fig.align="center",
+  strip.white=TRUE, warning=FALSE, tidy=TRUE,
+  fig.height = 4, fig.width = 8, error=FALSE
 )
 ```
 
-Install the package with the Bioconductor manager package.
-
-```{r, eval=FALSE}
-if (!requireNamespace("BiocManager", quietly = TRUE)) {
-    install.packages("BiocManager")
-}
-BiocManager::install("dce")
-```
 
 Load the package with the library function.
 
 ```{r}
+# fix "object 'guide_edge_colourbar' of mode 'function' was not found" when building vignettes (see also https://github.com/thomasp85/ggraph/issues/75)
+library(ggraph)
+
 library(dce)
 
 set.seed(42)
@@ -48,7 +43,7 @@ its edge weights to generate the mutant network.
 node_num <- 10
 edge_prob <- .2
 
-graph_wt <- create_random_DAG(node_num, edge_prob, lB=c(0.5, 2), uB=c(0.5, 2))
+graph_wt <- create_random_DAG(node_num, edge_prob)
 graph_mt <- resample_edge_weights(graph_wt)
 ```
 
@@ -64,7 +59,7 @@ Finally, it is possible to compute differential causal effects.
 ```{r}
 res <- dce_nb(graph_wt, X_wt, X_mt)
 
-print(res)
+as.data.frame(res)
 ```
 
 The result can be visualized.
@@ -81,6 +76,4 @@ sessionInfo()
 
 # References:
 
-* Taruttis et al
-* Matthuis et al
-* ...
+tba
