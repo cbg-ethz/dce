@@ -115,20 +115,24 @@ plot_network <- function(
             dce = pmap_dbl(
                 list(.data$from, .data$to),
                 function(from_id, to_id) {
-                    from_name <- .N()$name[from_id]
-                    to_name <- .N()$name[to_id]
+                    if (is.null(rownames(value_matrix))) {
+                        return(value_matrix[from_id, to_id])
+                    } else {
+                        from_name <- .N()$name[from_id]
+                        to_name <- .N()$name[to_id]
 
-                    if (
-                        !(from_name %in% rownames(value_matrix)) ||
-                        !(to_name %in% colnames(value_matrix))
-                    ) {
-                        stop(paste0(
-                            "Edge ", from_name, "->", to_name,
-                            " has no weight in value matrix."
-                        ))
+                        if (
+                            !(from_name %in% rownames(value_matrix)) ||
+                            !(to_name %in% colnames(value_matrix))
+                        ) {
+                            stop(paste0(
+                                "Edge ", from_name, "->", to_name,
+                                " has no weight in value matrix."
+                            ))
+                        }
+
+                        return(value_matrix[from_name, to_name])
                     }
-
-                    value_matrix[from_name, to_name]
                 }
             ),
             dce.symlog = symlog(dce),
