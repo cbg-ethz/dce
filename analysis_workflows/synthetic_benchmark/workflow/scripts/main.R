@@ -3,19 +3,14 @@ library(magrittr)
 library(graph)
 library(naturalsort)
 
-devtools::load_all("..")
+devtools::load_all("../..")
 
-lapply(list.files("../R/"),function(x) {
-    if (!(x %in% c(".",".."))) {
-        source(paste0("../R/",x))
-    }
-})
 
-source("helper_functions.R")
-source("models.R")
-source("performance_measures.R")
-source("LDGM.R")
-source("FastGGM.R")
+source("workflow/scripts/helper_functions.R")
+source("workflow/scripts/models.R")
+source("workflow/scripts/performance_measures.R")
+source("workflow/scripts/LDGM.R")
+source("workflow/scripts/FastGGM.R")
 
 # parse commandline arguments
 "
@@ -99,7 +94,7 @@ print(glue::glue("  Parameter: {parameter.list}"))
 seed.list <- sample(seq_len(10^9), replicate.count)
 
 if (sample.kegg) {
-  kegg.dag <- readRDS("pathways.rds")
+  kegg.dag <- readRDS("resoureces/pathways.rds")
   node.num <- 10^9
   replicate.count <- length(kegg.dag)
 }

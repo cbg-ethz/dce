@@ -1,19 +1,19 @@
-configfile: 'config.yaml'
+configfile: 'config/config.yaml'
 localrules: all, aggregate_replicates
 
 
 rule all:
     input:
         expand(
-            'benchmarks/plots_{benchmark}/',
+            'results/plots_{benchmark}/',
             benchmark=config['benchmarks'].keys())
 
 
 rule run_benchmark:
     output:
-        fname = 'benchmarks/replicates/bench_{benchmark}_{replicate}.csv'
+        fname = 'results/replicates/bench_{benchmark}_{replicate}.csv'
     params:
-        benchmark_script = srcdir('main.R')
+        benchmark_script = srcdir('scripts/main.R')
     resources:
         mem_mb = 5_000
     run:
@@ -42,11 +42,11 @@ rule run_benchmark:
 rule aggregate_replicates:
     input:
         fname_list = expand(
-            'benchmarks/replicates/bench_{benchmark}_{replicate}.csv',
+            'results/replicates/bench_{benchmark}_{replicate}.csv',
             replicate=list(range(config['rule_replicates'])),
             allow_missing=True)
     output:
-        fname = 'benchmarks/bench_{benchmark}.csv'
+        fname = 'results/bench_{benchmark}.csv'
     run:
         import pandas as pd
 
@@ -56,11 +56,11 @@ rule aggregate_replicates:
 
 rule plot_results:
     input:
-        fname = 'benchmarks/bench_{benchmark}.csv'
+        fname = 'results/bench_{benchmark}.csv'
     output:
-        outdir = directory('benchmarks/plots_{benchmark}/')
+        outdir = directory('results/plots_{benchmark}/')
     params:
-        plotting_script = srcdir('plotting.R')
+        plotting_script = srcdir('scripts/plotting.R')
     run:
         import sh
 
