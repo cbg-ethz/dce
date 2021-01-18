@@ -71,7 +71,12 @@ nodes <- igraph::vertex.attributes(pathway)$name
 # compute DCEs
 common.genes <- intersect(nodes, rownames(data))
 
-res <- dce::dce_nb(igraph::induced_subgraph(pathway, common.genes), X.group1[, common.genes], X.group2[, common.genes])
-plot(res)
+res <- dce::dce(
+  igraph::induced_subgraph(pathway, common.genes),
+  X.group1[, common.genes], X.group2[, common.genes],
+  solver = "lm",
+  lib_size = FALSE, latent = 0
+)
 
+plot(res, use_symlog = FALSE, nodesize = 30, labelsize = 2)
 ggsave("output.pdf", width = 20, height = 20)
