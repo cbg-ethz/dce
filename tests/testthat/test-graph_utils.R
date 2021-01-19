@@ -3,19 +3,19 @@ test_that("union works", {
     g1 <- create_graph_from_dataframe(data.frame(
       from = c("A"),
       to = c("B")
-    ), edge_weight = function() { 0.5 })
+    ), edge_weight = function() 0.5)
     g2 <- create_graph_from_dataframe(data.frame(
       from = c("A"),
       to = c("C")
-    ), edge_weight = function() { 1 })
+    ), edge_weight = function() 1)
     g3 <- create_graph_from_dataframe(data.frame(
       from = c("X"),
       to = c("Y")
-    ), edge_weight = function() { -4 })
+    ), edge_weight = function() -4)
     g4 <- create_graph_from_dataframe(data.frame(
       from = c("Y"),
       to = c("A")
-    ), edge_weight = function() { 6 })
+    ), edge_weight = function() 6)
 
     # compute union
     g_union <- graph_union(c(g1, g2, g3, g4))

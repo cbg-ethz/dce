@@ -119,7 +119,7 @@ g2dag <- function(g, tc = FALSE) {
             if (sum(g[b, ]) >= sum(g[a, ])) {
                 g3[b, a] <- 1
             }
-            g4 <- mytc(g3)
+            g4 <- mnem:::mytc(g3)
             ord <- order(apply(g4, 1, sum) - apply(g4, 2, sum), decreasing = 1)
             g4 <- g4[ord, ord]
             if (any(g2 + t(g2) > 1)) {
@@ -215,8 +215,14 @@ create_random_DAG <- function(
     node_labels = paste0("n", as.character(seq_len(node_num)))
 ) {
     stopifnot(
-        node_num >= 2, is.numeric(prob), length(prob) == 1, 0 <= prob, prob <= 1,
-        is.numeric(eff_min), is.numeric(eff_max), eff_min <= eff_max
+        node_num >= 2,
+        is.numeric(prob),
+        length(prob) == 1,
+        0 <= prob,
+        prob <= 1,
+        is.numeric(eff_min),
+        is.numeric(eff_max),
+        eff_min <= eff_max
     )
 
     # create (directed) adjacency matrix
@@ -251,7 +257,8 @@ create_random_DAG <- function(
 #' @param mineff minimal differential effect size
 #' @param maxeff maximum effect effect size or standard deviation,
 #' if method is "gauss"
-#' @param method method for drawing the differential for the causal effects. can be "runif", "exp" or "gauss".
+#' @param method method for drawing the differential for the causal effects.
+#' Can be "runif", "exp" or "gauss".
 #' @author Martin Pirkl
 #' @return graph with new edge weights
 #' @export
@@ -294,7 +301,7 @@ resample_edge_weights <- function(g, tp = 0.5,
     change <- which(g != 0)
     change <- unlist(lapply(change, function(x) {
         eff <- g2[x]
-        die <- sample(c(0,1), 1)
+        die <- sample(c(0, 1), 1)
         if (die) {
             if (method == "runif") {
                 effnew <- runif(1, eff + mineff, eff + maxeff)
@@ -318,7 +325,9 @@ resample_edge_weights <- function(g, tp = 0.5,
     g[keep] <- g2[keep]
     edges <- which(gbin == 1, arr.ind = TRUE)
     for (i in seq(nrow(edges))) {
-        edge <- paste0(rownames(gbin)[edges[i, 1]], "|", rownames(gbin)[edges[i, 2]])
+        edge <- paste0(
+            rownames(gbin)[edges[i, 1]], "|", rownames(gbin)[edges[i, 2]]
+        )
         gold@edgeData@data[[edge]]$weight <- g[edges[i, 1], edges[i, 2]]
     }
     return(gold)
@@ -339,17 +348,18 @@ summary.glmmle <- function(x) {
     hess <- x$hessian
     df <- seq_len(length(coef))
     hess <- hess[df, df]
-    hessGlob <- hess
     coef <- coef[df]
     cov <- Gsolve(-hess)
     var.cf <- diag(cov)
     s.err <- sqrt(var.cf)
-    tvalue <- coef/s.err
-    ptvalue <- 2*pt(-abs(tvalue), ncol(hess))
-    pzvalue <- 2*pnorm(-abs(tvalue))
+    tvalue <- coef / s.err
+    ptvalue <- 2 * pt(-abs(tvalue), ncol(hess))
+    pzvalue <- 2 * pnorm(-abs(tvalue))
     y <- list()
     y$coefficients <- cbind(coef, s.err, tvalue, ptvalue, pzvalue)
-    colnames(y$coefficients) <- c("Estimate", "Std. Error", "t value", "Pr(>|t|)", "P(>|z|)")
+    colnames(y$coefficients) <- c(
+        "Estimate", "Std. Error", "t value", "Pr(>|t|)", "P(>|z|)"
+    )
     return(y)
 }
 
@@ -378,10 +388,10 @@ estimateTheta <- function(data, ...) {
 #' @export
 make.log.link <- function(base=exp(1)) {
     structure(list(
-        linkfun=function(mu) { log(mu, base) },
-        linkinv=function(eta) { base**(eta) },
-        mu.eta=function(eta) { base**(eta) },
-        valideta=function(eta) { TRUE }
+        linkfun = function(mu) log(mu, base),
+        linkinv = function(eta) base**eta,
+        mu.eta = function(eta) base**eta,
+        valideta = function(eta) TRUE
     ), class = "link-glm")
 }
 
@@ -404,14 +414,6 @@ make.log.link <- function(base=exp(1)) {
 #' graph.wt <- as(matrix(c(0,0,0,1,0,0,0,1,0), 3), "graphNEL")
 #' trueEffects(graph.wt)
 trueEffects <- function(g, partial = FALSE) {
-    ## n <- ncol(as(g, "matrix"))
-    ## te <- matrix(0, n, n)
-    ## for (i in seq_len(n-1)) {
-    ##     for (j in i:n) {
-    ##         te[i, j] <- causalEffect(g, j, i)
-    ##     }
-    ## }
-    ## return(te)
     a <- as(g, "matrix")
     if (partial) {
         ae <- a
@@ -425,44 +427,44 @@ trueEffects <- function(g, partial = FALSE) {
 }
 
 
-permutation_thresholding = function(X, quantile=0.99){
-    N = 50
-    r = min(dim(X))
-    X = scale(X)
-    
-    evals = matrix(0, nrow=N, ncol=r)
-    for(i in 1:N){
-        X_perm = apply(X, 2, function(xx){sample(xx)})
-        evals[i,] = svd(scale(X_perm))$d[1:r]
+permutation_thresholding <- function(X, quantile=0.99) {
+    N <- 50
+    r <- min(dim(X))
+    X <- scale(X)
+
+    evals <- matrix(0, nrow = N, ncol = r)
+    for (i in 1:N) {
+        X_perm <- apply(X, 2, function(xx) sample(xx))
+        evals[i, ] <- svd(scale(X_perm))$d[1:r]
     }
-    thresholds = apply(evals, 2, function(xx){quantile(xx, probs=quantile)})
-    
-    #last which crosses the threshold
+    thresholds <- apply(evals, 2, function(xx) quantile(xx, probs = quantile))
+
+    # last which crosses the threshold
     return(max(which(c(TRUE, svd(X)$d > thresholds))) - 1)
 }
 
 #' Estimate number of latent confounders
-estimate_latent_confounder_count <- function(X1, X2, method) {
-    if(method == 'auto'){
-        q1 = permutation_thresholding(X1)
-        q2 = permutation_thresholding(X2)
+estimate_latent_confounder_count <- function(X1, X2, method) {  # nolint
+    if (method == "auto") {
+        q1 <- permutation_thresholding(X1)
+        q2 <- permutation_thresholding(X2)
         print(c(q1, q2))
-        return(ceiling((q1+q2)/2))
+        return(ceiling((q1 + q2) / 2))
     }
-    
-    if(method == 'kim'){
+
+    if (method == "kim") {
         #' This function looks at the knee point of a scree plot.
-        
-        X = cbind(X1, X2)
+
+        X <- cbind(X1, X2)
         fit_pca <- prcomp(scale(X))
-    
+
         scree <- fit_pca$sdev
         values <- seq(length(scree))
-    
+
         d1 <- diff(scree) / diff(values) # first derivative
         d2 <- diff(d1) / diff(values[-1]) # second derivative
         idx <- which.max(abs(d2))
-        
+
         return(idx)
     }
 }

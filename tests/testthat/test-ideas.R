@@ -33,10 +33,10 @@ test_that("library size correction is useful", {
   bg.s <- t(t(bg) * lib.factor)
   lib.size <- apply(bg.s, 2, sum)
 
-  lib.size <- round(lib.size/(10^min(round(log10(lib.size)))))
+  lib.size <- round(lib.size / (10^min(round(log10(lib.size)))))
 
   # data overview
-  plot(data.frame(A=A, B=B, A.s=A.s, B.s=B.s))
+  plot(data.frame(A = A, B = B, A.s = A.s, B.s = B.s))
 
   # helper function
   glm.fun <- function(...) {
@@ -44,10 +44,18 @@ test_that("library size correction is useful", {
   }
 
   # fit models
-  glm.fun(B ~ A) # works fine (no library size effect)
-  glm.fun(B.s ~ A.s) # yields wrong estimate
-  glm.fun(B.s ~ A.s + factor(lib.factor)) # works fine (but `lib.factor` is ground truth)
-  glm.fun(B.s ~ A.s + factor(lib.size)) # uses realistic library size correction and yields reasonable estimate
+
+  # works fine (no library size effect)
+  glm.fun(B ~ A)
+
+  # yields wrong estimate
+  glm.fun(B.s ~ A.s)
+
+  # works fine (but `lib.factor` is ground truth)
+  glm.fun(B.s ~ A.s + factor(lib.factor))
+
+  # uses realistic library size correction and yields reasonable estimate
+  glm.fun(B.s ~ A.s + factor(lib.size))
 })
 
 
@@ -81,13 +89,16 @@ test_that("CRISPR-like intervention leads to non-zero DCE", {
       from = c("A", "B"),
       to = c("B", "C")
     ),
-    edge_weight = function() { beta }
+    edge_weight = function() beta
   )
   X_wt <- simulate_data(graph_wt, n = 100)
 
   X_mt <- X_wt
   X_mt[, "B"] <- X_mt[, "B"] * 0.5
-  X_mt[, "C"] <- rnbinom(100, size = Inf, mu = dce::negative.binomial.special()$linkfun(X_mt[, "B"] * beta))
+  X_mt[, "C"] <- rnbinom(
+    100, size = Inf,
+    mu = dce::negative.binomial.special()$linkfun(X_mt[, "B"] * beta)
+  )
 
   res <- dce::dce_nb(graph_wt, X_wt, X_mt)
   res %>%
@@ -105,13 +116,16 @@ test_that("CRISPR-like intervention leads to non-zero DCE", {
       from = c("A", "B"),
       to = c("B", "C")
     ),
-    edge_weight = function() { beta }
+    edge_weight = function() beta
   )
   X_wt <- simulate_data(graph_wt, n = 100)
 
   X_mt <- X_wt
   X_mt[, "B"] <- X_mt[, "B"] * 0.5
-  X_mt[, "C"] <- rnbinom(100, size = Inf, mu = dce::negative.binomial.special()$linkfun(X_mt[, "B"] * beta))
+  X_mt[, "C"] <- rnbinom(
+    100, size = Inf,
+    mu = dce::negative.binomial.special()$linkfun(X_mt[, "B"] * beta)
+  )
 
   res <- dce::dce_nb(graph_wt, X_wt, X_mt)
   res %>%

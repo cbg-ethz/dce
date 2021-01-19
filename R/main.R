@@ -214,17 +214,24 @@ dce_nb <- function(
     verbose
 ) {
     # handle latent variables
-    if (deconfounding){
-        if(is.numeric(num_latent)==FALSE) {
-            num_latent <- estimate_latent_confounder_count(df_expr_wt, df_expr_mt, num_latent)
+    if (deconfounding) {
+        if (is.numeric(num_latent) == FALSE) {
+            num_latent <- estimate_latent_confounder_count(
+                df_expr_wt, df_expr_mt,
+                num_latent
+            )
             if (verbose) {
                 print(glue::glue("Estimated {latent} latent confounders"))
             }
         }
 
         if (num_latent > 0) {
-            lat_wt <- nrow(df_expr_wt)^0.5 * svd(scale(df_expr_wt))$u[, seq_len(num_latent), drop = FALSE]
-            lat_mt <- nrow(df_expr_mt)^0.5 * svd(scale(df_expr_mt))$u[, seq_len(num_latent), drop = FALSE]
+            lat_wt <- nrow(df_expr_wt)^0.5 * svd(
+                scale(df_expr_wt)
+            )$u[, seq_len(num_latent), drop = FALSE]
+            lat_mt <- nrow(df_expr_mt)^0.5 * svd(
+                scale(df_expr_mt)
+            )$u[, seq_len(num_latent), drop = FALSE]
             lat_data <- rbind(lat_wt, lat_mt)
             colnames(lat_data) <- paste0("H", seq_len(num_latent))
         }

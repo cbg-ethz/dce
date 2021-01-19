@@ -1,10 +1,13 @@
 test_that("simple propagation works", {
   set.seed(42)
 
-  graph <- create_graph_from_dataframe(data.frame(
-    from = c("A", "B"),
-    to = c("B", "C")
-  ), edge_weight = function() { 10 })
+  graph <- create_graph_from_dataframe(
+    data.frame(
+      from = c("A", "B"),
+      to = c("B", "C")
+    ),
+    edge_weight = function() 10
+  )
 
   X <- simulate_data(graph, n = 1000, dist_mean = 42)
 

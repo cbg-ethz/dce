@@ -16,9 +16,9 @@ vignette: >
 ## Load required packages
 ```{r global_options, include=FALSE}
 knitr::opts_chunk$set(
-  message=FALSE, out.width="\\textwidth", fig.align="center",
-  strip.white=TRUE, warning=FALSE, tidy=TRUE,
-  fig.height = 4, fig.width = 8, error=FALSE
+  message = FALSE, out.width = "\\textwidth", fig.align = "center",
+  strip.white = TRUE, warning = FALSE, tidy = TRUE,
+  fig.height = 4, fig.width = 8, error = FALSE
 )
 ```
 
@@ -26,7 +26,9 @@ knitr::opts_chunk$set(
 Load the package with the library function.
 
 ```{r}
-# fix "object 'guide_edge_colourbar' of mode 'function' was not found" when building vignettes (see also https://github.com/thomasp85/ggraph/issues/75)
+# fix "object 'guide_edge_colourbar' of mode 'function' was not found"
+# when building vignettes
+# (see also https://github.com/thomasp85/ggraph/issues/75)
 library(ggraph)
 
 library(tidyverse)
