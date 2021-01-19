@@ -18,11 +18,6 @@ jobs:
 
       - uses: r-lib/actions/setup-pandoc@v1
 
-      - name: Setup macOS environment
-        if: runner.os == 'macOS'
-        run: |
-          brew install --cask xquartz
-
       - name: Query dependencies
         run: |
           install.packages('remotes')
