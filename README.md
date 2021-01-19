@@ -24,3 +24,15 @@ remotes::install_github("cbg-ethz/dce")
     * `ovarian_cancer`: How does Ovarian Cancer dysregulate pathways?
     * `synthetic_benchmark`: Synthetic data validation
     * `tcga_pipeline`: Compute effects for loads of data from TCGA
+
+
+## Development notes
+
+* Update NAMESPACE: `Rscript -e "devtools::document()"`
+* Check package locally:
+    * `R CMD build .`
+    * `R CMD check .`
+    * `R CMD BiocCheck`
+* Documentation
+    * Build locally: `Rscript -e "pkgdown::build_site()"`
+    * Deploy: `Rscript -e "pkgdown::deploy_to_branch(new_process = FALSE)"`
