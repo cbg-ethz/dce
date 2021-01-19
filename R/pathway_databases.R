@@ -31,8 +31,8 @@ get_pathway_info <- function(
         if (include_network_statistics) {
           graph <- graphite::pathwayGraph(pw, which = "proteins")
 
-          tmp$node_num <- length(graph::nodes(graph))
-          tmp$edge_num <- length(graph::edges(graph))
+          tmp$node_num <- graph::numNodes(graph)
+          tmp$edge_num <- graph::numEdges(graph)
         }
 
         return(tmp)
