@@ -107,6 +107,10 @@ jobs:
           ## For installing usethis's dependency gert
           brew install libgit2
 
+          ## for installing packages which require X11
+          ## see also https://github.com/r-lib/actions/issues/78
+          brew install --cask xquartz
+
       - name: Install Windows system dependencies
         if: runner.os == 'Windows'
         run: |
