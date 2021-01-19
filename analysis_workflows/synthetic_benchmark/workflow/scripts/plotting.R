@@ -9,12 +9,14 @@ Usage:
   plotting.R
   plotting.R --input STR --output STR
   plotting.R --input STR --output STR --methods STR
+  plotting.R --input STR --output STR --methods STR --parameters STR
 
 Options:
   -h --help     Show this screen.
   --input STR   CSV file to read data from [default: benchmark_results.csv].
   --output STR  Directory to store plots in [default: plots/].
   --methods STR    Which methods to plot separated by commas, e.g., cor,pcor [default: NULL].
+  --parameters STR    Which parameters to plot separated by commas, e.g., 1,5 [default: NULL].
 " -> doc
 
 arguments <- docopt::docopt(doc)
@@ -24,12 +26,14 @@ arguments <- docopt::docopt(doc)
 input.fname <- "benchmark_results.csv"
 target.dir <- "plots/"
 methods <- NULL
+parameters <- NULL
 
 input.fname <- arguments$input
 target.dir <- arguments$output
 methods <- unlist(strsplit(arguments$methods,','))
+parameters <- unlist(strsplit(arguments$parameters,','))
 
-print(glue::glue("{input.fname} -> {target.dir} (methods)"))
+print(glue::glue("{input.fname} -> {target.dir} (methods) (parameters)"))
 
 
 # helper functions
@@ -154,14 +158,19 @@ df.bench <- read_csv(input.fname)
 if (!is.null(methods)) {
     df.bench <- df.bench[,colnames(df.bench) %in% c(methods,'type','parameter','varied.parameter','rng.seed')]
 }
+if (!is.null(parameters)) {
+  df.bench <- df.bench[df.bench$parameter %in% parameters,]
+}
 
 # check amount of runs and NAs
 print('runs:')
 print(table(df.bench$parameter[df.bench$type=='correlation']))
 print('dce NAs for correlation:')
 print(summary(df.bench$dce.lm.tpm[df.bench$type=='correlation']))
+print(summary(df.bench$dce.tpm[df.bench$type=='correlation']))
 print('dce NAs for roc-auc:')
 print(summary(df.bench$dce.lm.tpm[df.bench$type=='roc-auc']))
+print(summary(df.bench$dce.tpm[df.bench$type=='roc-auc']))
 
 tmp <- df.bench %>% pull(varied.parameter) %>% unique
 stopifnot(length(tmp) == 1)
