@@ -3,8 +3,7 @@ library(magrittr)
 library(graph)
 library(naturalsort)
 
-devtools::load_all("../..")
-
+devtools::load_all("../../")
 
 source("workflow/scripts/helper_functions.R")
 source("workflow/scripts/models.R")
@@ -65,7 +64,6 @@ replicate.count <- 100
 link.method <- "identity"
 methods <- NULL
 
-
 # parse parameters
 varied.parameter <- arguments$variable
 parameter.list <- unlist(
@@ -94,7 +92,7 @@ print(glue::glue("  Parameter: {parameter.list}"))
 seed.list <- sample(seq_len(10^9), replicate.count)
 
 if (sample.kegg) {
-  kegg.dag <- readRDS("resoureces/pathways.rds")
+  kegg.dag <- readRDS("resources/pathways.rds")
   node.num <- 10^9
   replicate.count <- length(kegg.dag)
 }
@@ -278,4 +276,4 @@ df.bench <- purrr::pmap_dfr(
     quiet = FALSE
   )
 ) %>%
-  write_csv(output.fname, append = append, col_names = !(append && file.exists(output.fname)))
+  write_csv(output.fname, append = file.exists(output.fname))

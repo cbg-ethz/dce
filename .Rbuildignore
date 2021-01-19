@@ -7,3 +7,9 @@
 
 ^doc$
 ^Meta$
+
+^analysis_workflows$
+
+^_pkgdown\.yml$
+^docs$
+^pkgdown$

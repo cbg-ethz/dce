@@ -1,6 +1,7 @@
 library(tidyverse)
 library(magrittr)
-library(dce)
+
+devtools::load_all("../../")
 
 
 # read data
@@ -48,7 +49,7 @@ res <- purrr::map(tumor_stage_list, function(selected_tumor_stage) {
 
 
   # compute DCEs
-  dce::dce_nb(graph, X.wt, X.mt, lib_size = TRUE)
+  dce::dce(graph, X.wt, X.mt, solver = "lm", lib_size = TRUE)
 }) %>%
   purrr::set_names(tumor_stage_list)
 

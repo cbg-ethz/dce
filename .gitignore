@@ -12,3 +12,4 @@ packrat/lib*/
 .snakemake
 doc
 Meta
+docs

@@ -1,34 +1,26 @@
 ---
 title: "Overview of pathway network databases"
-author: "Kim Jablonski, Martin Pirkl"
+author: "Kim Philipp Jablonski, Martin Pirkl"
 date: "`r Sys.Date()`"
 graphics: yes
-output: BiocStyle::pdf_document
+output: BiocStyle::html_document
 bibliography: bibliography.bib
 vignette: >
-    %\VignetteIndexEntry{dce}
+    %\VignetteIndexEntry{Overview of pathway network databases}
     %\VignetteEngine{knitr::knitr}
     %\VignetteEncoding{UTF-8}
 ---
 
 # Introduction
 
-# Installation and loading
+## Load required packages
+
 ```{r global_options, include=FALSE}
 knitr::opts_chunk$set(
-    message=FALSE, out.width="\\textwidth", fig.align="center",
-    strip.white=TRUE, warning=FALSE, tidy=TRUE,
-    fig.height = 4, fig.width = 8, error=FALSE
+  message=FALSE, out.width="\\textwidth", fig.align="center",
+  strip.white=TRUE, warning=FALSE, tidy=TRUE,
+  fig.height = 4, fig.width = 8, error=FALSE
 )
-```
-
-Install the package with the Bioconductor manager package.
-
-```{r, eval = FALSE}
-if (!requireNamespace("BiocManager", quietly = TRUE)) {
-    install.packages("BiocManager")
-}
-BiocManager::install("dce")
 ```
 
 Load the package with the library function.
@@ -42,8 +34,9 @@ set.seed(42)
 ```
 
 ```{r}
+# only use "small" databases in this example
 df_info <- get_pathway_info(
-  database_list = c("kegg", "biocarta", "nci", "panther", "pharmgkb"), # only use "small" databases in this example
+  database_list = c("kegg", "biocarta", "nci", "panther", "pharmgkb"),
   include_network_statistics = TRUE
 )
 
@@ -77,4 +70,4 @@ df_info %>%
 sessionInfo()
 ```
 
-# References:
+# References

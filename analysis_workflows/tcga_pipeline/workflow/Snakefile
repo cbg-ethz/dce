@@ -1,0 +1,100 @@
+from snakemake.remote.HTTP import RemoteProvider as HTTPRemoteProvider
+
+
+# setup
+HTTP = HTTPRemoteProvider()
+
+configfile: 'config/config.yaml'
+
+
+# rule definitions
+rule all:
+    input:
+        'results/summary/enrichments.csv',
+        expand(
+            'results/plots/{project}/{project}.{pathway}.dce.pdf',
+            project=config['projects'], pathway=config['pathways']),
+        expand('results/drugs/results_{project}_{pathway}.csv', project=config['projects'], pathway=config['pathways'])
+
+
+rule download_TCGA_data:
+    output:
+        data_dir = directory('results/tcga_data/GDCdata/'),
+        hdf5_dname = directory('results/tcga_data/hdf5_store/')
+    script:
+        'scripts/tcga_download.R'
+
+
+rule process_TCGA_data:
+    input:
+        hdf5_dname = 'results/tcga_data/hdf5_store/'
+    output:
+        expression_fname = 'results/tcga_data/{project}/expression_matrix.csv',
+        classification_fname = 'results/tcga_data/{project}/case_classifications.csv'
+    log:
+        notebook = 'notebooks/ProcessTCGAData.{project}.ipynb'
+    notebook:
+        'notebooks/ProcessTCGAData.ipynb'
+
+
+rule download_KEGG_pathway:
+    output:
+        xml_fname = 'results/kegg_data/{pathway}.xml',
+        network_fname = 'results/kegg_data/{pathway}.edgelist.csv.gz',
+        plot_fname = 'results/kegg_data/{pathway}.pdf',
+        geneid_fname = 'results/kegg_data/{pathway}_geneids.csv'
+    script:
+        'scripts/kegg_download.R'
+
+
+rule compute_differential_causal_effects:
+    input:
+        expression_fname = 'results/tcga_data/{project}/expression_matrix.csv',
+        classification_fname = 'results/tcga_data/{project}/case_classifications.csv',
+        network_fname = 'results/kegg_data/{pathway}.edgelist.csv.gz'
+    output:
+        dce_fname = 'results/results/{project}/{project}.{pathway}.dce.rds',
+        csv_fname = 'results/results/{project}/{project}.{pathway}.dce.csv'
+    script:
+        'scripts/compute_dce.R'
+
+
+rule visualize:
+    input:
+        dce_fname = 'results/results/{project}/{project}.{pathway}.dce.rds',
+        geneid_fname = 'results/kegg_data/{pathway}_geneids.csv'
+    output:
+        plot_fname = 'results/plots/{project}/{project}.{pathway}.dce.pdf',
+        heatmap_fname = 'results/plots/{project}/{project}.{pathway}.dce.heatmap.pdf'
+    script:
+        'scripts/visualize.R'
+
+
+rule discover_drugs:
+    input:
+        csv_fname = 'results/results/{project}/{project}.{pathway}.dce.csv',
+        geneid_fname = 'results/kegg_data/{pathway}_geneids.csv',
+
+        hetnet_nodes_fname = HTTP.remote(
+            'https://github.com/hetio/hetionet/raw/master/hetnet/tsv/hetionet-v1.0-nodes.tsv',
+            keep_local=True
+        )[0],
+        hetnet_edges_fname = HTTP.remote(
+            'https://github.com/hetio/hetionet/raw/master/hetnet/tsv/hetionet-v1.0-edges.sif.gz',
+            keep_local=True
+        )[0]
+    output:
+        result_fname = 'results/drugs/results_{project}_{pathway}.csv'
+    script:
+        'scripts/drug_discovery.py'
+
+
+rule summarize:
+    input:
+        dce_fname_list = expand(
+            'results/results/{project}/{project}.{pathway}.dce.rds',
+            project=config['projects'], pathway=config['pathways'])
+    output:
+        enrichment_fname = 'results/summary/enrichments.csv'
+    script:
+        'scripts/summarize_results.R'
