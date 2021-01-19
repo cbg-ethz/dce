@@ -29,6 +29,7 @@ Load the package with the library function.
 # fix "object 'guide_edge_colourbar' of mode 'function' was not found" when building vignettes (see also https://github.com/thomasp85/ggraph/issues/75)
 library(ggraph)
 
+library(tidyverse)
 library(dce)
 
 set.seed(42)
@@ -59,7 +60,9 @@ Finally, it is possible to compute differential causal effects.
 ```{r}
 res <- dce_nb(graph_wt, X_wt, X_mt)
 
-as.data.frame(res)
+res %>%
+  as.data.frame %>%
+  drop_na
 ```
 
 The result can be visualized.
