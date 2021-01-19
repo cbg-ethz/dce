@@ -20,7 +20,9 @@ Depends:
     R (>= 2.10)
 Suggests:
     knitr,
-    testthat (>= 2.1.0)
+    testthat (>= 2.1.0),
+    BiocStyle,
+    cowplot
 VignetteBuilder: knitr
 RoxygenNote: 7.1.1
 Imports:
@@ -54,6 +56,4 @@ Imports:
     reshape2,
     formatR,
     dplyr,
-    glue,
-    BiocStyle,
-    cowplot
+    glue
