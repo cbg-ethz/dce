@@ -30,8 +30,8 @@ run.all.models <- function(
   }
   # reduce data for correlations
   graph <- as(wt.graph, "matrix")
-  wt.X.cor <- wt.X[, seq_len(ncol(graph))]
-  mt.X.cor <- mt.X[, seq_len(ncol(graph))]
+  wt.X.cor <- compute.tpm(wt.X)[, seq_len(ncol(graph))]
+  mt.X.cor <- compute.tpm(mt.X)[, seq_len(ncol(graph))]
 
   # correlations
   time.tmp <- Sys.time()
@@ -138,11 +138,11 @@ run.all.models <- function(
 
   time.tmp <- Sys.time()
   if (is.null(methods) || "dce.nolib" %in% methods) {
-    res.dce.nolib <- dce::dce_nb(
+    res.dce.nolib <- dce::dce(
       wt.graph.perturbed, wt.X, mt.X,
+      solver = 'lm',
       adjustment_type = adjustment.type,
       effect_type = effect.type,
-      solver_args = solver.args,
       lib_size = FALSE
     )
   } else {
@@ -244,10 +244,8 @@ run.all.models <- function(
   # LDGM
   time.tmp <- Sys.time()
   if (is.null(methods) || "ldgm" %in% methods) {
-    res.cor <- list(dce = cor(mt.X.cor) - cor(wt.X.cor))
-    res.cor$dce_pvalue <- pcor_perm(wt.X.cor, mt.X.cor, fun = cor)
-    res.ldgm <- list(dce = LDGM(log(compute.tpm(wt.X.cor)+1),log(compute.tpm(mt.X.cor)+1)))
-    res.ldgm$dce_pvalue <- LDGM.perm(log(compute.tpm(wt.X.cor)+1),log(compute.tpm(mt.X.cor)+1))
+    res.ldgm <- list(dce = LDGM(log(wt.X.cor+1),log(mt.X.cor+1)))
+    res.ldgm$dce_pvalue <- LDGM.perm(log(wt.X.cor+1),log(mt.X.cor+1))
   } else {
     res.ldgm <- ground.truth
     res.ldgm$dce_pvalue <- ground.truth$dce*0
@@ -259,7 +257,7 @@ run.all.models <- function(
   # Diff with FastGGM
   time.tmp <- Sys.time()
   if (is.null(methods) || "fggm" %in% methods) {
-    res.fggm <- FastGGM_Diff(log(compute.tpm(wt.X.cor)+1),log(compute.tpm(mt.X.cor)+1))
+    res.fggm <- FastGGM_Diff(log(wt.X.cor+1),log(mt.X.cor+1))
   } else {
     res.fggm <- ground.truth
     res.fggm$dce_pvalue <- ground.truth$dce*0
