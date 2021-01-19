@@ -48,22 +48,22 @@ test_that("DAG sampling works", {
   set.seed(42)
 
   # initial graph
-  graph <- dce::create_random_DAG(100, prob = 0.5, eff_min = -4, eff_max = 3)
+  graph <- dce::create_random_DAG(100, prob = 0.5, eff_min = -5, eff_max = 5)
   mat <- as(graph, "matrix")
 
   expect_equal(dim(mat), c(100, 100))
   for (w in mat) {
-    expect_lte(w, 3)
-    expect_gte(w, -4)
+    expect_lte(w, 5)
+    expect_gte(w, -5)
   }
 
   # resampled graph
-  graph_s <- dce::resample_edge_weights(graph, tp = 1, mineff = 4, maxeff = 7)
+  graph_s <- dce::resample_edge_weights(graph, tp = 1, mineff = 2, maxeff = 4)
   mat_s <- as(graph_s, "matrix")
 
   expect_equal(dim(mat_s), c(100, 100))
   for (w in mat_s) {
-    expect_lte(w, 7)
-    expect_gte(w, 0)
+    expect_lte(w, 9)
+    expect_gte(w, -9)
   }
 })
