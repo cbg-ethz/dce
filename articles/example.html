@@ -38,6 +38,12 @@
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
 <li>
+  <a href="../index.html">
+    <span class="fas fa-home fa-lg"></span>
+     
+  </a>
+</li>
+<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
@@ -69,11 +75,11 @@
 
       
 
-      </header><script src="example_files/header-attrs-2.6.4/header-attrs.js"></script><div class="row">
+      </header><script src="example_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Simple usage example</h1>
-                        <h4 class="author">Kim Jablonski, Martin Pirkl</h4>
+                        <h4 class="author">Kim Philipp Jablonski, Martin Pirkl</h4>
             
             <h4 class="date">2021-01-19</h4>
       
@@ -97,6 +103,7 @@
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggraph.data-imaginist.com">ggraph</a></span><span class="op">)</span>
 
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://tidyverse.tidyverse.org">tidyverse</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://wilkelab.org/cowplot/">cowplot</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">dce</span><span class="op">)</span>
 
 <span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span></code></pre></div>
@@ -108,27 +115,45 @@
 <p>First we generate a random wild type network and then resample its edge weights to generate the mutant network.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">node_num</span> <span class="op">&lt;-</span> <span class="fl">10</span>
-<span class="va">edge_prob</span> <span class="op">&lt;-</span> <span class="fl">0.2</span>
+<span class="va">edge_prob</span> <span class="op">&lt;-</span> <span class="fl">0.5</span>
 
 <span class="va">graph_wt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_random_DAG.html">create_random_DAG</a></span><span class="op">(</span><span class="va">node_num</span>, <span class="va">edge_prob</span><span class="op">)</span>
-<span class="va">graph_mt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/resample_edge_weights.html">resample_edge_weights</a></span><span class="op">(</span><span class="va">graph_wt</span><span class="op">)</span></code></pre></div>
+<span class="va">graph_mt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/resample_edge_weights.html">resample_edge_weights</a></span><span class="op">(</span><span class="va">graph_wt</span><span class="op">)</span>
+
+<span class="fu">cowplot</span><span class="fu">::</span><span class="fu"><a href="https://wilkelab.org/cowplot/reference/plot_grid.html">plot_grid</a></span><span class="op">(</span><span class="fu"><a href="../reference/plot_network.html">plot_network</a></span><span class="op">(</span><span class="fu">as</span><span class="op">(</span><span class="va">graph_wt</span>, <span class="st">"matrix"</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="../reference/plot_network.html">plot_network</a></span><span class="op">(</span><span class="fu">as</span><span class="op">(</span><span class="va">graph_mt</span>, 
+    <span class="st">"matrix"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<p><img src="example_files/figure-html/unnamed-chunk-2-1.png" width="\textwidth" style="display: block; margin: auto;"></p>
 <p>We can then simulate data for these two networks.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">X_wt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_data.html">simulate_data</a></span><span class="op">(</span><span class="va">graph_wt</span><span class="op">)</span>
 <span class="va">X_mt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_data.html">simulate_data</a></span><span class="op">(</span><span class="va">graph_mt</span><span class="op">)</span></code></pre></div>
 <p>Finally, it is possible to compute differential causal effects.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu">dce_nb</span><span class="op">(</span><span class="va">graph_wt</span>, <span class="va">X_wt</span>, <span class="va">X_mt</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dce.html">dce</a></span><span class="op">(</span><span class="va">graph_wt</span>, <span class="va">X_wt</span>, <span class="va">X_mt</span>, solver <span class="op">=</span> <span class="st">"lm"</span><span class="op">)</span>
 
 <span class="va">res</span> <span class="op">%&gt;%</span> <span class="va">as.data.frame</span> <span class="op">%&gt;%</span> <span class="va">drop_na</span></code></pre></div>
-<pre><code>##   source target          dce  dce_stderr   dce_pvalue
-## 1     n1     n3  0.004294363 0.007024583 5.409788e-01
-## 2     n2     n4  1.538064160 0.009299901 0.000000e+00
-## 3     n4     n5 -1.682516547 0.159245404 4.304014e-26
-## 4     n2     n7 -3.431730936 0.069117089 0.000000e+00
-## 5     n5     n7 -0.072819967 0.173228130 6.742149e-01
-## 6     n4    n10  0.840627006 0.177458277 2.168621e-06
-## 7     n5    n10  0.058833378 0.095514886 5.379207e-01</code></pre>
+<pre><code>##    source target         dce dce_stderr   dce_pvalue
+## 1      n1     n3 -0.01247250 0.01221580 3.085065e-01
+## 2      n1     n4  0.05626508 0.08697680 5.184551e-01
+## 3      n2     n4  0.02197863 0.08085374 7.860373e-01
+## 4      n4     n5 -1.14734408 0.13204269 1.593702e-15
+## 5      n4     n6 -0.13529905 0.14931727 3.660092e-01
+## 6      n1     n7 -3.48839810 0.08662073 9.646663e-97
+## 7      n2     n7 -0.58480388 0.27380255 3.393153e-02
+## 8      n3     n7 -1.41917563 1.03396369 1.714743e-01
+## 9      n4     n7  2.69814910 0.41707010 7.984052e-10
+## 10     n5     n7 -0.95696959 2.11813027 6.519183e-01
+## 11     n6     n8  0.03859311 0.06406200 5.475889e-01
+## 12     n1     n9 -2.25011001 0.12154286 6.594217e-45
+## 13     n4     n9  1.03137526 0.20028758 6.443130e-07
+## 14     n5     n9  0.41747980 0.91100347 6.472759e-01
+## 15     n6     n9  0.89785653 0.52191169 8.696836e-02
+## 16     n1    n10  3.03994995 0.20227322 1.831267e-34
+## 17     n4    n10 -1.79784713 0.34828538 6.075869e-07
+## 18     n5    n10  1.57586929 1.34382087 2.423628e-01
+## 19     n6    n10 -2.99128362 0.73829485 7.353657e-05
+## 20     n8    n10 -0.33526927 1.74653949 8.479727e-01
+## 21     n9    n10 -0.09106629 0.31227815 7.708993e-01</code></pre>
 <p>The result can be visualized.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span></code></pre></div>
@@ -140,12 +165,12 @@
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <pre><code>## R version 4.0.3 (2020-10-10)
-## Platform: x86_64-apple-darwin19.6.0 (64-bit)
+## Platform: x86_64-apple-darwin17.0 (64-bit)
 ## Running under: macOS Catalina 10.15.7
 ## 
 ## Matrix products: default
-## BLAS:   /usr/local/Cellar/openblas/0.3.13/lib/libopenblasp-r0.3.13.dylib
-## LAPACK: /usr/local/Cellar/r/4.0.3_2/lib/R/lib/libRlapack.dylib
+## BLAS:   /Library/Frameworks/R.framework/Versions/4.0/Resources/lib/libRblas.dylib
+## LAPACK: /Library/Frameworks/R.framework/Versions/4.0/Resources/lib/libRlapack.dylib
 ## 
 ## locale:
 ## [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
@@ -154,79 +179,72 @@
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-##  [1] dce_0.99.0       forcats_0.5.0    stringr_1.4.0    dplyr_1.0.2     
-##  [5] purrr_0.3.4      readr_1.4.0      tidyr_1.1.2      tibble_3.0.4    
-##  [9] tidyverse_1.3.0  ggraph_2.0.4     ggplot2_3.3.3    BiocStyle_2.18.1
+##  [1] dce_0.99.0       cowplot_1.1.1    forcats_0.5.0    stringr_1.4.0   
+##  [5] dplyr_1.0.3      purrr_0.3.4      readr_1.4.0      tidyr_1.1.2     
+##  [9] tibble_3.0.5     tidyverse_1.3.0  ggraph_2.0.4     ggplot2_3.3.3   
+## [13] BiocStyle_2.18.1
 ## 
 ## loaded via a namespace (and not attached):
-##   [1] rappdirs_0.3.1           prabclus_2.3-2           ragg_0.4.0              
-##   [4] bit64_4.0.5              knitr_1.30               multcomp_1.4-15         
-##   [7] data.table_1.13.6        generics_0.1.0           metap_1.4               
-##  [10] BiocGenerics_0.36.0      TH.data_1.0-10           RSQLite_2.2.2           
-##  [13] CombinePValue_1.0        bit_4.0.4                mutoss_0.1-12           
-##  [16] webshot_0.5.2            xml2_1.3.2               lubridate_1.7.9.2       
-##  [19] httpuv_1.5.4             assertthat_0.2.1         viridis_0.5.1           
-##  [22] amap_0.8-18              xfun_0.20                hms_0.5.3               
-##  [25] evaluate_0.14            promises_1.1.1           DEoptimR_1.0-8          
-##  [28] fansi_0.4.1              dbplyr_2.0.0             readxl_1.3.1            
-##  [31] Rgraphviz_2.34.0         igraph_1.2.6             DBI_1.1.0               
-##  [34] tmvnsim_1.0-2            htmlwidgets_1.5.3        apcluster_1.4.8         
-##  [37] RcppArmadillo_0.10.1.2.2 stats4_4.0.3             ellipsis_0.3.1          
-##  [40] crosstalk_1.1.0.1        backports_1.2.1          bookdown_0.21           
-##  [43] permute_0.9-5            gbRd_0.4-11              aod_1.3.1               
-##  [46] vctrs_0.3.6              Biobase_2.50.0           Linnorm_2.14.0          
-##  [49] abind_1.4-5              RcppEigen_0.3.3.9.1      withr_2.3.0             
-##  [52] ggforce_0.3.2            sfsmisc_1.1-8            robustbase_0.93-7       
-##  [55] bdsmatrix_1.3-4          checkmate_2.0.0          vegan_2.5-7             
-##  [58] pcalg_2.7-1              mclust_5.4.7             mnormt_2.0.2            
-##  [61] cluster_2.1.0            crayon_1.3.4             ellipse_0.4.2           
-##  [64] labeling_0.4.2           edgeR_3.32.0             pkgconfig_2.0.3         
-##  [67] tweenr_1.0.1             nlme_3.1-151             ggm_2.5                 
-##  [70] nnet_7.3-14              rlang_0.4.10             diptest_0.75-7          
-##  [73] lifecycle_0.2.0          miniUI_0.1.1.1           sandwich_3.0-0          
-##  [76] mathjaxr_1.0-1           modelr_0.1.8             cellranger_1.1.0        
-##  [79] rprojroot_2.0.2          polyclip_1.10-0          matrixStats_0.57.0      
-##  [82] graph_1.68.0             Matrix_1.3-2             carData_3.0-4           
-##  [85] zoo_1.8-8                reprex_0.3.0             viridisLite_0.3.0       
-##  [88] blob_1.2.1               rgl_0.103.5              manipulateWidget_0.10.1 
-##  [91] S4Vectors_0.28.1         scales_1.1.1             plyr_1.8.6              
-##  [94] memoise_1.1.0            graphite_1.36.0          magrittr_2.0.1          
-##  [97] gdata_2.18.0             compiler_4.0.3           plotrix_3.7-8           
-## [100] clue_0.3-58              cli_2.2.0                ps_1.5.0                
-## [103] formatR_1.7              MASS_7.3-53              mgcv_1.8-33             
-## [106] tidyselect_1.1.0         stringi_1.5.3            textshaping_0.2.1       
-## [109] yaml_2.2.1               locfit_1.5-9.4           ggrepel_0.9.0           
-## [112] grid_4.0.3               tools_4.0.3              parallel_4.0.3          
-## [115] rio_0.5.16               rstudioapi_0.13          foreign_0.8-81          
-## [118] snowfall_1.84-6.1        gridExtra_2.3            farver_2.0.3            
-## [121] Rtsne_0.15               digest_0.6.27            BiocManager_1.30.10     
-## [124] shiny_1.5.0              flexclust_1.4-0          mnem_1.6.5              
-## [127] fpc_2.2-9                ppcor_1.1                Rcpp_1.0.5              
-## [130] car_3.0-10               broom_0.7.3              later_1.1.0.1           
-## [133] httr_1.4.2               ggdendro_0.1.22          AnnotationDbi_1.52.0    
-## [136] kernlab_0.9-29           naturalsort_0.1.3        Rdpack_2.1              
-## [139] colorspace_2.0-0         rvest_0.3.6              fs_1.5.0                
-## [142] IRanges_2.24.1           splines_4.0.3            RBGL_1.66.0             
-## [145] statmod_1.4.35           sn_1.6-2                 expm_0.999-5            
-## [148] pkgdown_1.6.1.9000       graphlayouts_0.7.1       multtest_2.46.0         
-## [151] matlib_0.9.4             flexmix_2.3-17           systemfonts_0.3.2       
-## [154] xtable_1.8-4             jsonlite_1.7.2           tidygraph_1.2.0         
-## [157] corpcor_1.6.9            modeltools_0.2-23        R6_2.5.0                
-## [160] gmodels_2.18.1           TFisher_0.2.0            pillar_1.4.7            
-## [163] htmltools_0.5.0          mime_0.9                 glue_1.4.2              
-## [166] fastmap_1.0.1            class_7.3-17             codetools_0.2-18        
-## [169] tsne_0.1-3               mvtnorm_1.1-1            lattice_0.20-41         
-## [172] numDeriv_2016.8-1.1      curl_4.3                 gtools_3.8.2            
-## [175] zip_2.1.1                openxlsx_4.2.3           survival_3.2-7          
-## [178] limma_3.46.0             rmarkdown_2.6.4          desc_1.2.0              
-## [181] fastICA_1.2-2            munsell_0.5.0            e1071_1.7-4             
-## [184] fastcluster_1.1.25       reshape2_1.4.4           haven_2.3.1             
-## [187] gtable_0.3.0             glm2_1.2.1               rbibutils_2.0</code></pre>
+##   [1] tidyselect_1.1.0         RSQLite_2.2.2            AnnotationDbi_1.52.0    
+##   [4] grid_4.0.3               Rtsne_0.15               munsell_0.5.0           
+##   [7] codetools_0.2-16         mutoss_0.1-12            ragg_0.4.1              
+##  [10] statmod_1.4.35           withr_2.4.0              fastICA_1.2-2           
+##  [13] colorspace_2.0-0         Biobase_2.50.0           knitr_1.30              
+##  [16] rstudioapi_0.13          stats4_4.0.3             robustbase_0.93-7       
+##  [19] gbRd_0.4-11              labeling_0.4.2           Rdpack_2.1              
+##  [22] mnormt_2.0.2             polyclip_1.10-0          bit64_4.0.5             
+##  [25] farver_2.0.3             rprojroot_2.0.2          vctrs_0.3.6             
+##  [28] generics_0.1.0           TH.data_1.0-10           xfun_0.20               
+##  [31] fastcluster_1.1.25       diptest_0.75-7           R6_2.5.0                
+##  [34] clue_0.3-58              graphlayouts_0.7.1       RcppEigen_0.3.3.9.1     
+##  [37] locfit_1.5-9.4           flexmix_2.3-17           RcppArmadillo_0.10.1.2.2
+##  [40] assertthat_0.2.1         scales_1.1.1             multcomp_1.4-15         
+##  [43] nnet_7.3-14              gtable_0.3.0             tidygraph_1.2.0         
+##  [46] sandwich_3.0-0           rlang_0.4.10             systemfonts_0.3.2       
+##  [49] splines_4.0.3            broom_0.7.3              checkmate_2.0.0         
+##  [52] reshape2_1.4.4           abind_1.4-5              BiocManager_1.30.10     
+##  [55] yaml_2.2.1               modelr_0.1.8             backports_1.2.1         
+##  [58] RBGL_1.66.0              tools_4.0.3              bookdown_0.21           
+##  [61] ggm_2.5                  ellipsis_0.3.1           ggdendro_0.1.22         
+##  [64] BiocGenerics_0.36.0      plyr_1.8.6               TFisher_0.2.0           
+##  [67] Rcpp_1.0.6               pcalg_2.7-1              ps_1.5.0                
+##  [70] viridis_0.5.1            sfsmisc_1.1-8            S4Vectors_0.28.1        
+##  [73] zoo_1.8-8                haven_2.3.1              ggrepel_0.9.1           
+##  [76] cluster_2.1.0            fs_1.5.0                 apcluster_1.4.8         
+##  [79] magrittr_2.0.1           data.table_1.13.6        gmodels_2.18.1          
+##  [82] reprex_0.3.0             tmvnsim_1.0-2            mvtnorm_1.1-1           
+##  [85] amap_0.8-18              matrixStats_0.57.0       mnem_1.6.5              
+##  [88] flexclust_1.4-0          hms_1.0.0                evaluate_0.14           
+##  [91] mclust_5.4.7             readxl_1.3.1             IRanges_2.24.1          
+##  [94] gridExtra_2.3            bdsmatrix_1.3-4          compiler_4.0.3          
+##  [97] ellipse_0.4.2            crayon_1.3.4             Linnorm_2.14.0          
+## [100] htmltools_0.5.1          corpcor_1.6.9            mgcv_1.8-33             
+## [103] expm_0.999-6             lubridate_1.7.9.2        DBI_1.1.1               
+## [106] tweenr_1.0.1             formatR_1.7              ppcor_1.1               
+## [109] dbplyr_2.0.0             MASS_7.3-53              fpc_2.2-9               
+## [112] rappdirs_0.3.1           Matrix_1.2-18            permute_0.9-5           
+## [115] cli_2.2.0                naturalsort_0.1.3        rbibutils_2.0           
+## [118] gdata_2.18.0             parallel_4.0.3           metap_1.4               
+## [121] igraph_1.2.6             pkgconfig_2.0.3          pkgdown_1.6.1           
+## [124] sn_1.6-2                 numDeriv_2016.8-1.1      xml2_1.3.2              
+## [127] multtest_2.46.0          rvest_0.3.6              digest_0.6.27           
+## [130] tsne_0.1-3               vegan_2.5-7              graph_1.68.0            
+## [133] rmarkdown_2.6            cellranger_1.1.0         edgeR_3.32.1            
+## [136] kernlab_0.9-29           gtools_3.8.2             modeltools_0.2-23       
+## [139] graphite_1.36.0          lifecycle_0.2.0          nlme_3.1-149            
+## [142] jsonlite_1.7.2           aod_1.3.1                desc_1.2.0              
+## [145] viridisLite_0.3.0        limma_3.46.0             fansi_0.4.2             
+## [148] pillar_1.4.7             lattice_0.20-41          httr_1.4.2              
+## [151] plotrix_3.7-8            DEoptimR_1.0-8           survival_3.2-7          
+## [154] glue_1.4.2               CombinePValue_1.0        prabclus_2.3-2          
+## [157] bit_4.0.4                Rgraphviz_2.34.0         ggforce_0.3.2           
+## [160] class_7.3-17             stringi_1.5.3            blob_1.2.1              
+## [163] textshaping_0.2.1        memoise_1.1.0            snowfall_1.84-6.1       
+## [166] mathjaxr_1.0-1           e1071_1.7-4</code></pre>
 </div>
 <div id="references" class="section level1">
 <h1 class="hasAnchor">
-<a href="#references" class="anchor"></a>References:</h1>
-<p>tba</p>
+<a href="#references" class="anchor"></a>References</h1>
 </div>
   </div>
 
@@ -245,7 +263,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>
