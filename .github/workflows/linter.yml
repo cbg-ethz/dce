@@ -50,3 +50,7 @@ jobs:
       - name: Lint
         run: lintr::lint_package()
         shell: Rscript {0}
+
+      - name: Fail on issues
+        run: quit(save = "no", status = length(lintr::lint_package()))
+        shell: Rscript {0}
