@@ -15,7 +15,8 @@ dce(
   p_method = "mean",
   test = "wald",
   lib_size = FALSE,
-  latent = 0,
+  deconfounding = FALSE,
+  num_latent = "auto",
   conservative = FALSE,
   verbose = FALSE
 )

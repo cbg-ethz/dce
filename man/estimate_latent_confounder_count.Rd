@@ -2,10 +2,12 @@
 % Please edit documentation in R/utils.R
 \name{estimate_latent_confounder_count}
 \alias{estimate_latent_confounder_count}
-\title{Estimate number of latent confounders.}
+\title{Estimate number of latent confounders
+This function looks at the knee point of a scree plot.}
 \usage{
-estimate_latent_confounder_count(X)
+estimate_latent_confounder_count(X1, X2, method)
 }
 \description{
+Estimate number of latent confounders
 This function looks at the knee point of a scree plot.
 }
