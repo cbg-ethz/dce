@@ -92,7 +92,7 @@ print(glue::glue("  Parameter: {parameter.list}"))
 seed.list <- sample(seq_len(10^9), replicate.count)
 
 if (sample.kegg) {
-  kegg.dag <- readRDS("../../resources/pathways.rds")
+  kegg.dag <- readRDS("resources/pathways.rds")
   node.num <- 10^9
   replicate.count <- length(kegg.dag)
 }
