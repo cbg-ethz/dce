@@ -52,4 +52,6 @@ Imports:
     reshape2,
     formatR,
     dplyr,
-    glue
+    glue,
+    BiocStyle,
+    cowplot
