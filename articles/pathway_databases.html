@@ -104,66 +104,92 @@
 
 <span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span></code></pre></div>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># only use 'small' databases in this example</span>
-<span class="va">df_info</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_pathway_info.html">get_pathway_info</a></span><span class="op">(</span>database_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"kegg"</span>, <span class="st">"biocarta"</span>, <span class="st">"nci"</span>, <span class="st">"panther"</span>, 
-    <span class="st">"pharmgkb"</span><span class="op">)</span>, include_network_statistics <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
-<pre><code>## Processing kegg
-## Processing biocarta
-## Processing nci
-## Processing panther
-## Processing pharmgkb</code></pre>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">df_info</span> <span class="op">%&gt;%</span> <span class="va">head</span> <span class="op">%&gt;%</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu">dce</span><span class="fu">::</span><span class="va"><a href="../reference/df_pathway_statistics.html">df_pathway_statistics</a></span> <span class="op">%&gt;%</span> <span class="fu">sample_n</span><span class="op">(</span><span class="fl">10</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu">arrange</span><span class="op">(</span><span class="fu">desc</span><span class="op">(</span><span class="va">node_num</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <table class="table">
+<colgroup>
+<col width="7%">
+<col width="9%">
+<col width="66%">
+<col width="7%">
+<col width="7%">
+</colgroup>
 <thead><tr class="header">
 <th align="left">database</th>
-<th align="left">id</th>
-<th align="left">name</th>
+<th align="left">pathway_id</th>
+<th align="left">pathway_name</th>
 <th align="right">node_num</th>
 <th align="right">edge_num</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
 <td align="left">kegg</td>
-<td align="left">hsa:00010</td>
-<td align="left">Glycolysis / Gluconeogenesis</td>
-<td align="right">67</td>
-<td align="right">692</td>
+<td align="left">hsa:04151</td>
+<td align="left">PI3K-Akt signaling pathway</td>
+<td align="right">354</td>
+<td align="right">4552</td>
 </tr>
 <tr class="even">
 <td align="left">kegg</td>
-<td align="left">hsa:00020</td>
-<td align="left">Citrate cycle (TCA cycle)</td>
-<td align="right">30</td>
-<td align="right">196</td>
+<td align="left">hsa:04371</td>
+<td align="left">Apelin signaling pathway</td>
+<td align="right">134</td>
+<td align="right">942</td>
 </tr>
 <tr class="odd">
 <td align="left">kegg</td>
-<td align="left">hsa:00030</td>
-<td align="left">Pentose phosphate pathway</td>
+<td align="left">hsa:04520</td>
+<td align="left">Adherens junction</td>
+<td align="right">68</td>
+<td align="right">170</td>
+</tr>
+<tr class="even">
+<td align="left">kegg</td>
+<td align="left">hsa:04970</td>
+<td align="left">Salivary secretion</td>
+<td align="right">48</td>
+<td align="right">96</td>
+</tr>
+<tr class="odd">
+<td align="left">kegg</td>
+<td align="left">hsa:05321</td>
+<td align="left">Inflammatory bowel disease</td>
+<td align="right">48</td>
+<td align="right">81</td>
+</tr>
+<tr class="even">
+<td align="left">nci</td>
+<td align="left">pid_4166</td>
+<td align="left">Beta2 integrin cell surface interactions</td>
 <td align="right">29</td>
-<td align="right">276</td>
-</tr>
-<tr class="even">
-<td align="left">kegg</td>
-<td align="left">hsa:00040</td>
-<td align="left">Pentose and glucuronate interconversions</td>
-<td align="right">33</td>
-<td align="right">483</td>
+<td align="right">140</td>
 </tr>
 <tr class="odd">
 <td align="left">kegg</td>
-<td align="left">hsa:00051</td>
-<td align="left">Fructose and mannose metabolism</td>
-<td align="right">32</td>
-<td align="right">188</td>
+<td align="left">hsa:00563</td>
+<td align="left">Glycosylphosphatidylinositol (GPI)-anchor biosynthesis</td>
+<td align="right">23</td>
+<td align="right">116</td>
 </tr>
 <tr class="even">
 <td align="left">kegg</td>
-<td align="left">hsa:00052</td>
-<td align="left">Galactose metabolism</td>
-<td align="right">28</td>
-<td align="right">186</td>
+<td align="left">hsa:00900</td>
+<td align="left">Terpenoid backbone biosynthesis</td>
+<td align="right">21</td>
+<td align="right">69</td>
+</tr>
+<tr class="odd">
+<td align="left">biocarta</td>
+<td align="left">pid_10459</td>
+<td align="left">rna polymerase iii transcription</td>
+<td align="right">7</td>
+<td align="right">42</td>
+</tr>
+<tr class="even">
+<td align="left">biocarta</td>
+<td align="left">pid_9732</td>
+<td align="left">estrogen responsive protein efp controls cell cycle and breast tumors growth</td>
+<td align="right">4</td>
+<td align="right">2</td>
 </tr>
 </tbody>
 </table>
@@ -173,12 +199,13 @@
 <h1 class="hasAnchor">
 <a href="#pathway-database-overview" class="anchor"></a>Pathway database overview</h1>
 <p>We provide access to the following topological pathway databases using graphite <span class="citation">(Sales et al. 2012)</span>:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">df_info</span> <span class="op">%&gt;%</span> <span class="fu">count</span><span class="op">(</span><span class="va">database</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu">arrange</span><span class="op">(</span><span class="fu">desc</span><span class="op">(</span><span class="va">n</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">dce</span><span class="fu">::</span><span class="va"><a href="../reference/df_pathway_statistics.html">df_pathway_statistics</a></span> <span class="op">%&gt;%</span> <span class="fu">count</span><span class="op">(</span><span class="va">database</span>, sort <span class="op">=</span> <span class="cn">TRUE</span>, name <span class="op">=</span> <span class="st">"pathway_number"</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+    <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="left">database</th>
-<th align="right">n</th>
+<th align="right">pathway_number</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
@@ -203,15 +230,15 @@
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">df_info</span> <span class="op">%&gt;%</span> <span class="fu">ggplot</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">node_num</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu">geom_histogram</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu">facet_wrap</span><span class="op">(</span><span class="op">~</span><span class="va">database</span>, 
-    scales <span class="op">=</span> <span class="st">"free"</span><span class="op">)</span> <span class="op">+</span> <span class="fu">theme_minimal</span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">dce</span><span class="fu">::</span><span class="va"><a href="../reference/df_pathway_statistics.html">df_pathway_statistics</a></span> <span class="op">%&gt;%</span> <span class="fu">ggplot</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">node_num</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu">geom_histogram</span><span class="op">(</span>bins <span class="op">=</span> <span class="fl">30</span><span class="op">)</span> <span class="op">+</span> 
+    <span class="fu">facet_wrap</span><span class="op">(</span><span class="op">~</span><span class="va">database</span>, scales <span class="op">=</span> <span class="st">"free"</span><span class="op">)</span> <span class="op">+</span> <span class="fu">theme_minimal</span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <p><img src="pathway_databases_files/figure-html/unnamed-chunk-4-1.png" width="\textwidth" style="display: block; margin: auto;"></p>
 </div>
 <div id="session-information" class="section level1">
 <h1 class="hasAnchor">
 <a href="#session-information" class="anchor"></a>Session information</h1>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <pre><code>## R version 4.0.3 (2020-10-10)
 ## Platform: x86_64-apple-darwin17.0 (64-bit)
@@ -278,18 +305,18 @@
 ## [127] numDeriv_2016.8-1.1      xml2_1.3.2               multtest_2.46.0         
 ## [130] rvest_0.3.6              digest_0.6.27            tsne_0.1-3              
 ## [133] vegan_2.5-7              graph_1.68.0             rmarkdown_2.6           
-## [136] cellranger_1.1.0         edgeR_3.32.1             curl_4.3                
-## [139] kernlab_0.9-29           gtools_3.8.2             modeltools_0.2-23       
-## [142] graphite_1.36.0          lifecycle_0.2.0          nlme_3.1-149            
-## [145] jsonlite_1.7.2           aod_1.3.1                desc_1.2.0              
-## [148] viridisLite_0.3.0        limma_3.46.0             fansi_0.4.2             
-## [151] pillar_1.4.7             lattice_0.20-41          httr_1.4.2              
-## [154] plotrix_3.7-8            DEoptimR_1.0-8           survival_3.2-7          
-## [157] glue_1.4.2               CombinePValue_1.0        prabclus_2.3-2          
-## [160] bit_4.0.4                Rgraphviz_2.34.0         ggforce_0.3.2           
-## [163] class_7.3-17             stringi_1.5.3            blob_1.2.1              
-## [166] textshaping_0.2.1        memoise_1.1.0            snowfall_1.84-6.1       
-## [169] mathjaxr_1.0-1           e1071_1.7-4</code></pre>
+## [136] cellranger_1.1.0         edgeR_3.32.1             kernlab_0.9-29          
+## [139] gtools_3.8.2             modeltools_0.2-23        graphite_1.36.0         
+## [142] lifecycle_0.2.0          nlme_3.1-149             jsonlite_1.7.2          
+## [145] aod_1.3.1                desc_1.2.0               viridisLite_0.3.0       
+## [148] limma_3.46.0             fansi_0.4.2              pillar_1.4.7            
+## [151] lattice_0.20-41          httr_1.4.2               plotrix_3.7-8           
+## [154] DEoptimR_1.0-8           survival_3.2-7           glue_1.4.2              
+## [157] CombinePValue_1.0        prabclus_2.3-2           bit_4.0.4               
+## [160] Rgraphviz_2.34.0         ggforce_0.3.2            class_7.3-17            
+## [163] stringi_1.5.3            blob_1.2.1               textshaping_0.2.1       
+## [166] memoise_1.1.0            snowfall_1.84-6.1        mathjaxr_1.0-1          
+## [169] e1071_1.7-4</code></pre>
 </div>
 <div id="references" class="section level1 unnumbered">
 <h1 class="hasAnchor">
