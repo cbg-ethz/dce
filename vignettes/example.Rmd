@@ -1,6 +1,6 @@
 ---
 title: "Simple usage example"
-author: "Kim Jablonski, Martin Pirkl"
+author: "Kim Philipp Jablonski, Martin Pirkl"
 date: "`r Sys.Date()`"
 graphics: yes
 output: BiocStyle::html_document
@@ -30,6 +30,7 @@ Load the package with the library function.
 library(ggraph)
 
 library(tidyverse)
+library(cowplot)
 library(dce)
 
 set.seed(42)
@@ -42,10 +43,15 @@ its edge weights to generate the mutant network.
 
 ```{r}
 node_num <- 10
-edge_prob <- .2
+edge_prob <- .5
 
 graph_wt <- create_random_DAG(node_num, edge_prob)
 graph_mt <- resample_edge_weights(graph_wt)
+
+cowplot::plot_grid(
+  plot_network(as(graph_wt, "matrix")),
+  plot_network(as(graph_mt, "matrix"))
+)
 ```
 
 We can then simulate data for these two networks.
@@ -58,7 +64,7 @@ X_mt <- simulate_data(graph_mt)
 Finally, it is possible to compute differential causal effects.
 
 ```{r}
-res <- dce_nb(graph_wt, X_wt, X_mt)
+res <- dce(graph_wt, X_wt, X_mt, solver = "lm")
 
 res %>%
   as.data.frame %>%
@@ -77,6 +83,4 @@ plot(res)
 sessionInfo()
 ```
 
-# References:
-
-tba
+# References

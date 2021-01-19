@@ -1,6 +1,6 @@
 ---
 title: "Overview of pathway network databases"
-author: "Kim Jablonski, Martin Pirkl"
+author: "Kim Philipp Jablonski, Martin Pirkl"
 date: "`r Sys.Date()`"
 graphics: yes
 output: BiocStyle::html_document
@@ -70,6 +70,4 @@ df_info %>%
 sessionInfo()
 ```
 
-# References:
-
-tba
+# References
