@@ -16,6 +16,8 @@ biocViews:
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
+Depends:
+    R (>= 2.10)
 Suggests:
     knitr,
     testthat (>= 2.1.0)
