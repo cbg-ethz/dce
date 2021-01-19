@@ -3,7 +3,7 @@ title: "Simple usage example"
 author: "Kim Jablonski, Martin Pirkl"
 date: "`r Sys.Date()`"
 graphics: yes
-output: BiocStyle::pdf_document
+output: BiocStyle::html_document
 bibliography: bibliography.bib
 vignette: >
     %\VignetteIndexEntry{Simple usage example}

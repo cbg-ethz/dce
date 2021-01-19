@@ -3,7 +3,7 @@ title: "Overview of pathway network databases"
 author: "Kim Jablonski, Martin Pirkl"
 date: "`r Sys.Date()`"
 graphics: yes
-output: BiocStyle::pdf_document
+output: BiocStyle::html_document
 bibliography: bibliography.bib
 vignette: >
     %\VignetteIndexEntry{Overview of pathway network databases}
