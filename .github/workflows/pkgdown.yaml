@@ -36,6 +36,8 @@ jobs:
         run: |
           remotes::install_deps(dependencies = TRUE)
           install.packages("pkgdown", type = "binary")
+          install.packages("BiocManager")
+          BiocManager::install("BiocStyle")
         shell: Rscript {0}
 
       - name: Install package
