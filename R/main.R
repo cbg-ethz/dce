@@ -35,7 +35,8 @@ setGeneric(
         p_method = "mean",
         test = "wald",
         lib_size = FALSE,
-        latent = 0,
+        deconfounding = FALSE,
+        num_latent = "auto",
         conservative = FALSE,
         verbose = FALSE
     ) {
@@ -58,7 +59,8 @@ setMethod(
         p_method = "mean",
         test = "wald",
         lib_size = FALSE,
-        latent = 0,
+        deconfounding = FALSE,
+        num_latent = "auto",
         conservative = FALSE,
         verbose = FALSE
     ) {
@@ -72,7 +74,8 @@ setMethod(
             p_method,
             test,
             lib_size,
-            latent,
+            deconfounding,
+            num_latent,
             conservative,
             verbose
         )
@@ -91,7 +94,8 @@ setMethod(
         p_method = "mean",
         test = "wald",
         lib_size = FALSE,
-        latent = 0,
+        deconfounding = FALSE,
+        num_latent = "auto",
         conservative = FALSE,
         verbose = FALSE
     ) {
@@ -104,7 +108,8 @@ setMethod(
             p_method,
             test,
             lib_size,
-            latent,
+            deconfounding,
+            num_latent,
             conservative,
             verbose
         )
@@ -123,7 +128,8 @@ setMethod(
         p_method = "mean",
         test = "wald",
         lib_size = FALSE,
-        latent = 0,
+        deconfounding = FALSE,
+        num_latent = "auto",
         conservative = FALSE,
         verbose = FALSE
     ) {
@@ -153,7 +159,8 @@ setMethod(
             p_method,
             test,
             lib_size,
-            latent,
+            deconfounding,
+            num_latent,
             conservative,
             verbose
         )
@@ -170,7 +177,8 @@ dce_nb <- function(
     p_method = "mean",
     test = "wald",
     lib_size = FALSE,
-    latent = 0,
+    deconfounding = FALSE,
+    num_latent = "auto",
     conservative = FALSE,
     verbose = FALSE
 ) {
@@ -182,7 +190,8 @@ dce_nb <- function(
         p_method,
         test,
         lib_size,
-        latent,
+        deconfounding,
+        num_latent,
         conservative,
         verbose
     )
@@ -199,29 +208,26 @@ dce_nb <- function(
     p_method,
     test,
     lib_size,
-    latent,
+    deconfounding,
+    num_latent,
     conservative,
     verbose
 ) {
     # handle latent variables
-    if (is.logical(latent) && latent) {
-        latent <- estimate_latent_confounder_count(
-            cbind(df_expr_wt, df_expr_mt)
-        )
-
-        if (verbose) {
-            print(glue::glue("Estimated {latent} latent confounders"))
+    if (deconfounding){
+        if(is.numeric(num_latent)==FALSE) {
+            num_latent <- estimate_latent_confounder_count(df_expr_wt, df_expr_mt, num_latent)
+            if (verbose) {
+                print(glue::glue("Estimated {latent} latent confounders"))
+            }
         }
-    }
 
-    if (latent > 0) {
-        pca_wt <- prcomp(scale(df_expr_wt))
-        lat_wt <- pca_wt$x[, seq_len(latent), drop = FALSE]
-        colnames(lat_wt) <- paste0("H", seq_len(latent))
-        pca_mt <- prcomp(scale(df_expr_mt))
-        lat_mt <- pca_mt$x[, seq_len(latent), drop = FALSE]
-        colnames(lat_mt) <- paste0("H", seq_len(latent))
-        lat_data <- rbind(lat_wt, lat_mt)
+        if (num_latent > 0) {
+            lat_wt <- nrow(df_expr_wt)^0.5 * svd(scale(df_expr_wt))$u[, seq_len(num_latent), drop = FALSE]
+            lat_mt <- nrow(df_expr_mt)^0.5 * svd(scale(df_expr_mt))$u[, seq_len(num_latent), drop = FALSE]
+            lat_data <- rbind(lat_wt, lat_mt)
+            colnames(lat_data) <- paste0("H", seq_len(num_latent))
+        }
     }
 
     # handle lib_size
@@ -316,10 +322,10 @@ dce_nb <- function(
                 df_data <- cbind(df_data, lib_size = factor(lib_size))
                 form <- paste0("Y ~ N * X + N*lib_size", form_adjustment_suffix)
             }
-            if (latent > 0) {
+            if (deconfounding && num_latent > 0) {
                 df_data <- cbind(df_data, lat_data)
                 form <- paste0(form, " + ",
-                               paste(paste0("N*H", seq_len(latent)),
+                               paste(paste0("N*H", seq_len(num_latent)),
                                      collapse = " + "))
             }
 
