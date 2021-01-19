@@ -50,4 +50,6 @@ Imports:
     glm2,
     graphite,
     reshape2,
-    formatR
+    formatR,
+    dplyr,
+    glue
