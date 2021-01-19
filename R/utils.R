@@ -43,7 +43,7 @@ pcor <- function(x, method = "spearman") {
     if (length(grep("Error", rho)) > 0) {
         warning(paste0("Moore-Penrose generalized matrix invers in ",
                        "function ppcor::pcor crashed. Using ",
-                       "matlib::Ginv instead."))
+                       "MAAS::ginv instead."))
         omega <- cor(x, method = method)
         p <- Gsolve(omega)
         pdiag <- diag(p) %*% t(diag(p))
@@ -132,13 +132,13 @@ g2dag <- function(g, tc = FALSE) {
 }
 
 
-#' @importFrom matlib Ginv
+#' @importFrom MASS ginv
 #' @noRd
 Gsolve <- function(a, b=NULL, ...) {
     if (!is.null(b)) {
-        x <- t(solve(diag(1, nrow(a)), matlib::Ginv(a, ...) %*% b))
+        x <- t(solve(diag(1, nrow(a)), MASS::ginv(a, ...) %*% b))
     } else {
-        x <- matlib::Ginv(a, ...)
+        x <- MASS::ginv(a, ...)
     }
     return(x)
 }

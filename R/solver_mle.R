@@ -216,7 +216,7 @@ summary.glm.mle <- function(x) {
         dplyr::rename(Estimate=".")
 
     # compute p-values for $H_0: \beta_i = 0$
-    cov.mat <- matlib::Ginv(x$hessian)
+    cov.mat <- MASS::ginv(x$hessian)
     var.vec <- diag(cov.mat)
     sd.vec <- sqrt(var.vec)
 
