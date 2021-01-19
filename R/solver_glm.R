@@ -58,6 +58,7 @@ glm.dce.nb.fit <- function(...) {
 #'
 #' fixes a bug, if theta estimation breaks
 #' see ?MASS::glm.nb for argument values
+#' @export
 glm.nb.rob <- function (
     formula, data, weights, subset, na.action, start = NULL,
     etastart, mustart, control = glm.control(...), method = "glm.fit",
