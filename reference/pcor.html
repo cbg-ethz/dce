@@ -146,7 +146,35 @@
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
+    <p>matrix of partial correlations</p>
+
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='va'>x</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='fl'>100</span><span class='op'>)</span>,<span class='fl'>10</span>,<span class='fl'>10</span><span class='op'>)</span>
+<span class='fu'>pcor</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='warning'>Warning: The inverse of variance-covariance matrix is calculated using Moore-Penrose generalized matrix invers due to its determinant of zero.</span></div><div class='output co'>#&gt; <span class='warning'>Warning: NaNs produced</span></div><div class='output co'>#&gt;             [,1]       [,2]       [,3]       [,4]          [,5]        [,6]
+#&gt;  [1,]  1.0000000  0.3295396 -0.5679066  0.8162678 -6.821266e-01  0.67690021
+#&gt;  [2,]  0.3295396  1.0000000  0.6543371 -0.4279222  4.661740e-01 -0.21438023
+#&gt;  [3,] -0.5679066  0.6543371  1.0000000  0.5169239 -5.302658e-01  0.42762005
+#&gt;  [4,]  0.8162678 -0.4279222  0.5169239  1.0000000  6.109051e-01 -0.70138919
+#&gt;  [5,] -0.6821266  0.4661740 -0.5302658  0.6109051  1.000000e+00  0.87301435
+#&gt;  [6,]  0.6769002 -0.2143802  0.4276201 -0.7013892  8.730144e-01  1.00000000
+#&gt;  [7,]  0.5770503 -0.4055680  0.4599503 -0.7079451  5.025781e-01 -0.46663663
+#&gt;  [8,]  0.5880874 -0.1390630  0.3235597 -0.3692290  4.628542e-05  0.05908093
+#&gt;  [9,]  0.8646058 -0.4976690  0.6142488 -0.7755456  9.055497e-01 -0.79628706
+#&gt; [10,] -0.8816436  0.4728731 -0.5398173  0.7887125 -8.518548e-01  0.80705325
+#&gt;             [,7]          [,8]       [,9]      [,10]
+#&gt;  [1,]  0.5770503  5.880874e-01  0.8646058 -0.8816436
+#&gt;  [2,] -0.4055680 -1.390630e-01 -0.4976690  0.4728731
+#&gt;  [3,]  0.4599503  3.235597e-01  0.6142488 -0.5398173
+#&gt;  [4,] -0.7079451 -3.692290e-01 -0.7755456  0.7887125
+#&gt;  [5,]  0.5025781  4.628542e-05  0.9055497 -0.8518548
+#&gt;  [6,] -0.4666366  5.908093e-02 -0.7962871  0.8070533
+#&gt;  [7,]  1.0000000 -4.153637e-01 -0.6063107  0.7205636
+#&gt;  [8,] -0.4153637  1.000000e+00 -0.3149311  0.3900554
+#&gt;  [9,] -0.6063107 -3.149311e-01  1.0000000  0.9499356
+#&gt; [10,]  0.7205636  3.900554e-01  0.9499356  1.0000000</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

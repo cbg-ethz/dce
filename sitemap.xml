@@ -7,9 +7,6 @@
     <loc>https://kpj.github.io/dce//reference/as_adjmat.html</loc>
   </url>
   <url>
-    <loc>https://kpj.github.io/dce//reference/create_graph_from_dataframe.html</loc>
-  </url>
-  <url>
     <loc>https://kpj.github.io/dce//reference/create_random_DAG.html</loc>
   </url>
   <url>
@@ -17,9 +14,6 @@
   </url>
   <url>
     <loc>https://kpj.github.io/dce//reference/df_pathway_statistics.html</loc>
-  </url>
-  <url>
-    <loc>https://kpj.github.io/dce//reference/estimate_latent_confounder_count.html</loc>
   </url>
   <url>
     <loc>https://kpj.github.io/dce//reference/g2dag.html</loc>
@@ -35,15 +29,6 @@
   </url>
   <url>
     <loc>https://kpj.github.io/dce//reference/get_prediction_counts.html</loc>
-  </url>
-  <url>
-    <loc>https://kpj.github.io/dce//reference/glm.dce.fit.html</loc>
-  </url>
-  <url>
-    <loc>https://kpj.github.io/dce//reference/glm.dce.nb.fit.html</loc>
-  </url>
-  <url>
-    <loc>https://kpj.github.io/dce//reference/glm.nb.rob.html</loc>
   </url>
   <url>
     <loc>https://kpj.github.io/dce//reference/glm_solver.html</loc>
@@ -74,15 +59,6 @@
   </url>
   <url>
     <loc>https://kpj.github.io/dce//reference/simulate_data.html</loc>
-  </url>
-  <url>
-    <loc>https://kpj.github.io/dce//reference/summary.glmmle.html</loc>
-  </url>
-  <url>
-    <loc>https://kpj.github.io/dce//reference/symlog.html</loc>
-  </url>
-  <url>
-    <loc>https://kpj.github.io/dce//reference/theta.ml.rob.html</loc>
   </url>
   <url>
     <loc>https://kpj.github.io/dce//reference/topologically_ordering.html</loc>
