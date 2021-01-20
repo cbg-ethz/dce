@@ -19,6 +19,11 @@
 #' sum of wild type and mutant samples or a logical. If TRUE, it is
 #' recommended that both data sets include not only the genes
 #' included in the graph but all genes available in the original data set.
+#' @param deconfounding indicates whether adjustment against latent 
+#' confounding is used. If FALSE, no adjustment is used, if TRUE it adjusts
+#' for confounding by automatically estimating the number of latent confounders.
+#' The estimated number of latent confounders can be chosen manually by setting 
+#' this variable to some number.
 #' @param verbose logical for verbose output
 #' @export
 #' @importFrom graph graphNEL
@@ -36,7 +41,6 @@ setGeneric(
         test = "wald",
         lib_size = FALSE,
         deconfounding = FALSE,
-        num_latent = "auto",
         conservative = FALSE,
         verbose = FALSE
     ) {
@@ -60,7 +64,6 @@ setMethod(
         test = "wald",
         lib_size = FALSE,
         deconfounding = FALSE,
-        num_latent = "auto",
         conservative = FALSE,
         verbose = FALSE
     ) {
@@ -75,7 +78,6 @@ setMethod(
             test,
             lib_size,
             deconfounding,
-            num_latent,
             conservative,
             verbose
         )
@@ -95,7 +97,6 @@ setMethod(
         test = "wald",
         lib_size = FALSE,
         deconfounding = FALSE,
-        num_latent = "auto",
         conservative = FALSE,
         verbose = FALSE
     ) {
@@ -109,7 +110,6 @@ setMethod(
             test,
             lib_size,
             deconfounding,
-            num_latent,
             conservative,
             verbose
         )
@@ -129,7 +129,6 @@ setMethod(
         test = "wald",
         lib_size = FALSE,
         deconfounding = FALSE,
-        num_latent = "auto",
         conservative = FALSE,
         verbose = FALSE
     ) {
@@ -160,7 +159,6 @@ setMethod(
             test,
             lib_size,
             deconfounding,
-            num_latent,
             conservative,
             verbose
         )
@@ -178,7 +176,6 @@ dce_nb <- function(
     test = "wald",
     lib_size = FALSE,
     deconfounding = FALSE,
-    num_latent = "auto",
     conservative = FALSE,
     verbose = FALSE
 ) {
@@ -191,7 +188,6 @@ dce_nb <- function(
         test,
         lib_size,
         deconfounding,
-        num_latent,
         conservative,
         verbose
     )
@@ -209,31 +205,31 @@ dce_nb <- function(
     test,
     lib_size,
     deconfounding,
-    num_latent,
     conservative,
     verbose
 ) {
     # handle latent variables
-    if (deconfounding) {
-        if (is.numeric(num_latent) == FALSE) {
-            num_latent <- estimate_latent_confounder_count(
+    if (deconfounding != FALSE) {
+        if (is.numeric(deconfounding) == FALSE) {
+            deconfounding <- estimate_latent_count(
                 df_expr_wt, df_expr_mt,
-                num_latent
+                ifelse(is.character(deconfounding), deconfounding, "auto")
             )
             if (verbose) {
-                print(glue::glue("Estimated {latent} latent confounders"))
+                print(glue::glue(
+                    "Estimated {deconfounding} latent confounders"))
             }
         }
 
-        if (num_latent > 0) {
+        if (deconfounding > 0) {
             lat_wt <- nrow(df_expr_wt)^0.5 * svd(
                 scale(df_expr_wt)
-            )$u[, seq_len(num_latent), drop = FALSE]
+            )$u[, seq_len(deconfounding), drop = FALSE]
             lat_mt <- nrow(df_expr_mt)^0.5 * svd(
                 scale(df_expr_mt)
-            )$u[, seq_len(num_latent), drop = FALSE]
+            )$u[, seq_len(deconfounding), drop = FALSE]
             lat_data <- rbind(lat_wt, lat_mt)
-            colnames(lat_data) <- paste0("H", seq_len(num_latent))
+            colnames(lat_data) <- paste0("H", seq_len(deconfounding))
         }
     }
 
@@ -341,10 +337,10 @@ dce_nb <- function(
                 df_data <- cbind(df_data, lib_size = factor(lib_size))
                 form <- paste0("Y ~ N * X + N*lib_size", form_adjustment_suffix)
             }
-            if (deconfounding && num_latent > 0) {
+            if (deconfounding > 0) {
                 df_data <- cbind(df_data, lat_data)
                 form <- paste0(form, " + ",
-                               paste(paste0("N*H", seq_len(num_latent)),
+                               paste(paste0("N*H", seq_len(deconfounding)),
                                      collapse = " + "))
             }
 

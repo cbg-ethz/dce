@@ -427,28 +427,52 @@ trueEffects <- function(g, partial = FALSE) {
 }
 
 
-permutation_thresholding <- function(X, quantile=0.99) {
-    N <- 50
-    r <- min(dim(X))
-    X <- scale(X)
-
-    evals <- matrix(0, nrow = N, ncol = r)
-    for (i in 1:N) {
-        X_perm <- apply(X, 2, function(xx) sample(xx))
-        evals[i, ] <- svd(scale(X_perm))$d[1:r]
-    }
-    thresholds <- apply(evals, 2, function(xx) quantile(xx, probs = quantile))
-
-    # last which crosses the threshold
-    return(max(which(c(TRUE, svd(X)$d > thresholds))) - 1)
-}
-
 #' Estimate number of latent confounders
-estimate_latent_confounder_count <- function(X1, X2, method) {  # nolint
+#' Compute the true casual effects of a simulated dag
+#'
+#' This function takes a DAG with edgeweights as input and computes
+#' the causal effects of all nodes on all direct and indirect children in the
+#' DAG. Alternatively see pcalg::causalEffect for pairwise computation.
+#' @param X1 data matrix corresponding to the first condition
+#' @param X2 data matrix corresponding to the second condition
+#' @param method a string indicating the method used for estimating the number
+#' of latent variables
+#' @author Domagoj Ćevid
+#' @return estimated number of latent variables
+#' @export
+#' @importFrom stats prcomp
+#' @examples
+#' graph1 <- create_random_DAG(node_num = 100, prob = .1)
+#' graph2 <- resample_edge_weights(graph1, tp=0.15)
+#' X1 <- simulate_data(graph1, n=200, latent = 3)
+#' X2 <- simulate_data(graph2, n=200, latent = 3)
+#' estimate_latent_count(X1, X2)
+estimate_latent_count <- function(X1, X2, method = "auto") {
     if (method == "auto") {
+        # this function estimates the number of principal components by
+        # comparing the singular values to what they would be if the
+        # variables were independent which is estimated by permuting the
+        # columns of the data matrix
+        permutation_thresholding <- function(X, quantile=0.99) {
+            N <- 50
+            r <- min(dim(X))
+            X <- scale(X)
+
+            evals <- matrix(0, nrow = N, ncol = r)
+            for (i in 1:N) {
+                X_perm <- apply(X, 2, function(xx) sample(xx))
+                evals[i, ] <- svd(scale(X_perm))$d[1:r]
+            }
+            thresholds <- apply(evals,
+                                2, function(xx) quantile(xx, probs = quantile))
+
+            # last which crosses the threshold
+            return(max(which(c(TRUE, svd(X)$d > thresholds))) - 1)
+        }
+
         q1 <- permutation_thresholding(X1)
         q2 <- permutation_thresholding(X2)
-        print(c(q1, q2))
+
         return(ceiling((q1 + q2) / 2))
     }
 
