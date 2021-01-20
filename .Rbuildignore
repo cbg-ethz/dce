@@ -1,9 +1,11 @@
 ^\.github$
+^\.gitignore$
 
 ^packrat/
 ^\.Rprofile$
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^\.lintr$
 
 ^doc$
 ^Meta$
@@ -13,3 +15,5 @@
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
+
+\.ipynb_checkpoints
