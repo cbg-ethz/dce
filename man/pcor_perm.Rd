@@ -15,6 +15,14 @@ pcor_perm(x, y, iter = 1000, fun = pcor, method = "spearman")
 
 \item{i}{number of iterations (permutations)}
 }
+\value{
+matrix of p-values
+}
 \description{
 permutation test for (partial) correlation on non-Gaussian data
+}
+\examples{
+x <- matrix(rnorm(100),10,10)
+y <- matrix(rnorm(100),10,10)
+pcor_perm(x,y,iter=10)
 }

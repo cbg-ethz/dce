@@ -49,6 +49,10 @@ plot of dag and dces
 \description{
 Generic function which plots any adjacency matrix (assumes DAG)
 }
+\examples{
+adj <- matrix(c(0,0,0,1,0,0,0,1,0),3,3)
+plot_network(adj)
+}
 \author{
 Martin Pirkl, Kim Philipp Jablonski
 }

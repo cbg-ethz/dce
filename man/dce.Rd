@@ -51,12 +51,22 @@ included in the graph but all genes available in the original data set.}
 
 \item{deconfounding}{indicates whether adjustment against latent 
 confounding is used. If FALSE, no adjustment is used, if TRUE it adjusts
-for confounding by automatically estimating the number of latent confounders.
-The estimated number of latent confounders can be chosen manually by setting 
-this variable to some number.}
+for confounding by automatically estimating the number of latent
+confounders. The estimated number of latent confounders can be chosen
+manually by setting this variable to some number.}
 
 \item{verbose}{logical for verbose output}
 }
+\value{
+list of matrices with dces and corresponding p-value
+}
 \description{
 Main function to compute differential causal effects and its enrichment
+}
+\examples{
+dag <- create_random_DAG(30, 0.2)
+X.wt <- simulate_data(dag)
+dag.mt <- resample_edge_weights(dag)
+X.mt <- simulate_data(dag)
+dce(dag,X.wt,Xmt)
 }

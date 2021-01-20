@@ -25,7 +25,7 @@ edges are added back in the final step.
 }
 \examples{
 g <- matrix(c(1,0,1,0, 1,1,0,0, 0,1,1,0, 1,1,0,1), 4, 4)
-rownames(g) <- colnames(g) <- LETTERS[1:4]
+rownames(g) <- colnames(g) <- LETTERS[seq_len(4)]
 dag <- g2dag(g)
 }
 \author{

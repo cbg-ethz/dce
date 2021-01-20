@@ -17,7 +17,7 @@ Authors@R:
         )
     )
 Maintainer: Kim Philipp Jablonski <kim.philipp.jablonski@gmail.com>
-Description: Compute differential causal effects on (biological) networks.
+Description: Compute differential causal effects (dce) on (biological) networks. Given observational samples from a control experiment and non-control (e.g., cancer) for two genes A and B, we can compute differential causal effects with a (generalized) linear regression. If the causal effect of gene A on gene B in the control samples is different from the causal effect in the non-control samples the dce will differ from zero. We regularise the dce computation by the inclusion of prior network information from pathway databases such as KEGG.
 URL: https://github.com/kpj/dce
 BugReports: https://github.com/kpj/dce/issues
 biocViews:
@@ -26,12 +26,15 @@ biocViews:
     GraphAndNetwork,
     Regression,
     GeneExpression,
-    DifferentialExpression
+    DifferentialExpression,
+    NetworkEnrichment,
+    Network,
+    KEGG
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
 Depends:
-    R (>= 2.10)
+    R (>= 4.0)
 Suggests:
     knitr,
     testthat (>= 2.1.0),
@@ -45,7 +48,6 @@ VignetteBuilder: knitr
 RoxygenNote: 7.1.1
 Imports:
     stats,
-    graphics,
     methods,
     assertthat,
     graph,
@@ -60,7 +62,6 @@ Imports:
     expm,
     MASS,
     CombinePValue,
-    aod,
     edgeR,
     epiNEM,
     igraph,

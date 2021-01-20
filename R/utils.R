@@ -3,6 +3,11 @@
 #' @param y mutant data set
 #' @param i number of iterations (permutations)
 #' @param fun function to compute the statistic, e.g., cor or pcor
+#' @return matrix of p-values
+#' @examples
+#' x <- matrix(rnorm(100),10,10)
+#' y <- matrix(rnorm(100),10,10)
+#' pcor_perm(x,y,iter=10)
 pcor_perm <- function(x, y, iter = 1000, fun = pcor, method = "spearman") {
     z <- fun(y) - fun(x)
     p <- z * 0
@@ -22,6 +27,10 @@ pcor_perm <- function(x, y, iter = 1000, fun = pcor, method = "spearman") {
 #'
 #' @param g graphNEL object
 #' @export
+#' @return graph as adjacency matrix
+#' @examples
+#' dag <- create_random_DAG(30, 0.2)
+#' adj <- as_adjmat(dag)
 as_adjmat <- function(g) {
     adj <- as(g, "matrix")
     for (p in names(g@edgeData@data)) {
@@ -38,6 +47,10 @@ as_adjmat <- function(g) {
 #' @param x matrix
 #' @importFrom ppcor pcor
 #' @export
+#' @return matrix of partial correlations
+#' @examples
+#' x <- matrix(rnorm(100),10,10)
+#' pcor(x)
 pcor <- function(x, method = "spearman") {
     rho <- try(ppcor::pcor(x, method = method), silent = TRUE)
     if (length(grep("Error", rho)) > 0) {
@@ -76,7 +89,7 @@ pcor <- function(x, method = "spearman") {
 #' @export
 #' @examples
 #' g <- matrix(c(1,0,1,0, 1,1,0,0, 0,1,1,0, 1,1,0,1), 4, 4)
-#' rownames(g) <- colnames(g) <- LETTERS[1:4]
+#' rownames(g) <- colnames(g) <- LETTERS[seq_len(4)]
 #' dag <- g2dag(g)
 g2dag <- function(g, tc = FALSE) {
     ord <- order(apply(g, 1, sum) - apply(g, 2, sum), decreasing = 1)
@@ -334,36 +347,6 @@ resample_edge_weights <- function(g, tp = 0.5,
 }
 
 
-#' Estimate p-values
-#'
-#' Function to compute p-values based on regression coefficients
-#' @param x object of class "glmmle"
-#' @author Martin Pirkl
-#' @return data.frame with coefficients and p-values
-#' @export
-#' @importFrom aod wald.test
-#' @method summary glmmle
-summary.glmmle <- function(object, ...) {
-    coef <- object$coefficients
-    hess <- object$hessian
-    df <- seq_len(length(coef))
-    hess <- hess[df, df]
-    coef <- coef[df]
-    cov <- Gsolve(-hess)
-    var.cf <- diag(cov)
-    s.err <- sqrt(var.cf)
-    tvalue <- coef / s.err
-    ptvalue <- 2 * pt(-abs(tvalue), ncol(hess))
-    pzvalue <- 2 * pnorm(-abs(tvalue))
-    y <- list()
-    y$coefficients <- cbind(coef, s.err, tvalue, ptvalue, pzvalue)
-    colnames(y$coefficients) <- c(
-        "Estimate", "Std. Error", "t value", "Pr(>|t|)", "P(>|z|)"
-    )
-    return(y)
-}
-
-
 #' @importFrom edgeR DGEList calcNormFactors estimateDisp
 #' @noRd
 estimateTheta <- function(data, ...) {
@@ -385,7 +368,7 @@ estimateTheta <- function(data, ...) {
 }
 
 
-#' @export
+#' @noRd
 make.log.link <- function(base=exp(1)) {
     structure(list(
         linkfun = function(mu) log(mu, base),
@@ -426,6 +409,22 @@ trueEffects <- function(g, partial = FALSE) {
     return(ae)
 }
 
+#' @noRd
+permutation_thresholding <- function(X, quantile=0.99) {
+    N <- 50
+    r <- min(dim(X))
+    X <- scale(X)
+
+    evals <- matrix(0, nrow = N, ncol = r)
+    for (i in seq_len(N)) {
+        X_perm <- apply(X, 2, function(xx) sample(xx))
+        evals[i, ] <- svd(scale(X_perm))$d[seq_len(r)]
+    }
+    thresholds <- apply(evals, 2, function(xx) quantile(xx, probs = quantile))
+
+    # last which crosses the threshold
+    return(max(which(c(TRUE, svd(X)$d > thresholds))) - 1)
+}
 
 #' Estimate number of latent confounders
 #' Compute the true casual effects of a simulated dag
@@ -457,7 +456,7 @@ estimate_latent_count <- function(X1, X2, method = "auto") {
             N <- 50
             r <- min(dim(X))
             X <- scale(X)
-
+            
             evals <- matrix(0, nrow = N, ncol = r)
             for (i in 1:N) {
                 X_perm <- apply(X, 2, function(xx) sample(xx))
@@ -465,30 +464,30 @@ estimate_latent_count <- function(X1, X2, method = "auto") {
             }
             thresholds <- apply(evals,
                                 2, function(xx) quantile(xx, probs = quantile))
-
+            
             # last which crosses the threshold
             return(max(which(c(TRUE, svd(X)$d > thresholds))) - 1)
         }
-
+        
         q1 <- permutation_thresholding(X1)
         q2 <- permutation_thresholding(X2)
-
+        
         return(ceiling((q1 + q2) / 2))
     }
-
+    
     if (method == "kim") {
         #' This function looks at the knee point of a scree plot.
-
+        
         X <- cbind(X1, X2)
         fit_pca <- prcomp(scale(X))
-
+        
         scree <- fit_pca$sdev
         values <- seq(length(scree))
-
+        
         d1 <- diff(scree) / diff(values) # first derivative
         d2 <- diff(d1) / diff(values[-1]) # second derivative
         idx <- which.max(abs(d2))
-
+        
         return(idx)
     }
 }

@@ -18,6 +18,14 @@ plot of dag and dces
 This function takes a differential causal effects object and plots
 the dag with the dces
 }
+\examples{
+dag <- create_random_DAG(30, 0.2)
+X.wt <- simulate_data(dag)
+dag.mt <- resample_edge_weights(dag)
+X.mt <- simulate_data(dag)
+dce.list <- dce(dag,X.wt,Xmt)
+plot.dce(dce.list)
+}
 \author{
 Martin Pirkl, Kim Philipp Jablonski
 }

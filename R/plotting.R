@@ -24,6 +24,10 @@
 #' @importFrom tidygraph as_tbl_graph activate mutate .N
 #' @importFrom rlang .data
 #' @importFrom igraph graph_from_adjacency_matrix
+#' @importFrom Rgraphviz agopen
+#' @examples
+#' adj <- matrix(c(0,0,0,1,0,0,0,1,0),3,3)
+#' plot_network(adj)
 plot_network <- function(
     adja_matrix,
     nodename_map = NULL, edgescale_limits = NULL,
@@ -94,7 +98,11 @@ plot_network <- function(
     )) %>%
         activate(nodes) %>%
         mutate(
-            label = if (is.null(nodename_map)) .data$name else nodename_map[.data$name],  # nolint
+            label = if (is.null(nodename_map)) {
+                .data$name
+            } else {
+                nodename_map[.data$name]  # nolint
+            },
             nodesize = nodesize,
             is.highlighted = .data$label %in% highlighted_nodes
         ) %T>%
@@ -103,7 +111,8 @@ plot_network <- function(
             extra_nodes <- setdiff(highlighted_nodes, label_list)
 
             if (length(extra_nodes) > 0) {
-                label_str <- glue::glue_collapse(extra_nodes, sep = ", ")  # nolint
+                label_str <- glue::glue_collapse(extra_nodes,
+                                                 sep = ", ")  # nolint
                 warning(
                     glue::glue("Invalid highlighted nodes: {label_str}"),
                     call. = FALSE
@@ -163,9 +172,17 @@ plot_network <- function(
         ) +
         scale_edge_color_gradient2(
             low = "red", mid = "grey", high = "blue", midpoint = 0,
-            limits = if (use_symlog) symlog(edgescale_limits) else edgescale_limits,  # nolint
+            limits = if (use_symlog) {
+                symlog(edgescale_limits) 
+            } else {
+                edgescale_limits
+            },  # nolint
             breaks = custom_breaks,
-            name = if (use_symlog) glue("{legend_title} (symlog)") else legend_title,  # nolint
+            name = if (use_symlog) {
+                glue("{legend_title} (symlog)") 
+            } else {
+                legend_title
+            },  # nolint
             na.value = "black"
         ) +
         scale_edge_width(
@@ -197,6 +214,13 @@ plot_network <- function(
 #' @method plot dce
 #' @return plot of dag and dces
 #' @export
+#' @examples
+#' dag <- create_random_DAG(30, 0.2)
+#' X.wt <- simulate_data(dag)
+#' dag.mt <- resample_edge_weights(dag)
+#' X.mt <- simulate_data(dag)
+#' dce.list <- dce(dag,X.wt,Xmt)
+#' plot.dce(dce.list)
 plot.dce <- function(x, ...) {
     plot_network(x$graph, value_matrix = x$dce, legend_title = "DCE", ...)
 }
@@ -206,7 +230,7 @@ plot.dce <- function(x, ...) {
 #' @param x Value to transform
 #' @param base Base of logarithm
 #' @param threshold Linearity threshold
-#' @export
+#' @noRd
 symlog <- function(x, base = 10, threshold = 1) {
     if (is.null(x)) {
         return(NULL)

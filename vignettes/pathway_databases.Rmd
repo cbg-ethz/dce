@@ -34,7 +34,8 @@ dce::df_pathway_statistics %>%
 
 # Pathway database overview
 
-We provide access to the following topological pathway databases using graphite [@sales2012graphite]:
+We provide access to the following topological pathway databases using 
+graphite [@sales2012graphite]:
 
 ```{r}
 dce::df_pathway_statistics %>%

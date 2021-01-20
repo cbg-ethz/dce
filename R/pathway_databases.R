@@ -5,6 +5,7 @@
 #' @param include_network_statistics Compute some useful statistics
 #'        per pathway. Takes longer!
 #' @import graphite graph glue purrr
+#' @importFrom dplyr pull
 #' @export
 get_pathway_info <- function(
   query_species = "hsapiens", database_list = NULL,
@@ -69,7 +70,7 @@ get_pathways <- function(
         # remove "SYMBOL:" prefix
         graph <- graphite::pathwayGraph(pw, which = "proteins")
         if (length(nodes(graph)) != 0) {
-          nodes(graph) <- sapply(nodes(graph), function(x) {
+          nodes(graph) <- vapply(nodes(graph), function(x) {
             strsplit(x, ":")[[1]][[2]]
           }, USE.NAMES = FALSE)
         }

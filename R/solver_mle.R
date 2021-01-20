@@ -1,7 +1,4 @@
-#' Modified theta.ml function from package MASS
-#'
-#' fixes a bug, if theta estimation breaks
-#' see ?MASS::theta.ml for argument values
+#' @noRd
 theta.ml.rob <- function(
     y, mu, n = sum(weights), weights,
     limit = 10, eps = .Machine$double.eps^0.25,
@@ -118,7 +115,7 @@ glm.mle <- function(
         int.fixed <- 0
     }
     llnegbin <- function(par, X, y, nvar) {
-        beta <- par[1:nvar]
+        beta <- par[seq_len(nvar)]
         if (intercept) {
             int <- par[nvar + 1]
         } else {
@@ -149,7 +146,7 @@ glm.mle <- function(
     if (!intercept) {
         mle$par[nvar + 1] <- int.fixed
     }
-    beta <- mle$par[1:nvar]
+    beta <- mle$par[seq_len(nvar)]
     intercept <- mle$par[nvar + 1]
     coefficients <- c(intercept, beta)
     names(coefficients) <- c("intercept", colnames(X))
@@ -226,6 +223,7 @@ loglikeli.func <- function(params, X, Y, family) {
 
 #' @export
 #' @method summary glm.mle
+#' @importFrom dplyr rename
 summary.glm.mle <- function(object, ...) {
     # get coefficients
     coef <- object$coefficients %>%

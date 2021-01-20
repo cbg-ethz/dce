@@ -9,6 +9,13 @@ pcor(x, method = "spearman")
 \arguments{
 \item{x}{matrix}
 }
+\value{
+matrix of partial correlations
+}
 \description{
 robust partial correlation of column variables
+}
+\examples{
+x <- matrix(rnorm(100),10,10)
+pcor(x)
 }

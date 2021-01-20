@@ -1,7 +1,7 @@
 #' Create graph from dataframe
 #' @param df_graph Dataframe with source and target columns
 #' @param edge_weight Edge weight (function)
-#' @export
+#' @noRd
 create_graph_from_dataframe <- function(
   df_graph,
   edge_weight = function() runif(1, 0.5, 2)
@@ -107,6 +107,7 @@ propagate_gene_edges <- function(graph) {
 #' Convert graph object to dataframe with source and target columns
 #' @param graph Network
 #' @export
+#' @importFrom dplyr rename
 graph2df <- function(graph) {
   graph %>%
     igraph::igraph.from.graphNEL(.) %>%
@@ -120,6 +121,7 @@ graph2df <- function(graph) {
 #' @param adja_mat Adjacency matrix of network
 #' @param alt Use igraph implementation
 #' @export
+#' @return topologically ordered matrix
 topologically_ordering <- function(adja_mat, alt = FALSE) {
   if (alt) {
     graph <- igraph::graph_from_adjacency_matrix(adja_mat)

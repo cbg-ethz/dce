@@ -1,4 +1,4 @@
-#' @export
+#' @noRd
 negative.binomial.special <- function(
     theta = NULL,
     linkinv = function(mu, offset = 1) mu - min(mu) + offset
@@ -27,12 +27,7 @@ negative.binomial.special <- function(
 }
 
 
-#' Extra robust model fitting
-#'
-#' `glm.nb` uses two families: poisson (initial theta fit) and
-#' negative binomial (final fit).
-#' The solver can fail if mu becomes negative
-#' @export
+#' @noRd
 glm.dce.nb.fit <- function(...) {
     args <- list(...)
 
@@ -50,11 +45,8 @@ glm.dce.nb.fit <- function(...) {
 }
 
 
-#' Modified glm.nb function from package MASS
-#'
-#' fixes a bug, if theta estimation breaks
-#' see ?MASS::glm.nb for argument values
-#' @export
+#' @import stats
+#' @noRd
 glm.nb.rob <- function(
     formula, data, weights, subset, na.action, start = NULL,
     etastart, mustart, control = glm.control(...), method = "glm.fit",
@@ -212,12 +204,7 @@ try larger number of iterations or larger epsilon"
 }
 
 
-#' Identity robust glm fit.
-#'
-#' A modified glm.fit function which prevents negative mean
-#' values in case of the identity link function. Convergence
-#' is not guaranteed!
-#' @export
+#' @noRd
 glm.dce.fit <- function(
     x, y, weights = rep(1, nobs),
     start = NULL, etastart = NULL,

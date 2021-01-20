@@ -19,17 +19,24 @@
 #' sum of wild type and mutant samples or a logical. If TRUE, it is
 #' recommended that both data sets include not only the genes
 #' included in the graph but all genes available in the original data set.
-#' @param deconfounding indicates whether adjustment against latent
+#' @param deconfounding indicates whether adjustment against latent 
 #' confounding is used. If FALSE, no adjustment is used, if TRUE it adjusts
-#' for confounding by automatically estimating the number of latent confounders.
-#' The estimated number of latent confounders can be chosen manually by setting
-#' this variable to some number.
+#' for confounding by automatically estimating the number of latent
+#' confounders. The estimated number of latent confounders can be chosen
+#' manually by setting this variable to some number.
 #' @param verbose logical for verbose output
+#' @return list of matrices with dces and corresponding p-value
 #' @export
 #' @importFrom graph graphNEL
 #' @importFrom igraph as_adjacency_matrix
 #' @importFrom Matrix sparseMatrix
-#' @import metap CombinePValue
+#' @import metap CombinePValue assertthat
+#' @examples
+#' dag <- create_random_DAG(30, 0.2)
+#' X.wt <- simulate_data(dag)
+#' dag.mt <- resample_edge_weights(dag)
+#' X.mt <- simulate_data(dag)
+#' dce(dag,X.wt,Xmt)
 setGeneric(
     "dce",
     function(
@@ -578,10 +585,17 @@ glm_solver <- function(form, df, solver, solver_args) {
     do.call(solver_func, func_args)
 }
 
-
+#' Turn dce object into data frame
 #' @export
 #' @importFrom reshape2 melt
-#' @importFrom dplyr rename mutate
+#' @importFrom dplyr mutate rename
+#' @return data frame containing the dce output
+#' @examples
+#' dag <- create_random_DAG(30, 0.2)
+#' X.wt <- simulate_data(dag)
+#' dag.mt <- resample_edge_weights(dag)
+#' X.mt <- simulate_data(dag)
+#' dce.list <- dce(dag,X.wt,Xmt)
 as.data.frame.dce <- function(x, row.names = NULL, optional = FALSE, ...) {
     if (!is.null(row.names) || optional) {
         stop("row.names and optional arguments not supported")

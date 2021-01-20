@@ -9,6 +9,13 @@ as_adjmat(g)
 \arguments{
 \item{g}{graphNEL object}
 }
+\value{
+graph as adjacency matrix
+}
 \description{
 graphNEL with 0 edge weights to proper adjacency matrix
+}
+\examples{
+dag <- create_random_DAG(30, 0.2)
+adj <- as_adjmat(dag)
 }

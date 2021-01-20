@@ -36,7 +36,7 @@ FastGGM_Diff <-function(case,control,alpha=0.05){
   p = ncol(case)
   II = diag(p)
   w.upper = which(upper.tri(II))
-  w.mat = which(upper.tri(II), arr.ind = T)
+  w.mat = which(upper.tri(II), arr.ind = TRUE)
   genepair = data.frame(gene1 = colnames(case)[w.mat[, 1]],gene2 = colnames(case)[w.mat[, 2]])
   
   fastggm_case <- FastGGM_Parallel(case)

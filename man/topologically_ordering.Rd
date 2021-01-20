@@ -11,6 +11,9 @@ topologically_ordering(adja_mat, alt = FALSE)
 
 \item{alt}{Use igraph implementation}
 }
+\value{
+topologically ordered matrix
+}
 \description{
 Order rows/columns topologically
 }
