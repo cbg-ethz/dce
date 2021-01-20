@@ -168,7 +168,12 @@ edges are added back in the final step.</p>
     <pre class="examples"><div class='input'><span class='va'>g</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>,<span class='fl'>0</span>,<span class='fl'>1</span>,<span class='fl'>0</span>, <span class='fl'>1</span>,<span class='fl'>1</span>,<span class='fl'>0</span>,<span class='fl'>0</span>, <span class='fl'>0</span>,<span class='fl'>1</span>,<span class='fl'>1</span>,<span class='fl'>0</span>, <span class='fl'>1</span>,<span class='fl'>1</span>,<span class='fl'>0</span>,<span class='fl'>1</span><span class='op'>)</span>, <span class='fl'>4</span>, <span class='fl'>4</span><span class='op'>)</span>
 <span class='fu'><a href='https://rdrr.io/r/base/colnames.html'>rownames</a></span><span class='op'>(</span><span class='va'>g</span><span class='op'>)</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/colnames.html'>colnames</a></span><span class='op'>(</span><span class='va'>g</span><span class='op'>)</span> <span class='op'>&lt;-</span> <span class='va'>LETTERS</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>4</span><span class='op'>]</span>
 <span class='va'>dag</span> <span class='op'>&lt;-</span> <span class='fu'>g2dag</span><span class='op'>(</span><span class='va'>g</span><span class='op'>)</span>
-</div><div class='output co'>#&gt;   B A C D
+</div><div class='output co'>#&gt; <span class='message'>Registered S3 methods overwritten by 'RcppEigen':</span>
+#&gt; <span class='message'>  method               from         </span>
+#&gt; <span class='message'>  predict.fastLm       RcppArmadillo</span>
+#&gt; <span class='message'>  print.fastLm         RcppArmadillo</span>
+#&gt; <span class='message'>  summary.fastLm       RcppArmadillo</span>
+#&gt; <span class='message'>  print.summary.fastLm RcppArmadillo</span></div><div class='output co'>#&gt;   B A C D
 #&gt; B 1 0 1 1
 #&gt; A 1 1 0 1
 #&gt; C 0 1 1 0

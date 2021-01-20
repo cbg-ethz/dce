@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Easy pathway network access — get_pathways • dce</title>
+<title>Generic solver function — glm_solver • dce</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Easy pathway network access — get_pathways" />
-<meta property="og:description" content="Easy pathway network access" />
+<meta property="og:title" content="Generic solver function — glm_solver" />
+<meta property="og:description" content="Generic solver function" />
 
 
 
@@ -121,35 +121,35 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Easy pathway network access</h1>
+    <h1>Generic solver function</h1>
     
-    <div class="hidden name"><code>get_pathways.Rd</code></div>
+    <div class="hidden name"><code>glm_solver.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Easy pathway network access</p>
+    <p>Generic solver function</p>
     </div>
 
-    <pre class="usage"><span class='fu'>get_pathways</span><span class='op'>(</span>
-  query_species <span class='op'>=</span> <span class='st'>"hsapiens"</span>,
-  database_list <span class='op'>=</span> <span class='cn'>NULL</span>,
-  remove_empty_pathways <span class='op'>=</span> <span class='cn'>TRUE</span>
-<span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>glm_solver</span><span class='op'>(</span><span class='va'>form</span>, <span class='va'>df</span>, <span class='va'>solver</span>, <span class='va'>solver_args</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>query_species</th>
-      <td><p>For which species</p></td>
+      <th>form</th>
+      <td><p>Formula describing model</p></td>
     </tr>
     <tr>
-      <th>database_list</th>
-      <td><p>Which databases to query. Query all if `NULL`.</p></td>
+      <th>df</th>
+      <td><p>Data used to fit model</p></td>
     </tr>
     <tr>
-      <th>remove_empty_pathways</th>
-      <td><p>Discard pathways without nodes</p></td>
+      <th>solver</th>
+      <td><p>Which solver to use</p></td>
+    </tr>
+    <tr>
+      <th>solver_args</th>
+      <td><p>Additional arguments for solver</p></td>
     </tr>
     </table>
 

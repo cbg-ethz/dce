@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Easy pathway network access — get_pathways • dce</title>
+<title>Convert graph object to dataframe with source and target columns — graph2df • dce</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Easy pathway network access — get_pathways" />
-<meta property="og:description" content="Easy pathway network access" />
+<meta property="og:title" content="Convert graph object to dataframe with source and target columns — graph2df" />
+<meta property="og:description" content="Convert graph object to dataframe with source and target columns" />
 
 
 
@@ -121,35 +121,23 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Easy pathway network access</h1>
+    <h1>Convert graph object to dataframe with source and target columns</h1>
     
-    <div class="hidden name"><code>get_pathways.Rd</code></div>
+    <div class="hidden name"><code>graph2df.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Easy pathway network access</p>
+    <p>Convert graph object to dataframe with source and target columns</p>
     </div>
 
-    <pre class="usage"><span class='fu'>get_pathways</span><span class='op'>(</span>
-  query_species <span class='op'>=</span> <span class='st'>"hsapiens"</span>,
-  database_list <span class='op'>=</span> <span class='cn'>NULL</span>,
-  remove_empty_pathways <span class='op'>=</span> <span class='cn'>TRUE</span>
-<span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>graph2df</span><span class='op'>(</span><span class='va'>graph</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>query_species</th>
-      <td><p>For which species</p></td>
-    </tr>
-    <tr>
-      <th>database_list</th>
-      <td><p>Which databases to query. Query all if `NULL`.</p></td>
-    </tr>
-    <tr>
-      <th>remove_empty_pathways</th>
-      <td><p>Discard pathways without nodes</p></td>
+      <th>graph</th>
+      <td><p>Network</p></td>
     </tr>
     </table>
 

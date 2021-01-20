@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Easy pathway network access — get_pathways • dce</title>
+<title>Create graph from dataframe — create_graph_from_dataframe • dce</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Easy pathway network access — get_pathways" />
-<meta property="og:description" content="Easy pathway network access" />
+<meta property="og:title" content="Create graph from dataframe — create_graph_from_dataframe" />
+<meta property="og:description" content="Create graph from dataframe" />
 
 
 
@@ -121,35 +121,30 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Easy pathway network access</h1>
+    <h1>Create graph from dataframe</h1>
     
-    <div class="hidden name"><code>get_pathways.Rd</code></div>
+    <div class="hidden name"><code>create_graph_from_dataframe.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Easy pathway network access</p>
+    <p>Create graph from dataframe</p>
     </div>
 
-    <pre class="usage"><span class='fu'>get_pathways</span><span class='op'>(</span>
-  query_species <span class='op'>=</span> <span class='st'>"hsapiens"</span>,
-  database_list <span class='op'>=</span> <span class='cn'>NULL</span>,
-  remove_empty_pathways <span class='op'>=</span> <span class='cn'>TRUE</span>
+    <pre class="usage"><span class='fu'>create_graph_from_dataframe</span><span class='op'>(</span>
+  <span class='va'>df_graph</span>,
+  edge_weight <span class='op'>=</span> <span class='kw'>function</span><span class='op'>(</span><span class='op'>)</span> <span class='fu'><a href='https://rdrr.io/r/stats/Uniform.html'>runif</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fl'>0.5</span>, <span class='fl'>2</span><span class='op'>)</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>query_species</th>
-      <td><p>For which species</p></td>
+      <th>df_graph</th>
+      <td><p>Dataframe with source and target columns</p></td>
     </tr>
     <tr>
-      <th>database_list</th>
-      <td><p>Which databases to query. Query all if `NULL`.</p></td>
-    </tr>
-    <tr>
-      <th>remove_empty_pathways</th>
-      <td><p>Discard pathways without nodes</p></td>
+      <th>edge_weight</th>
+      <td><p>Edge weight (function)</p></td>
     </tr>
     </table>
 
