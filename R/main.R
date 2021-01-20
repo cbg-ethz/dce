@@ -250,6 +250,18 @@ dce_nb <- function(
         lib_size <- FALSE
     }
 
+    # set labels if none are given
+    if (
+        is.null(rownames(graph)) &&
+        is.null(colnames(graph)) &&
+        is.null(colnames(df_expr_wt)) &&
+        is.null(colnames(df_expr_mt))
+    ) {
+        node_names <- paste0("n", seq_len(dim(graph)[[1]]))
+        rownames(graph) <- colnames(graph) <- node_names
+        colnames(df_expr_wt) <- colnames(df_expr_mt) <- node_names
+    }
+
     # subset expression data to pathway genes
     df_expr_wt <- df_expr_wt[, which(colnames(df_expr_wt) %in% colnames(graph))]
     df_expr_mt <- df_expr_mt[, which(colnames(df_expr_mt) %in% colnames(graph))]
