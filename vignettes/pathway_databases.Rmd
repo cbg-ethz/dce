@@ -7,21 +7,13 @@ output: BiocStyle::html_document
 bibliography: bibliography.bib
 vignette: >
     %\VignetteIndexEntry{Overview of pathway network databases}
-    %\VignetteEngine{knitr::knitr}
+    %\VignetteEngine{knitr::rmarkdown}
     %\VignetteEncoding{UTF-8}
 ---
 
 # Introduction
 
 ## Load required packages
-
-```{r global_options, include=FALSE}
-knitr::opts_chunk$set(
-  message = FALSE, out.width = "\\textwidth", fig.align = "center",
-  strip.white = TRUE, warning = FALSE, tidy = TRUE,
-  fig.height = 4, fig.width = 8, error = FALSE
-)
-```
 
 Load the package with the library function.
 

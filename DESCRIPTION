@@ -2,10 +2,24 @@ Package: dce
 Type: Package
 Title: Pathway Enrichment Based on Differential Causal Effects
 Version: 0.99.0
-Author: Kim Philipp Jablonski & Martin Pirkl
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+Authors@R:
+    c(
+        person(
+            given = "Kim Philipp", family = "Jablonski",
+            role = c("aut", "cre"),
+            email = "kim.philipp.jablonski@gmail.com",
+            comment = c(ORCID = "0000-0002-4166-4343")
+        ),
+        person(
+            given = "Martin", family = "Pirkl",
+            role = c("aut"),
+            email = "0000-0002-4166-4343"
+        )
+    )
+Maintainer: Kim Philipp Jablonski <kim.philipp.jablonski@gmail.com>
+Description: Compute differential causal effects on (biological) networks.
+URL: https://github.com/kpj/dce
+BugReports: https://github.com/kpj/dce/issues
 biocViews:
     Software,
     StatisticalMethod,
