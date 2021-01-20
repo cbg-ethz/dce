@@ -7,6 +7,9 @@
 #' @import graphite graph glue purrr
 #' @importFrom dplyr pull
 #' @export
+#' @return data frame with pathway meta information
+#' @examples
+#' get_pathway_info()
 get_pathway_info <- function(
   query_species = "hsapiens", database_list = NULL,
   include_network_statistics = FALSE
@@ -49,6 +52,9 @@ get_pathway_info <- function(
 #' @param remove_empty_pathways Discard pathways without nodes
 #' @import graphite glue purrr
 #' @export
+#' @return list of pathways
+#' @examples
+#' get_pathways()
 get_pathways <- function(
   query_species = "hsapiens", database_list = NULL,
   remove_empty_pathways = TRUE

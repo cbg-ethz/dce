@@ -18,6 +18,12 @@ get_pathway_info(
 \item{include_network_statistics}{Compute some useful statistics
 per pathway. Takes longer!}
 }
+\value{
+data frame with pathway meta information
+}
 \description{
 Dataframe containing meta-information of pathways in database
+}
+\examples{
+get_pathway_info()
 }

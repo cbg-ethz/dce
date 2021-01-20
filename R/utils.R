@@ -1,4 +1,7 @@
-#' permutation test for (partial) correlation on non-Gaussian data
+#' Permutation test for (partial) correlation on non-Gaussian data
+#' 
+#' Computes the significance of (partial) correlation based
+#' on permutations of the observations
 #' @param x wild type data set
 #' @param y mutant data set
 #' @param i number of iterations (permutations)
@@ -22,9 +25,9 @@ pcor_perm <- function(x, y, iter = 1000, fun = pcor, method = "spearman") {
     return(p)
 }
 
-
-#' graphNEL with 0 edge weights to proper adjacency matrix
-#'
+#' graph to adjacency
+#' 
+#' From graphNEL with 0 edge weights to proper adjacency matrix
 #' @param g graphNEL object
 #' @export
 #' @return graph as adjacency matrix
@@ -41,9 +44,10 @@ as_adjmat <- function(g) {
     return(adj)
 }
 
-
-#' robust partial correlation of column variables
-#'
+#' Partial correlation
+#' 
+#' Robust partial correlation of column variables of a 
+#' numeric matrix
 #' @param x matrix
 #' @importFrom ppcor pcor
 #' @export
@@ -458,9 +462,9 @@ estimate_latent_count <- function(X1, X2, method = "auto") {
             X <- scale(X)
             
             evals <- matrix(0, nrow = N, ncol = r)
-            for (i in 1:N) {
+            for (i in seq_len(N)) {
                 X_perm <- apply(X, 2, function(xx) sample(xx))
-                evals[i, ] <- svd(scale(X_perm))$d[1:r]
+                evals[i, ] <- svd(scale(X_perm))$d[seq_len(r)]
             }
             thresholds <- apply(evals,
                                 2, function(xx) quantile(xx, probs = quantile))
@@ -474,9 +478,9 @@ estimate_latent_count <- function(X1, X2, method = "auto") {
         
         return(ceiling((q1 + q2) / 2))
     }
-    
+
     if (method == "kim") {
-        #' This function looks at the knee point of a scree plot.
+        # This function looks at the knee point of a scree plot.
         
         X <- cbind(X1, X2)
         fit_pca <- prcomp(scale(X))

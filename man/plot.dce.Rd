@@ -23,7 +23,7 @@ dag <- create_random_DAG(30, 0.2)
 X.wt <- simulate_data(dag)
 dag.mt <- resample_edge_weights(dag)
 X.mt <- simulate_data(dag)
-dce.list <- dce(dag,X.wt,Xmt)
+dce.list <- dce(dag,X.wt,X.mt)
 plot.dce(dce.list)
 }
 \author{

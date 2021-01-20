@@ -9,6 +9,13 @@ propagate_gene_edges(graph)
 \arguments{
 \item{graph}{Biological pathway}
 }
+\value{
+graph with only genes as nodes
+}
 \description{
 Remove non-gene nodes from pathway and reconnect nodes
+}
+\examples{
+dag <- create_random_DAG(30, 0.2)
+propagate_gene_edges(dag)
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/main.R
 \name{dce}
 \alias{dce}
-\title{dce - main function}
+\title{Differential Causal Effects - main function}
 \usage{
 dce(
   graph,
@@ -61,12 +61,13 @@ manually by setting this variable to some number.}
 list of matrices with dces and corresponding p-value
 }
 \description{
-Main function to compute differential causal effects and its enrichment
+Main function to compute differential causal effects and the 
+pathway enrichment
 }
 \examples{
 dag <- create_random_DAG(30, 0.2)
 X.wt <- simulate_data(dag)
 dag.mt <- resample_edge_weights(dag)
 X.mt <- simulate_data(dag)
-dce(dag,X.wt,Xmt)
+dce(dag,X.wt,X.mt)
 }

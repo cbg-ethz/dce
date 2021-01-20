@@ -2,7 +2,7 @@
 % Please edit documentation in R/main.R
 \name{as.data.frame.dce}
 \alias{as.data.frame.dce}
-\title{Turn dce object into data frame}
+\title{Dce to data frame}
 \usage{
 \method{as.data.frame}{dce}(x, row.names = NULL, optional = FALSE, ...)
 }
