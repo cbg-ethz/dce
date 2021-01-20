@@ -22,8 +22,11 @@ Suggests:
     knitr,
     testthat (>= 2.1.0),
     BiocStyle,
+    formatR,
     cowplot,
-    dagitty
+    dagitty,
+    lmtest,
+    sandwich
 VignetteBuilder: knitr
 RoxygenNote: 7.1.1
 Imports:
@@ -32,7 +35,6 @@ Imports:
     methods,
     assertthat,
     graph,
-    matlib,
     pcalg,
     purrr,
     tidyverse,
@@ -55,6 +57,6 @@ Imports:
     glm2,
     graphite,
     reshape2,
-    formatR,
     dplyr,
-    glue
+    glue,
+    Rgraphviz

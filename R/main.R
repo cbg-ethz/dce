@@ -494,7 +494,12 @@ dce_nb <- function(
 }
 
 
-#' @importFrom mnem transitive.closure
+#' Get adjustment set on graph given two nodes
+#' @param graph Topology to use
+#' @param x Source node
+#' @param y target node
+#' @param adjustment_type Which adjustment method to use
+#' @param effect_type Which effect to compute
 #' @export
 get_adjustment_set <- function(
     graph, x, y,
@@ -545,6 +550,11 @@ get_adjustment_set <- function(
 }
 
 
+#' Generic solver function
+#' @param form Formula describing model
+#' @param df Data used to fit model
+#' @param solver Which solver to use
+#' @param solver_args Additional arguments for solver
 #' @export
 glm_solver <- function(form, df, solver, solver_args) {
     # handle general functions
@@ -576,7 +586,11 @@ glm_solver <- function(form, df, solver, solver_args) {
 #' @export
 #' @importFrom reshape2 melt
 #' @importFrom dplyr rename mutate
-as.data.frame.dce <- function(x) {
+as.data.frame.dce <- function(x, row.names = NULL, optional = FALSE, ...) {
+    if (!is.null(row.names) || optional) {
+        stop("row.names and optional arguments not supported")
+    }
+
     x$dce %>%
         melt(.) %>%
         rename(dce = value, source = Var1, target = Var2) %>%

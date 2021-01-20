@@ -226,19 +226,19 @@ loglikeli.func <- function(params, X, Y, family) {
 
 #' @export
 #' @method summary glm.mle
-summary.glm.mle <- function(x) {
+summary.glm.mle <- function(object, ...) {
     # get coefficients
-    coef <- x$coefficients %>%
+    coef <- object$coefficients %>%
         as.data.frame %>%
         dplyr::rename(Estimate = ".")
 
     # compute p-values for $H_0: \beta_i = 0$
-    cov.mat <- MASS::ginv(x$hessian)
+    cov.mat <- MASS::ginv(object$hessian)
     var.vec <- diag(cov.mat)
     sd.vec <- sqrt(var.vec)
 
-    t.value <- x$coefficients / sd.vec
-    pt.value <- 2 * pt(-abs(t.value), ncol(x$hessian))
+    t.value <- object$coefficients / sd.vec
+    pt.value <- 2 * pt(-abs(t.value), ncol(object$hessian))
 
     coef[, "Pr(>|t|)"] <- pt.value
 

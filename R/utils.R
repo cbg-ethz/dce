@@ -343,9 +343,9 @@ resample_edge_weights <- function(g, tp = 0.5,
 #' @export
 #' @importFrom aod wald.test
 #' @method summary glmmle
-summary.glmmle <- function(x) {
-    coef <- x$coefficients
-    hess <- x$hessian
+summary.glmmle <- function(object, ...) {
+    coef <- object$coefficients
+    hess <- object$hessian
     df <- seq_len(length(coef))
     hess <- hess[df, df]
     coef <- coef[df]

@@ -16,7 +16,8 @@ resample_edge_weights(g, tp = 0.5, mineff = 1, maxeff = 2, method = "runif")
 \item{maxeff}{maximum effect effect size or standard deviation,
 if method is "gauss"}
 
-\item{method}{method for drawing the differential for the causal effects. can be "runif", "exp" or "gauss".}
+\item{method}{method for drawing the differential for the causal effects.
+Can be "runif", "exp" or "gauss".}
 }
 \value{
 graph with new edge weights

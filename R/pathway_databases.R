@@ -45,6 +45,7 @@ get_pathway_info <- function(
 #'
 #' @param query_species For which species
 #' @param database_list Which databases to query. Query all if `NULL`.
+#' @param remove_empty_pathways Discard pathways without nodes
 #' @import graphite glue purrr
 #' @export
 get_pathways <- function(

@@ -7,6 +7,7 @@
 glm.dce.nb.fit(...)
 }
 \description{
-`glm.nb` uses two families: poisson (initial theta fit) and negative binomial (final fit).
+`glm.nb` uses two families: poisson (initial theta fit) and
+negative binomial (final fit).
 The solver can fail if mu becomes negative
 }

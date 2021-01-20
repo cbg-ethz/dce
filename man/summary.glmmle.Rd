@@ -4,7 +4,7 @@
 \alias{summary.glmmle}
 \title{Estimate p-values}
 \usage{
-\method{summary}{glmmle}(x)
+\method{summary}{glmmle}(object, ...)
 }
 \arguments{
 \item{x}{object of class "glmmle"}

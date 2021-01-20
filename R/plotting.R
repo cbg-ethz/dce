@@ -202,6 +202,10 @@ plot.dce <- function(x, ...) {
 }
 
 
+#' Linear transform if under logarithmic transform is over threshold
+#' @param x Value to transform
+#' @param base Base of logarithm
+#' @param threshold Linearity threshold
 #' @export
 symlog <- function(x, base = 10, threshold = 1) {
     if (is.null(x)) {

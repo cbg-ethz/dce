@@ -14,6 +14,8 @@ get_pathways(
 \item{query_species}{For which species}
 
 \item{database_list}{Which databases to query. Query all if `NULL`.}
+
+\item{remove_empty_pathways}{Discard pathways without nodes}
 }
 \description{
 Easy pathway network access

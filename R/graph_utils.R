@@ -1,3 +1,6 @@
+#' Create graph from dataframe
+#' @param df_graph Dataframe with source and target columns
+#' @param edge_weight Edge weight (function)
 #' @export
 create_graph_from_dataframe <- function(
   df_graph,
@@ -48,11 +51,15 @@ graph_union_two <- function(graph1, graph2) {
 }
 
 
+#' Create union of multiple graphs
+#' @param graph_list List of graphs
 #' @export
 graph_union <- function(graph_list) {
   Reduce(graph_union_two, graph_list)
 }
 
+#' Remove non-gene nodes from pathway and reconnect nodes
+#' @param graph Biological pathway
 #' @export
 propagate_gene_edges <- function(graph) {
   # propagate edges
@@ -97,6 +104,8 @@ propagate_gene_edges <- function(graph) {
 }
 
 
+#' Convert graph object to dataframe with source and target columns
+#' @param graph Network
 #' @export
 graph2df <- function(graph) {
   graph %>%
@@ -107,6 +116,9 @@ graph2df <- function(graph) {
 }
 
 
+#' Order rows/columns topologically
+#' @param adja_mat Adjacency matrix of network
+#' @param alt Use igraph implementation
 #' @export
 topologically_ordering <- function(adja_mat, alt = FALSE) {
   if (alt) {
