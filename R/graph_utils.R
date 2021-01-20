@@ -52,7 +52,7 @@ graph_union_two <- function(graph1, graph2) {
 
 
 #' Graph union
-#' 
+#'
 #' Create union of multiple graphs
 #' @param graph_list List of graphs
 #' @return graph union
@@ -115,7 +115,7 @@ propagate_gene_edges <- function(graph) {
 }
 
 #' Graph to data frame
-#' 
+#'
 #' Convert graph object to dataframe with source and target columns
 #' @param graph Network
 #' @export
@@ -133,7 +133,7 @@ graph2df <- function(graph) {
 }
 
 #' Topological ordering
-#' 
+#'
 #' Order rows/columns of a adjacency matrix topologically
 #' @param adja_mat Adjacency matrix of network
 #' @param alt Use igraph implementation

@@ -1,6 +1,6 @@
 #' Differential Causal Effects - main function
 #'
-#' Main function to compute differential causal effects and the 
+#' Main function to compute differential causal effects and the
 #' pathway enrichment
 #' @param graph valid object defining a directed acyclic graph
 #' @param df_expr_wt data frame with wild type expression values
@@ -499,7 +499,7 @@ dce_nb <- function(
 }
 
 #' Adjustment set
-#' 
+#'
 #' Get adjustment set on graph given two nodes
 #' @param graph Topology to use
 #' @param x Source node

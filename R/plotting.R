@@ -173,13 +173,13 @@ plot_network <- function(
         scale_edge_color_gradient2(
             low = "red", mid = "grey", high = "blue", midpoint = 0,
             limits = if (use_symlog) {
-                symlog(edgescale_limits) 
+                symlog(edgescale_limits)
             } else {
                 edgescale_limits
             },  # nolint
             breaks = custom_breaks,
             name = if (use_symlog) {
-                glue("{legend_title} (symlog)") 
+                glue("{legend_title} (symlog)")
             } else {
                 legend_title
             },  # nolint

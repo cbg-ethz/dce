@@ -1,5 +1,5 @@
 #' Permutation test for (partial) correlation on non-Gaussian data
-#' 
+#'
 #' Computes the significance of (partial) correlation based
 #' on permutations of the observations
 #' @param x wild type data set
@@ -26,7 +26,7 @@ pcor_perm <- function(x, y, iter = 1000, fun = pcor, method = "spearman") {
 }
 
 #' graph to adjacency
-#' 
+#'
 #' From graphNEL with 0 edge weights to proper adjacency matrix
 #' @param g graphNEL object
 #' @export
@@ -45,7 +45,7 @@ as_adjmat <- function(g) {
 }
 
 #' Partial correlation
-#' 
+#'
 #' Robust partial correlation of column variables of a 
 #' numeric matrix
 #' @param x matrix
