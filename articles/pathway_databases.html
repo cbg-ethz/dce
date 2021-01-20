@@ -44,6 +44,9 @@
   </a>
 </li>
 <li>
+  <a href="../articles/dce.html">Get started</a>
+</li>
+<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
@@ -54,9 +57,6 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/example.html">Simple usage example</a>
-    </li>
-    <li>
       <a href="../articles/pathway_databases.html">Overview of pathway network databases</a>
     </li>
   </ul>
@@ -65,7 +65,14 @@
   <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
-<ul class="nav navbar-nav navbar-right"></ul>
+<ul class="nav navbar-nav navbar-right">
+<li>
+  <a href="https://github.com/kpj/dce/">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
 </div>
 <!--/.nav-collapse -->
   </div>
@@ -83,7 +90,7 @@
             
             <h4 class="date">2021-01-20</h4>
       
-      
+      <small class="dont-index">Source: <a href="https://github.com/kpj/dce/blob/master/vignettes/pathway_databases.Rmd"><code>vignettes/pathway_databases.Rmd</code></a></small>
       <div class="hidden name"><code>pathway_databases.Rmd</code></div>
 
     </div>
@@ -98,13 +105,24 @@
 <a href="#load-required-packages" class="anchor"></a>Load required packages</h2>
 <p>Load the package with the library function.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://tidyverse.tidyverse.org">tidyverse</a></span><span class="op">)</span>
-
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">dce</span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://tidyverse.tidyverse.org">tidyverse</a></span><span class="op">)</span></code></pre></div>
+<pre><code>## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.0 ──</code></pre>
+<pre><code>## ✔ ggplot2 3.3.3     ✔ purrr   0.3.4
+## ✔ tibble  3.0.5     ✔ dplyr   1.0.3
+## ✔ tidyr   1.1.2     ✔ stringr 1.4.0
+## ✔ readr   1.4.0     ✔ forcats 0.5.0</code></pre>
+<pre><code>## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+## ✖ dplyr::filter() masks stats::filter()
+## ✖ dplyr::lag()    masks stats::lag()</code></pre>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/kpj/dce">dce</a></span><span class="op">)</span>
 
 <span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span></code></pre></div>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">dce</span><span class="fu">::</span><span class="va"><a href="../reference/df_pathway_statistics.html">df_pathway_statistics</a></span> <span class="op">%&gt;%</span> <span class="fu">sample_n</span><span class="op">(</span><span class="fl">10</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu">arrange</span><span class="op">(</span><span class="fu">desc</span><span class="op">(</span><span class="va">node_num</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">dce</span><span class="fu">::</span><span class="va"><a href="../reference/df_pathway_statistics.html">df_pathway_statistics</a></span> <span class="op">%&gt;%</span>
+  <span class="fu">sample_n</span><span class="op">(</span><span class="fl">10</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu">arrange</span><span class="op">(</span><span class="fu">desc</span><span class="op">(</span><span class="va">node_num</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <table class="table">
 <colgroup>
 <col width="7%">
@@ -199,9 +217,10 @@
 <h1 class="hasAnchor">
 <a href="#pathway-database-overview" class="anchor"></a>Pathway database overview</h1>
 <p>We provide access to the following topological pathway databases using graphite <span class="citation">(Sales et al. 2012)</span>:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">dce</span><span class="fu">::</span><span class="va"><a href="../reference/df_pathway_statistics.html">df_pathway_statistics</a></span> <span class="op">%&gt;%</span> <span class="fu">count</span><span class="op">(</span><span class="va">database</span>, sort <span class="op">=</span> <span class="cn">TRUE</span>, name <span class="op">=</span> <span class="st">"pathway_number"</span><span class="op">)</span> <span class="op">%&gt;%</span> 
-    <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">dce</span><span class="fu">::</span><span class="va"><a href="../reference/df_pathway_statistics.html">df_pathway_statistics</a></span> <span class="op">%&gt;%</span>
+  <span class="fu">count</span><span class="op">(</span><span class="va">database</span>, sort <span class="op">=</span> <span class="cn">TRUE</span>, name <span class="op">=</span> <span class="st">"pathway_number"</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="left">database</th>
@@ -230,15 +249,18 @@
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">dce</span><span class="fu">::</span><span class="va"><a href="../reference/df_pathway_statistics.html">df_pathway_statistics</a></span> <span class="op">%&gt;%</span> <span class="fu">ggplot</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">node_num</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu">geom_histogram</span><span class="op">(</span>bins <span class="op">=</span> <span class="fl">30</span><span class="op">)</span> <span class="op">+</span> 
-    <span class="fu">facet_wrap</span><span class="op">(</span><span class="op">~</span><span class="va">database</span>, scales <span class="op">=</span> <span class="st">"free"</span><span class="op">)</span> <span class="op">+</span> <span class="fu">theme_minimal</span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<p><img src="pathway_databases_files/figure-html/unnamed-chunk-4-1.png" width="\textwidth" style="display: block; margin: auto;"></p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">dce</span><span class="fu">::</span><span class="va"><a href="../reference/df_pathway_statistics.html">df_pathway_statistics</a></span> <span class="op">%&gt;%</span>
+  <span class="fu">ggplot</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">node_num</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+    <span class="fu">geom_histogram</span><span class="op">(</span>bins <span class="op">=</span> <span class="fl">30</span><span class="op">)</span> <span class="op">+</span>
+    <span class="fu">facet_wrap</span><span class="op">(</span><span class="op">~</span> <span class="va">database</span>, scales <span class="op">=</span> <span class="st">"free"</span><span class="op">)</span> <span class="op">+</span>
+    <span class="fu">theme_minimal</span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<p><img src="pathway_databases_files/figure-html/unnamed-chunk-4-1.png" width="700"></p>
 </div>
 <div id="session-information" class="section level1">
 <h1 class="hasAnchor">
 <a href="#session-information" class="anchor"></a>Session information</h1>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <pre><code>## R version 4.0.3 (2020-10-10)
 ## Platform: x86_64-apple-darwin17.0 (64-bit)
@@ -266,7 +288,7 @@
 ##  [10] digest_0.6.27        htmltools_0.5.1      viridis_0.5.1       
 ##  [13] pcalg_2.7-1          fansi_0.4.2          magrittr_2.0.1      
 ##  [16] checkmate_2.0.0      memoise_1.1.0        cluster_2.1.0       
-##  [19] sfsmisc_1.1-8        aod_1.3.1            limma_3.46.0        
+##  [19] aod_1.3.1            sfsmisc_1.1-8        limma_3.46.0        
 ##  [22] graphlayouts_0.7.1   modelr_0.1.8         sandwich_3.0-0      
 ##  [25] bdsmatrix_1.3-4      pkgdown_1.6.1        CombinePValue_1.0   
 ##  [28] colorspace_2.0-0     blob_1.2.1           rvest_0.3.6         
@@ -290,21 +312,21 @@
 ##  [82] mathjaxr_1.0-1       evaluate_0.14        yaml_2.2.1          
 ##  [85] ragg_0.4.1           knitr_1.30           bit64_4.0.5         
 ##  [88] fs_1.5.0             tidygraph_1.2.0      robustbase_0.93-7   
-##  [91] ggraph_2.0.4         RBGL_1.66.0          formatR_1.7         
-##  [94] xml2_1.3.2           compiler_4.0.3       rstudioapi_0.13     
-##  [97] reprex_0.3.0         tweenr_1.0.1         stringi_1.5.3       
-## [100] highr_0.8            ps_1.5.0             desc_1.2.0          
-## [103] naturalsort_0.1.3    lattice_0.20-41      Matrix_1.2-18       
-## [106] multtest_2.46.0      vctrs_0.3.6          mutoss_0.1-12       
-## [109] pillar_1.4.7         lifecycle_0.2.0      BiocManager_1.30.10 
-## [112] Rdpack_2.1           corpcor_1.6.9        gbRd_0.4-11         
-## [115] R6_2.5.0             bookdown_0.21        gridExtra_2.3       
-## [118] IRanges_2.24.1       codetools_0.2-16     MASS_7.3-53         
-## [121] assertthat_0.2.1     rprojroot_2.0.2      withr_2.4.0         
-## [124] mnormt_2.0.2         multcomp_1.4-15      S4Vectors_0.28.1    
-## [127] expm_0.999-6         parallel_4.0.3       hms_1.0.0           
-## [130] grid_4.0.3           rmarkdown_2.6        ggforce_0.3.2       
-## [133] numDeriv_2016.8-1.1  Biobase_2.50.0       lubridate_1.7.9.2</code></pre>
+##  [91] ggraph_2.0.4         RBGL_1.66.0          xml2_1.3.2          
+##  [94] compiler_4.0.3       rstudioapi_0.13      reprex_0.3.0        
+##  [97] tweenr_1.0.1         stringi_1.5.3        highr_0.8           
+## [100] ps_1.5.0             desc_1.2.0           naturalsort_0.1.3   
+## [103] lattice_0.20-41      Matrix_1.2-18        multtest_2.46.0     
+## [106] vctrs_0.3.6          mutoss_0.1-12        pillar_1.4.7        
+## [109] lifecycle_0.2.0      BiocManager_1.30.10  Rdpack_2.1          
+## [112] corpcor_1.6.9        gbRd_0.4-11          R6_2.5.0            
+## [115] bookdown_0.21        gridExtra_2.3        IRanges_2.24.1      
+## [118] codetools_0.2-16     MASS_7.3-53          assertthat_0.2.1    
+## [121] rprojroot_2.0.2      withr_2.4.0          mnormt_2.0.2        
+## [124] multcomp_1.4-15      S4Vectors_0.28.1     expm_0.999-6        
+## [127] parallel_4.0.3       hms_1.0.0            grid_4.0.3          
+## [130] rmarkdown_2.6        ggforce_0.3.2        numDeriv_2016.8-1.1 
+## [133] Biobase_2.50.0       lubridate_1.7.9.2</code></pre>
 </div>
 <div id="references" class="section level1 unnumbered">
 <h1 class="hasAnchor">
@@ -328,7 +350,7 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by The package maintainer.</p>
+  <p>Developed by Kim Philipp Jablonski, Martin Pirkl.</p>
 </div>
 
 <div class="pkgdown">

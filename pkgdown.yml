@@ -2,7 +2,10 @@ pandoc: 2.7.3
 pkgdown: 1.6.1
 pkgdown_sha: ~
 articles:
-  example: example.html
+  dce: dce.html
   pathway_databases: pathway_databases.html
-last_built: 2021-01-20T08:35Z
+last_built: 2021-01-20T12:55Z
+urls:
+  reference: https://kpj.github.io/dce//reference
+  article: https://kpj.github.io/dce//articles
 
