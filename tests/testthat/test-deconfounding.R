@@ -44,11 +44,7 @@ test_that("general idea works", {
     )
   )
 
-  # TODO: why does this fail?
-  # expect_equal(
-  #   true_value, coef(fit_confounded_pca)[parent_set],
-  #   tolerance = 1e-2
-  # )
+  # TODO: test `coef(fit_confounded_pca)[parent_set]`
 })
 
 
