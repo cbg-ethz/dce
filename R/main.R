@@ -19,7 +19,7 @@
 #' sum of wild type and mutant samples or a logical. If TRUE, it is
 #' recommended that both data sets include not only the genes
 #' included in the graph but all genes available in the original data set.
-#' @param deconfounding indicates whether adjustment against latent 
+#' @param deconfounding indicates whether adjustment against latent
 #' confounding is used. If FALSE, no adjustment is used, if TRUE it adjusts
 #' for confounding by automatically estimating the number of latent
 #' confounders. The estimated number of latent confounders can be chosen
@@ -592,10 +592,10 @@ glm_solver <- function(form, df, solver, solver_args) {
 #' @return data frame containing the dce output
 #' @examples
 #' dag <- create_random_DAG(30, 0.2)
-#' X.wt <- simulate_data(dag)
-#' dag.mt <- resample_edge_weights(dag)
-#' X.mt <- simulate_data(dag)
-#' dce.list <- dce(dag,X.wt,Xmt)
+#' X_wt <- simulate_data(dag)
+#' dag_mt <- resample_edge_weights(dag)
+#' X_mt <- simulate_data(dag_mt)
+#' dce_list <- dce(dag, X_wt, X_mt)
 as.data.frame.dce <- function(x, row.names = NULL, optional = FALSE, ...) {
     if (!is.null(row.names) || optional) {
         stop("row.names and optional arguments not supported")
