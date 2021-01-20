@@ -49,21 +49,25 @@ test_that("positive beta can be recovered", {
 
   expect_equal(rownames(res$dce), node_names)
   expect_equal(colnames(res$dce), node_names)
-  expect_equal(rownames(res$dce.pvalue), node_names)
-  expect_equal(colnames(res$dce.pvalue), node_names)
+  expect_equal(rownames(res$dce_pvalue), node_names)
+  expect_equal(colnames(res$dce_pvalue), node_names)
 })
 
 
 test_that("negative beta can be recovered", {
   set.seed(42)
 
+  node_names <- c("A", "B")
+
   graph_wt <- matrix(c(0, 0, 1e-42, 0), 2, 2)
+  rownames(graph_wt) <- colnames(graph_wt) <- node_names
   X_wt <- simulate_data(graph_wt)
 
   graph_mt <- matrix(c(0, 0, -1.5, 0), 2, 2)
+  rownames(graph_mt) <- colnames(graph_mt) <- node_names
   X_mt <- simulate_data(graph_mt)
 
-  res <- dce::dce_nb(graph_wt, X_wt, X_mt)
+  res <- dce::dce(graph_wt, X_wt, X_mt, solver = "lm")
   res
 
   expect_equal(as.vector(res$dce), c(NA, NA, -1.5, NA), tolerance = 0.1)
@@ -80,7 +84,7 @@ test_that("igraph input works", {
   X_wt <- simulate_data(graph_wt, n = 1000)
   X_mt <- simulate_data(graph_mt, n = 1000)
 
-  res <- dce::dce_nb(graph, X_wt, X_mt)
+  res <- dce::dce(graph, X_wt, X_mt, solver = "lm")
   res
 
   expect_equal(
