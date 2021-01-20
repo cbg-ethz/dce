@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{pcor}
 \alias{pcor}
-\title{robust partial correlation of column variables}
+\title{Partial correlation}
 \usage{
 pcor(x, method = "spearman")
 }
@@ -13,7 +13,8 @@ pcor(x, method = "spearman")
 matrix of partial correlations
 }
 \description{
-robust partial correlation of column variables
+Robust partial correlation of column variables of a 
+numeric matrix
 }
 \examples{
 x <- matrix(rnorm(100),10,10)

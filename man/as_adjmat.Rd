@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{as_adjmat}
 \alias{as_adjmat}
-\title{graphNEL with 0 edge weights to proper adjacency matrix}
+\title{graph to adjacency}
 \usage{
 as_adjmat(g)
 }
@@ -13,7 +13,7 @@ as_adjmat(g)
 graph as adjacency matrix
 }
 \description{
-graphNEL with 0 edge weights to proper adjacency matrix
+From graphNEL with 0 edge weights to proper adjacency matrix
 }
 \examples{
 dag <- create_random_DAG(30, 0.2)

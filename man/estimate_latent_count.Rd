@@ -29,7 +29,6 @@ graph2 <- resample_edge_weights(graph1, tp=0.15)
 X1 <- simulate_data(graph1, n=200, latent = 3)
 X2 <- simulate_data(graph2, n=200, latent = 3)
 estimate_latent_count(X1, X2)
-This function looks at the knee point of a scree plot.
 }
 \author{
 Domagoj Ćevid

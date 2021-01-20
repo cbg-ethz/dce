@@ -2,13 +2,21 @@
 % Please edit documentation in R/graph_utils.R
 \name{graph_union}
 \alias{graph_union}
-\title{Create union of multiple graphs}
+\title{Graph union}
 \usage{
 graph_union(graph_list)
 }
 \arguments{
 \item{graph_list}{List of graphs}
 }
+\value{
+graph union
+}
 \description{
 Create union of multiple graphs
+}
+\examples{
+dag <- create_random_DAG(30, 0.2)
+dag2 <- create_random_DAG(30, 0.2)
+graph_union(dag,dag2)
 }

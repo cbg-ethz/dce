@@ -219,7 +219,7 @@ plot_network <- function(
 #' X.wt <- simulate_data(dag)
 #' dag.mt <- resample_edge_weights(dag)
 #' X.mt <- simulate_data(dag)
-#' dce.list <- dce(dag,X.wt,Xmt)
+#' dce.list <- dce(dag,X.wt,X.mt)
 #' plot.dce(dce.list)
 plot.dce <- function(x, ...) {
     plot_network(x$graph, value_matrix = x$dce, legend_title = "DCE", ...)

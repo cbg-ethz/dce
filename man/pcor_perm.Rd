@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{pcor_perm}
 \alias{pcor_perm}
-\title{permutation test for (partial) correlation on non-Gaussian data}
+\title{Permutation test for (partial) correlation on non-Gaussian data}
 \usage{
 pcor_perm(x, y, iter = 1000, fun = pcor, method = "spearman")
 }
@@ -19,7 +19,8 @@ pcor_perm(x, y, iter = 1000, fun = pcor, method = "spearman")
 matrix of p-values
 }
 \description{
-permutation test for (partial) correlation on non-Gaussian data
+Computes the significance of (partial) correlation based
+on permutations of the observations
 }
 \examples{
 x <- matrix(rnorm(100),10,10)

@@ -51,9 +51,16 @@ graph_union_two <- function(graph1, graph2) {
 }
 
 
+#' Graph union
+#' 
 #' Create union of multiple graphs
 #' @param graph_list List of graphs
+#' @return graph union
 #' @export
+#' @examples
+#' dag <- create_random_DAG(30, 0.2)
+#' dag2 <- create_random_DAG(30, 0.2)
+#' graph_union(dag,dag2)
 graph_union <- function(graph_list) {
   Reduce(graph_union_two, graph_list)
 }
@@ -61,6 +68,10 @@ graph_union <- function(graph_list) {
 #' Remove non-gene nodes from pathway and reconnect nodes
 #' @param graph Biological pathway
 #' @export
+#' @return graph with only genes as nodes
+#' @examples
+#' dag <- create_random_DAG(30, 0.2)
+#' propagate_gene_edges(dag)
 propagate_gene_edges <- function(graph) {
   # propagate edges
   ig <- igraph::igraph.from.graphNEL(graph)
@@ -103,11 +114,16 @@ propagate_gene_edges <- function(graph) {
   return(graph_filter)
 }
 
-
+#' Graph to data frame
+#' 
 #' Convert graph object to dataframe with source and target columns
 #' @param graph Network
 #' @export
 #' @importFrom dplyr rename
+#' @return data frame
+#' @examples
+#' dag <- create_random_DAG(30, 0.2)
+#' graph2df(dag)
 graph2df <- function(graph) {
   graph %>%
     igraph::igraph.from.graphNEL(.) %>%
@@ -116,12 +132,16 @@ graph2df <- function(graph) {
     dplyr::rename(source = V1, sink = V2)
 }
 
-
-#' Order rows/columns topologically
+#' Topological ordering
+#' 
+#' Order rows/columns of a adjacency matrix topologically
 #' @param adja_mat Adjacency matrix of network
 #' @param alt Use igraph implementation
 #' @export
 #' @return topologically ordered matrix
+#' @examples
+#' adj <- matrix(c(0,1,0,0,0,1,0,0,0),3,3)
+#' topologically_ordering(adj)
 topologically_ordering <- function(adja_mat, alt = FALSE) {
   if (alt) {
     graph <- igraph::graph_from_adjacency_matrix(adja_mat)

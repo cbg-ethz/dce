@@ -1,6 +1,7 @@
-#' dce - main function
+#' Differential Causal Effects - main function
 #'
-#' Main function to compute differential causal effects and its enrichment
+#' Main function to compute differential causal effects and the 
+#' pathway enrichment
 #' @param graph valid object defining a directed acyclic graph
 #' @param df_expr_wt data frame with wild type expression values
 #' @param df_expr_mt data from with mutation type expression values
@@ -36,7 +37,7 @@
 #' X.wt <- simulate_data(dag)
 #' dag.mt <- resample_edge_weights(dag)
 #' X.mt <- simulate_data(dag)
-#' dce(dag,X.wt,Xmt)
+#' dce(dag,X.wt,X.mt)
 setGeneric(
     "dce",
     function(
@@ -202,6 +203,7 @@ dce_nb <- function(
 
 
 #' @importFrom naturalsort naturalorder
+#' @importFrom Rgraphviz head
 #' @noRd
 .dce <- function(
     graph, df_expr_wt, df_expr_mt,
@@ -496,14 +498,15 @@ dce_nb <- function(
     ), class = "dce")
 }
 
-
+#' Adjustment set
+#' 
 #' Get adjustment set on graph given two nodes
 #' @param graph Topology to use
 #' @param x Source node
 #' @param y target node
 #' @param adjustment_type Which adjustment method to use
 #' @param effect_type Which effect to compute
-#' @export
+#' @noRd
 get_adjustment_set <- function(
     graph, x, y,
     adjustment_type = "parents", effect_type = "total"
@@ -553,12 +556,7 @@ get_adjustment_set <- function(
 }
 
 
-#' Generic solver function
-#' @param form Formula describing model
-#' @param df Data used to fit model
-#' @param solver Which solver to use
-#' @param solver_args Additional arguments for solver
-#' @export
+#' @noRd
 glm_solver <- function(form, df, solver, solver_args) {
     # handle general functions
     if (is.function(solver)) {
@@ -585,6 +583,8 @@ glm_solver <- function(form, df, solver, solver_args) {
     do.call(solver_func, func_args)
 }
 
+#' Dce to data frame
+#'
 #' Turn dce object into data frame
 #' @export
 #' @importFrom reshape2 melt

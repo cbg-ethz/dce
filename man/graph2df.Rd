@@ -2,13 +2,20 @@
 % Please edit documentation in R/graph_utils.R
 \name{graph2df}
 \alias{graph2df}
-\title{Convert graph object to dataframe with source and target columns}
+\title{Graph to data frame}
 \usage{
 graph2df(graph)
 }
 \arguments{
 \item{graph}{Network}
 }
+\value{
+data frame
+}
 \description{
 Convert graph object to dataframe with source and target columns
+}
+\examples{
+dag <- create_random_DAG(30, 0.2)
+graph2df(dag)
 }

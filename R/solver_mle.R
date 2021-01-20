@@ -170,7 +170,7 @@ glm.mle <- function(
 }
 
 
-#' @export
+#' @noRd
 glm.mle.new <- function(form, family, data, control=list()) {
     form <- as.formula(form)
 
@@ -221,7 +221,7 @@ loglikeli.func <- function(params, X, Y, family) {
 }
 
 
-#' @export
+#' @noRd
 #' @method summary glm.mle
 #' @importFrom dplyr rename
 summary.glm.mle <- function(object, ...) {

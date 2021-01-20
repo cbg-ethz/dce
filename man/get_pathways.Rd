@@ -17,6 +17,12 @@ get_pathways(
 
 \item{remove_empty_pathways}{Discard pathways without nodes}
 }
+\value{
+list of pathways
+}
 \description{
 Easy pathway network access
+}
+\examples{
+get_pathways()
 }
