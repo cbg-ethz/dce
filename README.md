@@ -28,10 +28,9 @@ remotes::install_github("cbg-ethz/dce")
 
 ## Development notes
 
-* Update NAMESPACE: `Rscript -e "devtools::document()"`
 * Check package locally:
     * `Rscript -e "lintr::lint_package()"`
-    * `Rscript -e "rcmdcheck::rcmdcheck(error_on = 'warning')"`
+    * `Rscript -e "devtools::check(error_on = 'warning')"`
     * `R CMD BiocCheck`
 * Documentation
     * Build locally: `Rscript -e "pkgdown::build_site()"`
