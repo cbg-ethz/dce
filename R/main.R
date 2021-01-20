@@ -64,9 +64,9 @@ setMethod(
         conservative = FALSE,
         verbose = FALSE
     ) {
-        graph <- igraph::igraph.to.graphNEL(graph)
+        mat <- as(igraph::as_adjacency_matrix(graph), "matrix")
         dce(
-            as_adjmat(graph),
+            mat,
             df_expr_wt, df_expr_mt,
             solver, solver_args,
             adjustment_type,
