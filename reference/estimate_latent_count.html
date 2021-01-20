@@ -6,7 +6,8 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>dce - main function — dce • dce</title>
+<title>Estimate number of latent confounders
+Compute the true casual effects of a simulated dag — estimate_latent_count • dce</title>
 
 
 <!-- jquery -->
@@ -39,8 +40,11 @@
 
 
 
-<meta property="og:title" content="dce - main function — dce" />
-<meta property="og:description" content="Main function to compute differential causal effects and its enrichment" />
+<meta property="og:title" content="Estimate number of latent confounders
+Compute the true casual effects of a simulated dag — estimate_latent_count" />
+<meta property="og:description" content="This function takes a DAG with edgeweights as input and computes
+the causal effects of all nodes on all direct and indirect children in the
+DAG. Alternatively see pcalg::causalEffect for pairwise computation." />
 
 
 
@@ -126,107 +130,47 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>dce - main function</h1>
-    <small class="dont-index">Source: <a href='https://github.com/kpj/dce/blob/master/R/main.R'><code>R/main.R</code></a></small>
-    <div class="hidden name"><code>dce.Rd</code></div>
+    <h1>Estimate number of latent confounders
+Compute the true casual effects of a simulated dag</h1>
+    <small class="dont-index">Source: <a href='https://github.com/kpj/dce/blob/master/R/utils.R'><code>R/utils.R</code></a></small>
+    <div class="hidden name"><code>estimate_latent_count.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Main function to compute differential causal effects and its enrichment</p>
+    <p>This function takes a DAG with edgeweights as input and computes
+the causal effects of all nodes on all direct and indirect children in the
+DAG. Alternatively see pcalg::causalEffect for pairwise computation.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>dce</span><span class='op'>(</span>
-  <span class='va'>graph</span>,
-  <span class='va'>df_expr_wt</span>,
-  <span class='va'>df_expr_mt</span>,
-  solver <span class='op'>=</span> <span class='st'>"glm2"</span>,
-  solver_args <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>method <span class='op'>=</span> <span class='st'>"glm.dce.fit"</span><span class='op'>)</span>,
-  adjustment_type <span class='op'>=</span> <span class='st'>"parents"</span>,
-  effect_type <span class='op'>=</span> <span class='st'>"total"</span>,
-  p_method <span class='op'>=</span> <span class='st'>"mean"</span>,
-  test <span class='op'>=</span> <span class='st'>"wald"</span>,
-  lib_size <span class='op'>=</span> <span class='cn'>FALSE</span>,
-  deconfounding <span class='op'>=</span> <span class='cn'>FALSE</span>,
-  conservative <span class='op'>=</span> <span class='cn'>FALSE</span>,
-  verbose <span class='op'>=</span> <span class='cn'>FALSE</span>
-<span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>estimate_latent_count</span><span class='op'>(</span><span class='va'>X1</span>, <span class='va'>X2</span>, method <span class='op'>=</span> <span class='st'>"auto"</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>graph</th>
-      <td><p>valid object defining a directed acyclic graph</p></td>
+      <th>X1</th>
+      <td><p>data matrix corresponding to the first condition</p></td>
     </tr>
     <tr>
-      <th>df_expr_wt</th>
-      <td><p>data frame with wild type expression values</p></td>
+      <th>X2</th>
+      <td><p>data matrix corresponding to the second condition</p></td>
     </tr>
     <tr>
-      <th>df_expr_mt</th>
-      <td><p>data from with mutation type expression values</p></td>
-    </tr>
-    <tr>
-      <th>solver</th>
-      <td><p>character with name of solver function</p></td>
-    </tr>
-    <tr>
-      <th>solver_args</th>
-      <td><p>additional arguments for the solver function</p></td>
-    </tr>
-    <tr>
-      <th>adjustment_type</th>
-      <td><p>character string for the method to define
-the adjustment set Z for the regression</p></td>
-    </tr>
-    <tr>
-      <th>effect_type</th>
-      <td><p>method of computing causal effects</p></td>
-    </tr>
-    <tr>
-      <th>p_method</th>
-      <td><p>character string. "mean", "sum" for standard summary
-functions, "hmp" for harmonic mean, "test" for the selfcontained
-test of package 'CombinePValue' or any method from package 'metap',
-e.g., "meanp" or "sump".</p></td>
-    </tr>
-    <tr>
-      <th>test</th>
-      <td><p>either "wald" for testing significance with the
-wald test or "lr" for using a likelihood ratio test</p></td>
-    </tr>
-    <tr>
-      <th>lib_size</th>
-      <td><p>either a numeric vector of the same length as the
-sum of wild type and mutant samples or a logical. If TRUE, it is
-recommended that both data sets include not only the genes
-included in the graph but all genes available in the original data set.</p></td>
-    </tr>
-    <tr>
-      <th>deconfounding</th>
-      <td><p>indicates whether adjustment against latent
-confounding is used. If FALSE, no adjustment is used, if TRUE it adjusts
-for confounding by automatically estimating the number of latent
-confounders. The estimated number of latent confounders can be chosen
-manually by setting this variable to some number.</p></td>
-    </tr>
-    <tr>
-      <th>verbose</th>
-      <td><p>logical for verbose output</p></td>
+      <th>method</th>
+      <td><p>a string indicating the method used for estimating the number
+of latent variables</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>list of matrices with dces and corresponding p-value</p>
+    <p>estimated number of latent variables</p>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Domagoj Ćevid</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='va'>dag</span> <span class='op'>&lt;-</span> <span class='fu'><a href='create_random_DAG.html'>create_random_DAG</a></span><span class='op'>(</span><span class='fl'>30</span>, <span class='fl'>0.2</span><span class='op'>)</span>
-<span class='va'>X.wt</span> <span class='op'>&lt;-</span> <span class='fu'><a href='simulate_data.html'>simulate_data</a></span><span class='op'>(</span><span class='va'>dag</span><span class='op'>)</span>
-<span class='va'>dag.mt</span> <span class='op'>&lt;-</span> <span class='fu'><a href='resample_edge_weights.html'>resample_edge_weights</a></span><span class='op'>(</span><span class='va'>dag</span><span class='op'>)</span>
-<span class='va'>X.mt</span> <span class='op'>&lt;-</span> <span class='fu'><a href='simulate_data.html'>simulate_data</a></span><span class='op'>(</span><span class='va'>dag</span><span class='op'>)</span>
-<span class='fu'>dce</span><span class='op'>(</span><span class='va'>dag</span>,<span class='va'>X.wt</span>,<span class='va'>Xmt</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='warning'>Warning: Cycle(s) detected in network</span></div><div class='output co'>#&gt; <span class='error'>Error in is.data.frame(x): object 'Xmt' not found</span></div></pre>
+    <pre class="examples"></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

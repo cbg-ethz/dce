@@ -4,6 +4,9 @@
     <loc>https://kpj.github.io/dce//index.html</loc>
   </url>
   <url>
+    <loc>https://kpj.github.io/dce//reference/as.data.frame.dce.html</loc>
+  </url>
+  <url>
     <loc>https://kpj.github.io/dce//reference/as_adjmat.html</loc>
   </url>
   <url>
@@ -14,6 +17,9 @@
   </url>
   <url>
     <loc>https://kpj.github.io/dce//reference/df_pathway_statistics.html</loc>
+  </url>
+  <url>
+    <loc>https://kpj.github.io/dce//reference/estimate_latent_count.html</loc>
   </url>
   <url>
     <loc>https://kpj.github.io/dce//reference/g2dag.html</loc>
