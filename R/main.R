@@ -19,10 +19,10 @@
 #' sum of wild type and mutant samples or a logical. If TRUE, it is
 #' recommended that both data sets include not only the genes
 #' included in the graph but all genes available in the original data set.
-#' @param deconfounding indicates whether adjustment against latent 
+#' @param deconfounding indicates whether adjustment against latent
 #' confounding is used. If FALSE, no adjustment is used, if TRUE it adjusts
 #' for confounding by automatically estimating the number of latent confounders.
-#' The estimated number of latent confounders can be chosen manually by setting 
+#' The estimated number of latent confounders can be chosen manually by setting
 #' this variable to some number.
 #' @param verbose logical for verbose output
 #' @export
