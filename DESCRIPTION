@@ -22,7 +22,8 @@ Suggests:
     knitr,
     testthat (>= 2.1.0),
     BiocStyle,
-    cowplot
+    cowplot,
+    dagitty
 VignetteBuilder: knitr
 RoxygenNote: 7.1.1
 Imports:
