@@ -1,12 +1,12 @@
 ---
-title: "Simple usage example"
+title: "Get started"
 author: "Kim Philipp Jablonski, Martin Pirkl"
 date: "`r Sys.Date()`"
 graphics: yes
 output: BiocStyle::html_document
 bibliography: bibliography.bib
 vignette: >
-    %\VignetteIndexEntry{Simple usage example}
+    %\VignetteIndexEntry{Get started}
     %\VignetteEngine{knitr::rmarkdown}
     %\VignetteEncoding{UTF-8}
 ---
