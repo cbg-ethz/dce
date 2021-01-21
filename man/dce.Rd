@@ -61,7 +61,7 @@ manually by setting this variable to some number.}
 list of matrices with dces and corresponding p-value
 }
 \description{
-Main function to compute differential causal effects and the 
+Main function to compute differential causal effects and the
 pathway enrichment
 }
 \examples{
