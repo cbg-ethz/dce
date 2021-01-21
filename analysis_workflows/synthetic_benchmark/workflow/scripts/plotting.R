@@ -25,8 +25,6 @@ arguments <- docopt::docopt(doc)
 # setup environment
 input.fname <- "benchmark_results.csv"
 target.dir <- "plots/"
-methods <- NULL
-parameters <- NULL
 
 input.fname <- arguments$input
 target.dir <- arguments$output
@@ -155,10 +153,11 @@ if (!dir.exists(target.dir)) {
 }
 
 df.bench <- read_csv(input.fname)
-if (!is.null(methods)) {
+if (methods[1]!='NULL') {
     df.bench <- df.bench[,colnames(df.bench) %in% c(methods,'type','parameter','varied.parameter','rng.seed')]
 }
-if (!is.null(parameters)) {
+
+if (parameters[1]!='NULL') {
   df.bench <- df.bench[df.bench$parameter %in% parameters,]
 }
 
