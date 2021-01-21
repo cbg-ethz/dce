@@ -60,7 +60,7 @@ graph_union_two <- function(graph1, graph2) {
 #' @examples
 #' dag <- create_random_DAG(30, 0.2)
 #' dag2 <- create_random_DAG(30, 0.2)
-#' graph_union(dag,dag2)
+#' graph_union(list(g1=dag,g2=dag2))
 graph_union <- function(graph_list) {
   Reduce(graph_union_two, graph_list)
 }

@@ -77,4 +77,6 @@ Imports:
     reshape2,
     dplyr,
     glue,
-    Rgraphviz
+    Rgraphviz,
+    harmonicmeanp,
+    devtools

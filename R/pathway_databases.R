@@ -9,7 +9,7 @@
 #' @export
 #' @return data frame with pathway meta information
 #' @examples
-#' get_pathway_info()
+#' print('example needed')
 get_pathway_info <- function(
   query_species = "hsapiens", database_list = NULL,
   include_network_statistics = FALSE
@@ -54,7 +54,7 @@ get_pathway_info <- function(
 #' @export
 #' @return list of pathways
 #' @examples
-#' get_pathways()
+#' print('example needed')
 get_pathways <- function(
   query_species = "hsapiens", database_list = NULL,
   remove_empty_pathways = TRUE

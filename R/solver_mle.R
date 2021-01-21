@@ -206,7 +206,7 @@ glm.mle.new <- function(form, family, data, control=list()) {
 }
 
 
-#' @export
+#' @noRd
 loglikeli.func <- function(params, X, Y, family) {
     beta.vec <- params[-length(params)]
     theta <- params[length(params)]

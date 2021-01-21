@@ -4,16 +4,18 @@
 \alias{pcor}
 \title{Partial correlation}
 \usage{
-pcor(x, method = "spearman")
+pcor(x, ...)
 }
 \arguments{
 \item{x}{matrix}
+
+\item{...}{additional arguments for functions 'cor'}
 }
 \value{
 matrix of partial correlations
 }
 \description{
-Robust partial correlation of column variables of a 
+Robust partial correlation of column variables of a
 numeric matrix
 }
 \examples{

@@ -183,7 +183,8 @@ plot_network <- function(
             } else {
                 legend_title
             },  # nolint
-            na.value = "black"
+            na.value = "black",
+            guide = ggraph::guide_edge_colorbar()
         ) +
         scale_edge_width(
             range = c(1, 3), limits = c(0, edgescale_limits[[2]]),
@@ -220,7 +221,7 @@ plot_network <- function(
 #' dag.mt <- resample_edge_weights(dag)
 #' X.mt <- simulate_data(dag)
 #' dce.list <- dce(dag,X.wt,X.mt)
-#' plot.dce(dce.list)
+#' plot(dce.list)
 plot.dce <- function(x, ...) {
     plot_network(x$graph, value_matrix = x$dce, legend_title = "DCE", ...)
 }

@@ -15,6 +15,8 @@ simulate_data(
 )
 }
 \arguments{
+\item{graph}{Graph to simulate on}
+
 \item{n}{Number of samples}
 
 \item{dist_mean}{distribution mean as numeric}
@@ -22,7 +24,13 @@ simulate_data(
 \item{dist_dispersion}{distribution dispersion
 (actually dispersion^-1) as a scalar}
 
-\item{dag}{Graph to simulate on}
+\item{link}{special link function for the negative binomial
+distribution}
+
+\item{pop_size}{numeric for the population size, e.g., pop_size=1000 adds
+1000-n random genes not in the graph}
+
+\item{latent}{number of latent variables}
 }
 \value{
 graph

@@ -9,7 +9,7 @@ dce(
   df_expr_wt,
   df_expr_mt,
   solver = "glm2",
-  solver_args = list(method = "glm.dce.fit"),
+  solver_args = list(method = glm.dce.fit),
   adjustment_type = "parents",
   effect_type = "total",
   p_method = "mean",
@@ -54,6 +54,9 @@ confounding is used. If FALSE, no adjustment is used, if TRUE it adjusts
 for confounding by automatically estimating the number of latent
 confounders. The estimated number of latent confounders can be chosen
 manually by setting this variable to some number.}
+
+\item{conservative}{logical; if TRUE, does not use the indicator variable
+for the variables in the adjustment set}
 
 \item{verbose}{logical for verbose output}
 }

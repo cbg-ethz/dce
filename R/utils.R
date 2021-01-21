@@ -4,20 +4,24 @@
 #' on permutations of the observations
 #' @param x wild type data set
 #' @param y mutant data set
-#' @param i number of iterations (permutations)
+#' @param iter number of iterations (permutations)
 #' @param fun function to compute the statistic, e.g., cor or pcor
+#' @param ... additional arguments for function 'fun'
 #' @return matrix of p-values
+#' @export
 #' @examples
 #' x <- matrix(rnorm(100),10,10)
 #' y <- matrix(rnorm(100),10,10)
-#' pcor_perm(x,y,iter=10)
-pcor_perm <- function(x, y, iter = 1000, fun = pcor, method = "spearman") {
-    z <- fun(y) - fun(x)
+#' permutation_test(x,y,iter=10)
+permutation_test <- function(x, y, iter = 1000, fun = pcor, ...) {
+    z <- fun(y,...) - fun(x,...)
     p <- z * 0
     for (i in seq_len(iter)) {
-        xp <- x[, sample(seq_len(ncol(x)), ncol(x))]
-        yp <- y[, sample(seq_len(ncol(y)), ncol(y))]
-        zp <- fun(yp) - fun(xp)
+        xy <- rbind(x,y)
+        xyp <- xy[sample(seq_len(nrow(xy)),nrow(xy)),]
+        xp <- xyp[seq_len(nrow(x)),]
+        yp <- xyp[-seq_len(nrow(x)),]
+        zp <- fun(yp,...) - fun(xp,...)
         idx <- which(abs(zp) >= abs(z))
         p[idx] <- p[idx] + 1
     }
@@ -49,19 +53,20 @@ as_adjmat <- function(g) {
 #' Robust partial correlation of column variables of a
 #' numeric matrix
 #' @param x matrix
+#' @param ... additional arguments for functions 'cor'
 #' @importFrom ppcor pcor
 #' @export
 #' @return matrix of partial correlations
 #' @examples
 #' x <- matrix(rnorm(100),10,10)
 #' pcor(x)
-pcor <- function(x, method = "spearman") {
-    rho <- try(ppcor::pcor(x, method = method), silent = TRUE)
+pcor <- function(x, ...) {
+    rho <- try(ppcor::pcor(x, ...), silent = TRUE)
     if (length(grep("Error", rho)) > 0) {
         warning(paste0("Moore-Penrose generalized matrix invers in ",
                        "function ppcor::pcor crashed. Using ",
                        "MAAS::ginv instead."))
-        omega <- cor(x, method = method)
+        omega <- cor(x, ...)
         p <- Gsolve(omega)
         pdiag <- diag(p) %*% t(diag(p))
         rho <- -p / (pdiag^0.5)
@@ -91,6 +96,7 @@ pcor <- function(x, method = "spearman") {
 #' @author Ken Adams
 #' @return dag as adjacency matrix
 #' @export
+#' @importFrom mnem transitive.closure
 #' @examples
 #' g <- matrix(c(1,0,1,0, 1,1,0,0, 0,1,1,0, 1,1,0,1), 4, 4)
 #' rownames(g) <- colnames(g) <- LETTERS[seq_len(4)]
@@ -136,7 +142,7 @@ g2dag <- function(g, tc = FALSE) {
             if (sum(g[b, ]) >= sum(g[a, ])) {
                 g3[b, a] <- 1
             }
-            g4 <- mnem:::mytc(g3)
+            g4 <- transitive.closure(g3)
             ord <- order(apply(g4, 1, sum) - apply(g4, 2, sum), decreasing = 1)
             g4 <- g4[ord, ord]
             if (any(g2 + t(g2) > 1)) {

@@ -24,5 +24,5 @@ list of pathways
 Easy pathway network access
 }
 \examples{
-get_pathways()
+print('example needed')
 }

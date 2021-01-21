@@ -25,5 +25,5 @@ data frame with pathway meta information
 Dataframe containing meta-information of pathways in database
 }
 \examples{
-get_pathway_info()
+print('example needed')
 }

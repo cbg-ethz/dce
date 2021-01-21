@@ -6,6 +6,15 @@
 \usage{
 \method{as.data.frame}{dce}(x, row.names = NULL, optional = FALSE, ...)
 }
+\arguments{
+\item{x}{dce object}
+
+\item{row.names}{optional character vector of rownames}
+
+\item{optional}{logical; allow optional arguments}
+
+\item{...}{additional arguments}
+}
 \value{
 data frame containing the dce output
 }

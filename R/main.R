@@ -25,6 +25,8 @@
 #' for confounding by automatically estimating the number of latent
 #' confounders. The estimated number of latent confounders can be chosen
 #' manually by setting this variable to some number.
+#' @param conservative logical; if TRUE, does not use the indicator variable
+#' for the variables in the adjustment set
 #' @param verbose logical for verbose output
 #' @return list of matrices with dces and corresponding p-value
 #' @export
@@ -32,6 +34,7 @@
 #' @importFrom igraph as_adjacency_matrix
 #' @importFrom Matrix sparseMatrix
 #' @import metap CombinePValue assertthat
+#' @importFrom devtools load_all
 #' @examples
 #' dag <- create_random_DAG(30, 0.2)
 #' X.wt <- simulate_data(dag)
@@ -42,7 +45,7 @@ setGeneric(
     "dce",
     function(
         graph, df_expr_wt, df_expr_mt,
-        solver = "glm2", solver_args = list(method = "glm.dce.fit"),
+        solver = "glm2", solver_args = list(method = glm.dce.fit),
         adjustment_type = "parents",
         effect_type = "total",
         p_method = "mean",
@@ -65,7 +68,7 @@ setMethod(
     signature = signature(graph = "igraph"),
     function(
         graph, df_expr_wt, df_expr_mt,
-        solver = "glm2", solver_args = list(method = "glm.dce.fit"),
+        solver = "glm2", solver_args = list(method = glm.dce.fit),
         adjustment_type = "parents",
         effect_type = "total",
         p_method = "mean",
@@ -98,7 +101,7 @@ setMethod(
     signature = signature(graph = "graphNEL"),
     function(
         graph, df_expr_wt, df_expr_mt,
-        solver = "glm2", solver_args = list(method = "glm.dce.fit"),
+        solver = "glm2", solver_args = list(method = glm.dce.fit),
         adjustment_type = "parents",
         effect_type = "total",
         p_method = "mean",
@@ -130,7 +133,7 @@ setMethod(
     signature = signature(graph = "matrix"),
     function(
         graph, df_expr_wt, df_expr_mt,
-        solver = "glm2", solver_args = list(method = "glm.dce.fit"),
+        solver = "glm2", solver_args = list(method = glm.dce.fit),
         adjustment_type = "parents",
         effect_type = "total",
         p_method = "mean",
@@ -174,7 +177,43 @@ setMethod(
 )
 
 
+#' Differential Causal Effects for negative binomial data
+#'
+#' Shortcut for the main function to analyse negative binomial
+#' data
+#' @param graph valid object defining a directed acyclic graph
+#' @param df_expr_wt data frame with wild type expression values
+#' @param df_expr_mt data from with mutation type expression values
+#' @param solver_args additional arguments for the solver function
+#' @param adjustment_type character string for the method to define
+#' the adjustment set Z for the regression
+#' @param effect_type method of computing causal effects
+#' @param p_method character string. "mean", "sum" for standard summary
+#' functions, "hmp" for harmonic mean, "test" for the selfcontained
+#' test of package 'CombinePValue' or any method from package 'metap',
+#' e.g., "meanp" or "sump".
+#' @param test either "wald" for testing significance with the
+#' wald test or "lr" for using a likelihood ratio test
+#' @param lib_size either a numeric vector of the same length as the
+#' sum of wild type and mutant samples or a logical. If TRUE, it is
+#' recommended that both data sets include not only the genes
+#' included in the graph but all genes available in the original data set.
+#' @param deconfounding indicates whether adjustment against latent
+#' confounding is used. If FALSE, no adjustment is used, if TRUE it adjusts
+#' for confounding by automatically estimating the number of latent
+#' confounders. The estimated number of latent confounders can be chosen
+#' manually by setting this variable to some number.
+#' @param conservative logical; if TRUE, does not use the indicator variable
+#' for the variables in the adjustment set
+#' @param verbose logical for verbose output
+#' @return list of matrices with dces and corresponding p-value
 #' @export
+#' @examples
+#' dag <- create_random_DAG(30, 0.2)
+#' X.wt <- simulate_data(dag)
+#' dag.mt <- resample_edge_weights(dag)
+#' X.mt <- simulate_data(dag)
+#' dce_nb(dag,X.wt,X.mt)
 dce_nb <- function(
     graph, df_expr_wt, df_expr_mt,
     solver_args = list(method = "glm.dce.nb.fit", link = "identity"),
@@ -204,6 +243,7 @@ dce_nb <- function(
 
 #' @importFrom naturalsort naturalorder
 #' @importFrom Rgraphviz head
+#' @importFrom harmonicmeanp p.hmp
 #' @noRd
 .dce <- function(
     graph, df_expr_wt, df_expr_mt,
@@ -483,7 +523,6 @@ dce_nb <- function(
         } else if (p_method %in% c("mean", "median", "sum", "max", "min")) {
             pathway_pvalue <- do.call(p_method, list(x = tmp))
         } else {
-            require(metap)
             pathway_pvalue <- do.call(p_method, list(p = tmp))$p
         }
     }
@@ -586,10 +625,15 @@ glm_solver <- function(form, df, solver, solver_args) {
 #' Dce to data frame
 #'
 #' Turn dce object into data frame
+#' @param x dce object
+#' @param row.names optional character vector of rownames
+#' @param optional logical; allow optional arguments
+#' @param ... additional arguments
 #' @export
 #' @importFrom reshape2 melt
 #' @importFrom dplyr mutate rename
 #' @return data frame containing the dce output
+#' @method as.data.frame dce
 #' @examples
 #' dag <- create_random_DAG(30, 0.2)
 #' X_wt <- simulate_data(dag)

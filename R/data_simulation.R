@@ -1,11 +1,16 @@
 #' Simulate data
 #'
 #' Generate data for given DAG.
-#' @param dag Graph to simulate on
+#' @param graph Graph to simulate on
 #' @param n Number of samples
 #' @param dist_mean distribution mean as numeric
 #' @param dist_dispersion distribution dispersion
 #' (actually dispersion^-1) as a scalar
+#' @param link special link function for the negative binomial
+#' distribution
+#' @param pop_size numeric for the population size, e.g., pop_size=1000 adds
+#' 1000-n random genes not in the graph
+#' @param latent number of latent variables
 #' @return graph
 #' @export
 #' @importFrom methods is
