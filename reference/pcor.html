@@ -40,7 +40,7 @@
 
 
 <meta property="og:title" content="Partial correlation — pcor" />
-<meta property="og:description" content="Robust partial correlation of column variables of a 
+<meta property="og:description" content="Robust partial correlation of column variables of a
 numeric matrix" />
 
 
@@ -133,11 +133,11 @@ numeric matrix" />
     </div>
 
     <div class="ref-description">
-    <p>Robust partial correlation of column variables of a 
+    <p>Robust partial correlation of column variables of a
 numeric matrix</p>
     </div>
 
-    <pre class="usage"><span class='fu'>pcor</span><span class='op'>(</span><span class='va'>x</span>, method <span class='op'>=</span> <span class='st'>"spearman"</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>pcor</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -145,6 +145,10 @@ numeric matrix</p>
     <tr>
       <th>x</th>
       <td><p>matrix</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>additional arguments for functions 'cor'</p></td>
     </tr>
     </table>
 
@@ -155,28 +159,28 @@ numeric matrix</p>
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='va'>x</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='fl'>100</span><span class='op'>)</span>,<span class='fl'>10</span>,<span class='fl'>10</span><span class='op'>)</span>
 <span class='fu'>pcor</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='warning'>Warning: The inverse of variance-covariance matrix is calculated using Moore-Penrose generalized matrix invers due to its determinant of zero.</span></div><div class='output co'>#&gt; <span class='warning'>Warning: NaNs produced</span></div><div class='output co'>#&gt;              [,1]        [,2]        [,3]        [,4]       [,5]       [,6]
-#&gt;  [1,]  1.00000000  0.09344332 -0.84638444  0.82585471  0.2588387 -0.7164361
-#&gt;  [2,]  0.09344332  1.00000000  0.08714005  0.30384321  0.5736012 -0.1637110
-#&gt;  [3,] -0.84638444  0.08714005  1.00000000  0.70822457  0.1049553 -0.6385582
-#&gt;  [4,]  0.82585471  0.30384321  0.70822457  1.00000000 -0.4899031  0.7475578
-#&gt;  [5,]  0.25883870  0.57360121  0.10495527 -0.48990310  1.0000000  0.5211515
-#&gt;  [6,] -0.71643613 -0.16371096 -0.63855821  0.74755777  0.5211515  1.0000000
-#&gt;  [7,]  0.50838129  0.45293116  0.43131347 -0.55226962 -0.8215965  0.5802971
-#&gt;  [8,] -0.17469482 -0.50861984 -0.12970772  0.46981229  0.6992893 -0.3669544
-#&gt;  [9,]  0.31742620 -0.35481067  0.32870275 -0.04775157  0.3106241  0.1491976
-#&gt; [10,] -0.85201139 -0.33437321 -0.76286291  0.94925751  0.5675123 -0.8440719
-#&gt;              [,7]        [,8]        [,9]       [,10]
-#&gt;  [1,]  0.50838129 -0.17469482  0.31742620 -0.85201139
-#&gt;  [2,]  0.45293116 -0.50861984 -0.35481067 -0.33437321
-#&gt;  [3,]  0.43131347 -0.12970772  0.32870275 -0.76286291
-#&gt;  [4,] -0.55226962  0.46981229 -0.04775157  0.94925751
-#&gt;  [5,] -0.82159648  0.69928935  0.31062407  0.56751226
-#&gt;  [6,]  0.58029714 -0.36695441  0.14919761 -0.84407189
-#&gt;  [7,]  1.00000000  0.72940260  0.05848719  0.65210672
-#&gt;  [8,]  0.72940260  1.00000000 -0.09089233 -0.49515395
-#&gt;  [9,]  0.05848719 -0.09089233  1.00000000  0.09829961
-#&gt; [10,]  0.65210672 -0.49515395  0.09829961  1.00000000</div></pre>
+</div><div class='output co'>#&gt; <span class='warning'>Warning: The inverse of variance-covariance matrix is calculated using Moore-Penrose generalized matrix invers due to its determinant of zero.</span></div><div class='output co'>#&gt; <span class='warning'>Warning: NaNs produced</span></div><div class='output co'>#&gt;               [,1]        [,2]         [,3]        [,4]        [,5]        [,6]
+#&gt;  [1,]  1.000000000 -0.47643824 -0.519424131 -0.19341784 -0.70019139 -0.33209625
+#&gt;  [2,] -0.476438237  1.00000000  0.121129771 -0.50580165 -0.11083204 -0.08294416
+#&gt;  [3,] -0.519424131  0.12112977  1.000000000  0.08122390 -0.76838250 -0.31497524
+#&gt;  [4,] -0.193417835 -0.50580165  0.081223896  1.00000000  0.29204058 -0.35246619
+#&gt;  [5,] -0.700191393 -0.11083204 -0.768382497  0.29204058  1.00000000 -0.27056717
+#&gt;  [6,] -0.332096251 -0.08294416 -0.314975242 -0.35246619 -0.27056717  1.00000000
+#&gt;  [7,] -0.910861466 -0.59048069 -0.451913584 -0.11163437 -0.71101344 -0.36114567
+#&gt;  [8,]  0.013976222 -0.44330905  0.368934376 -0.59132566  0.28564131  0.03988216
+#&gt;  [9,]  0.006683528 -0.23730899 -0.002465881  0.01827767  0.02876053  0.29465360
+#&gt; [10,]  0.691428551  0.79723690  0.061170922  0.53666528  0.12830444  0.10475626
+#&gt;               [,7]         [,8]         [,9]      [,10]
+#&gt;  [1,] -0.910861466  0.013976222  0.006683528 0.69142855
+#&gt;  [2,] -0.590480690 -0.443309052 -0.237308994 0.79723690
+#&gt;  [3,] -0.451913584  0.368934376 -0.002465881 0.06117092
+#&gt;  [4,] -0.111634375 -0.591325659  0.018277669 0.53666528
+#&gt;  [5,] -0.711013438  0.285641309  0.028760531 0.12830444
+#&gt;  [6,] -0.361145671  0.039882160  0.294653605 0.10475626
+#&gt;  [7,]  1.000000000  0.009783456 -0.051177889 0.62603665
+#&gt;  [8,]  0.009783456  1.000000000  0.095218857 0.48610999
+#&gt;  [9,] -0.051177889  0.095218857  1.000000000 0.20617417
+#&gt; [10,]  0.626036653  0.486109993  0.206174174 1.00000000</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

@@ -153,8 +153,10 @@
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='va'>dag</span> <span class='op'>&lt;-</span> <span class='fu'><a href='create_random_DAG.html'>create_random_DAG</a></span><span class='op'>(</span><span class='fl'>30</span>, <span class='fl'>0.2</span><span class='op'>)</span>
 <span class='va'>dag2</span> <span class='op'>&lt;-</span> <span class='fu'><a href='create_random_DAG.html'>create_random_DAG</a></span><span class='op'>(</span><span class='fl'>30</span>, <span class='fl'>0.2</span><span class='op'>)</span>
-<span class='fu'>graph_union</span><span class='op'>(</span><span class='va'>dag</span>,<span class='va'>dag2</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='error'>Error in graph_union(dag, dag2): unused argument (dag2)</span></div></pre>
+<span class='fu'>graph_union</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>g1<span class='op'>=</span><span class='va'>dag</span>,g2<span class='op'>=</span><span class='va'>dag2</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; A graphNEL graph with directed edges
+#&gt; Number of Nodes = 30 
+#&gt; Number of Edges = 154 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

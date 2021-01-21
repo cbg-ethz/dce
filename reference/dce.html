@@ -142,7 +142,7 @@ pathway enrichment</p>
   <span class='va'>df_expr_wt</span>,
   <span class='va'>df_expr_mt</span>,
   solver <span class='op'>=</span> <span class='st'>"glm2"</span>,
-  solver_args <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>method <span class='op'>=</span> <span class='st'>"glm.dce.fit"</span><span class='op'>)</span>,
+  solver_args <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>method <span class='op'>=</span> <span class='va'>glm.dce.fit</span><span class='op'>)</span>,
   adjustment_type <span class='op'>=</span> <span class='st'>"parents"</span>,
   effect_type <span class='op'>=</span> <span class='st'>"total"</span>,
   p_method <span class='op'>=</span> <span class='st'>"mean"</span>,
@@ -213,6 +213,11 @@ confounders. The estimated number of latent confounders can be chosen
 manually by setting this variable to some number.</p></td>
     </tr>
     <tr>
+      <th>conservative</th>
+      <td><p>logical; if TRUE, does not use the indicator variable
+for the variables in the adjustment set</p></td>
+    </tr>
+    <tr>
       <th>verbose</th>
       <td><p>logical for verbose output</p></td>
     </tr>
@@ -228,7 +233,484 @@ manually by setting this variable to some number.</p></td>
 <span class='va'>dag.mt</span> <span class='op'>&lt;-</span> <span class='fu'><a href='resample_edge_weights.html'>resample_edge_weights</a></span><span class='op'>(</span><span class='va'>dag</span><span class='op'>)</span>
 <span class='va'>X.mt</span> <span class='op'>&lt;-</span> <span class='fu'><a href='simulate_data.html'>simulate_data</a></span><span class='op'>(</span><span class='va'>dag</span><span class='op'>)</span>
 <span class='fu'>dce</span><span class='op'>(</span><span class='va'>dag</span>,<span class='va'>X.wt</span>,<span class='va'>X.mt</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='warning'>Warning: Cycle(s) detected in network</span></div><div class='output co'>#&gt; <span class='error'>Error in glm.dce.fit(x = structure(c(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 778, 1100, 920, 974, 829, 1094, 942, 1129, 906, 1128, 848, 1043, 943, 864, 859, 991, 1495, 859, 758, 987, 1019, 1061, 953, 829, 944, 1078, 975, 879, 1084, 962, 1152, 1152, 863, 1037, 1091, 1054, 955, 1034, 1029, 1043, 1362, 1042, 965, 947, 901, 1125, 998, 939, 908, 981, 978, 1068, 1049, 1102, 913, 956, 717, 1021, 1073, 1033, 1007, 1245, 1042, 969, 1031, 908, 925, 1119, 1056, 984, 987, 902, 934, 980, 809, 1007, 817, 956, 953, 953, 1145, 1166, 771, 1098, 900, 922, 819, 922, 985, 884, 984, 907, 887, 989, 1052, 952, 1026, 1052, 966, 1222, 954, 795, 987, 1034, 886, 876, 1116, 925, 1106, 1043, 898, 877, 1073, 1008, 1098, 1023, 976, 877, 1010, 914, 874, 1266, 1094, 972, 1089, 1038, 1123, 1014, 1083, 1124, 1004, 1053, 1119, 1206, 816, 849, 1201, 1011, 890, 1132, 947, 949, 887, 1015, 929, 1094, 826, 1167, 741, 1133, 1053, 972, 1073, 1067, 843, 946, 804, 1091, 1056, 1007, 973, 1117, 1146, 892, 1031, 1097, 993, 1118, 1081, 1133, 850, 924, 1077, 994, 1049, 995, 1114, 955, 791, 932, 1073, 1077, 1067, 774, 992, 953, 1029, 944, 1032, 845, 1019, 907, 1055, 896, 1020, 1186, 1058, 1183, 918, 940, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 954, 795, 987, 1034, 886, 876, 1116, 925, 1106, 1043, 898, 877, 1073, 1008, 1098, 1023, 976, 877, 1010, 914, 874, 1266, 1094, 972, 1089, 1038, 1123, 1014, 1083, 1124, 1004, 1053, 1119, 1206, 816, 849, 1201, 1011, 890, 1132, 947, 949, 887, 1015, 929, 1094, 826, 1167, 741, 1133, 1053, 972, 1073, 1067, 843, 946, 804, 1091, 1056, 1007, 973, 1117, 1146, 892, 1031, 1097, 993, 1118, 1081, 1133, 850, 924, 1077, 994, 1049, 995, 1114, 955, 791, 932, 1073, 1077, 1067, 774, 992, 953, 1029, 944, 1032, 845, 1019, 907, 1055, 896, 1020, 1186, 1058, 1183, 918, 940), .Dim = c(200L, 4L), .Dimnames = list(c("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "40", "41", "42", "43", "44", "45", "46", "47", "48", "49", "50", "51", "52", "53", "54", "55", "56", "57", "58", "59", "60", "61", "62", "63", "64", "65", "66", "67", "68", "69", "70", "71", "72", "73", "74", "75", "76", "77", "78", "79", "80", "81", "82", "83", "84", "85", "86", "87", "88", "89", "90", "91", "92", "93", "94", "95", "96", "97", "98", "99", "100", "101", "102", "103", "104", "105", "106", "107", "108", "109", "110", "111", "112", "113", "114", "115", "116", "117", "118", "119", "120", "121", "122", "123", "124", "125", "126", "127", "128", "129", "130", "131", "132", "133", "134", "135", "136", "137", "138", "139", "140", "141", "142", "143", "144", "145", "146", "147", "148", "149", "150", "151", "152", "153", "154", "155", "156", "157", "158", "159", "160", "161", "162", "163", "164", "165", "166", "167", "168", "169", "170", "171", "172", "173", "174", "175", "176", "177", "178", "179", "180", "181", "182", "183", "184", "185", "186", "187", "188", "189", "190", "191", "192", "193", "194", "195", "196", "197", "198", "199", "200"), c("(Intercept)", "N", "X", "N:X")), assign = 0:3), y = c(`1` = 425, `2` = 238, `3` = 326, `4` = 336, `5` = 355, `6` = 223, `7` = 320, `8` = 218, `9` = 333, `10` = 226, `11` = 387, `12` = 262, `13` = 330, `14` = 348, `15` = 401, `16` = 330, `17` = 2, `18` = 372, `19` = 408, `20` = 276, `21` = 279, `22` = 276, `23` = 328, `24` = 354, `25` = 286, `26` = 241, `27` = 280, `28` = 360, `29` = 228, `30` = 261, `31` = 191, `32` = 209, `33` = 387, `34` = 269, `35` = 227, `36` = 311, `37` = 289, `38` = 252, `39` = 269, `40` = 243, `41` = 82, `42` = 255, `43` = 321, `44` = 314, `45` = 331, `46` = 239, `47` = 296, `48` = 303, `49` = 377, `50` = 300, `51` = 279, `52` = 239, `53` = 251, `54` = 235, `55` = 319, `56` = 346, `57` = 441, `58` = 291, `59` = 242, `60` = 283, `61` = 296, `62` = 152, `63` = 268, `64` = 323, `65` = 275, `66` = 371, `67` = 345, `68` = 202, `69` = 228, `70` = 331, `71` = 332, `72` = 350, `73` = 330, `74` = 283, `75` = 399, `76` = 291, `77` = 374, `78` = 331, `79` = 326, `80` = 306, `81` = 201, `82` = 196, `83` = 424, `84` = 244, `85` = 361, `86` = 334, `87` = 403, `88` = 317, `89` = 290, `90` = 372, `91` = 305, `92` = 325, `93` = 347, `94` = 301, `95` = 258, `96` = 317, `97` = 274, `98` = 277, `99` = 295, `100` = 153, `101` = 158, `102` = 222, `103` = 171, `104` = 133, `105` = 202, `106` = 263, `107` = 106, `108` = 171, `109` = 111, `110` = 126, `111` = 229, `112` = 229, `113` = 114, `114` = 179, `115` = 90, `116` = 119, `117` = 171, `118` = 246, `119` = 145, `120` = 203, `121` = 205, `122` = 0, `123` = 87, `124` = 169, `125` = 93, `126` = 143, `127` = 91, `128` = 150, `129` = 102, `130` = 66, `131` = 158, `132` = 141, `133` = 74, `134` = 43, `135` = 267, `136` = 240, `137` = 45, `138` = 140, `139` = 223, `140` = 81, `141` = 168, `142` = 178, `143` = 205, `144` = 142, `145` = 199, `146` = 99, `147` = 256, `148` = 48, `149` = 304, `150` = 79, `151` = 118, `152` = 153, `153` = 99, `154` = 113, `155` = 269, `156` = 195, `157` = 282, `158` = 107, `159` = 142, `160` = 134, `161` = 166, `162` = 85, `163` = 65, `164` = 213, `165` = 147, `166` = 87, `167` = 168, `168` = 82, `169` = 103, `170` = 73, `171` = 240, `172` = 203, `173` = 108, `174` = 164, `175` = 130, `176` = 161, `177` = 86, `178` = 178, `179` = 275, `180` = 189, `181` = 109, `182` = 122, `183` = 102, `184` = 264, `185` = 139, `186` = 175, `187` = 131, `188` = 171, `189` = 144, `190` = 282, `191` = 146, `192` = 251, `193` = 128, `194` = 226, `195` = 136, `196` = 55, `197` = 105, `198` = 46, `199` = 222, `200` = 195), weights = NULL, start = NULL,     etastart = NULL, mustart = NULL, offset = NULL, family = structure(list(        family = "gaussian", link = "identity", linkfun = function (mu)         mu, linkinv = function (eta)         eta, variance = function (mu)         rep.int(1, length(mu)), dev.resids = function (y, mu,             wt)         wt * ((y - mu)^2), aic = function (y, n, mu, wt, dev)         {            nobs &lt;- length(y)            nobs * (log(dev/nobs * 2 * pi) + 1) + 2 - sum(log(wt))        }, mu.eta = function (eta)         rep.int(1, length(eta)), initialize = expression({            n &lt;- rep.int(1, nobs)            if (is.null(etastart) &amp;&amp; is.null(start) &amp;&amp; is.null(mustart) &amp;&amp;                 ((family$link == "inverse" &amp;&amp; any(y == 0)) ||                   (family$link == "log" &amp;&amp; any(y &lt;= 0))))                 stop("cannot find valid starting values: please specify some")            mustart &lt;- y        }), validmu = function (mu)         TRUE, valideta = function (eta)         TRUE), class = "family"), control = list(), intercept = TRUE,     singular.ok = TRUE): could not find function "glm.dce.fit"</span></div></pre>
+</div><div class='output co'>#&gt; <span class='warning'>Warning: Cycle(s) detected in network</span></div><div class='output co'>#&gt; $graph
+#&gt;     n1 n2 n3 n4 n5 n6 n7 n8 n9 n10 n11 n12 n13 n14 n15 n16 n17 n18 n19 n20 n21
+#&gt; n1   0  0  0  0  0  0  0  0  0   0   0   0   0   1   0   1   1   1   0   0   0
+#&gt; n2   0  0  1  0  0  0  0  0  1   0   1   0   0   0   0   1   0   0   0   0   0
+#&gt; n3   0  0  0  0  0  0  1  0  1   1   0   0   0   0   0   0   0   1   0   0   0
+#&gt; n4   0  0  0  0  1  1  1  0  0   0   0   0   0   0   1   0   0   1   1   0   0
+#&gt; n5   0  0  0  0  0  1  0  0  0   0   1   0   0   0   1   0   0   0   0   0   0
+#&gt; n6   0  0  0  0  0  0  0  1  0   0   1   1   0   0   0   0   0   0   0   0   0
+#&gt; n7   0  0  0  0  0  0  0  0  0   0   0   0   1   1   1   0   0   1   0   0   0
+#&gt; n8   0  0  0  0  0  0  0  0  1   0   0   0   0   0   0   0   1   0   0   1   0
+#&gt; n9   0  0  0  0  0  0  0  0  0   0   0   0   0   1   1   0   0   0   1   0   0
+#&gt; n10  0  0  0  0  0  0  0  0  0   0   0   1   0   0   0   0   0   0   0   0   0
+#&gt; n11  0  0  0  0  0  0  0  0  0   0   0   1   1   0   0   0   1   0   0   0   0
+#&gt; n12  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   1   0
+#&gt; n13  0  0  0  0  0  0  0  0  0   0   0   0   0   0   1   0   0   0   0   0   1
+#&gt; n14  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   1   0   0   0
+#&gt; n15  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0   1
+#&gt; n16  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0   1
+#&gt; n17  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   1   0
+#&gt; n18  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0   0
+#&gt; n19  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0   1
+#&gt; n20  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0   1
+#&gt; n21  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0   0
+#&gt; n22  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0   0
+#&gt; n23  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0   0
+#&gt; n24  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0   0
+#&gt; n25  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0   0
+#&gt; n26  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0   0
+#&gt; n27  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0   0
+#&gt; n28  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0   0
+#&gt; n29  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0   0
+#&gt; n30  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0   0
+#&gt;     n22 n23 n24 n25 n26 n27 n28 n29 n30
+#&gt; n1    0   0   0   0   0   0   0   0   0
+#&gt; n2    1   0   0   1   0   1   0   0   1
+#&gt; n3    0   0   0   0   0   0   0   0   0
+#&gt; n4    0   0   0   0   0   1   0   0   0
+#&gt; n5    0   0   0   0   0   0   0   0   0
+#&gt; n6    0   0   0   0   0   1   0   0   1
+#&gt; n7    0   1   0   0   0   0   1   0   0
+#&gt; n8    0   0   0   0   0   0   0   0   0
+#&gt; n9    0   1   0   0   0   0   0   1   0
+#&gt; n10   0   0   0   0   0   0   0   0   0
+#&gt; n11   0   1   0   0   0   0   0   1   0
+#&gt; n12   0   1   0   0   0   0   1   0   0
+#&gt; n13   0   0   0   1   0   1   0   0   0
+#&gt; n14   0   0   0   0   0   0   0   0   0
+#&gt; n15   0   0   0   1   0   0   0   1   0
+#&gt; n16   0   0   1   0   0   0   0   0   0
+#&gt; n17   0   0   0   0   0   1   0   0   0
+#&gt; n18   0   0   0   1   0   0   0   0   0
+#&gt; n19   0   1   1   0   0   0   0   0   1
+#&gt; n20   0   0   0   0   0   1   0   0   0
+#&gt; n21   0   0   0   0   0   0   0   0   0
+#&gt; n22   0   1   0   0   0   0   0   0   0
+#&gt; n23   0   0   1   0   0   0   0   0   0
+#&gt; n24   0   0   0   0   0   0   0   1   0
+#&gt; n25   0   0   0   0   0   0   0   1   0
+#&gt; n26   0   0   0   0   0   0   0   0   1
+#&gt; n27   0   0   0   0   0   0   0   0   0
+#&gt; n28   0   0   0   0   0   0   0   0   1
+#&gt; n29   0   0   0   0   0   0   0   0   0
+#&gt; n30   0   0   0   0   0   0   0   0   0
+#&gt; 
+#&gt; $dce
+#&gt;     n1 n2         n3 n4           n5          n6         n7         n8
+#&gt; n1  NA NA         NA NA           NA          NA         NA         NA
+#&gt; n2  NA NA -0.0158564 NA           NA          NA         NA         NA
+#&gt; n3  NA NA         NA NA           NA          NA 0.74425469         NA
+#&gt; n4  NA NA         NA NA -0.003142513 -0.01226063 0.09042489         NA
+#&gt; n5  NA NA         NA NA           NA -0.07489950         NA         NA
+#&gt; n6  NA NA         NA NA           NA          NA         NA 0.05350847
+#&gt; n7  NA NA         NA NA           NA          NA         NA         NA
+#&gt; n8  NA NA         NA NA           NA          NA         NA         NA
+#&gt; n9  NA NA         NA NA           NA          NA         NA         NA
+#&gt; n10 NA NA         NA NA           NA          NA         NA         NA
+#&gt; n11 NA NA         NA NA           NA          NA         NA         NA
+#&gt; n12 NA NA         NA NA           NA          NA         NA         NA
+#&gt; n13 NA NA         NA NA           NA          NA         NA         NA
+#&gt; n14 NA NA         NA NA           NA          NA         NA         NA
+#&gt; n15 NA NA         NA NA           NA          NA         NA         NA
+#&gt; n16 NA NA         NA NA           NA          NA         NA         NA
+#&gt; n17 NA NA         NA NA           NA          NA         NA         NA
+#&gt; n18 NA NA         NA NA           NA          NA         NA         NA
+#&gt; n19 NA NA         NA NA           NA          NA         NA         NA
+#&gt; n20 NA NA         NA NA           NA          NA         NA         NA
+#&gt; n21 NA NA         NA NA           NA          NA         NA         NA
+#&gt; n22 NA NA         NA NA           NA          NA         NA         NA
+#&gt; n23 NA NA         NA NA           NA          NA         NA         NA
+#&gt; n24 NA NA         NA NA           NA          NA         NA         NA
+#&gt; n25 NA NA         NA NA           NA          NA         NA         NA
+#&gt; n26 NA NA         NA NA           NA          NA         NA         NA
+#&gt; n27 NA NA         NA NA           NA          NA         NA         NA
+#&gt; n28 NA NA         NA NA           NA          NA         NA         NA
+#&gt; n29 NA NA         NA NA           NA          NA         NA         NA
+#&gt; n30 NA NA         NA NA           NA          NA         NA         NA
+#&gt;              n9         n10         n11         n12         n13        n14
+#&gt; n1           NA          NA          NA          NA          NA 0.02506077
+#&gt; n2  -0.03662647          NA -0.06537389          NA          NA         NA
+#&gt; n3   0.18124232 -0.06916058          NA          NA          NA         NA
+#&gt; n4           NA          NA          NA          NA          NA         NA
+#&gt; n5           NA          NA -0.25614272          NA          NA         NA
+#&gt; n6           NA          NA -0.18264319 -0.20553018          NA         NA
+#&gt; n7           NA          NA          NA          NA -0.24397227 0.20112085
+#&gt; n8  -0.20396607          NA          NA          NA          NA         NA
+#&gt; n9           NA          NA          NA          NA          NA 0.64427649
+#&gt; n10          NA          NA          NA  0.30119876          NA         NA
+#&gt; n11          NA          NA          NA -0.06676994 -0.02565627         NA
+#&gt; n12          NA          NA          NA          NA          NA         NA
+#&gt; n13          NA          NA          NA          NA          NA         NA
+#&gt; n14          NA          NA          NA          NA          NA         NA
+#&gt; n15          NA          NA          NA          NA          NA         NA
+#&gt; n16          NA          NA          NA          NA          NA         NA
+#&gt; n17          NA          NA          NA          NA          NA         NA
+#&gt; n18          NA          NA          NA          NA          NA         NA
+#&gt; n19          NA          NA          NA          NA          NA         NA
+#&gt; n20          NA          NA          NA          NA          NA         NA
+#&gt; n21          NA          NA          NA          NA          NA         NA
+#&gt; n22          NA          NA          NA          NA          NA         NA
+#&gt; n23          NA          NA          NA          NA          NA         NA
+#&gt; n24          NA          NA          NA          NA          NA         NA
+#&gt; n25          NA          NA          NA          NA          NA         NA
+#&gt; n26          NA          NA          NA          NA          NA         NA
+#&gt; n27          NA          NA          NA          NA          NA         NA
+#&gt; n28          NA          NA          NA          NA          NA         NA
+#&gt; n29          NA          NA          NA          NA          NA         NA
+#&gt; n30          NA          NA          NA          NA          NA         NA
+#&gt;             n15         n16         n17         n18         n19        n20
+#&gt; n1           NA -0.03883634 -0.07587297 -0.21586431          NA         NA
+#&gt; n2           NA -0.06337460          NA          NA          NA         NA
+#&gt; n3           NA          NA          NA  1.64332088          NA         NA
+#&gt; n4   0.07002761          NA          NA  0.03457117  0.01377727         NA
+#&gt; n5  -0.43413099          NA          NA          NA          NA         NA
+#&gt; n6           NA          NA          NA          NA          NA         NA
+#&gt; n7  -0.42991014          NA          NA  0.11434543          NA         NA
+#&gt; n8           NA          NA  0.30421112          NA          NA  0.2274981
+#&gt; n9  -0.25302795          NA          NA          NA -0.02671571         NA
+#&gt; n10          NA          NA          NA          NA          NA         NA
+#&gt; n11          NA          NA -0.29437197          NA          NA         NA
+#&gt; n12          NA          NA          NA          NA          NA -0.1076579
+#&gt; n13 -0.36217060          NA          NA          NA          NA         NA
+#&gt; n14          NA          NA          NA -0.33811426          NA         NA
+#&gt; n15          NA          NA          NA          NA          NA         NA
+#&gt; n16          NA          NA          NA          NA          NA         NA
+#&gt; n17          NA          NA          NA          NA          NA  0.3695955
+#&gt; n18          NA          NA          NA          NA          NA         NA
+#&gt; n19          NA          NA          NA          NA          NA         NA
+#&gt; n20          NA          NA          NA          NA          NA         NA
+#&gt; n21          NA          NA          NA          NA          NA         NA
+#&gt; n22          NA          NA          NA          NA          NA         NA
+#&gt; n23          NA          NA          NA          NA          NA         NA
+#&gt; n24          NA          NA          NA          NA          NA         NA
+#&gt; n25          NA          NA          NA          NA          NA         NA
+#&gt; n26          NA          NA          NA          NA          NA         NA
+#&gt; n27          NA          NA          NA          NA          NA         NA
+#&gt; n28          NA          NA          NA          NA          NA         NA
+#&gt; n29          NA          NA          NA          NA          NA         NA
+#&gt; n30          NA          NA          NA          NA          NA         NA
+#&gt;            n21         n22         n23         n24         n25 n26        n27
+#&gt; n1          NA          NA          NA          NA          NA  NA         NA
+#&gt; n2          NA 0.008611816          NA          NA -0.23742552  NA -0.1303073
+#&gt; n3          NA          NA          NA          NA          NA  NA         NA
+#&gt; n4          NA          NA          NA          NA          NA  NA -0.1553150
+#&gt; n5          NA          NA          NA          NA          NA  NA         NA
+#&gt; n6          NA          NA          NA          NA          NA  NA  0.3000018
+#&gt; n7          NA          NA  0.16840516          NA          NA  NA         NA
+#&gt; n8          NA          NA          NA          NA          NA  NA         NA
+#&gt; n9          NA          NA -0.37513942          NA          NA  NA         NA
+#&gt; n10         NA          NA          NA          NA          NA  NA         NA
+#&gt; n11         NA          NA  0.02377339          NA          NA  NA         NA
+#&gt; n12         NA          NA  0.08387154          NA          NA  NA         NA
+#&gt; n13 -1.9201007          NA          NA          NA -0.35339868  NA -0.7947446
+#&gt; n14         NA          NA          NA          NA          NA  NA         NA
+#&gt; n15  0.1140282          NA          NA          NA -0.81569956  NA         NA
+#&gt; n16  1.5288836          NA          NA  0.36552440          NA  NA         NA
+#&gt; n17         NA          NA          NA          NA          NA  NA -0.5344875
+#&gt; n18         NA          NA          NA          NA -0.06860646  NA         NA
+#&gt; n19  3.1532717          NA -1.77881561 -0.05722452          NA  NA         NA
+#&gt; n20 -0.2423641          NA          NA          NA          NA  NA -1.3105215
+#&gt; n21         NA          NA          NA          NA          NA  NA         NA
+#&gt; n22         NA          NA  0.83860146          NA          NA  NA         NA
+#&gt; n23         NA          NA          NA -0.21603175          NA  NA         NA
+#&gt; n24         NA          NA          NA          NA          NA  NA         NA
+#&gt; n25         NA          NA          NA          NA          NA  NA         NA
+#&gt; n26         NA          NA          NA          NA          NA  NA         NA
+#&gt; n27         NA          NA          NA          NA          NA  NA         NA
+#&gt; n28         NA          NA          NA          NA          NA  NA         NA
+#&gt; n29         NA          NA          NA          NA          NA  NA         NA
+#&gt; n30         NA          NA          NA          NA          NA  NA         NA
+#&gt;            n28         n29        n30
+#&gt; n1          NA          NA         NA
+#&gt; n2          NA          NA -0.1424501
+#&gt; n3          NA          NA         NA
+#&gt; n4          NA          NA         NA
+#&gt; n5          NA          NA         NA
+#&gt; n6          NA          NA  0.6550903
+#&gt; n7  0.07210089          NA         NA
+#&gt; n8          NA          NA         NA
+#&gt; n9          NA -0.22025406         NA
+#&gt; n10         NA          NA         NA
+#&gt; n11         NA -0.05285491         NA
+#&gt; n12 0.02699409          NA         NA
+#&gt; n13         NA          NA         NA
+#&gt; n14         NA          NA         NA
+#&gt; n15         NA -0.20980642         NA
+#&gt; n16         NA          NA         NA
+#&gt; n17         NA          NA         NA
+#&gt; n18         NA          NA         NA
+#&gt; n19         NA          NA -0.3439059
+#&gt; n20         NA          NA         NA
+#&gt; n21         NA          NA         NA
+#&gt; n22         NA          NA         NA
+#&gt; n23         NA          NA         NA
+#&gt; n24         NA -0.21634598         NA
+#&gt; n25         NA  0.19171475         NA
+#&gt; n26         NA          NA -0.0146057
+#&gt; n27         NA          NA         NA
+#&gt; n28         NA          NA  0.4817357
+#&gt; n29         NA          NA         NA
+#&gt; n30         NA          NA         NA
+#&gt; 
+#&gt; $dce_stderr
+#&gt;     n1 n2         n3 n4         n5         n6         n7         n8         n9
+#&gt; n1  NA NA         NA NA         NA         NA         NA         NA         NA
+#&gt; n2  NA NA 0.02017282 NA         NA         NA         NA         NA 0.02864433
+#&gt; n3  NA NA         NA NA         NA         NA 0.39433200         NA 0.19374341
+#&gt; n4  NA NA         NA NA 0.01065462 0.03004638 0.05971195         NA         NA
+#&gt; n5  NA NA         NA NA         NA 0.26875479         NA         NA         NA
+#&gt; n6  NA NA         NA NA         NA         NA         NA 0.08006033         NA
+#&gt; n7  NA NA         NA NA         NA         NA         NA         NA         NA
+#&gt; n8  NA NA         NA NA         NA         NA         NA         NA 0.43736877
+#&gt; n9  NA NA         NA NA         NA         NA         NA         NA         NA
+#&gt; n10 NA NA         NA NA         NA         NA         NA         NA         NA
+#&gt; n11 NA NA         NA NA         NA         NA         NA         NA         NA
+#&gt; n12 NA NA         NA NA         NA         NA         NA         NA         NA
+#&gt; n13 NA NA         NA NA         NA         NA         NA         NA         NA
+#&gt; n14 NA NA         NA NA         NA         NA         NA         NA         NA
+#&gt; n15 NA NA         NA NA         NA         NA         NA         NA         NA
+#&gt; n16 NA NA         NA NA         NA         NA         NA         NA         NA
+#&gt; n17 NA NA         NA NA         NA         NA         NA         NA         NA
+#&gt; n18 NA NA         NA NA         NA         NA         NA         NA         NA
+#&gt; n19 NA NA         NA NA         NA         NA         NA         NA         NA
+#&gt; n20 NA NA         NA NA         NA         NA         NA         NA         NA
+#&gt; n21 NA NA         NA NA         NA         NA         NA         NA         NA
+#&gt; n22 NA NA         NA NA         NA         NA         NA         NA         NA
+#&gt; n23 NA NA         NA NA         NA         NA         NA         NA         NA
+#&gt; n24 NA NA         NA NA         NA         NA         NA         NA         NA
+#&gt; n25 NA NA         NA NA         NA         NA         NA         NA         NA
+#&gt; n26 NA NA         NA NA         NA         NA         NA         NA         NA
+#&gt; n27 NA NA         NA NA         NA         NA         NA         NA         NA
+#&gt; n28 NA NA         NA NA         NA         NA         NA         NA         NA
+#&gt; n29 NA NA         NA NA         NA         NA         NA         NA         NA
+#&gt; n30 NA NA         NA NA         NA         NA         NA         NA         NA
+#&gt;            n10        n11       n12       n13        n14        n15        n16
+#&gt; n1          NA         NA        NA        NA 0.06586027         NA 0.08536513
+#&gt; n2          NA 0.04334838        NA        NA         NA         NA 0.11754822
+#&gt; n3  0.08420809         NA        NA        NA         NA         NA         NA
+#&gt; n4          NA         NA        NA        NA         NA 0.03767462         NA
+#&gt; n5          NA 0.78583560        NA        NA         NA 0.50477886         NA
+#&gt; n6          NA 0.42343156 0.1287147        NA         NA         NA         NA
+#&gt; n7          NA         NA        NA 0.2021605 0.69537020 0.29280131         NA
+#&gt; n8          NA         NA        NA        NA         NA         NA         NA
+#&gt; n9          NA         NA        NA        NA 1.10319514 0.81987168         NA
+#&gt; n10         NA         NA 0.9110356        NA         NA         NA         NA
+#&gt; n11         NA         NA 0.1650745 0.1876833         NA         NA         NA
+#&gt; n12         NA         NA        NA        NA         NA         NA         NA
+#&gt; n13         NA         NA        NA        NA         NA 0.47123039         NA
+#&gt; n14         NA         NA        NA        NA         NA         NA         NA
+#&gt; n15         NA         NA        NA        NA         NA         NA         NA
+#&gt; n16         NA         NA        NA        NA         NA         NA         NA
+#&gt; n17         NA         NA        NA        NA         NA         NA         NA
+#&gt; n18         NA         NA        NA        NA         NA         NA         NA
+#&gt; n19         NA         NA        NA        NA         NA         NA         NA
+#&gt; n20         NA         NA        NA        NA         NA         NA         NA
+#&gt; n21         NA         NA        NA        NA         NA         NA         NA
+#&gt; n22         NA         NA        NA        NA         NA         NA         NA
+#&gt; n23         NA         NA        NA        NA         NA         NA         NA
+#&gt; n24         NA         NA        NA        NA         NA         NA         NA
+#&gt; n25         NA         NA        NA        NA         NA         NA         NA
+#&gt; n26         NA         NA        NA        NA         NA         NA         NA
+#&gt; n27         NA         NA        NA        NA         NA         NA         NA
+#&gt; n28         NA         NA        NA        NA         NA         NA         NA
+#&gt; n29         NA         NA        NA        NA         NA         NA         NA
+#&gt; n30         NA         NA        NA        NA         NA         NA         NA
+#&gt;            n17       n18         n19       n20       n21     n22       n23
+#&gt; n1  0.05756333 0.2039966          NA        NA        NA      NA        NA
+#&gt; n2          NA        NA          NA        NA        NA 0.01905        NA
+#&gt; n3          NA 1.4280957          NA        NA        NA      NA        NA
+#&gt; n4          NA 0.1124043 0.008770311        NA        NA      NA        NA
+#&gt; n5          NA        NA          NA        NA        NA      NA        NA
+#&gt; n6          NA        NA          NA        NA        NA      NA        NA
+#&gt; n7          NA 0.9498349          NA        NA        NA      NA 0.1976981
+#&gt; n8  1.17734417        NA          NA 1.0514686        NA      NA        NA
+#&gt; n9          NA        NA 0.167948562        NA        NA      NA 0.3582329
+#&gt; n10         NA        NA          NA        NA        NA      NA        NA
+#&gt; n11 0.67523752        NA          NA        NA        NA      NA 0.2584100
+#&gt; n12         NA        NA          NA 0.5465507        NA      NA 0.2213246
+#&gt; n13         NA        NA          NA        NA 1.2649244      NA        NA
+#&gt; n14         NA 0.5145981          NA        NA        NA      NA        NA
+#&gt; n15         NA        NA          NA        NA 1.0518330      NA        NA
+#&gt; n16         NA        NA          NA        NA 1.2371790      NA        NA
+#&gt; n17         NA        NA          NA 0.2676147        NA      NA        NA
+#&gt; n18         NA        NA          NA        NA        NA      NA        NA
+#&gt; n19         NA        NA          NA        NA 2.6921851      NA 1.0872331
+#&gt; n20         NA        NA          NA        NA 0.8713372      NA        NA
+#&gt; n21         NA        NA          NA        NA        NA      NA        NA
+#&gt; n22         NA        NA          NA        NA        NA      NA 0.3172236
+#&gt; n23         NA        NA          NA        NA        NA      NA        NA
+#&gt; n24         NA        NA          NA        NA        NA      NA        NA
+#&gt; n25         NA        NA          NA        NA        NA      NA        NA
+#&gt; n26         NA        NA          NA        NA        NA      NA        NA
+#&gt; n27         NA        NA          NA        NA        NA      NA        NA
+#&gt; n28         NA        NA          NA        NA        NA      NA        NA
+#&gt; n29         NA        NA          NA        NA        NA      NA        NA
+#&gt; n30         NA        NA          NA        NA        NA      NA        NA
+#&gt;           n24       n25 n26        n27       n28       n29       n30
+#&gt; n1         NA        NA  NA         NA        NA        NA        NA
+#&gt; n2         NA 0.1877239  NA 0.07872916        NA        NA 0.1091344
+#&gt; n3         NA        NA  NA         NA        NA        NA        NA
+#&gt; n4         NA        NA  NA 0.10662001        NA        NA        NA
+#&gt; n5         NA        NA  NA         NA        NA        NA        NA
+#&gt; n6         NA        NA  NA 0.77828948        NA        NA 0.3217528
+#&gt; n7         NA        NA  NA         NA 0.1353677        NA        NA
+#&gt; n8         NA        NA  NA         NA        NA        NA        NA
+#&gt; n9         NA        NA  NA         NA        NA 1.3205182        NA
+#&gt; n10        NA        NA  NA         NA        NA        NA        NA
+#&gt; n11        NA        NA  NA         NA        NA 0.9042982        NA
+#&gt; n12        NA        NA  NA         NA 0.1087531        NA        NA
+#&gt; n13        NA 1.4988099  NA 0.95774335        NA        NA        NA
+#&gt; n14        NA        NA  NA         NA        NA        NA        NA
+#&gt; n15        NA 0.7461832  NA         NA        NA 0.7094819        NA
+#&gt; n16 0.2385014        NA  NA         NA        NA        NA        NA
+#&gt; n17        NA        NA  NA 0.63179367        NA        NA        NA
+#&gt; n18        NA 0.1641781  NA         NA        NA        NA        NA
+#&gt; n19 2.1288816        NA  NA         NA        NA        NA 0.7372308
+#&gt; n20        NA        NA  NA 1.14938377        NA        NA        NA
+#&gt; n21        NA        NA  NA         NA        NA        NA        NA
+#&gt; n22        NA        NA  NA         NA        NA        NA        NA
+#&gt; n23 1.0210735        NA  NA         NA        NA        NA        NA
+#&gt; n24        NA        NA  NA         NA        NA 0.2566951        NA
+#&gt; n25        NA        NA  NA         NA        NA 0.3654268        NA
+#&gt; n26        NA        NA  NA         NA        NA        NA 0.1154464
+#&gt; n27        NA        NA  NA         NA        NA        NA        NA
+#&gt; n28        NA        NA  NA         NA        NA        NA 0.5389159
+#&gt; n29        NA        NA  NA         NA        NA        NA        NA
+#&gt; n30        NA        NA  NA         NA        NA        NA        NA
+#&gt; 
+#&gt; $dce_pvalue
+#&gt;     n1 n2        n3 n4       n5        n6         n7        n8        n9
+#&gt; n1  NA NA        NA NA       NA        NA         NA        NA        NA
+#&gt; n2  NA NA 0.4328003 NA       NA        NA         NA        NA 0.2025274
+#&gt; n3  NA NA        NA NA       NA        NA 0.06060227        NA 0.3507060
+#&gt; n4  NA NA        NA NA 0.768349 0.6836774 0.13154762        NA        NA
+#&gt; n5  NA NA        NA NA       NA 0.7807789         NA        NA        NA
+#&gt; n6  NA NA        NA NA       NA        NA         NA 0.5047117        NA
+#&gt; n7  NA NA        NA NA       NA        NA         NA        NA        NA
+#&gt; n8  NA NA        NA NA       NA        NA         NA        NA 0.6414896
+#&gt; n9  NA NA        NA NA       NA        NA         NA        NA        NA
+#&gt; n10 NA NA        NA NA       NA        NA         NA        NA        NA
+#&gt; n11 NA NA        NA NA       NA        NA         NA        NA        NA
+#&gt; n12 NA NA        NA NA       NA        NA         NA        NA        NA
+#&gt; n13 NA NA        NA NA       NA        NA         NA        NA        NA
+#&gt; n14 NA NA        NA NA       NA        NA         NA        NA        NA
+#&gt; n15 NA NA        NA NA       NA        NA         NA        NA        NA
+#&gt; n16 NA NA        NA NA       NA        NA         NA        NA        NA
+#&gt; n17 NA NA        NA NA       NA        NA         NA        NA        NA
+#&gt; n18 NA NA        NA NA       NA        NA         NA        NA        NA
+#&gt; n19 NA NA        NA NA       NA        NA         NA        NA        NA
+#&gt; n20 NA NA        NA NA       NA        NA         NA        NA        NA
+#&gt; n21 NA NA        NA NA       NA        NA         NA        NA        NA
+#&gt; n22 NA NA        NA NA       NA        NA         NA        NA        NA
+#&gt; n23 NA NA        NA NA       NA        NA         NA        NA        NA
+#&gt; n24 NA NA        NA NA       NA        NA         NA        NA        NA
+#&gt; n25 NA NA        NA NA       NA        NA         NA        NA        NA
+#&gt; n26 NA NA        NA NA       NA        NA         NA        NA        NA
+#&gt; n27 NA NA        NA NA       NA        NA         NA        NA        NA
+#&gt; n28 NA NA        NA NA       NA        NA         NA        NA        NA
+#&gt; n29 NA NA        NA NA       NA        NA         NA        NA        NA
+#&gt; n30 NA NA        NA NA       NA        NA         NA        NA        NA
+#&gt;           n10       n11       n12       n13       n14        n15       n16
+#&gt; n1         NA        NA        NA        NA 0.7039758         NA 0.6496532
+#&gt; n2         NA 0.1331380        NA        NA        NA         NA 0.5904042
+#&gt; n3  0.4124803        NA        NA        NA        NA         NA        NA
+#&gt; n4         NA        NA        NA        NA        NA 0.06456211        NA
+#&gt; n5         NA 0.7448139        NA        NA        NA 0.39082750        NA
+#&gt; n6         NA 0.6667047 0.1119573        NA        NA         NA        NA
+#&gt; n7         NA        NA        NA 0.2289845 0.7727186 0.14366840        NA
+#&gt; n8         NA        NA        NA        NA        NA         NA        NA
+#&gt; n9         NA        NA        NA        NA 0.5599066 0.75794951        NA
+#&gt; n10        NA        NA 0.7412948        NA        NA         NA        NA
+#&gt; n11        NA        NA 0.6863120 0.8914128        NA         NA        NA
+#&gt; n12        NA        NA        NA        NA        NA         NA        NA
+#&gt; n13        NA        NA        NA        NA        NA 0.44309664        NA
+#&gt; n14        NA        NA        NA        NA        NA         NA        NA
+#&gt; n15        NA        NA        NA        NA        NA         NA        NA
+#&gt; n16        NA        NA        NA        NA        NA         NA        NA
+#&gt; n17        NA        NA        NA        NA        NA         NA        NA
+#&gt; n18        NA        NA        NA        NA        NA         NA        NA
+#&gt; n19        NA        NA        NA        NA        NA         NA        NA
+#&gt; n20        NA        NA        NA        NA        NA         NA        NA
+#&gt; n21        NA        NA        NA        NA        NA         NA        NA
+#&gt; n22        NA        NA        NA        NA        NA         NA        NA
+#&gt; n23        NA        NA        NA        NA        NA         NA        NA
+#&gt; n24        NA        NA        NA        NA        NA         NA        NA
+#&gt; n25        NA        NA        NA        NA        NA         NA        NA
+#&gt; n26        NA        NA        NA        NA        NA         NA        NA
+#&gt; n27        NA        NA        NA        NA        NA         NA        NA
+#&gt; n28        NA        NA        NA        NA        NA         NA        NA
+#&gt; n29        NA        NA        NA        NA        NA         NA        NA
+#&gt; n30        NA        NA        NA        NA        NA         NA        NA
+#&gt;           n17       n18       n19       n20       n21       n22         n23
+#&gt; n1  0.1890158 0.2912775        NA        NA        NA        NA          NA
+#&gt; n2         NA        NA        NA        NA        NA 0.6517229          NA
+#&gt; n3         NA 0.2512688        NA        NA        NA        NA          NA
+#&gt; n4         NA 0.7587429 0.1178190        NA        NA        NA          NA
+#&gt; n5         NA        NA        NA        NA        NA        NA          NA
+#&gt; n6         NA        NA        NA        NA        NA        NA          NA
+#&gt; n7         NA 0.9043044        NA        NA        NA        NA 0.395369633
+#&gt; n8  0.7963817        NA        NA 0.8289327        NA        NA          NA
+#&gt; n9         NA        NA 0.8737821        NA        NA        NA 0.296340356
+#&gt; n10        NA        NA        NA        NA        NA        NA          NA
+#&gt; n11 0.6633656        NA        NA        NA        NA        NA 0.926795982
+#&gt; n12        NA        NA        NA 0.8440561        NA        NA 0.705146141
+#&gt; n13        NA        NA        NA        NA 0.1306701        NA          NA
+#&gt; n14        NA 0.5119469        NA        NA        NA        NA          NA
+#&gt; n15        NA        NA        NA        NA 0.9137881        NA          NA
+#&gt; n16        NA        NA        NA        NA 0.2180494        NA          NA
+#&gt; n17        NA        NA        NA 0.1688786        NA        NA          NA
+#&gt; n18        NA        NA        NA        NA        NA        NA          NA
+#&gt; n19        NA        NA        NA        NA 0.2429424        NA 0.103458079
+#&gt; n20        NA        NA        NA        NA 0.7811982        NA          NA
+#&gt; n21        NA        NA        NA        NA        NA        NA          NA
+#&gt; n22        NA        NA        NA        NA        NA        NA 0.008874592
+#&gt; n23        NA        NA        NA        NA        NA        NA          NA
+#&gt; n24        NA        NA        NA        NA        NA        NA          NA
+#&gt; n25        NA        NA        NA        NA        NA        NA          NA
+#&gt; n26        NA        NA        NA        NA        NA        NA          NA
+#&gt; n27        NA        NA        NA        NA        NA        NA          NA
+#&gt; n28        NA        NA        NA        NA        NA        NA          NA
+#&gt; n29        NA        NA        NA        NA        NA        NA          NA
+#&gt; n30        NA        NA        NA        NA        NA        NA          NA
+#&gt;           n24       n25 n26        n27       n28       n29        n30
+#&gt; n1         NA        NA  NA         NA        NA        NA         NA
+#&gt; n2         NA 0.2074595  NA 0.09949757        NA        NA 0.19333063
+#&gt; n3         NA        NA  NA         NA        NA        NA         NA
+#&gt; n4         NA        NA  NA 0.14679501        NA        NA         NA
+#&gt; n5         NA        NA  NA         NA        NA        NA         NA
+#&gt; n6         NA        NA  NA 0.70032114        NA        NA 0.04312352
+#&gt; n7         NA        NA  NA         NA 0.5949056        NA         NA
+#&gt; n8         NA        NA  NA         NA        NA        NA         NA
+#&gt; n9         NA        NA  NA         NA        NA 0.8677098         NA
+#&gt; n10        NA        NA  NA         NA        NA        NA         NA
+#&gt; n11        NA        NA  NA         NA        NA 0.9534528         NA
+#&gt; n12        NA        NA  NA         NA 0.8042367        NA         NA
+#&gt; n13        NA 0.8138499  NA 0.40767702        NA        NA         NA
+#&gt; n14        NA        NA  NA         NA        NA        NA         NA
+#&gt; n15        NA 0.2757362  NA         NA        NA 0.7677755         NA
+#&gt; n16 0.1270235        NA  NA         NA        NA        NA         NA
+#&gt; n17        NA        NA  NA 0.39862573        NA        NA         NA
+#&gt; n18        NA 0.6765181  NA         NA        NA        NA         NA
+#&gt; n19 0.9785833        NA  NA         NA        NA        NA 0.64139839
+#&gt; n20        NA        NA  NA 0.25564038        NA        NA         NA
+#&gt; n21        NA        NA  NA         NA        NA        NA         NA
+#&gt; n22        NA        NA  NA         NA        NA        NA         NA
+#&gt; n23 0.8326742        NA  NA         NA        NA        NA         NA
+#&gt; n24        NA        NA  NA         NA        NA 0.4003927         NA
+#&gt; n25        NA        NA  NA         NA        NA 0.6004568         NA
+#&gt; n26        NA        NA  NA         NA        NA        NA 0.89945399
+#&gt; n27        NA        NA  NA         NA        NA        NA         NA
+#&gt; n28        NA        NA  NA         NA        NA        NA 0.37249578
+#&gt; n29        NA        NA  NA         NA        NA        NA         NA
+#&gt; n30        NA        NA  NA         NA        NA        NA         NA
+#&gt; 
+#&gt; $pathway_pvalue
+#&gt; [1] 0.5048647
+#&gt; 
+#&gt; attr(,"class")
+#&gt; [1] "dce"</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
