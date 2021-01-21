@@ -46,7 +46,7 @@ as_adjmat <- function(g) {
 
 #' Partial correlation
 #'
-#' Robust partial correlation of column variables of a 
+#' Robust partial correlation of column variables of a
 #' numeric matrix
 #' @param x matrix
 #' @importFrom ppcor pcor
@@ -460,7 +460,7 @@ estimate_latent_count <- function(X1, X2, method = "auto") {
             N <- 50
             r <- min(dim(X))
             X <- scale(X)
-            
+
             evals <- matrix(0, nrow = N, ncol = r)
             for (i in seq_len(N)) {
                 X_perm <- apply(X, 2, function(xx) sample(xx))
@@ -468,30 +468,30 @@ estimate_latent_count <- function(X1, X2, method = "auto") {
             }
             thresholds <- apply(evals,
                                 2, function(xx) quantile(xx, probs = quantile))
-            
+
             # last which crosses the threshold
             return(max(which(c(TRUE, svd(X)$d > thresholds))) - 1)
         }
-        
+
         q1 <- permutation_thresholding(X1)
         q2 <- permutation_thresholding(X2)
-        
+
         return(ceiling((q1 + q2) / 2))
     }
 
     if (method == "kim") {
         # This function looks at the knee point of a scree plot.
-        
+
         X <- cbind(X1, X2)
         fit_pca <- prcomp(scale(X))
-        
+
         scree <- fit_pca$sdev
         values <- seq(length(scree))
-        
+
         d1 <- diff(scree) / diff(values) # first derivative
         d2 <- diff(d1) / diff(values[-1]) # second derivative
         idx <- which.max(abs(d2))
-        
+
         return(idx)
     }
 }
