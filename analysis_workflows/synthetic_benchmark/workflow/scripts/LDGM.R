@@ -13,16 +13,3 @@ LDGM <- function(wt.X,mt.X) {
     system(paste0("rm ", wt.f, " ", mt.f, " LDGM/", theta.f))
     return(Theta)
 }
-LDGM.perm <- function(x, y, iter = 1000) {
-    z <- LDGM(x,y)
-    p <- z * 0
-    for (i in seq_len(iter)) {
-        xp <- x[, sample(seq_len(ncol(x)), ncol(x))]
-        yp <- y[, sample(seq_len(ncol(y)), ncol(y))]
-        zp <- LDGM(xp,yp)
-        idx <- which(abs(zp) >= abs(z))
-        p[idx] <- p[idx] + 1
-    }
-    p <- p / iter
-    return(p)
-}
