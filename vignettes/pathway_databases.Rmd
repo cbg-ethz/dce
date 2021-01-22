@@ -35,7 +35,7 @@ dce::df_pathway_statistics %>%
 
 # Pathway database overview
 
-We provide access to the following topological pathway databases using 
+We provide access to the following topological pathway databases using
 graphite [@sales2012graphite]:
 
 ```{r}
@@ -63,7 +63,7 @@ pathways <- get_pathways(
   )
 )
 
-lapply(pathways, function (x) {
+lapply(pathways, function(x) {
   plot_network(as(x$graph, "matrix")) +
     ggtitle(x$pathway_name)
 })

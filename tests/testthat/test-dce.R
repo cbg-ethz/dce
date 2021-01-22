@@ -178,8 +178,8 @@ test_that("better solver can mitigate crash", {
 
   # TODO: figure out how to pass `dce:::glm.dce.nb.fit` as method
   # # custom fit will succeed
-  # fit <- MASS::glm.nb(B ~ A, link = "identity", method = dce:::glm.dce.nb.fit)
-  # fit
+  # fit <- MASS::glm.nb(B ~ A, link = "identity", method = dce:::glm.dce.nb.fit) # nolint
+  # fit # nolint
 })
 
 

@@ -41,22 +41,22 @@ test_that("library size correction is useful", {
   # TODO: figure out how to pass `dce:::glm.dce.nb.fit` as method
   # # helper function
   # glm.fun <- function(...) {
-  #   dce:::glm.nb.rob(..., method = dce:::glm.dce.nb.fit, link = "identity")
+  #   dce:::glm.nb.rob(..., method = dce:::glm.dce.nb.fit, link = "identity") # nolint
   # }
   #
   # # fit models
   #
   # # works fine (no library size effect)
-  # glm.fun(B ~ A)
+  # glm.fun(B ~ A) # nolint
   #
   # # yields wrong estimate
-  # glm.fun(B.s ~ A.s)
+  # glm.fun(B.s ~ A.s) # nolint
   #
   # # works fine (but `lib.factor` is ground truth)
-  # glm.fun(B.s ~ A.s + factor(lib.factor))
+  # glm.fun(B.s ~ A.s + factor(lib.factor)) # nolint
   #
   # # uses realistic library size correction and yields reasonable estimate
-  # glm.fun(B.s ~ A.s + factor(lib.size))
+  # glm.fun(B.s ~ A.s + factor(lib.size)) # nolint
 })
 
 
