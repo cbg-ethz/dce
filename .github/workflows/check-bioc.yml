@@ -111,6 +111,9 @@ jobs:
           ## see also https://github.com/r-lib/actions/issues/78
           brew install --cask xquartz
 
+          ## Supply gfortran
+          sudo ln -s /usr/local/bin/gfortran-9 /usr/local/bin/gfortran
+
       - name: Install Windows system dependencies
         if: runner.os == 'Windows'
         run: |
