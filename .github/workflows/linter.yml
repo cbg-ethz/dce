@@ -17,7 +17,7 @@ jobs:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Provide gfortran
-        if: matrix.config.os == 'macOS-latest'
+        if: runner.os == 'macOS'
         run: |
           sudo ln -s /usr/local/bin/gfortran-9 /usr/local/bin/gfortran
 
