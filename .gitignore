@@ -7,9 +7,11 @@ packrat/lib*/
 .Rhistory
 .RData
 .Ruserdata
+Rplots.pdf
 
 # misc
 .snakemake
 doc
 Meta
 docs
+vignettes/*.html
