@@ -1,5 +1,9 @@
 # dce
 
+[![lint](https://github.com/kpj/dce/workflows/lint/badge.svg)](https://github.com/kpj/dce/actions)
+[![check-bioc](https://github.com/kpj/dce/workflows/check-bioc/badge.svg)](https://github.com/kpj/dce/actions)
+[![pkgdown](https://github.com/kpj/dce/workflows/pkgdown/badge.svg)](https://github.com/kpj/dce/actions)
+
 Compute differential causal effects on (biological) networks.
 
 

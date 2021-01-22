@@ -2,7 +2,7 @@ on:
   push:
   pull_request:
 
-name: R-CMD-check-bioc
+name: check-bioc
 
 env:
   has_testthat: 'true'
