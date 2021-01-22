@@ -45,7 +45,7 @@ plot_network <- function(
 
     if (is.null(rownames(adja_matrix)) || is.null(colnames(adja_matrix))) {
         warning(
-            "Not nodenames set, using dummy names...",
+            "No nodenames set, using dummy names...",
             call. = FALSE
         )
 
