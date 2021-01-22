@@ -30,15 +30,14 @@ common.genes <- intersect(igraph::vertex_attr(graph, "name"), colnames(X.wt))
 res <- dce::dce(
   igraph::induced_subgraph(graph, common.genes),
   X.wt, X.mt,
-  solver = "lm",
-  lib_size = FALSE, latent = 0
+  solver = "lm"
 )
 
 # run competing models
 res_cor <- list(
   dce = cor(X.mt[, common.genes]) - cor(X.wt[, common.genes])
 )
-res_cor$dce_pvalue <- dce::pcor_perm(
+res_cor$dce_pvalue <- dce::permutation_test(
   X.wt[, common.genes], X.mt[, common.genes],
   fun = cor
 )
@@ -46,7 +45,7 @@ res_cor$dce_pvalue <- dce::pcor_perm(
 res_pcor <- list(
   dce = dce::pcor(X.mt[, common.genes]) - dce::pcor(X.wt[, common.genes])
 )
-res_pcor$dce_pvalue <- dce::pcor_perm(
+res_pcor$dce_pvalue <- dce::permutation_test(
   X.wt[, common.genes], X.mt[, common.genes],
   fun = dce::pcor
 )
