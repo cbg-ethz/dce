@@ -1,18 +1,18 @@
 test_that("union works", {
     # create individual graphs
-    g1 <- create_graph_from_dataframe(data.frame(
+    g1 <- dce:::create_graph_from_dataframe(data.frame(
       from = c("A"),
       to = c("B")
     ), edge_weight = function() 0.5)
-    g2 <- create_graph_from_dataframe(data.frame(
+    g2 <- dce:::create_graph_from_dataframe(data.frame(
       from = c("A"),
       to = c("C")
     ), edge_weight = function() 1)
-    g3 <- create_graph_from_dataframe(data.frame(
+    g3 <- dce:::create_graph_from_dataframe(data.frame(
       from = c("X"),
       to = c("Y")
     ), edge_weight = function() -4)
-    g4 <- create_graph_from_dataframe(data.frame(
+    g4 <- dce:::create_graph_from_dataframe(data.frame(
       from = c("Y"),
       to = c("A")
     ), edge_weight = function() 6)

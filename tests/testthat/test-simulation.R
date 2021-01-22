@@ -1,7 +1,7 @@
 test_that("simple propagation works", {
   set.seed(42)
 
-  graph <- create_graph_from_dataframe(
+  graph <- dce:::create_graph_from_dataframe(
     data.frame(
       from = c("A", "B"),
       to = c("B", "C")
