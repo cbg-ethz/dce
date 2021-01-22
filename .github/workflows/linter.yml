@@ -19,7 +19,7 @@ jobs:
       - name: Provide gfortran
         if: runner.os == 'macOS'
         run: |
-          sudo ln -s /usr/local/bin/gfortran-9 /usr/local/bin/gfortran
+          alias gfortran='gfortran-10'
           gfortran --version
 
       - uses: actions/checkout@v2

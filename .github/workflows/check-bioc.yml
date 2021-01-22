@@ -112,7 +112,7 @@ jobs:
           brew install --cask xquartz
 
           ## Supply gfortran
-          sudo ln -s /usr/local/bin/gfortran-9 /usr/local/bin/gfortran
+          alias gfortran='gfortran-10'
           gfortran --version
 
       - name: Install Windows system dependencies
