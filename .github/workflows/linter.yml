@@ -12,13 +12,10 @@ name: lint
 
 jobs:
   lint:
-    runs-on: ubuntu-latest
+    runs-on: macOS-latest
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
     steps:
-      - name: Install dependencies
-        run: sudo apt-get install libcurl4-openssl-dev
-
       - uses: actions/checkout@v2
 
       - uses: r-lib/actions/setup-r@v1
