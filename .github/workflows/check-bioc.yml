@@ -113,6 +113,7 @@ jobs:
 
           ## Supply gfortran
           sudo ln -s /usr/local/bin/gfortran-9 /usr/local/bin/gfortran
+          gfortran --version
 
       - name: Install Windows system dependencies
         if: runner.os == 'Windows'

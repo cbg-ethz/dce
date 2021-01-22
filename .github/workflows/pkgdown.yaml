@@ -16,6 +16,7 @@ jobs:
         if: runner.os == 'macOS'
         run: |
           sudo ln -s /usr/local/bin/gfortran-9 /usr/local/bin/gfortran
+          gfortran --version
 
       - uses: actions/checkout@v2
 
