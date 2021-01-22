@@ -50,6 +50,14 @@ res_pcor$dce_pvalue <- dce::permutation_test(
   fun = dce::pcor
 )
 
+# clean p-values
+min_val <- min(res_cor$dce_pvalue[res_cor$dce_pvalue != 0], na.rm = TRUE)
+res_cor$dce_pvalue[res_cor$dce_pvalue == 0] <- min_val
+
+min_val <- min(res_pcor$dce_pvalue[res_pcor$dce_pvalue != 0], na.rm = TRUE)
+res_pcor$dce_pvalue[res_pcor$dce_pvalue == 0] <- min_val
+
+
 # plot method comparison
 p <- cowplot::plot_grid(
   plot_network(
