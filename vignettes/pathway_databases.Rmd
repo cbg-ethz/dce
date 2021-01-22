@@ -19,6 +19,7 @@ Load the package with the library function.
 
 ```{r}
 library(tidyverse)
+library(ggplot2)
 
 library(dce)
 
@@ -49,6 +50,23 @@ dce::df_pathway_statistics %>%
     geom_histogram(bins = 30) +
     facet_wrap(~ database, scales = "free") +
     theme_minimal()
+```
+
+# Plotting pathways
+
+It is easily possible to plot pathways:
+```{r}
+pathways <- get_pathways(
+  pathway_list = list(
+    kegg = c("Citrate cycle (TCA cycle)"),
+    biocarta = c("erk1/erk2 mapk signaling pathway")
+  )
+)
+
+lapply(pathways, function (x) {
+  plot_network(as(x$graph, "matrix")) +
+    ggtitle(x$pathway_name)
+})
 ```
 
 # Session information

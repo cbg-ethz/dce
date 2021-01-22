@@ -9,7 +9,7 @@
 #' @export
 #' @return data frame with pathway meta information
 #' @examples
-#' print('example needed')
+#' head(get_pathway_info(database_list = c("kegg")))
 get_pathway_info <- function(
   query_species = "hsapiens", database_list = NULL,
   include_network_statistics = FALSE
@@ -28,8 +28,8 @@ get_pathway_info <- function(
       purrr::map_dfr(as.list(db), function(pw) {
         tmp <- data.frame(
           database = database,
-          id = graphite::pathwayId(pw),
-          name = graphite::pathwayTitle(pw)
+          pathway_id = graphite::pathwayId(pw),
+          pathway_name = graphite::pathwayTitle(pw)
         )
 
         if (include_network_statistics) {
@@ -50,19 +50,34 @@ get_pathway_info <- function(
 #' @param query_species For which species
 #' @param database_list Which databases to query. Query all if `NULL`.
 #' @param remove_empty_pathways Discard pathways without nodes
+#' @param pathway_list List mapping database name to
+#' vector of pathway names to download
 #' @import graphite glue purrr
 #' @export
 #' @return list of pathways
 #' @examples
-#' print('example needed')
+#' pathways <- get_pathways(
+#'   pathway_list = list(kegg = c(
+#'     "Protein processing in endoplasmic reticulum"
+#'   ))
+#' )
+#' plot_network(as(pathways[[1]]$graph, "matrix"))
 get_pathways <- function(
   query_species = "hsapiens", database_list = NULL,
-  remove_empty_pathways = TRUE
+  remove_empty_pathways = TRUE,
+  pathway_list = NULL
 ) {
   if (is.null(database_list)) {
-    database_list <- graphite::pathwayDatabases() %>%
-      filter(species == query_species) %>%
-      pull(database)
+    # we need to figure out which databases to use
+    if (is.null(pathway_list)) {
+      # user has no preference, use all
+      database_list <- graphite::pathwayDatabases() %>%
+        filter(species == query_species) %>%
+        pull(database)
+    } else {
+      # user wants certain pathways, only use respective databases
+      database_list <- names(pathway_list)
+    }
   }
 
   database_list %>%
@@ -70,13 +85,19 @@ get_pathways <- function(
       print(glue::glue("Processing {database}"))
 
       db <- graphite::pathways(query_species, database)
+
+      if (!is.null(pathway_list) && !is.null(pathway_list[[database]])) {
+        db <- db[pathway_list[[database]]]
+      }
+
       db_symbol <- graphite::convertIdentifiers(db, "SYMBOL")
 
       graph_list <- purrr::map(as.list(db_symbol), function(pw) {
         # remove "SYMBOL:" prefix
         graph <- graphite::pathwayGraph(pw, which = "proteins")
+
         if (length(nodes(graph)) != 0) {
-          nodes(graph) <- vapply(nodes(graph), function(x) {
+          nodes(graph) <- sapply(nodes(graph), function(x) {
             strsplit(x, ":")[[1]][[2]]
           }, USE.NAMES = FALSE)
         }
@@ -87,8 +108,8 @@ get_pathways <- function(
 
         list(
           database = database,
-          id = graphite::pathwayId(pw),
-          name = graphite::pathwayTitle(pw),
+          pathway_id = graphite::pathwayId(pw),
+          pathway_name = graphite::pathwayTitle(pw),
           graph = graph
         )
       }) %>%
