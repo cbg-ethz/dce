@@ -7,7 +7,8 @@
 get_pathways(
   query_species = "hsapiens",
   database_list = NULL,
-  remove_empty_pathways = TRUE
+  remove_empty_pathways = TRUE,
+  pathway_list = NULL
 )
 }
 \arguments{
@@ -16,6 +17,9 @@ get_pathways(
 \item{database_list}{Which databases to query. Query all if `NULL`.}
 
 \item{remove_empty_pathways}{Discard pathways without nodes}
+
+\item{pathway_list}{List mapping database name to
+vector of pathway names to download}
 }
 \value{
 list of pathways
@@ -24,5 +28,10 @@ list of pathways
 Easy pathway network access
 }
 \examples{
-print('example needed')
+pathways <- get_pathways(
+  pathway_list = list(kegg = c(
+    "Protein processing in endoplasmic reticulum"
+  ))
+)
+plot_network(as(pathways[[1]]$graph, "matrix"))
 }

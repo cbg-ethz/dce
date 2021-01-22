@@ -25,5 +25,5 @@ data frame with pathway meta information
 Dataframe containing meta-information of pathways in database
 }
 \examples{
-print('example needed')
+head(get_pathway_info(database_list = c("kegg")))
 }

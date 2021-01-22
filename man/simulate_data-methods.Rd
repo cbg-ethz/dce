@@ -2,9 +2,42 @@
 % Please edit documentation in R/data_simulation.R
 \name{simulate_data}
 \alias{simulate_data}
+\alias{simulate_data,igraph-method}
+\alias{simulate_data,graphNEL-method}
+\alias{simulate_data,matrix-method}
 \title{Simulate data}
 \usage{
 simulate_data(
+  graph,
+  n = 100,
+  dist_mean = 1000,
+  dist_dispersion = 100,
+  link = negative.binomial.special()$linkfun,
+  pop_size = 0,
+  latent = 0
+)
+
+\S4method{simulate_data}{igraph}(
+  graph,
+  n = 100,
+  dist_mean = 1000,
+  dist_dispersion = 100,
+  link = negative.binomial.special()$linkfun,
+  pop_size = 0,
+  latent = 0
+)
+
+\S4method{simulate_data}{graphNEL}(
+  graph,
+  n = 100,
+  dist_mean = 1000,
+  dist_dispersion = 100,
+  link = negative.binomial.special()$linkfun,
+  pop_size = 0,
+  latent = 0
+)
+
+\S4method{simulate_data}{matrix}(
   graph,
   n = 100,
   dist_mean = 1000,

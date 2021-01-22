@@ -13,6 +13,7 @@
 #' @param latent number of latent variables
 #' @return graph
 #' @export
+#' @rdname simulate_data-methods
 #' @importFrom methods is
 #' @importFrom pcalg wgtMatrix
 #' @importFrom MASS rnegbin
@@ -34,6 +35,7 @@ setGeneric(
 
 
 setOldClass("igraph")
+#' @rdname simulate_data-methods
 setMethod(
     "simulate_data",
     signature = signature(graph = "igraph"),
@@ -56,6 +58,7 @@ setMethod(
 )
 
 
+#' @rdname simulate_data-methods
 setMethod(
     "simulate_data",
     signature = signature(graph = "graphNEL"),
@@ -74,6 +77,7 @@ setMethod(
 )
 
 
+#' @rdname simulate_data-methods
 setMethod(
     "simulate_data",
     signature = signature(graph = "matrix"),

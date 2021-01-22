@@ -30,6 +30,7 @@
 #' @param verbose logical for verbose output
 #' @return list of matrices with dces and corresponding p-value
 #' @export
+#' @rdname dce-methods
 #' @importFrom graph graphNEL
 #' @importFrom igraph as_adjacency_matrix
 #' @importFrom Matrix sparseMatrix
@@ -63,6 +64,7 @@ setGeneric(
 
 # "igraph" is not a formal S4 class, make it compatible with `signature` call
 setOldClass("igraph")
+#' @rdname dce-methods
 setMethod(
     "dce",
     signature = signature(graph = "igraph"),
@@ -96,6 +98,7 @@ setMethod(
 )
 
 
+#' @rdname dce-methods
 setMethod(
     "dce",
     signature = signature(graph = "graphNEL"),
@@ -128,6 +131,7 @@ setMethod(
 )
 
 
+#' @rdname dce-methods
 setMethod(
     "dce",
     signature = signature(graph = "matrix"),
