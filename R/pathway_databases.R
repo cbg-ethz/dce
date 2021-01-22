@@ -97,9 +97,9 @@ get_pathways <- function(
         graph <- graphite::pathwayGraph(pw, which = "proteins")
 
         if (length(nodes(graph)) != 0) {
-          nodes(graph) <- sapply(nodes(graph), function(x) {
+          nodes(graph) <- vapply(nodes(graph), function(x) {
             strsplit(x, ":")[[1]][[2]]
-          }, USE.NAMES = FALSE)
+          }, FUN.VALUE = character(1), USE.NAMES = FALSE)
         }
 
         if (remove_empty_pathways & length(nodes(graph)) == 0) {
