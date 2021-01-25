@@ -35,7 +35,6 @@
 #' @importFrom igraph as_adjacency_matrix
 #' @importFrom Matrix sparseMatrix
 #' @import metap CombinePValue assertthat
-#' @importFrom devtools load_all
 #' @examples
 #' dag <- create_random_DAG(30, 0.2)
 #' X.wt <- simulate_data(dag)
