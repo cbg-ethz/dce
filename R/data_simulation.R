@@ -120,14 +120,14 @@ setMethod(
 
         # simulate data
         for (j in seq(start, p)) {
-          ij <- seq_len(j - 1)
-          betas <- graph[ij, j]
+            ij <- seq_len(j - 1)
+            betas <- graph[ij, j]
 
-          if (any(betas != 0)) {
-            # current node has parents
-            mu <- link(X[, ij, drop = FALSE] %*% betas, offset = 1)
-            X[, j] <- rnbinom(n, size = Inf, mu = mu)
-          }
+            if (any(betas != 0)) {
+                # current node has parents
+                mu <- link(X[, ij, drop = FALSE] %*% betas, offset = 1)
+                X[, j] <- rnbinom(n, size = Inf, mu = mu)
+            }
         }
         if (pop_size > p & latent == 0) {
             Y <- matrix(rnbinom(n * (pop_size - p),

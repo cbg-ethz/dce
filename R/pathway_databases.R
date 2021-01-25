@@ -11,37 +11,37 @@
 #' @examples
 #' head(get_pathway_info(database_list = c("kegg")))
 get_pathway_info <- function(
-  query_species = "hsapiens", database_list = NULL,
-  include_network_statistics = FALSE
+    query_species = "hsapiens", database_list = NULL,
+    include_network_statistics = FALSE
 ) {
-  if (is.null(database_list)) {
-    database_list <- graphite::pathwayDatabases() %>%
-      filter(species == query_species) %>%
-      pull(database)
-  }
+    if (is.null(database_list)) {
+        database_list <- graphite::pathwayDatabases() %>%
+            filter(species == query_species) %>%
+            pull(database)
+    }
 
-  database_list %>%
-    purrr::map_dfr(function(database) {
-      print(glue::glue("Processing {database}"))
-      db <- graphite::pathways(query_species, database)
+    database_list %>%
+        purrr::map_dfr(function(database) {
+            print(glue::glue("Processing {database}"))
+            db <- graphite::pathways(query_species, database)
 
-      purrr::map_dfr(as.list(db), function(pw) {
-        tmp <- data.frame(
-          database = database,
-          pathway_id = graphite::pathwayId(pw),
-          pathway_name = graphite::pathwayTitle(pw)
-        )
+            purrr::map_dfr(as.list(db), function(pw) {
+                tmp <- data.frame(
+                    database = database,
+                    pathway_id = graphite::pathwayId(pw),
+                    pathway_name = graphite::pathwayTitle(pw)
+                )
 
-        if (include_network_statistics) {
-          graph <- graphite::pathwayGraph(pw, which = "proteins")
+                if (include_network_statistics) {
+                    graph <- graphite::pathwayGraph(pw, which = "proteins")
 
-          tmp$node_num <- graph::numNodes(graph)
-          tmp$edge_num <- graph::numEdges(graph)
-        }
+                    tmp$node_num <- graph::numNodes(graph)
+                    tmp$edge_num <- graph::numEdges(graph)
+                }
 
-        return(tmp)
-      })
-    })
+                return(tmp)
+            })
+        })
 }
 
 
@@ -63,58 +63,58 @@ get_pathway_info <- function(
 #' )
 #' plot_network(as(pathways[[1]]$graph, "matrix"))
 get_pathways <- function(
-  query_species = "hsapiens", database_list = NULL,
-  remove_empty_pathways = TRUE,
-  pathway_list = NULL
+    query_species = "hsapiens", database_list = NULL,
+    remove_empty_pathways = TRUE,
+    pathway_list = NULL
 ) {
-  if (is.null(database_list)) {
-    # we need to figure out which databases to use
-    if (is.null(pathway_list)) {
-      # user has no preference, use all
-      database_list <- graphite::pathwayDatabases() %>%
-        filter(species == query_species) %>%
-        pull(database)
-    } else {
-      # user wants certain pathways, only use respective databases
-      database_list <- names(pathway_list)
+    if (is.null(database_list)) {
+        # we need to figure out which databases to use
+        if (is.null(pathway_list)) {
+            # user has no preference, use all
+            database_list <- graphite::pathwayDatabases() %>%
+                filter(species == query_species) %>%
+                pull(database)
+        } else {
+            # user wants certain pathways, only use respective databases
+            database_list <- names(pathway_list)
+        }
     }
-  }
 
-  database_list %>%
-    purrr::map(function(database) {
-      print(glue::glue("Processing {database}"))
+    database_list %>%
+        purrr::map(function(database) {
+            print(glue::glue("Processing {database}"))
 
-      db <- graphite::pathways(query_species, database)
+            db <- graphite::pathways(query_species, database)
 
-      if (!is.null(pathway_list) && !is.null(pathway_list[[database]])) {
-        db <- db[pathway_list[[database]]]
-      }
+            if (!is.null(pathway_list) && !is.null(pathway_list[[database]])) {
+                db <- db[pathway_list[[database]]]
+            }
 
-      db_symbol <- graphite::convertIdentifiers(db, "SYMBOL")
+            db_symbol <- graphite::convertIdentifiers(db, "SYMBOL")
 
-      graph_list <- purrr::map(as.list(db_symbol), function(pw) {
-        # remove "SYMBOL:" prefix
-        graph <- graphite::pathwayGraph(pw, which = "proteins")
+            graph_list <- purrr::map(as.list(db_symbol), function(pw) {
+                # remove "SYMBOL:" prefix
+                graph <- graphite::pathwayGraph(pw, which = "proteins")
 
-        if (length(nodes(graph)) != 0) {
-          nodes(graph) <- vapply(nodes(graph), function(x) {
-            strsplit(x, ":")[[1]][[2]]
-          }, FUN.VALUE = character(1), USE.NAMES = FALSE)
-        }
+                if (length(nodes(graph)) != 0) {
+                    nodes(graph) <- vapply(nodes(graph), function(x) {
+                        strsplit(x, ":")[[1]][[2]]
+                    }, FUN.VALUE = character(1), USE.NAMES = FALSE)
+                }
 
-        if (remove_empty_pathways & length(nodes(graph)) == 0) {
-          return(NULL)
-        }
+                if (remove_empty_pathways & length(nodes(graph)) == 0) {
+                    return(NULL)
+                }
 
-        list(
-          database = database,
-          pathway_id = graphite::pathwayId(pw),
-          pathway_name = graphite::pathwayTitle(pw),
-          graph = graph
-        )
-      }) %>%
-        unname
-    }) %>%
-    unlist(recursive = FALSE, use.names = FALSE) %>%
-    purrr::compact()
+                list(
+                    database = database,
+                    pathway_id = graphite::pathwayId(pw),
+                    pathway_name = graphite::pathwayTitle(pw),
+                    graph = graph
+                )
+            }) %>%
+                unname
+        }) %>%
+        unlist(recursive = FALSE, use.names = FALSE) %>%
+        purrr::compact()
 }
