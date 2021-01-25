@@ -23,7 +23,7 @@ remotes::install_github("cbg-ethz/dce")
 ## Project structure
 
 * `.`: R package
-* `analysis_workflows`: Snakemake workflows for all investigations in publication
+* `inst/scripts/`: Snakemake workflows for all investigations in publication
     * `crispr_benchmark`: Real-life data validation
     * `ovarian_cancer`: How does Ovarian Cancer dysregulate pathways?
     * `synthetic_benchmark`: Synthetic data validation

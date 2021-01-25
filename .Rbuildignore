@@ -10,7 +10,7 @@
 ^doc$
 ^Meta$
 
-^analysis_workflows$
+^inst/scripts/$
 
 ^_pkgdown\.yml$
 ^docs$
