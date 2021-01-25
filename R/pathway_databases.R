@@ -52,7 +52,7 @@ get_pathway_info <- function(
 #' @param remove_empty_pathways Discard pathways without nodes
 #' @param pathway_list List mapping database name to
 #' vector of pathway names to download
-#' @import graphite glue purrr
+#' @import graphite glue purrr org.Hs.eg.db
 #' @export
 #' @return list of pathways
 #' @examples
