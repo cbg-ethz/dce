@@ -1,3 +1,3 @@
-## Version 0.99.x
+## Changes in version 0.99.0 (2021-01-25)
 
-Initial release!
+* Submitted to Bioconductor
