@@ -67,7 +67,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/kpj/dce/">
+  <a href="https://github.com/cbg-ethz/dce/">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -90,7 +90,7 @@
             
             <h4 class="date">2021-01-25</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/kpj/dce/blob/master/vignettes/dce.Rmd"><code>vignettes/dce.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/cbg-ethz/dce/blob/master/vignettes/dce.Rmd"><code>vignettes/dce.Rmd</code></a></small>
       <div class="hidden name"><code>dce.Rmd</code></div>
 
     </div>
@@ -122,14 +122,15 @@
 ## ✖ dplyr::lag()    masks stats::lag()</code></pre>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://wilkelab.org/cowplot/">cowplot</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/kpj/dce">dce</a></span><span class="op">)</span></code></pre></div>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/cbg-ethz/dce">dce</a></span><span class="op">)</span></code></pre></div>
+<pre><code>## </code></pre>
 <pre><code>## Registered S3 methods overwritten by 'RcppEigen':
 ##   method               from         
 ##   predict.fastLm       RcppArmadillo
 ##   print.fastLm         RcppArmadillo
 ##   summary.fastLm       RcppArmadillo
 ##   print.summary.fastLm RcppArmadillo</code></pre>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span></code></pre></div>
 </div>
 </div>
@@ -137,7 +138,7 @@
 <h1 class="hasAnchor">
 <a href="#simple-example" class="anchor"></a>Simple example</h1>
 <p>First we generate a random wild type network and then resample its edge weights to generate the mutant network.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">node_num</span> <span class="op">&lt;-</span> <span class="fl">10</span>
 <span class="va">edge_prob</span> <span class="op">&lt;-</span> <span class="fl">.5</span>
 
@@ -150,15 +151,15 @@
 <span class="op">)</span></code></pre></div>
 <p><img src="dce_files/figure-html/unnamed-chunk-2-1.png" width="700"></p>
 <p>We can then simulate data for these two networks.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">X_wt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_data.html">simulate_data</a></span><span class="op">(</span><span class="va">graph_wt</span><span class="op">)</span>
 <span class="va">X_mt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_data.html">simulate_data</a></span><span class="op">(</span><span class="va">graph_mt</span><span class="op">)</span></code></pre></div>
 <p>Finally, it is possible to compute differential causal effects.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dce.html">dce</a></span><span class="op">(</span><span class="va">graph_wt</span>, <span class="va">X_wt</span>, <span class="va">X_mt</span>, solver <span class="op">=</span> <span class="st">"lm"</span><span class="op">)</span></code></pre></div>
 <pre><code>## Warning in dce(as_adjmat(graph), df_expr_wt, df_expr_mt, solver, solver_args, :
 ## Cycle(s) detected in network</code></pre>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">res</span> <span class="op">%&gt;%</span>
   <span class="va">as.data.frame</span> <span class="op">%&gt;%</span>
   <span class="va">drop_na</span></code></pre></div>
@@ -185,14 +186,14 @@
 ## 20     n8    n10 -0.33526927 1.74653949 8.479727e-01
 ## 21     n9    n10 -0.09106629 0.31227815 7.708993e-01</code></pre>
 <p>The result can be visualized.</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span></code></pre></div>
 <p><img src="dce_files/figure-html/unnamed-chunk-5-1.png" width="700"></p>
 </div>
 <div id="session-information" class="section level1">
 <h1 class="hasAnchor">
 <a href="#session-information" class="anchor"></a>Session information</h1>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <pre><code>## R version 4.0.3 (2020-10-10)
 ## Platform: x86_64-apple-darwin17.0 (64-bit)
@@ -243,7 +244,7 @@
 ##  [76] cluster_2.1.0            fs_1.5.0                 apcluster_1.4.8         
 ##  [79] magrittr_2.0.1           data.table_1.13.6        gmodels_2.18.1          
 ##  [82] reprex_0.3.0             tmvnsim_1.0-2            mvtnorm_1.1-1           
-##  [85] amap_0.8-18              mnem_1.6.5               matrixStats_0.57.0      
+##  [85] amap_0.8-18              matrixStats_0.57.0       mnem_1.6.5              
 ##  [88] flexclust_1.4-0          hms_1.0.0                evaluate_0.14           
 ##  [91] mclust_5.4.7             readxl_1.3.1             IRanges_2.24.1          
 ##  [94] gridExtra_2.3            bdsmatrix_1.3-4          compiler_4.0.3          
@@ -269,8 +270,8 @@
 ## [154] CombinePValue_1.0        prabclus_2.3-2           bit_4.0.4               
 ## [157] Rgraphviz_2.34.0         ggforce_0.3.2            class_7.3-17            
 ## [160] stringi_1.5.3            blob_1.2.1               textshaping_0.2.1       
-## [163] memoise_1.1.0            FMStable_0.1-2           snowfall_1.84-6.1       
-## [166] mathjaxr_1.0-1           e1071_1.7-4</code></pre>
+## [163] org.Hs.eg.db_3.12.0      memoise_1.1.0            FMStable_0.1-2          
+## [166] snowfall_1.84-6.1        mathjaxr_1.0-1           e1071_1.7-4</code></pre>
 </div>
 <div id="references" class="section level1">
 <h1 class="hasAnchor">

@@ -1,78 +1,78 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://kpj.github.io/dce//index.html</loc>
+    <loc>https://cbg-ethz.github.io/dce//index.html</loc>
   </url>
   <url>
-    <loc>https://kpj.github.io/dce//reference/as.data.frame.dce.html</loc>
+    <loc>https://cbg-ethz.github.io/dce//reference/as.data.frame.dce.html</loc>
   </url>
   <url>
-    <loc>https://kpj.github.io/dce//reference/as_adjmat.html</loc>
+    <loc>https://cbg-ethz.github.io/dce//reference/as_adjmat.html</loc>
   </url>
   <url>
-    <loc>https://kpj.github.io/dce//reference/create_random_DAG.html</loc>
+    <loc>https://cbg-ethz.github.io/dce//reference/create_random_DAG.html</loc>
   </url>
   <url>
-    <loc>https://kpj.github.io/dce//reference/dce-methods.html</loc>
+    <loc>https://cbg-ethz.github.io/dce//reference/dce-methods.html</loc>
   </url>
   <url>
-    <loc>https://kpj.github.io/dce//reference/dce_nb.html</loc>
+    <loc>https://cbg-ethz.github.io/dce//reference/dce_nb.html</loc>
   </url>
   <url>
-    <loc>https://kpj.github.io/dce//reference/df_pathway_statistics.html</loc>
+    <loc>https://cbg-ethz.github.io/dce//reference/df_pathway_statistics.html</loc>
   </url>
   <url>
-    <loc>https://kpj.github.io/dce//reference/estimate_latent_count.html</loc>
+    <loc>https://cbg-ethz.github.io/dce//reference/estimate_latent_count.html</loc>
   </url>
   <url>
-    <loc>https://kpj.github.io/dce//reference/g2dag.html</loc>
+    <loc>https://cbg-ethz.github.io/dce//reference/g2dag.html</loc>
   </url>
   <url>
-    <loc>https://kpj.github.io/dce//reference/get_pathway_info.html</loc>
+    <loc>https://cbg-ethz.github.io/dce//reference/get_pathway_info.html</loc>
   </url>
   <url>
-    <loc>https://kpj.github.io/dce//reference/get_pathways.html</loc>
+    <loc>https://cbg-ethz.github.io/dce//reference/get_pathways.html</loc>
   </url>
   <url>
-    <loc>https://kpj.github.io/dce//reference/get_prediction_counts.html</loc>
+    <loc>https://cbg-ethz.github.io/dce//reference/get_prediction_counts.html</loc>
   </url>
   <url>
-    <loc>https://kpj.github.io/dce//reference/graph2df.html</loc>
+    <loc>https://cbg-ethz.github.io/dce//reference/graph2df.html</loc>
   </url>
   <url>
-    <loc>https://kpj.github.io/dce//reference/graph_union.html</loc>
+    <loc>https://cbg-ethz.github.io/dce//reference/graph_union.html</loc>
   </url>
   <url>
-    <loc>https://kpj.github.io/dce//reference/pcor.html</loc>
+    <loc>https://cbg-ethz.github.io/dce//reference/pcor.html</loc>
   </url>
   <url>
-    <loc>https://kpj.github.io/dce//reference/permutation_test.html</loc>
+    <loc>https://cbg-ethz.github.io/dce//reference/permutation_test.html</loc>
   </url>
   <url>
-    <loc>https://kpj.github.io/dce//reference/plot.dce.html</loc>
+    <loc>https://cbg-ethz.github.io/dce//reference/plot.dce.html</loc>
   </url>
   <url>
-    <loc>https://kpj.github.io/dce//reference/plot_network.html</loc>
+    <loc>https://cbg-ethz.github.io/dce//reference/plot_network.html</loc>
   </url>
   <url>
-    <loc>https://kpj.github.io/dce//reference/propagate_gene_edges.html</loc>
+    <loc>https://cbg-ethz.github.io/dce//reference/propagate_gene_edges.html</loc>
   </url>
   <url>
-    <loc>https://kpj.github.io/dce//reference/resample_edge_weights.html</loc>
+    <loc>https://cbg-ethz.github.io/dce//reference/resample_edge_weights.html</loc>
   </url>
   <url>
-    <loc>https://kpj.github.io/dce//reference/simulate_data-methods.html</loc>
+    <loc>https://cbg-ethz.github.io/dce//reference/simulate_data-methods.html</loc>
   </url>
   <url>
-    <loc>https://kpj.github.io/dce//reference/topologically_ordering.html</loc>
+    <loc>https://cbg-ethz.github.io/dce//reference/topologically_ordering.html</loc>
   </url>
   <url>
-    <loc>https://kpj.github.io/dce//reference/trueEffects.html</loc>
+    <loc>https://cbg-ethz.github.io/dce//reference/trueEffects.html</loc>
   </url>
   <url>
-    <loc>https://kpj.github.io/dce//articles/dce.html</loc>
+    <loc>https://cbg-ethz.github.io/dce//articles/dce.html</loc>
   </url>
   <url>
-    <loc>https://kpj.github.io/dce//articles/pathway_databases.html</loc>
+    <loc>https://cbg-ethz.github.io/dce//articles/pathway_databases.html</loc>
   </url>
 </urlset>
