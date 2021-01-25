@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Graph to data frame — graph2df • dce</title>
+<title>Simulate data — simulate_data • dce</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Graph to data frame — graph2df" />
-<meta property="og:description" content="Convert graph object to dataframe with source and target columns" />
+<meta property="og:title" content="Simulate data — simulate_data" />
+<meta property="og:description" content="Generate data for given DAG." />
 
 
 
@@ -126,124 +126,102 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Graph to data frame</h1>
-    <small class="dont-index">Source: <a href='https://github.com/kpj/dce/blob/master/R/graph_utils.R'><code>R/graph_utils.R</code></a></small>
-    <div class="hidden name"><code>graph2df.Rd</code></div>
+    <h1>Simulate data</h1>
+    <small class="dont-index">Source: <a href='https://github.com/kpj/dce/blob/master/R/data_simulation.R'><code>R/data_simulation.R</code></a></small>
+    <div class="hidden name"><code>simulate_data-methods.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Convert graph object to dataframe with source and target columns</p>
+    <p>Generate data for given DAG.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>graph2df</span><span class='op'>(</span><span class='va'>graph</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>simulate_data</span><span class='op'>(</span>
+  <span class='va'>graph</span>,
+  n <span class='op'>=</span> <span class='fl'>100</span>,
+  dist_mean <span class='op'>=</span> <span class='fl'>1000</span>,
+  dist_dispersion <span class='op'>=</span> <span class='fl'>100</span>,
+  link <span class='op'>=</span> <span class='fu'>negative.binomial.special</span><span class='op'>(</span><span class='op'>)</span><span class='op'>$</span><span class='va'>linkfun</span>,
+  pop_size <span class='op'>=</span> <span class='fl'>0</span>,
+  latent <span class='op'>=</span> <span class='fl'>0</span>
+<span class='op'>)</span>
+
+<span class='co'># S4 method for igraph</span>
+<span class='fu'>simulate_data</span><span class='op'>(</span>
+  <span class='va'>graph</span>,
+  n <span class='op'>=</span> <span class='fl'>100</span>,
+  dist_mean <span class='op'>=</span> <span class='fl'>1000</span>,
+  dist_dispersion <span class='op'>=</span> <span class='fl'>100</span>,
+  link <span class='op'>=</span> <span class='fu'>negative.binomial.special</span><span class='op'>(</span><span class='op'>)</span><span class='op'>$</span><span class='va'>linkfun</span>,
+  pop_size <span class='op'>=</span> <span class='fl'>0</span>,
+  latent <span class='op'>=</span> <span class='fl'>0</span>
+<span class='op'>)</span>
+
+<span class='co'># S4 method for graphNEL</span>
+<span class='fu'>simulate_data</span><span class='op'>(</span>
+  <span class='va'>graph</span>,
+  n <span class='op'>=</span> <span class='fl'>100</span>,
+  dist_mean <span class='op'>=</span> <span class='fl'>1000</span>,
+  dist_dispersion <span class='op'>=</span> <span class='fl'>100</span>,
+  link <span class='op'>=</span> <span class='fu'>negative.binomial.special</span><span class='op'>(</span><span class='op'>)</span><span class='op'>$</span><span class='va'>linkfun</span>,
+  pop_size <span class='op'>=</span> <span class='fl'>0</span>,
+  latent <span class='op'>=</span> <span class='fl'>0</span>
+<span class='op'>)</span>
+
+<span class='co'># S4 method for matrix</span>
+<span class='fu'>simulate_data</span><span class='op'>(</span>
+  <span class='va'>graph</span>,
+  n <span class='op'>=</span> <span class='fl'>100</span>,
+  dist_mean <span class='op'>=</span> <span class='fl'>1000</span>,
+  dist_dispersion <span class='op'>=</span> <span class='fl'>100</span>,
+  link <span class='op'>=</span> <span class='fu'>negative.binomial.special</span><span class='op'>(</span><span class='op'>)</span><span class='op'>$</span><span class='va'>linkfun</span>,
+  pop_size <span class='op'>=</span> <span class='fl'>0</span>,
+  latent <span class='op'>=</span> <span class='fl'>0</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>graph</th>
-      <td><p>Network</p></td>
+      <td><p>Graph to simulate on</p></td>
+    </tr>
+    <tr>
+      <th>n</th>
+      <td><p>Number of samples</p></td>
+    </tr>
+    <tr>
+      <th>dist_mean</th>
+      <td><p>distribution mean as numeric</p></td>
+    </tr>
+    <tr>
+      <th>dist_dispersion</th>
+      <td><p>distribution dispersion
+(actually dispersion^-1) as a scalar</p></td>
+    </tr>
+    <tr>
+      <th>link</th>
+      <td><p>special link function for the negative binomial
+distribution</p></td>
+    </tr>
+    <tr>
+      <th>pop_size</th>
+      <td><p>numeric for the population size, e.g., pop_size=1000 adds
+1000-n random genes not in the graph</p></td>
+    </tr>
+    <tr>
+      <th>latent</th>
+      <td><p>number of latent variables</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>data frame</p>
+    <p>graph</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='va'>dag</span> <span class='op'>&lt;-</span> <span class='fu'><a href='create_random_DAG.html'>create_random_DAG</a></span><span class='op'>(</span><span class='fl'>30</span>, <span class='fl'>0.2</span><span class='op'>)</span>
-<span class='fu'>graph2df</span><span class='op'>(</span><span class='va'>dag</span><span class='op'>)</span>
-</div><div class='output co'>#&gt;    source sink
-#&gt; 1      n1  n11
-#&gt; 2      n1  n19
-#&gt; 3      n1  n16
-#&gt; 4      n1  n18
-#&gt; 5      n2  n15
-#&gt; 6      n2  n18
-#&gt; 7      n2  n28
-#&gt; 8      n2  n27
-#&gt; 9      n2  n29
-#&gt; 10     n2  n25
-#&gt; 11     n3  n20
-#&gt; 12     n3  n19
-#&gt; 13     n3  n18
-#&gt; 14     n3  n21
-#&gt; 15     n3  n29
-#&gt; 16     n4   n8
-#&gt; 17     n4  n14
-#&gt; 18     n4  n12
-#&gt; 19     n4  n23
-#&gt; 20     n4  n21
-#&gt; 21     n4  n28
-#&gt; 22     n4  n29
-#&gt; 23     n5   n6
-#&gt; 24     n5   n9
-#&gt; 25     n5  n13
-#&gt; 26     n5  n26
-#&gt; 27     n5  n18
-#&gt; 28     n7  n17
-#&gt; 29     n7  n20
-#&gt; 30     n7  n12
-#&gt; 31     n7  n23
-#&gt; 32     n7  n21
-#&gt; 33     n7  n28
-#&gt; 34     n7  n30
-#&gt; 35     n8  n13
-#&gt; 36     n8  n26
-#&gt; 37     n8  n23
-#&gt; 38     n8  n27
-#&gt; 39    n14  n15
-#&gt; 40    n14  n30
-#&gt; 41     n6  n12
-#&gt; 42     n6  n26
-#&gt; 43     n6  n18
-#&gt; 44     n6  n23
-#&gt; 45     n6  n28
-#&gt; 46     n9  n10
-#&gt; 47     n9  n11
-#&gt; 48     n9  n29
-#&gt; 49     n9  n25
-#&gt; 50    n17  n19
-#&gt; 51    n17  n22
-#&gt; 52    n17  n29
-#&gt; 53    n20  n28
-#&gt; 54    n15  n19
-#&gt; 55    n15  n16
-#&gt; 56    n15  n22
-#&gt; 57    n15  n23
-#&gt; 58    n10  n12
-#&gt; 59    n10  n13
-#&gt; 60    n10  n21
-#&gt; 61    n10  n27
-#&gt; 62    n11  n13
-#&gt; 63    n11  n18
-#&gt; 64    n11  n21
-#&gt; 65    n11  n30
-#&gt; 66    n19  n26
-#&gt; 67    n19  n21
-#&gt; 68    n19  n28
-#&gt; 69    n19  n30
-#&gt; 70    n19  n24
-#&gt; 71    n12  n16
-#&gt; 72    n12  n18
-#&gt; 73    n12  n22
-#&gt; 74    n12  n23
-#&gt; 75    n12  n21
-#&gt; 76    n12  n24
-#&gt; 77    n13  n21
-#&gt; 78    n13  n29
-#&gt; 79    n13  n25
-#&gt; 80    n26  n27
-#&gt; 81    n16  n23
-#&gt; 82    n18  n21
-#&gt; 83    n18  n28
-#&gt; 84    n18  n30
-#&gt; 85    n18  n25
-#&gt; 86    n22  n27
-#&gt; 87    n23  n29
-#&gt; 88    n23  n24
-#&gt; 89    n21  n24
-#&gt; 90    n21  n25</div></pre>
+<span class='va'>X</span> <span class='op'>&lt;-</span> <span class='fu'>simulate_data</span><span class='op'>(</span><span class='va'>dag</span><span class='op'>)</span>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

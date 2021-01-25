@@ -13,7 +13,10 @@
     <loc>https://kpj.github.io/dce//reference/create_random_DAG.html</loc>
   </url>
   <url>
-    <loc>https://kpj.github.io/dce//reference/dce.html</loc>
+    <loc>https://kpj.github.io/dce//reference/dce-methods.html</loc>
+  </url>
+  <url>
+    <loc>https://kpj.github.io/dce//reference/dce_nb.html</loc>
   </url>
   <url>
     <loc>https://kpj.github.io/dce//reference/df_pathway_statistics.html</loc>
@@ -43,7 +46,7 @@
     <loc>https://kpj.github.io/dce//reference/pcor.html</loc>
   </url>
   <url>
-    <loc>https://kpj.github.io/dce//reference/pcor_perm.html</loc>
+    <loc>https://kpj.github.io/dce//reference/permutation_test.html</loc>
   </url>
   <url>
     <loc>https://kpj.github.io/dce//reference/plot.dce.html</loc>
@@ -58,7 +61,7 @@
     <loc>https://kpj.github.io/dce//reference/resample_edge_weights.html</loc>
   </url>
   <url>
-    <loc>https://kpj.github.io/dce//reference/simulate_data.html</loc>
+    <loc>https://kpj.github.io/dce//reference/simulate_data-methods.html</loc>
   </url>
   <url>
     <loc>https://kpj.github.io/dce//reference/topologically_ordering.html</loc>
