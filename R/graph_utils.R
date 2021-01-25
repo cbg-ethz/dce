@@ -84,18 +84,26 @@ propagate_gene_edges <- function(graph) {
             if (substr(target, start = 0, stop = 3) != "hsa") {
                 # source is not connected to gene
 
-                for (bridge_idx in igraph::neighbors(ig, target_idx, mode = "out")) {
+                for (bridge_idx in igraph::neighbors(
+                    ig, target_idx, mode = "out"
+                )) {
                     bridge <- vertex_names[bridge_idx]
 
                     if (substr(bridge, start = 0, stop = 3) == "hsa") {
-                        if (!igraph::are.connected(ig, source_idx, bridge_idx)) {
-                            ig <- igraph::add.edges(ig, c(source_idx, bridge_idx), weight = 1)
+                        if (!igraph::are.connected(
+                            ig, source_idx, bridge_idx
+                        )) {
+                            ig <- igraph::add.edges(
+                                ig, c(source_idx, bridge_idx),
+                                weight = 1
+                            )
                         }
                     } else {
                         source <- vertex_names[source_idx]  # nolint
-                        print(glue::glue(
-                            "{bridge} is not a valid extension for edge {source}->{target}"
-                        ))
+                        print(glue::glue(paste(
+                            "{bridge} is not a valid extension",
+                            "for edge {source}->{target}"
+                        )))
                     }
                 }
             }
