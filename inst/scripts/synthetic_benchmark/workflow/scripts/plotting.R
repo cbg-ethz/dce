@@ -172,9 +172,12 @@ print(summary(df.bench$dce.lm.tpm[df.bench$type=='roc-auc']))
 print(summary(df.bench$dce.tpm[df.bench$type=='roc-auc']))
 
 tmp <- df.bench %>% pull(varied.parameter) %>% unique
-stopifnot(length(tmp) == 1)
-varied.parameter <- tmp[[1]]
-
+if (length(tmp) != 1) {
+  tmp <- table(df.bench$varied.parameter)
+  varied.parameter <- names(tmp)[which.max(tmp)]
+} else {
+  varied.parameter <- tmp
+}
 
 if (!any(is.na(as.numeric(df.bench$parameter)))) {
   df.bench$parameter %<>% as.factor %>% fct_inseq
