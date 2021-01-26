@@ -12,10 +12,15 @@ jobs:
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
     steps:
-      - name: Provide gfortran
+      - name: Setup system dependencies
         if: runner.os == 'macOS'
         run: |
+          # libgit2
+          brew install libgit2
+
+          # fortran
           sudo ln -s /usr/local/bin/gfortran-9 /usr/local/bin/gfortran
+          sudo ln -s /usr/local/Cellar/gcc@9/9.3.0_1/lib/gcc/9 /usr/local/gfortran/lib
           gfortran --version
 
       - uses: actions/checkout@v2
