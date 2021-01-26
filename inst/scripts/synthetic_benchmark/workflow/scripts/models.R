@@ -106,7 +106,8 @@ run.all.models <- function(
       adjustment_type = adjustment.type,
       effect_type = effect.type,
       solver_args = solver.args,
-      lib_size = FALSE
+      lib_size = FALSE,
+      deconfounding = latent
     )
   } else {
     res.dce.tpm <- ground.truth
@@ -115,7 +116,24 @@ run.all.models <- function(
     res.dce.tpm$dce_pvalue[as(wt.graph.perturbed, "matrix") == 0] <- NA
   }
   time.dce.tpm <- as.integer(difftime(Sys.time(), time.tmp, units = "secs"))
-
+  
+  time.tmp <- Sys.time()
+  if (is.null(methods) || "dce.tpm.nolatent" %in% methods) {
+    res.dce.tpm.nolatent <- dce::dce_nb(
+      wt.graph.perturbed, compute.tpm(wt.X), compute.tpm(mt.X),
+      adjustment_type = adjustment.type,
+      effect_type = effect.type,
+      solver_args = solver.args,
+      lib_size = FALSE
+    )
+  } else {
+    res.dce.tpm.nolatent <- ground.truth
+    res.dce.tpm.nolatent$dce_pvalue <- ground.truth$dce*0
+    res.dce.tpm.nolatent$dce[as(wt.graph.perturbed, "matrix") == 0] <- NA
+    res.dce.tpm.nolatent$dce_pvalue[as(wt.graph.perturbed, "matrix") == 0] <- NA
+  }
+  time.dce.tpm.nolatent <- as.integer(difftime(Sys.time(), time.tmp, units = "secs"))
+  
   time.tmp <- Sys.time()
   if (is.null(methods) || "dce.lm.tpm" %in% methods) {
     res.dce.lm.tpm <- dce(
@@ -123,7 +141,8 @@ run.all.models <- function(
       solver = "lm",
       adjustment_type = adjustment.type,
       effect_type = effect.type,
-      lib_size = FALSE
+      lib_size = FALSE,
+      deconfounding = latent
     )
   } else {
     res.dce.lm.tpm <- ground.truth
@@ -238,6 +257,7 @@ run.all.models <- function(
     dce=as.vector(res.dce$dce),
     dce.nolib=as.vector(res.dce.nolib$dce),
     dce.tpm=as.vector(res.dce.tpm$dce),
+    dce.tpm.nolatent=as.vector(res.dce.tpm.nolatent$dce),
     dce.lm.tpm=as.vector(res.dce.lm.tpm$dce),
     ldgm=as.vector(res.ldgm$dce),
     fggm=as.vector(res.fggm$dce),
@@ -252,6 +272,7 @@ run.all.models <- function(
     dce=as.vector(res.dce$dce_pvalue),
     dce.nolib=as.vector(res.dce.nolib$dce_pvalue),
     dce.tpm=as.vector(res.dce.tpm$dce_pvalue),
+    dce.tpm.nolatent=as.vector(res.dce.tpm.nolatent$dce_pvalue),
     dce.lm.tpm=as.vector(res.dce.lm.tpm$dce_pvalue),
     ldgm=as.vector(res.ldgm$dce_pvalue),
     fggm=as.vector(res.fggm$dce_pvalue),
@@ -265,6 +286,7 @@ run.all.models <- function(
     dce=time.dce,
     dce.nolib=time.dce.nolib,
     dce.tpm=time.dce.tpm,
+    dce.tpm.nolatent=time.dce.tpm.nolatent,
     dce.lm.tpm=time.dce.lm.tpm,
     ldgm=time.ldgm,
     fggm=time.fggm,

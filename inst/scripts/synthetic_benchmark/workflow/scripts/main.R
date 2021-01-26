@@ -187,6 +187,7 @@ df.bench <- purrr::pmap_dfr(
 
 
       # run models
+      if (latent != 0) latent <- TRUE
       res <- run.all.models(
         wt.graph, wt.X,
         mt.graph, mt.X,
