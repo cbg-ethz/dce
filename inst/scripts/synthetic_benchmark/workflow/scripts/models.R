@@ -37,7 +37,7 @@ run.all.models <- function(
   time.tmp <- Sys.time()
   if (is.null(methods) || "cor" %in% methods) {
     res.cor <- list(dce = cor(mt.X.cor) - cor(wt.X.cor))
-    res.cor$dce_pvalue <- permutation_test(wt.X.cor, mt.X.cor, fun = cor)
+    res.cor$dce_pvalue <- permutation_test(wt.X.cor, mt.X.cor, fun = cor, method = 'spearman')
   } else {
     res.cor <- ground.truth
     res.cor$dce_pvalue <- ground.truth$dce*0
@@ -49,7 +49,7 @@ run.all.models <- function(
   time.tmp <- Sys.time()
   if (is.null(methods) || "pcor" %in% methods) {
     res.pcor <- list(dce = pcor(mt.X.cor) - pcor(wt.X.cor))
-    res.pcor$dce_pvalue <- permutation_test(wt.X.cor, mt.X.cor, fun = pcor)
+    res.pcor$dce_pvalue <- permutation_test(wt.X.cor, mt.X.cor, fun = pcor, method = 'spearman')
   } else {
     res.pcor <- ground.truth
     res.pcor$dce_pvalue <- ground.truth$dce*0
