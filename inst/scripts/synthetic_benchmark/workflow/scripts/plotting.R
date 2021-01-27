@@ -175,6 +175,7 @@ tmp <- df.bench %>% pull(varied.parameter) %>% unique
 if (length(tmp) != 1) {
   tmp <- table(df.bench$varied.parameter)
   varied.parameter <- names(tmp)[which.max(tmp)]
+  df.bench <- df.bench[!is.na(df.bench$parameter),]
 } else {
   varied.parameter <- tmp
 }
