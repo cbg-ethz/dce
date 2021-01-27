@@ -36,7 +36,7 @@ run.all.models <- function(
   # correlations
   time.tmp <- Sys.time()
   if (is.null(methods) || "cor" %in% methods) {
-    res.cor <- list(dce = cor(mt.X.cor) - cor(wt.X.cor))
+    res.cor <- list(dce = cor(mt.X.cor, method = 'spearman') - cor(wt.X.cor, method = 'spearman'))
     res.cor$dce_pvalue <- permutation_test(wt.X.cor, mt.X.cor, fun = cor, method = 'spearman')
   } else {
     res.cor <- ground.truth
@@ -48,7 +48,7 @@ run.all.models <- function(
 
   time.tmp <- Sys.time()
   if (is.null(methods) || "pcor" %in% methods) {
-    res.pcor <- list(dce = pcor(mt.X.cor) - pcor(wt.X.cor))
+    res.pcor <- list(dce = pcor(mt.X.cor, method = 'spearman') - pcor(wt.X.cor, method = 'spearman'))
     res.pcor$dce_pvalue <- permutation_test(wt.X.cor, mt.X.cor, fun = pcor, method = 'spearman')
   } else {
     res.pcor <- ground.truth
@@ -116,7 +116,7 @@ run.all.models <- function(
     res.dce.tpm$dce_pvalue[as(wt.graph.perturbed, "matrix") == 0] <- NA
   }
   time.dce.tpm <- as.integer(difftime(Sys.time(), time.tmp, units = "secs"))
-  
+
   time.tmp <- Sys.time()
   if (is.null(methods) || "dce.tpm.nolatent" %in% methods) {
     res.dce.tpm.nolatent <- dce::dce_nb(
@@ -133,7 +133,7 @@ run.all.models <- function(
     res.dce.tpm.nolatent$dce_pvalue[as(wt.graph.perturbed, "matrix") == 0] <- NA
   }
   time.dce.tpm.nolatent <- as.integer(difftime(Sys.time(), time.tmp, units = "secs"))
-  
+
   time.tmp <- Sys.time()
   if (is.null(methods) || "dce.lm.tpm" %in% methods) {
     res.dce.lm.tpm <- dce(
