@@ -24,6 +24,7 @@ jobs:
 
           # fortran
           sudo ln -s /usr/local/bin/gfortran-9 /usr/local/bin/gfortran
+          sudo mkdir /usr/local/gfortran
           sudo ln -s /usr/local/Cellar/gcc@9/9.3.0_1/lib/gcc/9 /usr/local/gfortran/lib
           gfortran --version
 
