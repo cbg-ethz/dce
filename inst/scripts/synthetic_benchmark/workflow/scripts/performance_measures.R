@@ -40,7 +40,7 @@ compute.precision <- function(df, col, alpha = .05) {
   c <- get.classification.counts(df, col, alpha = alpha)
 
   if (c$tp == 0) {
-    if (c$fp == 0 && c$fn == 0) {
+    if (c$fp == 0 && c$fn == 0 & any(!is.na(df[[col]]))) {
       # "there are no results and we (correctly) identify none"
       return(1)
     }
@@ -55,7 +55,7 @@ compute.recall <- function(df, col, alpha = .05) {
   c <- get.classification.counts(df, col, alpha = alpha)
 
   if (c$tp == 0) {
-    if (c$fp == 0 && c$fn == 0) {
+    if (c$fp == 0 && c$fn == 0 & any(!is.na(df[[col]]))) {
       # "there are no results and we (correctly) identify none"
       return(1)
     }
@@ -70,7 +70,7 @@ compute.f1score <- function(df, col, alpha = .05) {
   # handle special case
   c <- get.classification.counts(df, col, alpha = alpha)
   if (c$tp == 0) {
-    if (c$fp == 0 && c$fn == 0) {
+    if (c$fp == 0 && c$fn == 0 & any(!is.na(df[[col]]))) {
       # "there are no results and we (correctly) identify none"
       return(1)
     }
@@ -85,7 +85,7 @@ compute.f1score <- function(df, col, alpha = .05) {
   return(2 * prec * reca / (prec + reca))
 }
 
-compute.prauc <- function(df, col, seq = 1000, NAweight = 1) {
+compute.prauc_old <- function(df, col, seq = 1000, NAweight = 1) {
   prec <- rec <- numeric(seq)
   auc <- 0
   alphas <- c(seq(0,1,length.out=seq-1), 2)
@@ -96,6 +96,26 @@ compute.prauc <- function(df, col, seq = 1000, NAweight = 1) {
     if (is.na(prec[i])) { prec[i] <- NAweight }
 
     rec[i] <- compute.recall(df, col, alpha = alpha)
+
+    if (i > 1) {
+      auc <- auc + (rec[i]-rec[i-1])*((prec[i]+prec[i-1])/2)
+    }
+  }
+  return(auc)
+}
+
+compute.prauc <- function(df, col, seq = 1000, NAweight = 1) {
+  prec <- rec <- numeric(seq)
+  auc <- 0
+  alphas <- c(seq(0,1,length.out=seq-1), 2)
+  for (i in seq_len(seq)) {
+    alpha <- alphas[i]
+
+    c <- get.classification.counts(df, col, alpha = alpha)
+
+    prec[i] <- c$tp / (c$tp + c$fp)
+    if (is.na(prec[i])) { prec[i] <- NAweight }
+    rec[i] <- c$tp / (c$tp + c$fn)
 
     if (i > 1) {
       auc <- auc + (rec[i]-rec[i-1])*((prec[i]+prec[i-1])/2)
