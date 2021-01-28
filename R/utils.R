@@ -493,12 +493,25 @@ estimate_latent_count <- function(X1, X2, method = "auto") {
         fit_pca <- prcomp(scale(X))
 
         scree <- fit_pca$sdev
+        scree <- scree[seq_len(round(length(scree) / 2))]
         values <- seq(length(scree))
 
         d1 <- diff(scree) / diff(values) # first derivative
         d2 <- diff(d1) / diff(values[-1]) # second derivative
         idx <- which.max(abs(d2))
 
+        return(idx)
+    }
+
+    if (method == "cluster") {
+        X <- cbind(X1, X2)
+        fit_pca <- prcomp(scale(X))
+
+        scree <- fit_pca$sdev
+        clust <- kmeans(scree, centers = c(scree[1], scree[2],
+                                        scree[round(length(scree) / 2 + 1)],
+                                        scree[length(scree)]))$cluster
+        idx <- sum(clust == clust[1])
         return(idx)
     }
 }
