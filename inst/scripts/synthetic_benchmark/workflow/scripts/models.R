@@ -152,6 +152,23 @@ run.all.models <- function(
   }
   time.dce.lm.tpm <- as.integer(difftime(Sys.time(), time.tmp, units = "secs"))
 
+  time.tmp <- Sys.time()
+  if (is.null(methods) || "dce.lm.tpm.nolatent" %in% methods) {
+    res.dce.lm.tpm.nolatent <- dce(
+      wt.graph.perturbed, compute.tpm(wt.X), compute.tpm(mt.X),
+      solver = "lm",
+      adjustment_type = adjustment.type,
+      effect_type = effect.type,
+      lib_size = FALSE
+    )
+  } else {
+    res.dce.lm.tpm.nolatent <- ground.truth
+    res.dce.lm.tpm.nolatent$dce_pvalue <- ground.truth$dce*0
+    res.dce.lm.tpm.nolatent$dce[as(wt.graph.perturbed, "matrix") == 0] <- NA
+    res.dce.lm.tpm.nolatent$dce_pvalue[as(wt.graph.perturbed, "matrix") == 0] <- NA
+  }
+  time.dce.lm.tpm.nolatent <- as.integer(difftime(Sys.time(), time.tmp, units = "secs"))
+
   # LDGM
   time.tmp <- Sys.time()
   if (is.null(methods) || "ldgm" %in% methods) {
@@ -259,6 +276,7 @@ run.all.models <- function(
     dce.tpm=as.vector(res.dce.tpm$dce),
     dce.tpm.nolatent=as.vector(res.dce.tpm.nolatent$dce),
     dce.lm.tpm=as.vector(res.dce.lm.tpm$dce),
+    dce.lm.tpm.nolatent=as.vector(res.dce.lm.tpm.nolatent$dce),
     ldgm=as.vector(res.ldgm$dce),
     fggm=as.vector(res.fggm$dce),
     rand=as.vector(res.rand$dce),
@@ -274,6 +292,7 @@ run.all.models <- function(
     dce.tpm=as.vector(res.dce.tpm$dce_pvalue),
     dce.tpm.nolatent=as.vector(res.dce.tpm.nolatent$dce_pvalue),
     dce.lm.tpm=as.vector(res.dce.lm.tpm$dce_pvalue),
+    dce.lm.tpm.nolatent=as.vector(res.dce.lm.tpm.nolatent$dce_pvalue),
     ldgm=as.vector(res.ldgm$dce_pvalue),
     fggm=as.vector(res.fggm$dce_pvalue),
     rand=as.vector(res.rand$dce_pvalue),
@@ -288,6 +307,7 @@ run.all.models <- function(
     dce.tpm=time.dce.tpm,
     dce.tpm.nolatent=time.dce.tpm.nolatent,
     dce.lm.tpm=time.dce.lm.tpm,
+    dce.lm.tpm.nolatent=time.dce.lm.tpm.nolatent,
     ldgm=time.ldgm,
     fggm=time.fggm,
     rand=time.rand,
