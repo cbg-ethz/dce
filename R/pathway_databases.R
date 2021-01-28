@@ -4,7 +4,7 @@
 #' @param database_list Which databases to query. Query all if `NULL`.
 #' @param include_network_statistics Compute some useful statistics
 #'        per pathway. Takes longer!
-#' @import graphite graph glue purrr
+#' @import graphite graph glue purrr logger
 #' @importFrom dplyr pull
 #' @export
 #' @return data frame with pathway meta information
@@ -22,7 +22,7 @@ get_pathway_info <- function(
 
     database_list %>%
         purrr::map_dfr(function(database) {
-            print(glue::glue("Processing {database}"))
+            logger::log_info("Processing {database}")
             db <- graphite::pathways(query_species, database)
 
             purrr::map_dfr(as.list(db), function(pw) {
@@ -52,7 +52,7 @@ get_pathway_info <- function(
 #' @param remove_empty_pathways Discard pathways without nodes
 #' @param pathway_list List mapping database name to
 #' vector of pathway names to download
-#' @import graphite glue purrr org.Hs.eg.db
+#' @import graphite glue purrr org.Hs.eg.db logger
 #' @export
 #' @return list of pathways
 #' @examples
@@ -82,7 +82,7 @@ get_pathways <- function(
 
     database_list %>%
         purrr::map(function(database) {
-            print(glue::glue("Processing {database}"))
+            logger::log_info("Processing {database}")
 
             db <- graphite::pathways(query_species, database)
 

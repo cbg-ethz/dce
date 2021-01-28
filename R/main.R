@@ -27,14 +27,14 @@
 #' manually by setting this variable to some number.
 #' @param conservative logical; if TRUE, does not use the indicator variable
 #' for the variables in the adjustment set
-#' @param verbose logical for verbose output
+#' @param log_level Control verbosity (logger::INFO, logger::DEBUG, ...)
 #' @return list of matrices with dces and corresponding p-value
 #' @export
 #' @rdname dce-methods
 #' @importFrom graph graphNEL
 #' @importFrom igraph as_adjacency_matrix
 #' @importFrom Matrix sparseMatrix
-#' @import metap CombinePValue assertthat
+#' @import metap CombinePValue assertthat logger
 #' @examples
 #' dag <- create_random_DAG(30, 0.2)
 #' X.wt <- simulate_data(dag)
@@ -53,7 +53,7 @@ setGeneric(
         lib_size = FALSE,
         deconfounding = FALSE,
         conservative = FALSE,
-        verbose = FALSE
+        log_level = logger::INFO
     ) {
         standardGeneric("dce")
     },
@@ -77,7 +77,7 @@ setMethod(
         lib_size = FALSE,
         deconfounding = FALSE,
         conservative = FALSE,
-        verbose = FALSE
+        log_level = logger::INFO
     ) {
         mat <- as(igraph::as_adjacency_matrix(graph), "matrix")
         dce(
@@ -91,7 +91,7 @@ setMethod(
             lib_size,
             deconfounding,
             conservative,
-            verbose
+            log_level
         )
     }
 )
@@ -111,7 +111,7 @@ setMethod(
         lib_size = FALSE,
         deconfounding = FALSE,
         conservative = FALSE,
-        verbose = FALSE
+        log_level = logger::INFO
     ) {
         dce(
             as_adjmat(graph),
@@ -124,7 +124,7 @@ setMethod(
             lib_size,
             deconfounding,
             conservative,
-            verbose
+            log_level
         )
     }
 )
@@ -144,8 +144,10 @@ setMethod(
         lib_size = FALSE,
         deconfounding = FALSE,
         conservative = FALSE,
-        verbose = FALSE
+        log_level = logger::INFO
     ) {
+        logger::log_threshold(log_level)
+
         # preparations
         graph[graph != 0] <- 1 # ignore edge weights
 
@@ -174,7 +176,7 @@ setMethod(
             lib_size,
             deconfounding,
             conservative,
-            verbose
+            log_level
         )
     }
 )
@@ -208,7 +210,7 @@ setMethod(
 #' manually by setting this variable to some number.
 #' @param conservative logical; if TRUE, does not use the indicator variable
 #' for the variables in the adjustment set
-#' @param verbose logical for verbose output
+#' @param log_level Control verbosity (logger::INFO, logger::DEBUG, ...)
 #' @return list of matrices with dces and corresponding p-value
 #' @export
 #' @examples
@@ -227,7 +229,7 @@ dce_nb <- function(
     lib_size = FALSE,
     deconfounding = FALSE,
     conservative = FALSE,
-    verbose = FALSE
+    log_level = logger::INFO
 ) {
     dce(
         graph, df_expr_wt, df_expr_mt,
@@ -239,7 +241,7 @@ dce_nb <- function(
         lib_size,
         deconfounding,
         conservative,
-        verbose
+        log_level
     )
 }
 
@@ -258,7 +260,7 @@ dce_nb <- function(
     lib_size,
     deconfounding,
     conservative,
-    verbose
+    log_level
 ) {
     # handle latent variables
     if (deconfounding != FALSE) {
@@ -267,10 +269,7 @@ dce_nb <- function(
                 df_expr_wt, df_expr_mt,
                 ifelse(is.character(deconfounding), deconfounding, "auto")
             )
-            if (verbose) {
-                print(glue::glue(
-                    "Estimated {deconfounding} latent confounders"))
-            }
+            logger::log_info("Estimated {deconfounding} latent confounders")
         }
 
         if (deconfounding > 0) {
@@ -294,7 +293,9 @@ dce_nb <- function(
     }
 
     if (length(unique(lib_size)) == 1 & lib_size[1] != FALSE) {
-        print("Only single library size detected, disabling correction!")
+        logger::log_warn(
+            "Only single library size detected, disabling correction!"
+        )
         lib_size <- FALSE
     }
 
@@ -396,11 +397,9 @@ dce_nb <- function(
                                      collapse = " + "))
             }
 
-            if (verbose) {
-                print(head(df_data))
-                print(form)
-                cat("\n")
-            }
+            logger::log_trace("{head(df_data)}")
+            logger::log_trace(form)
+            logger::log_trace("\n")
 
             fit <- glm_solver(
                 form = form, df = df_data,
@@ -429,9 +428,7 @@ dce_nb <- function(
                     )
                 }
 
-                if (verbose) {
-                    print(form2)
-                }
+                logger::log_trace(form2)
 
                 fit2 <- glm_solver(
                     form = form2, df = df_data,

@@ -69,6 +69,7 @@ graph_union <- function(graph_list) {
 #' @param graph Biological pathway
 #' @export
 #' @return graph with only genes as nodes
+#' @import logger
 #' @examples
 #' dag <- create_random_DAG(30, 0.2)
 #' propagate_gene_edges(dag)
@@ -100,10 +101,10 @@ propagate_gene_edges <- function(graph) {
                         }
                     } else {
                         source <- vertex_names[source_idx]  # nolint
-                        print(glue::glue(paste(
+                        logger::log_warn(paste(
                             "{bridge} is not a valid extension",
                             "for edge {source}->{target}"
-                        )))
+                        ))
                     }
                 }
             }

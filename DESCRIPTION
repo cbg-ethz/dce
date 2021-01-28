@@ -79,4 +79,5 @@ Imports:
     glue,
     Rgraphviz,
     harmonicmeanp,
-    org.Hs.eg.db
+    org.Hs.eg.db,
+    logger

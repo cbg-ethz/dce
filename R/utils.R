@@ -97,6 +97,7 @@ pcor <- function(x, ...) {
 #' @return dag as adjacency matrix
 #' @export
 #' @importFrom mnem transitive.closure
+#' @import logger
 #' @examples
 #' g <- matrix(c(1,0,1,0, 1,1,0,0, 0,1,1,0, 1,1,0,1), 4, 4)
 #' rownames(g) <- colnames(g) <- LETTERS[seq_len(4)]
@@ -125,7 +126,7 @@ g2dag <- function(g, tc = FALSE) {
         epiNEM::HeatmapOP(g2, Colv = 0, Rowv = 0)
     }
     if (!tc) {
-        print(g)
+        logger::log_trace(g)
         g3 <- g2 * 0
         g3[which(g2 == 1 & g == 1)] <- 1
         for (e in which(g == 1 & g3 == 0)) {
@@ -136,9 +137,9 @@ g2dag <- function(g, tc = FALSE) {
                     break
                 }
             }
-            print(e)
-            print(b)
-            print(a)
+            logger::log_trace(e)
+            logger::log_trace(b)
+            logger::log_trace(a)
             if (sum(g[b, ]) >= sum(g[a, ])) {
                 g3[b, a] <- 1
             }

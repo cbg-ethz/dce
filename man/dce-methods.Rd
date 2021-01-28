@@ -20,7 +20,7 @@ dce(
   lib_size = FALSE,
   deconfounding = FALSE,
   conservative = FALSE,
-  verbose = FALSE
+  log_level = logger::INFO
 )
 
 \S4method{dce}{igraph}(
@@ -36,7 +36,7 @@ dce(
   lib_size = FALSE,
   deconfounding = FALSE,
   conservative = FALSE,
-  verbose = FALSE
+  log_level = logger::INFO
 )
 
 \S4method{dce}{graphNEL}(
@@ -52,7 +52,7 @@ dce(
   lib_size = FALSE,
   deconfounding = FALSE,
   conservative = FALSE,
-  verbose = FALSE
+  log_level = logger::INFO
 )
 
 \S4method{dce}{matrix}(
@@ -68,7 +68,7 @@ dce(
   lib_size = FALSE,
   deconfounding = FALSE,
   conservative = FALSE,
-  verbose = FALSE
+  log_level = logger::INFO
 )
 }
 \arguments{
@@ -109,7 +109,7 @@ manually by setting this variable to some number.}
 \item{conservative}{logical; if TRUE, does not use the indicator variable
 for the variables in the adjustment set}
 
-\item{verbose}{logical for verbose output}
+\item{log_level}{Control verbosity (logger::INFO, logger::DEBUG, ...)}
 }
 \value{
 list of matrices with dces and corresponding p-value
