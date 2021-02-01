@@ -88,7 +88,7 @@
       <h1 data-toc-skip>Overview of pathway network databases</h1>
                         <h4 class="author">Kim Philipp Jablonski, Martin Pirkl</h4>
             
-            <h4 class="date">2021-01-28</h4>
+            <h4 class="date">2021-02-01</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/cbg-ethz/dce/blob/master/vignettes/pathway_databases.Rmd"><code>vignettes/pathway_databases.Rmd</code></a></small>
       <div class="hidden name"><code>pathway_databases.Rmd</code></div>
@@ -108,7 +108,7 @@
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://tidyverse.tidyverse.org">tidyverse</a></span><span class="op">)</span></code></pre></div>
 <pre><code>## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.0 ──</code></pre>
 <pre><code>## ✔ ggplot2 3.3.3     ✔ purrr   0.3.4
-## ✔ tibble  3.0.5     ✔ dplyr   1.0.3
+## ✔ tibble  3.0.6     ✔ dplyr   1.0.3
 ## ✔ tidyr   1.1.2     ✔ stringr 1.4.0
 ## ✔ readr   1.4.0     ✔ forcats 0.5.1</code></pre>
 <pre><code>## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
@@ -277,12 +277,12 @@
     biocarta <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"erk1/erk2 mapk signaling pathway"</span><span class="op">)</span>
   <span class="op">)</span>
 <span class="op">)</span></code></pre></div>
-<pre><code>## INFO [2021-01-28 15:31:01] Processing kegg</code></pre>
+<pre><code>## INFO [2021-02-01 12:23:14] Processing kegg</code></pre>
 <pre><code>## 'select()' returned 1:1 mapping between keys and columns
 ## 'select()' returned 1:1 mapping between keys and columns
 ## 'select()' returned 1:1 mapping between keys and columns
 ## 'select()' returned 1:1 mapping between keys and columns</code></pre>
-<pre><code>## INFO [2021-01-28 15:31:03] Processing biocarta</code></pre>
+<pre><code>## INFO [2021-02-01 12:23:17] Processing biocarta</code></pre>
 <pre><code>## 'select()' returned 1:1 mapping between keys and columns
 ## 'select()' returned 1:1 mapping between keys and columns</code></pre>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
@@ -321,7 +321,7 @@
 ##  [4] S4Vectors_0.28.1     Biobase_2.50.0       BiocGenerics_0.36.0 
 ##  [7] dce_0.99.0           forcats_0.5.1        stringr_1.4.0       
 ## [10] dplyr_1.0.3          purrr_0.3.4          readr_1.4.0         
-## [13] tidyr_1.1.2          tibble_3.0.5         ggplot2_3.3.3       
+## [13] tidyr_1.1.2          tibble_3.0.6         ggplot2_3.3.3       
 ## [16] tidyverse_1.3.0      BiocStyle_2.18.1    
 ## 
 ## loaded via a namespace (and not attached):
@@ -341,7 +341,7 @@
 ##  [40] assertthat_0.2.1         scales_1.1.1             multcomp_1.4-15         
 ##  [43] ggraph_2.0.4             nnet_7.3-14              gtable_0.3.0            
 ##  [46] tidygraph_1.2.0          sandwich_3.0-0           rlang_0.4.10            
-##  [49] systemfonts_0.3.2        splines_4.0.3            broom_0.7.3             
+##  [49] systemfonts_0.3.2        splines_4.0.3            broom_0.7.4             
 ##  [52] checkmate_2.0.0          reshape2_1.4.4           abind_1.4-5             
 ##  [55] BiocManager_1.30.10      yaml_2.2.1               modelr_0.1.8            
 ##  [58] backports_1.2.1          RBGL_1.66.0              tools_4.0.3             
@@ -353,16 +353,16 @@
 ##  [76] fs_1.5.0                 apcluster_1.4.8          magrittr_2.0.1          
 ##  [79] data.table_1.13.6        gmodels_2.18.1           reprex_1.0.0            
 ##  [82] tmvnsim_1.0-2            mvtnorm_1.1-1            amap_0.8-18             
-##  [85] matrixStats_0.57.0       mnem_1.6.5               flexclust_1.4-0         
+##  [85] matrixStats_0.58.0       mnem_1.6.5               flexclust_1.4-0         
 ##  [88] hms_1.0.0                evaluate_0.14            mclust_5.4.7            
 ##  [91] readxl_1.3.1             gridExtra_2.3            bdsmatrix_1.3-4         
-##  [94] compiler_4.0.3           ellipse_0.4.2            crayon_1.3.4            
+##  [94] compiler_4.0.3           ellipse_0.4.2            crayon_1.4.0            
 ##  [97] Linnorm_2.14.0           htmltools_0.5.1.1        corpcor_1.6.9           
 ## [100] mgcv_1.8-33              expm_0.999-6             lubridate_1.7.9.2       
 ## [103] DBI_1.1.1                tweenr_1.0.1             ppcor_1.1               
 ## [106] dbplyr_2.0.0             MASS_7.3-53              fpc_2.2-9               
-## [109] rappdirs_0.3.2           Matrix_1.2-18            permute_0.9-5           
-## [112] cli_2.2.0                naturalsort_0.1.3        rbibutils_2.0           
+## [109] rappdirs_0.3.3           Matrix_1.2-18            permute_0.9-5           
+## [112] cli_2.3.0                naturalsort_0.1.3        rbibutils_2.0           
 ## [115] gdata_2.18.0             metap_1.4                igraph_1.2.6            
 ## [118] pkgconfig_2.0.3          pkgdown_1.6.1            sn_1.6-2                
 ## [121] numDeriv_2016.8-1.1      xml2_1.3.2               multtest_2.46.0         
@@ -372,15 +372,14 @@
 ## [133] curl_4.3                 kernlab_0.9-29           gtools_3.8.2            
 ## [136] modeltools_0.2-23        graphite_1.36.0          lifecycle_0.2.0         
 ## [139] nlme_3.1-149             jsonlite_1.7.2           desc_1.2.0              
-## [142] viridisLite_0.3.0        limma_3.46.0             fansi_0.4.2             
-## [145] pillar_1.4.7             lattice_0.20-41          fastmap_1.1.0           
-## [148] httr_1.4.2               plotrix_3.8-1            DEoptimR_1.0-8          
-## [151] survival_3.2-7           glue_1.4.2               CombinePValue_1.0       
-## [154] prabclus_2.3-2           bit_4.0.4                Rgraphviz_2.34.0        
-## [157] ggforce_0.3.2            class_7.3-17             stringi_1.5.3           
-## [160] blob_1.2.1               textshaping_0.2.1        memoise_2.0.0           
-## [163] FMStable_0.1-2           snowfall_1.84-6.1        mathjaxr_1.0-1          
-## [166] e1071_1.7-4</code></pre>
+## [142] viridisLite_0.3.0        limma_3.46.0             pillar_1.4.7            
+## [145] lattice_0.20-41          fastmap_1.1.0            httr_1.4.2              
+## [148] plotrix_3.8-1            DEoptimR_1.0-8           survival_3.2-7          
+## [151] glue_1.4.2               CombinePValue_1.0        prabclus_2.3-2          
+## [154] bit_4.0.4                Rgraphviz_2.34.0         ggforce_0.3.2           
+## [157] class_7.3-17             stringi_1.5.3            blob_1.2.1              
+## [160] textshaping_0.2.1        memoise_2.0.0            FMStable_0.1-2          
+## [163] snowfall_1.84-6.1        mathjaxr_1.2-0           e1071_1.7-4</code></pre>
 </div>
 <div id="references" class="section level1 unnumbered">
 <h1 class="hasAnchor">
