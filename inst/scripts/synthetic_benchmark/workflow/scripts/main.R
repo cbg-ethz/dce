@@ -187,7 +187,6 @@ df.bench <- purrr::pmap_dfr(
 
 
       # run models
-      if (latent != 0) latent <- TRUE
       res <- run.all.models(
         wt.graph, wt.X,
         mt.graph, mt.X,
@@ -196,7 +195,7 @@ df.bench <- purrr::pmap_dfr(
         methods = methods,
         effect.type = effect.type,
         adjustment.type = adjustment.type,
-        latent = latent
+        latent = 'kim'
       )
 
       if (is.null(methods)) {
@@ -207,13 +206,14 @@ df.bench <- purrr::pmap_dfr(
       df.pvalues <- res$pvalues
       df.runtime <- res$runtime
 
-
       # modify predictions
       #  * if edge exists only in original graph (but not in perturbed one), it should be a false negative if truth != 0
       #  * for performance evaluation use all entries with edge in original or perturbed graph
+      tmp.graph <- as(wt.graph, "matrix")
+      tmp.graph <- tmp.graph[naturalorder(rownames(tmp.graph)), naturalorder(colnames(tmp.graph))]
       df.all <- bind_cols(
-        data.frame(orig.edge = as.numeric(as.vector(as(wt.graph, "matrix")) != 0)),
-        data.frame(pert.edge = as.numeric(as.vector(as(wt.graph.perturbed, "matrix")) != 0)),
+        data.frame(orig.edge = as.numeric(as.vector(tmp.graph) != 0)),
+        data.frame(pert.edge = as.numeric(as.vector(tmp.graph) != 0)),
         df.pvalues
       )
 
@@ -229,7 +229,6 @@ df.bench <- purrr::pmap_dfr(
 
       df.pvalues.mod <- df.all %>%
         select(-orig.edge, -pert.edge)
-
 
       # return performance computation
       data.frame() %>%
