@@ -211,9 +211,11 @@ df.bench <- purrr::pmap_dfr(
       #  * for performance evaluation use all entries with edge in original or perturbed graph
       tmp.graph <- as(wt.graph, "matrix")
       tmp.graph <- tmp.graph[naturalorder(rownames(tmp.graph)), naturalorder(colnames(tmp.graph))]
+      tmp.graph.perturbed <- as(wt.graph.perturbed, "matrix")
+      tmp.graph.perturbed <- tmp.graph.perturbed[naturalorder(rownames(tmp.graph.perturbed)), naturalorder(colnames(tmp.graph.perturbed))]
       df.all <- bind_cols(
         data.frame(orig.edge = as.numeric(as.vector(tmp.graph) != 0)),
-        data.frame(pert.edge = as.numeric(as.vector(tmp.graph) != 0)),
+        data.frame(pert.edge = as.numeric(as.vector(tmp.graph.perturbed) != 0)),
         df.pvalues
       )
 
@@ -229,6 +231,9 @@ df.bench <- purrr::pmap_dfr(
 
       df.pvalues.mod <- df.all %>%
         select(-orig.edge, -pert.edge)
+
+      apply.performance.measure(df.pvalues.mod, methods, compute.prauc, "pr-auc")
+      apply.performance.measure(df.pvalues.mod, methods, compute.rocauc, "roc-auc")
 
       # return performance computation
       data.frame() %>%
