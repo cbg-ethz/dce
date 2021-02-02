@@ -136,7 +136,7 @@ setMethod(
                         nrow = n, ncol = pop_size - p)
             colnames(Y) <- paste0("n", (p + 1):pop_size)
             X <- cbind(X, Y)
-        } else if (pop_size > 0 & latent > 0) {
+        } else if (pop_size > p & latent > 0) {
             H <- matrix(
                 runif(latent * (pop_size - p + latent), -1, 1),
                 latent, pop_size - p + latent
