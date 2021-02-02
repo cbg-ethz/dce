@@ -126,7 +126,7 @@ setMethod(
             if (any(betas != 0)) {
                 # current node has parents
                 mu <- link(X[, ij, drop = FALSE] %*% betas, offset = 1)
-                X[, j] <- rnbinom(n, size = Inf, mu = mu)
+                X[, j] <- rpois(n, lambda = mu)
             }
         }
         if (pop_size > p & latent == 0) {
@@ -143,7 +143,7 @@ setMethod(
             )
             Y <- X[, seq_len(latent), drop = FALSE] %*% H
             Y <- apply(Y, 2, function(x) {
-                y <- rnbinom(n, size = Inf, mu = link(x, offset = 1))
+                y <- rpois(n, lambda = link(x, offset = 1))
                 return(y)
             })
             colnames(Y) <- paste0("n", (p + 1 - latent):pop_size)

@@ -291,7 +291,7 @@ create_random_DAG <- function(
 #' graph.mt <- resample_edge_weights(graph.wt)
 resample_edge_weights <- function(g, tp = 0.5,
                                   mineff = 1, maxeff = 2,
-                                  method = "runif") {
+                                  method = "unif") {
     gold <- g
     g <- as(g, "matrix")
     changes <- floor((1 - tp) * sum(g != 0))
@@ -327,7 +327,7 @@ resample_edge_weights <- function(g, tp = 0.5,
         eff <- g2[x]
         die <- sample(c(0, 1), 1)
         if (die) {
-            if (method == "runif") {
+            if (method == "unif") {
                 effnew <- runif(1, eff + mineff, eff + maxeff)
             } else if (method == "gauss") {
                 effnew <- eff + mineff + abs(rnorm(1, 0, maxeff))
@@ -335,7 +335,7 @@ resample_edge_weights <- function(g, tp = 0.5,
                 effnew <- eff + mineff + rexp(1, maxeff)
             }
         } else {
-            if (method == "runif") {
+            if (method == "unif") {
                 effnew <- runif(1, eff - maxeff, eff - mineff)
             } else if (method == "gauss") {
                 effnew <- eff - mineff - abs(rnorm(1, 0, maxeff))

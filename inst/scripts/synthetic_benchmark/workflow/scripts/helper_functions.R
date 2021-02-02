@@ -1,4 +1,5 @@
-generate.random.graphs <- function(node.num, beta.magnitude, true.positives) {
+generate.random.graphs <- function(node.num, beta.magnitude, true.positives,
+                                   maxeff = 1, method = 'unif') {
   edge.prob <- runif(1, 0, 1)
 
   negweight.range <- c(-beta.magnitude, 0)
@@ -11,8 +12,8 @@ generate.random.graphs <- function(node.num, beta.magnitude, true.positives) {
 
   mt.graph <- resample_edge_weights(wt.graph, tp = true.positives,
                                     mineff = beta.magnitude,
-                                    maxeff = 1,
-                                    method = "exp")
+                                    maxeff = maxeff,
+                                    method = method)
 
   return(list(wt=wt.graph, mt=mt.graph))
 }

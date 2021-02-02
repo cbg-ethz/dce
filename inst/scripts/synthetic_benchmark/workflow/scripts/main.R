@@ -187,6 +187,10 @@ df.bench <- purrr::pmap_dfr(
 
 
       # run models
+      latent2 <- FALSE
+      if (latent > 0) {
+        latent2 <- 'kim'
+      }
       res <- run.all.models(
         wt.graph, wt.X,
         mt.graph, mt.X,
@@ -195,7 +199,7 @@ df.bench <- purrr::pmap_dfr(
         methods = methods,
         effect.type = effect.type,
         adjustment.type = adjustment.type,
-        latent = 'kim'
+        latent = latent2
       )
 
       if (is.null(methods)) {
