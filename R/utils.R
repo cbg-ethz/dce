@@ -282,7 +282,7 @@ create_random_DAG <- function(
 #' @param maxeff maximum effect effect size or standard deviation,
 #' if method is "gauss"
 #' @param method method for drawing the differential for the causal effects.
-#' Can be "runif", "exp" or "gauss".
+#' Can be "unif", "exp" or "gauss".
 #' @author Martin Pirkl
 #' @return graph with new edge weights
 #' @export

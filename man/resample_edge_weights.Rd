@@ -4,7 +4,7 @@
 \alias{resample_edge_weights}
 \title{Resample network edge weights}
 \usage{
-resample_edge_weights(g, tp = 0.5, mineff = 1, maxeff = 2, method = "runif")
+resample_edge_weights(g, tp = 0.5, mineff = 1, maxeff = 2, method = "unif")
 }
 \arguments{
 \item{g}{original graph}
@@ -17,7 +17,7 @@ resample_edge_weights(g, tp = 0.5, mineff = 1, maxeff = 2, method = "runif")
 if method is "gauss"}
 
 \item{method}{method for drawing the differential for the causal effects.
-Can be "runif", "exp" or "gauss".}
+Can be "unif", "exp" or "gauss".}
 }
 \value{
 graph with new edge weights
