@@ -1,6 +1,6 @@
 generate.random.graphs <- function(node.num, beta.magnitude, true.positives,
                                    mineff = 0, method = 'unif',
-                                   edge.prob = runif(1, 0.1, 1), ...) {
+                                   edge.prob = runif(1, 0.01, 1), ...) {
 
   negweight.range <- c(-beta.magnitude, 0)
   posweight.range <- c(0, beta.magnitude)

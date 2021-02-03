@@ -10,7 +10,7 @@ create_random_DAG(
   eff_min = -1,
   eff_max = 1,
   node_labels = paste0("n", as.character(seq_len(node_num))),
-  max_par = 2
+  max_par = 3
 )
 }
 \arguments{
