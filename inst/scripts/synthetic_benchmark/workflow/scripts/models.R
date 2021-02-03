@@ -42,8 +42,6 @@ run.all.models <- function(
     res.cor <- ground.truth
     res.cor$dce_pvalue <- ground.truth$dce*0
   }
-  res.cor$dce[as(wt.graph.perturbed, "matrix") == 0] <- NA
-  res.cor$dce_pvalue[as(wt.graph.perturbed, "matrix") == 0] <- NA
   time.cor <- as.integer(difftime(Sys.time(), time.tmp, units = "secs"))
 
   time.tmp <- Sys.time()
@@ -54,8 +52,6 @@ run.all.models <- function(
     res.pcor <- ground.truth
     res.pcor$dce_pvalue <- ground.truth$dce*0
   }
-  res.pcor$dce[as(wt.graph.perturbed, "matrix") == 0] <- NA
-  res.pcor$dce_pvalue[as(wt.graph.perturbed, "matrix") == 0] <- NA
   time.pcor <- as.integer(difftime(Sys.time(), time.tmp, units = "secs"))
 
   # differential causal effects
@@ -77,8 +73,6 @@ run.all.models <- function(
   } else {
     res.dce <- ground.truth
     res.dce$dce_pvalue <- ground.truth$dce*0
-    res.dce$dce[as(wt.graph.perturbed, "matrix") == 0] <- NA
-    res.dce$dce_pvalue[as(wt.graph.perturbed, "matrix") == 0] <- NA
   }
   time.dce <- as.integer(difftime(Sys.time(), time.tmp, units = "secs"))
 
@@ -94,8 +88,6 @@ run.all.models <- function(
   } else {
     res.dce.nolib <- ground.truth
     res.dce.nolib$dce_pvalue <- ground.truth$dce*0
-    res.dce.nolib$dce[as(wt.graph.perturbed, "matrix") == 0] <- NA
-    res.dce.nolib$dce_pvalue[as(wt.graph.perturbed, "matrix") == 0] <- NA
   }
   time.dce.nolib <- as.integer(difftime(Sys.time(), time.tmp, units = "secs"))
 
@@ -112,8 +104,6 @@ run.all.models <- function(
   } else {
     res.dce.tpm <- ground.truth
     res.dce.tpm$dce_pvalue <- ground.truth$dce*0
-    res.dce.tpm$dce[as(wt.graph.perturbed, "matrix") == 0] <- NA
-    res.dce.tpm$dce_pvalue[as(wt.graph.perturbed, "matrix") == 0] <- NA
   }
   time.dce.tpm <- as.integer(difftime(Sys.time(), time.tmp, units = "secs"))
 
@@ -129,8 +119,6 @@ run.all.models <- function(
   } else {
     res.dce.tpm.nolatent <- ground.truth
     res.dce.tpm.nolatent$dce_pvalue <- ground.truth$dce*0
-    res.dce.tpm.nolatent$dce[as(wt.graph.perturbed, "matrix") == 0] <- NA
-    res.dce.tpm.nolatent$dce_pvalue[as(wt.graph.perturbed, "matrix") == 0] <- NA
   }
   time.dce.tpm.nolatent <- as.integer(difftime(Sys.time(), time.tmp, units = "secs"))
 
@@ -147,8 +135,6 @@ run.all.models <- function(
   } else {
     res.dce.lm.tpm <- ground.truth
     res.dce.lm.tpm$dce_pvalue <- ground.truth$dce*0
-    res.dce.lm.tpm$dce[as(wt.graph.perturbed, "matrix") == 0] <- NA
-    res.dce.lm.tpm$dce_pvalue[as(wt.graph.perturbed, "matrix") == 0] <- NA
   }
   time.dce.lm.tpm <- as.integer(difftime(Sys.time(), time.tmp, units = "secs"))
 
@@ -164,8 +150,6 @@ run.all.models <- function(
   } else {
     res.dce.lm.tpm.nolatent <- ground.truth
     res.dce.lm.tpm.nolatent$dce_pvalue <- ground.truth$dce*0
-    res.dce.lm.tpm.nolatent$dce[as(wt.graph.perturbed, "matrix") == 0] <- NA
-    res.dce.lm.tpm.nolatent$dce_pvalue[as(wt.graph.perturbed, "matrix") == 0] <- NA
   }
   time.dce.lm.tpm.nolatent <- as.integer(difftime(Sys.time(), time.tmp, units = "secs"))
 
@@ -177,8 +161,6 @@ run.all.models <- function(
   } else {
     res.ldgm <- ground.truth
     res.ldgm$dce_pvalue <- ground.truth$dce*0
-    res.ldgm$dce[as(wt.graph.perturbed, "matrix") == 0] <- NA
-    res.ldgm$dce_pvalue[as(wt.graph.perturbed, "matrix") == 0] <- NA
   }
   time.ldgm <- as.integer(difftime(Sys.time(), time.tmp, units = "secs"))
 
@@ -189,27 +171,25 @@ run.all.models <- function(
   } else {
     res.fggm <- ground.truth
     res.fggm$dce_pvalue <- ground.truth$dce*0
-    res.fggm$dce[as(wt.graph.perturbed, "matrix") == 0] <- NA
-    res.fggm$dce_pvalue[as(wt.graph.perturbed, "matrix") == 0] <- NA
   }
   time.fggm <- as.integer(difftime(Sys.time(), time.tmp, units = "secs"))
 
   # null models
   time.tmp <- Sys.time()
   if (is.null(methods) || "rand" %in% methods) {
-    tmp <- as(wt.graph.perturbed, "matrix") * NA
-    tmp[which(as(wt.graph.perturbed, "matrix") != 0)] = (
-      runif(sum(as(wt.graph.perturbed, "matrix") != 0), negweight.range[1], posweight.range[2]) -
-        runif(sum(as(wt.graph.perturbed, "matrix") != 0), negweight.range[1], posweight.range[2])
+    tmp.graph.perturbed <- as(wt.graph.perturbed, "matrix")
+    tmp.graph.perturbed <- tmp.graph.perturbed[naturalorder(rownames(tmp.graph.perturbed)), naturalorder(colnames(tmp.graph.perturbed))]
+    tmp <- tmp.graph.perturbed * NA
+    tmp[which(tmp.graph.perturbed != 0)] = (
+      runif(sum(tmp.graph.perturbed != 0), negweight.range[1], posweight.range[2]) -
+        runif(sum(tmp.graph.perturbed != 0), negweight.range[1], posweight.range[2])
     )
-    tmp.pvals <- as(wt.graph.perturbed, "matrix") * NA
-    tmp.pvals[which(as(wt.graph.perturbed, "matrix") != 0)] <- runif(sum(as(wt.graph.perturbed, "matrix") != 0), 0, 1)
+    tmp.pvals <- tmp.graph.perturbed * NA
+    tmp.pvals[which(tmp.graph.perturbed != 0)] <- runif(sum(tmp.graph.perturbed != 0), 0, 1)
     res.rand <- list(dce = tmp, dce_pvalue = tmp.pvals)
   } else {
     res.rand <- ground.truth
     res.rand$dce_pvalue <- ground.truth$dce*0
-    res.rand$dce[as(wt.graph.perturbed, "matrix") == 0] <- NA
-    res.rand$dce_pvalue[as(wt.graph.perturbed, "matrix") == 0] <- NA
   }
   time.rand <- as.integer(difftime(Sys.time(), time.tmp, units = "secs"))
 
@@ -254,15 +234,10 @@ run.all.models <- function(
 
       res.causaldag$dce_pvalue[res.causaldag$dce_pvalue != 0] <- 0.01 # something significant...
       res.causaldag$dce_pvalue[res.causaldag$dce_pvalue == 0] <- 0.99
-
-      res.causaldag$dce[as(wt.graph.perturbed, "matrix") == 0] <- NA
-      res.causaldag$dce_pvalue[as(wt.graph.perturbed, "matrix") == 0] <- NA
     }
   } else {
     res.causaldag <- ground.truth
     res.causaldag$dce_pvalue <- ground.truth$dce*0
-    res.causaldag$dce[as(wt.graph.perturbed, "matrix") == 0] <- NA
-    res.causaldag$dce_pvalue[as(wt.graph.perturbed, "matrix") == 0] <- NA
   }
   time.causaldag <- as.integer(difftime(Sys.time(), time.tmp, units = "secs"))
 
