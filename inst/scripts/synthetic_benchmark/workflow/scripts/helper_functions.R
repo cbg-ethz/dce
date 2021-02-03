@@ -1,13 +1,13 @@
 generate.random.graphs <- function(node.num, beta.magnitude, true.positives,
-                                   mineff = 0, method = 'unif') {
-  edge.prob <- runif(1, 0, 1)
+                                   mineff = 0, method = 'unif',
+                                   edge.prob = runif(1, 0.1, 1), ...) {
 
   negweight.range <- c(-beta.magnitude, 0)
   posweight.range <- c(0, beta.magnitude)
 
-  wt.graph <- create_random_DAG(node.num, edge.prob, negweight.range, posweight.range)
+  wt.graph <- create_random_DAG(node.num, edge.prob, negweight.range, posweight.range, ...)
   while(length(wt.graph@edgeData@data) <= 1) {
-    wt.graph <- create_random_DAG(node.num, edge.prob, negweight.range, posweight.range)
+    wt.graph <- create_random_DAG(node.num, edge.prob, negweight.range, posweight.range, ...)
   }
 
   mt.graph <- resample_edge_weights(wt.graph, tp = true.positives,
