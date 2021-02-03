@@ -88,7 +88,7 @@
       <h1 data-toc-skip>Get started</h1>
                         <h4 class="author">Kim Philipp Jablonski, Martin Pirkl</h4>
             
-            <h4 class="date">2021-02-02</h4>
+            <h4 class="date">2021-02-03</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/cbg-ethz/dce/blob/master/vignettes/dce.Rmd"><code>vignettes/dce.Rmd</code></a></small>
       <div class="hidden name"><code>dce.Rmd</code></div>
@@ -113,7 +113,7 @@
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://tidyverse.tidyverse.org">tidyverse</a></span><span class="op">)</span></code></pre></div>
 <pre><code>## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.0 ──</code></pre>
-<pre><code>## ✔ tibble  3.0.6     ✔ dplyr   1.0.3
+<pre><code>## ✔ tibble  3.0.6     ✔ dplyr   1.0.4
 ## ✔ tidyr   1.1.2     ✔ stringr 1.4.0
 ## ✔ readr   1.4.0     ✔ forcats 0.5.1
 ## ✔ purrr   0.3.4</code></pre>
@@ -156,44 +156,33 @@
 <span class="va">X_mt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_data.html">simulate_data</a></span><span class="op">(</span><span class="va">graph_mt</span><span class="op">)</span></code></pre></div>
 <p>Finally, it is possible to compute differential causal effects.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dce.html">dce</a></span><span class="op">(</span><span class="va">graph_wt</span>, <span class="va">X_wt</span>, <span class="va">X_mt</span>, solver <span class="op">=</span> <span class="st">"lm"</span><span class="op">)</span></code></pre></div>
-<pre><code>## Warning in dce(as_adjmat(graph), df_expr_wt, df_expr_mt, solver, solver_args, :
-## Cycle(s) detected in network</code></pre>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">res</span> <span class="op">%&gt;%</span>
+<code class="sourceCode R"><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dce.html">dce</a></span><span class="op">(</span><span class="va">graph_wt</span>, <span class="va">X_wt</span>, <span class="va">X_mt</span>, solver <span class="op">=</span> <span class="st">"lm"</span><span class="op">)</span>
+
+<span class="va">res</span> <span class="op">%&gt;%</span>
   <span class="va">as.data.frame</span> <span class="op">%&gt;%</span>
   <span class="va">drop_na</span></code></pre></div>
-<pre><code>##    source target         dce dce_stderr   dce_pvalue
-## 1      n1     n3  0.01944574 0.01212736 1.104435e-01
-## 2      n1     n4  0.14076117 0.09002725 1.195389e-01
-## 3      n2     n4  0.11644276 0.07342659 1.143878e-01
-## 4      n4     n5 -1.20136778 0.13842215 1.699483e-15
-## 5      n4     n6 -0.24798274 0.12744279 5.313424e-02
-## 6      n1     n7 -3.43557980 0.08395015 5.780416e-98
-## 7      n2     n7 -0.18148978 0.25051471 4.696426e-01
-## 8      n3     n7 -1.29165204 0.98930526 1.932296e-01
-## 9      n4     n7  2.95252188 0.45025079 4.934986e-10
-## 10     n5     n7 -3.98220528 2.13402516 6.354319e-02
-## 11     n6     n8 -0.04373101 0.07047904 5.356683e-01
-## 12     n1     n9 -2.06446977 0.12470724 4.381387e-39
-## 13     n4     n9  1.30456556 0.17822108 6.618970e-12
-## 14     n5     n9 -1.23619372 0.83535699 1.405383e-01
-## 15     n6     n9 -0.03875831 0.65872080 9.531411e-01
-## 16     n1    n10  2.75555328 0.20847027 6.185638e-29
-## 17     n4    n10 -2.13723549 0.35254359 6.977181e-09
-## 18     n5    n10  2.79582153 1.22155848 2.317217e-02
-## 19     n6    n10 -2.11163815 0.99530961 3.514151e-02
-## 20     n8    n10 -1.43826707 2.16401810 5.070777e-01
-## 21     n9    n10  0.29835867 0.24148445 2.181790e-01</code></pre>
+<pre><code>##    source target           dce dce_stderr   dce_pvalue
+## 1      n1     n3  0.0037308062 0.01122805 7.400363e-01
+## 2      n1     n4 -1.4086259462 0.23728788 1.303707e-08
+## 3      n2     n4  1.7815203376 0.08175022 2.870192e-54
+## 4      n4     n5  0.0067389735 0.05852839 9.084543e-01
+## 5      n4     n6 -0.0005650721 0.03983062 9.886956e-01
+## 6      n2     n7 -3.3973055464 0.08654526 8.383526e-95
+## 7      n4     n7 -0.0664017647 0.21734417 7.603054e-01
+## 8      n6     n8  1.8062376999 0.18962123 6.873354e-18
+## 9      n1     n9 -2.7519067254 0.16110848 1.153428e-40
+## 10     n4     n9 -0.2323277967 0.19265024 2.293183e-01
+## 11     n8    n10 -1.5299412602 1.00038972 1.278078e-01
+## 12     n9    n10 -0.1744648720 0.12392263 1.607916e-01</code></pre>
 <p>The result can be visualized.</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span></code></pre></div>
 <p><img src="dce_files/figure-html/unnamed-chunk-5-1.png" width="700"></p>
 </div>
 <div id="session-information" class="section level1">
 <h1 class="hasAnchor">
 <a href="#session-information" class="anchor"></a>Session information</h1>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <pre><code>## R version 4.0.3 (2020-10-10)
 ## Platform: x86_64-apple-darwin17.0 (64-bit)
@@ -211,7 +200,7 @@
 ## 
 ## other attached packages:
 ##  [1] dce_0.99.0       cowplot_1.1.1    forcats_0.5.1    stringr_1.4.0   
-##  [5] dplyr_1.0.3      purrr_0.3.4      readr_1.4.0      tidyr_1.1.2     
+##  [5] dplyr_1.0.4      purrr_0.3.4      readr_1.4.0      tidyr_1.1.2     
 ##  [9] tibble_3.0.6     tidyverse_1.3.0  ggraph_2.0.4     ggplot2_3.3.3   
 ## [13] BiocStyle_2.18.1
 ## 
