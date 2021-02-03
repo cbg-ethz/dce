@@ -227,6 +227,7 @@ get_prediction_counts <- function(truth, inferred, cutoff = 0.5) {
 #' @param eff_min Lower bound for edge weights
 #' @param eff_max Upper bound for edge weights
 #' @param node_labels Node labels
+#' @param max_par Maximal number of parents
 #' @author Martin Pirkl
 #' @return graph
 #' @export
@@ -236,7 +237,8 @@ get_prediction_counts <- function(truth, inferred, cutoff = 0.5) {
 create_random_DAG <- function(
     node_num, prob,
     eff_min = -1, eff_max = 1,
-    node_labels = paste0("n", as.character(seq_len(node_num)))
+    node_labels = paste0("n", as.character(seq_len(node_num))),
+    max_par = 2
 ) {
     stopifnot(
         node_num >= 2,
@@ -253,6 +255,15 @@ create_random_DAG <- function(
     mat <- matrix(rbinom(node_num * node_num, 1, prob), node_num, node_num)
     mat[lower.tri(mat)] <- 0
     diag(mat) <- 0
+
+    # make sure to abide to max parents
+    mat <- apply(mat, 2, function(x) {
+        if (sum(x) > max_par) {
+            y <- sample(which(x == 1), max_par)
+            x[-y] <- 0
+        }
+        return(x)
+    })
 
     # assign effects
     mat[mat != 0] <- runif(sum(mat != 0), min = eff_min, max = eff_max)

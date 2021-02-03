@@ -9,7 +9,8 @@ create_random_DAG(
   prob,
   eff_min = -1,
   eff_max = 1,
-  node_labels = paste0("n", as.character(seq_len(node_num)))
+  node_labels = paste0("n", as.character(seq_len(node_num))),
+  max_par = 2
 )
 }
 \arguments{
@@ -22,6 +23,8 @@ create_random_DAG(
 \item{eff_max}{Upper bound for edge weights}
 
 \item{node_labels}{Node labels}
+
+\item{max_par}{Maximal number of parents}
 }
 \value{
 graph
