@@ -78,6 +78,7 @@ setMethod(
 
 
 #' @rdname simulate_data-methods
+#' @importFrom naturalsort naturalorder
 setMethod(
     "simulate_data",
     signature = signature(graph = "matrix"),
@@ -152,6 +153,7 @@ setMethod(
         if (latent > 0) {
             X <- X[, -seq_len(latent), drop = FALSE]
         }
+        X <- X[,naturalorder(colnames(X))]
         return(X)
     }
 )
