@@ -97,6 +97,7 @@ setMethod(
             start <- latent + 1
             p <- dim(graph)[[1]]
         }
+        if (pop_size < p) { pop_size <- p }
 
         # sanity checks
         stopifnot(p >= 2)
@@ -130,6 +131,7 @@ setMethod(
                 X[, j] <- rpois(n, lambda = mu)
             }
         }
+        X <- X[,naturalorder(colnames(X))]
         if (pop_size > p & latent == 0) {
             Y <- matrix(rnbinom(n * (pop_size - p),
                                 size = dist_dispersion,
@@ -153,7 +155,6 @@ setMethod(
         if (latent > 0) {
             X <- X[, -seq_len(latent), drop = FALSE]
         }
-        X <- X[,naturalorder(colnames(X))]
         return(X)
     }
 )
