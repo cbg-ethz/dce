@@ -97,9 +97,9 @@
 
     
     
-<div id="introduction" class="section level1">
+<div id="environment-setup" class="section level1">
 <h1 class="hasAnchor">
-<a href="#introduction" class="anchor"></a>Introduction</h1>
+<a href="#environment-setup" class="anchor"></a>Environment Setup</h1>
 <div id="load-required-packages" class="section level2">
 <h2 class="hasAnchor">
 <a href="#load-required-packages" class="anchor"></a>Load required packages</h2>
@@ -108,37 +108,20 @@
 <code class="sourceCode R"><span class="co"># fix "object 'guide_edge_colourbar' of mode 'function' was not found"</span>
 <span class="co"># when building vignettes</span>
 <span class="co"># (see also https://github.com/thomasp85/ggraph/issues/75)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggraph.data-imaginist.com">ggraph</a></span><span class="op">)</span></code></pre></div>
-<pre><code>## Loading required package: ggplot2</code></pre>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://tidyverse.tidyverse.org">tidyverse</a></span><span class="op">)</span></code></pre></div>
-<pre><code>## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.0 ──</code></pre>
-<pre><code>## ✔ tibble  3.0.6     ✔ dplyr   1.0.4
-## ✔ tidyr   1.1.2     ✔ stringr 1.4.0
-## ✔ readr   1.4.0     ✔ forcats 0.5.1
-## ✔ purrr   0.3.4</code></pre>
-<pre><code>## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-## ✖ dplyr::filter() masks stats::filter()
-## ✖ dplyr::lag()    masks stats::lag()</code></pre>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://wilkelab.org/cowplot/">cowplot</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/cbg-ethz/dce">dce</a></span><span class="op">)</span></code></pre></div>
-<pre><code>## </code></pre>
-<pre><code>## Registered S3 methods overwritten by 'RcppEigen':
-##   method               from         
-##   predict.fastLm       RcppArmadillo
-##   print.fastLm         RcppArmadillo
-##   summary.fastLm       RcppArmadillo
-##   print.summary.fastLm RcppArmadillo</code></pre>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span></code></pre></div>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggraph.data-imaginist.com">ggraph</a></span><span class="op">)</span>
+
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://tidyverse.tidyverse.org">tidyverse</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://wilkelab.org/cowplot/">cowplot</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/cbg-ethz/dce">dce</a></span><span class="op">)</span>
+
+<span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span></code></pre></div>
 </div>
 </div>
 <div id="introductory-example" class="section level1">
 <h1 class="hasAnchor">
 <a href="#introductory-example" class="anchor"></a>Introductory example</h1>
 <p>To demonstrate the basic idea of Differential Causal Effects (DCEs), we first create a wild-type network by setting up its adjacency matrix. The specified edge weights correspond to direct causal effects and total causal effects are defined accordingly <span class="citation">(Pearl 2010)</span>. In a biological setting, this could, for example, correspond to a KEGG pathway <span class="citation">(Kanehisa et al. 2004)</span>in a healthy cell. Here, the edge weights can correspond to proteins facilitating or inhibiting each others expression levels.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">graph_wt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">0</span><span class="op">)</span>, <span class="fl">3</span>, <span class="fl">3</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span><span class="op">(</span><span class="va">graph_wt</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span><span class="op">(</span><span class="va">graph_wt</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span><span class="op">)</span>
 <span class="va">graph_wt</span></code></pre></div>
@@ -147,7 +130,7 @@
 ## B 0 0 1
 ## C 0 0 0</code></pre>
 <p>In case of a disease, these pathways can become dysregulated. This can be expressed by a change in edge weights.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">graph_mt</span> <span class="op">&lt;-</span> <span class="va">graph_wt</span>
 <span class="va">graph_mt</span><span class="op">[</span><span class="st">"A"</span>, <span class="st">"B"</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">2.5</span> <span class="co"># dysregulation happens here!</span>
 <span class="va">graph_mt</span></code></pre></div>
@@ -155,7 +138,7 @@
 ## A 0 2.5 1
 ## B 0 0.0 1
 ## C 0 0.0 0</code></pre>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu">cowplot</span><span class="fu">::</span><span class="fu"><a href="https://wilkelab.org/cowplot/reference/plot_grid.html">plot_grid</a></span><span class="op">(</span>
   <span class="fu"><a href="../reference/plot_network.html">plot_network</a></span><span class="op">(</span><span class="va">graph_wt</span>, edgescale_limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">3</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span>,
   <span class="fu"><a href="../reference/plot_network.html">plot_network</a></span><span class="op">(</span><span class="va">graph_mt</span>, edgescale_limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">3</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span>,
@@ -163,7 +146,7 @@
 <span class="op">)</span></code></pre></div>
 <p><img src="dce_files/figure-html/unnamed-chunk-3-1.png" width="700"></p>
 <p>By propagating counts where were randomly initialized at root notes, we can generate synthetic expression data for each node in both networks. Both <code>X_wt</code> and <code>X_mt</code> then induce causal effects as defined in their respective adjacency matrices.</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">X_wt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_data.html">simulate_data</a></span><span class="op">(</span><span class="va">graph_wt</span><span class="op">)</span>
 <span class="va">X_mt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_data.html">simulate_data</a></span><span class="op">(</span><span class="va">graph_mt</span><span class="op">)</span>
 
@@ -177,7 +160,7 @@
 ## [5,]  848 125  251
 ## [6,] 1163 455  885</code></pre>
 <p>Given the network topology (without edge weights!) and expression data from both WT and MT conditions, we can estimate the difference in causal effects for each edge between the two conditions. These are the aforementioned Differential Causal Effects (DCEs).</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dce.html">dce</a></span><span class="op">(</span><span class="va">graph_wt</span>, <span class="va">X_wt</span>, <span class="va">X_mt</span>, solver <span class="op">=</span> <span class="st">"lm"</span><span class="op">)</span>
 
 <span class="va">res</span> <span class="op">%&gt;%</span>
@@ -188,15 +171,133 @@
 ## 2      A      C 1.5234426 0.04449333  1.207257e-84
 ## 3      B      C 0.1152442 0.17882577  5.200452e-01</code></pre>
 <p>Visualizing the result shows that we can recover the dysregulation of the edge from <code>A</code> to <code>B</code>. Note that since we are computing total causal effects, the edge from <code>A</code> to <code>C</code> shows the same effect.</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu">ggtitle</span><span class="op">(</span><span class="st">"Differential Causal Effects between WT and MT condition"</span><span class="op">)</span></code></pre></div>
 <p><img src="dce_files/figure-html/unnamed-chunk-6-1.png" width="700"></p>
 </div>
+<div id="application-to-real-data" class="section level1">
+<h1 class="hasAnchor">
+<a href="#application-to-real-data" class="anchor"></a>Application to real data</h1>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">graph</span><span class="op">)</span>
+
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">curatedTCGAData</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">TCGAutils</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://bioconductor.org/packages/SummarizedExperiment">SummarizedExperiment</a></span><span class="op">)</span></code></pre></div>
+<p>Pathway dysregulations are a common cancer hallmark <span class="citation">(Hanahan and Weinberg 2011)</span>. It is thus of interest to investigate how the causal effects strength in relevant pathways varies between normal and tumor samples.</p>
+<div id="retrieve-gene-expression-data" class="section level2">
+<h2 class="hasAnchor">
+<a href="#retrieve-gene-expression-data" class="anchor"></a>Retrieve gene expression data</h2>
+<p>As a showcase, we download breast cancer (BRCA) RNA transcriptomics profiling data from TCGA <span class="citation">(Tomczak, Czerwińska, and Wiznerowicz 2015)</span>.</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">brca</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/curatedTCGAData/man/curatedTCGAData.html">curatedTCGAData</a></span><span class="op">(</span>
+  diseaseCode <span class="op">=</span> <span class="st">"BRCA"</span>,
+  assays <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"RNASeq2*"</span><span class="op">)</span>,
+  dry.run <span class="op">=</span> <span class="cn">FALSE</span>
+<span class="op">)</span></code></pre></div>
+<pre><code>## using temporary cache /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T//RtmpT8Hgb7/BiocFileCache</code></pre>
+<pre><code>## snapshotDate(): 2020-10-27</code></pre>
+<pre><code>## Working on: BRCA_RNASeq2GeneNorm-20160128</code></pre>
+<pre><code>## see ?curatedTCGAData and browseVignettes('curatedTCGAData') for documentation</code></pre>
+<pre><code>## downloading 1 resources</code></pre>
+<pre><code>## retrieving 1 resource</code></pre>
+<pre><code>## loading from cache</code></pre>
+<pre><code>## Working on: BRCA_colData-20160128</code></pre>
+<pre><code>## see ?curatedTCGAData and browseVignettes('curatedTCGAData') for documentation</code></pre>
+<pre><code>## downloading 1 resources</code></pre>
+<pre><code>## retrieving 1 resource</code></pre>
+<pre><code>## loading from cache</code></pre>
+<pre><code>## Working on: BRCA_metadata-20160128</code></pre>
+<pre><code>## see ?curatedTCGAData and browseVignettes('curatedTCGAData') for documentation</code></pre>
+<pre><code>## downloading 1 resources</code></pre>
+<pre><code>## retrieving 1 resource</code></pre>
+<pre><code>## loading from cache</code></pre>
+<pre><code>## Working on: BRCA_sampleMap-20160128</code></pre>
+<pre><code>## see ?curatedTCGAData and browseVignettes('curatedTCGAData') for documentation</code></pre>
+<pre><code>## downloading 1 resources</code></pre>
+<pre><code>## retrieving 1 resource</code></pre>
+<pre><code>## loading from cache</code></pre>
+<pre><code>## harmonizing input:
+##   removing 13161 sampleMap rows not in names(experiments)
+##   removing 5 colData rownames not in sampleMap 'primary'</code></pre>
+<p>This will retrieve all available samples for the requested data sets. These samples can be classified according to their site of origin.</p>
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/TCGAutils/man/curatedTCGAData-helpers.html">sampleTables</a></span><span class="op">(</span><span class="va">brca</span><span class="op">)</span></code></pre></div>
+<pre><code>## $`BRCA_RNASeq2GeneNorm-20160128`
+## 
+##   01   06   11 
+## 1093    7  112</code></pre>
+<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">sampleTypes</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">Code</span> <span class="op">%in%</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"01"</span>, <span class="st">"06"</span>, <span class="st">"11"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<pre><code>##   Code          Definition Short.Letter.Code
+## 1   01 Primary Solid Tumor                TP
+## 2   06          Metastatic                TM
+## 3   11 Solid Tissue Normal                NT</code></pre>
+<p>We can extract Primary Solid Tumor and matched Solid Tissue Normale samples.</p>
+<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># split assays</span>
+<span class="va">brca_split</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/TCGAutils/man/curatedTCGAData-helpers.html">splitAssays</a></span><span class="op">(</span><span class="va">brca</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"01"</span>, <span class="st">"11"</span><span class="op">)</span><span class="op">)</span>
+
+<span class="co"># only retain matching samples</span>
+<span class="va">brca_matched</span> <span class="op">&lt;-</span> <span class="fu">as</span><span class="op">(</span><span class="va">brca_split</span>, <span class="st">"MatchedAssayExperiment"</span><span class="op">)</span>
+
+<span class="va">brca_wt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html">assay</a></span><span class="op">(</span><span class="va">brca_matched</span>, <span class="st">"01_BRCA_RNASeq2GeneNorm-20160128"</span><span class="op">)</span>
+<span class="va">brca_mt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html">assay</a></span><span class="op">(</span><span class="va">brca_matched</span>, <span class="st">"11_BRCA_RNASeq2GeneNorm-20160128"</span><span class="op">)</span></code></pre></div>
+</div>
+<div id="retrieve-biological-pathway-of-interest" class="section level2">
+<h2 class="hasAnchor">
+<a href="#retrieve-biological-pathway-of-interest" class="anchor"></a>Retrieve biological pathway of interest</h2>
+<p>KEGG <span class="citation">(Kanehisa et al. 2004)</span> provides the breast cancer related pathway <code>hsa05224</code>. It can be easily retrieved using <code>dce</code>.</p>
+<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">pathways</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_pathways.html">get_pathways</a></span><span class="op">(</span>pathway_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>kegg <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Breast cancer"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<pre><code>## INFO [2021-02-04 16:27:02] Processing kegg</code></pre>
+<pre><code>## 'select()' returned 1:1 mapping between keys and columns
+## 'select()' returned 1:1 mapping between keys and columns
+## 'select()' returned 1:1 mapping between keys and columns
+## 'select()' returned 1:1 mapping between keys and columns
+## 'select()' returned 1:1 mapping between keys and columns
+## 'select()' returned 1:1 mapping between keys and columns</code></pre>
+<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">brca_pathway</span> <span class="op">&lt;-</span> <span class="va">pathways</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">graph</span></code></pre></div>
+<p>Luckily it shares all genes with the cancer data set.</p>
+<div class="sourceCode" id="cb46"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">shared_genes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sets.html">intersect</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/graph/man/graphNEL-class.html">nodes</a></span><span class="op">(</span><span class="va">brca_pathway</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span><span class="op">(</span><span class="va">brca_wt</span><span class="op">)</span><span class="op">)</span>
+<span class="fu">glue</span><span class="fu">::</span><span class="fu"><a href="https://glue.tidyverse.org/reference/glue.html">glue</a></span><span class="op">(</span>
+  <span class="st">"Covered nodes: {length(shared_genes)}/{length(nodes(brca_pathway))}"</span>
+<span class="op">)</span></code></pre></div>
+<pre><code>## Covered nodes: 145/145</code></pre>
+</div>
+<div id="estimate-differential-causal-effects" class="section level2">
+<h2 class="hasAnchor">
+<a href="#estimate-differential-causal-effects" class="anchor"></a>Estimate Differential Causal Effects</h2>
+<p>We can now estimate the differences in causal effects between matched tumor and normal samples on a breast cancer specific pathway.</p>
+<div class="sourceCode" id="cb48"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu">dce</span><span class="fu">::</span><span class="fu"><a href="../reference/dce.html">dce</a></span><span class="op">(</span><span class="va">brca_pathway</span>, <span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span><span class="op">(</span><span class="va">brca_wt</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span><span class="op">(</span><span class="va">brca_mt</span><span class="op">)</span>, solver <span class="op">=</span> <span class="st">"lm"</span><span class="op">)</span></code></pre></div>
+<p>Interpretations may now begin.</p>
+<div class="sourceCode" id="cb49"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">res</span> <span class="op">%&gt;%</span>
+  <span class="va">as.data.frame</span> <span class="op">%&gt;%</span>
+  <span class="va">drop_na</span> <span class="op">%&gt;%</span>
+  <span class="fu">arrange</span><span class="op">(</span><span class="fu">desc</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">abs</a></span><span class="op">(</span><span class="va">dce</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="va">head</span></code></pre></div>
+<pre><code>##   source target        dce dce_stderr   dce_pvalue
+## 1  WNT8A   FZD4 -4342.2001  2876.9003 1.326486e-01
+## 2   FGF3  FGFR1 -1553.3334  1322.3358 2.413890e-01
+## 3  WNT8B   FZD4 -1540.1078   235.1719 4.038543e-10
+## 4  WNT7A   FZD4 -1334.3963   598.5797 2.680676e-02
+## 5  FGF21  FGFR1  -917.1445  1128.4631 4.172471e-01
+## 6  WNT8A   FZD7   817.6733   954.3545 3.924979e-01</code></pre>
+<div class="sourceCode" id="cb51"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">res</span>, nodesize <span class="op">=</span> <span class="fl">20</span>, labelsize <span class="op">=</span> <span class="fl">1</span>, use_symlog <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<p><img src="dce_files/figure-html/unnamed-chunk-14-1.png" width="700"></p>
+</div>
+</div>
 <div id="session-information" class="section level1">
 <h1 class="hasAnchor">
 <a href="#session-information" class="anchor"></a>Session information</h1>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb52"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <pre><code>## R version 4.0.3 (2020-10-10)
 ## Platform: x86_64-apple-darwin17.0 (64-bit)
@@ -210,82 +311,138 @@
 ## [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
 ## 
 ## attached base packages:
-## [1] stats     graphics  grDevices utils     datasets  methods   base     
+## [1] stats4    parallel  stats     graphics  grDevices utils     datasets 
+## [8] methods   base     
 ## 
 ## other attached packages:
-##  [1] dce_0.99.0       cowplot_1.1.1    forcats_0.5.1    stringr_1.4.0   
-##  [5] dplyr_1.0.4      purrr_0.3.4      readr_1.4.0      tidyr_1.1.2     
-##  [9] tibble_3.0.6     tidyverse_1.3.0  ggraph_2.0.4     ggplot2_3.3.3   
-## [13] BiocStyle_2.18.1
+##  [1] org.Hs.eg.db_3.12.0         AnnotationDbi_1.52.0       
+##  [3] TCGAutils_1.10.0            curatedTCGAData_1.12.0     
+##  [5] MultiAssayExperiment_1.16.0 SummarizedExperiment_1.20.0
+##  [7] Biobase_2.50.0              GenomicRanges_1.42.0       
+##  [9] GenomeInfoDb_1.26.2         IRanges_2.24.1             
+## [11] S4Vectors_0.28.1            MatrixGenerics_1.2.1       
+## [13] matrixStats_0.58.0          graph_1.68.0               
+## [15] BiocGenerics_0.36.0         dce_0.99.0                 
+## [17] cowplot_1.1.1               forcats_0.5.1              
+## [19] stringr_1.4.0               dplyr_1.0.4                
+## [21] purrr_0.3.4                 readr_1.4.0                
+## [23] tidyr_1.1.2                 tibble_3.0.6               
+## [25] tidyverse_1.3.0             ggraph_2.0.4               
+## [27] ggplot2_3.3.3               BiocStyle_2.18.1           
 ## 
 ## loaded via a namespace (and not attached):
-##   [1] tidyselect_1.1.0         RSQLite_2.2.3            AnnotationDbi_1.52.0    
-##   [4] grid_4.0.3               Rtsne_0.15               munsell_0.5.0           
-##   [7] codetools_0.2-16         mutoss_0.1-12            ragg_0.4.1              
-##  [10] statmod_1.4.35           withr_2.4.1              fastICA_1.2-2           
-##  [13] colorspace_2.0-0         Biobase_2.50.0           highr_0.8               
-##  [16] logger_0.1               knitr_1.31               rstudioapi_0.13         
-##  [19] stats4_4.0.3             robustbase_0.93-7        gbRd_0.4-11             
-##  [22] labeling_0.4.2           Rdpack_2.1               mnormt_2.0.2            
-##  [25] polyclip_1.10-0          bit64_4.0.5              farver_2.0.3            
-##  [28] rprojroot_2.0.2          vctrs_0.3.6              generics_0.1.0          
-##  [31] TH.data_1.0-10           xfun_0.20                fastcluster_1.1.25      
-##  [34] diptest_0.75-7           R6_2.5.0                 clue_0.3-58             
-##  [37] graphlayouts_0.7.1       RcppEigen_0.3.3.9.1      locfit_1.5-9.4          
-##  [40] flexmix_2.3-17           cachem_1.0.2             RcppArmadillo_0.10.1.2.2
-##  [43] assertthat_0.2.1         scales_1.1.1             multcomp_1.4-15         
-##  [46] nnet_7.3-14              gtable_0.3.0             tidygraph_1.2.0         
-##  [49] sandwich_3.0-0           rlang_0.4.10             systemfonts_0.3.2       
-##  [52] splines_4.0.3            broom_0.7.4              checkmate_2.0.0         
-##  [55] reshape2_1.4.4           abind_1.4-5              BiocManager_1.30.10     
-##  [58] yaml_2.2.1               modelr_0.1.8             backports_1.2.1         
-##  [61] RBGL_1.66.0              tools_4.0.3              bookdown_0.21           
-##  [64] ggm_2.5                  ellipsis_0.3.1           ggdendro_0.1.22         
-##  [67] BiocGenerics_0.36.0      plyr_1.8.6               TFisher_0.2.0           
-##  [70] Rcpp_1.0.6               pcalg_2.7-1              ps_1.5.0                
-##  [73] viridis_0.5.1            sfsmisc_1.1-8            S4Vectors_0.28.1        
-##  [76] zoo_1.8-8                haven_2.3.1              ggrepel_0.9.1           
-##  [79] cluster_2.1.0            fs_1.5.0                 apcluster_1.4.8         
-##  [82] magrittr_2.0.1           data.table_1.13.6        gmodels_2.18.1          
-##  [85] reprex_1.0.0             tmvnsim_1.0-2            mvtnorm_1.1-1           
-##  [88] amap_0.8-18              matrixStats_0.58.0       mnem_1.6.5              
-##  [91] flexclust_1.4-0          hms_1.0.0                evaluate_0.14           
-##  [94] mclust_5.4.7             readxl_1.3.1             IRanges_2.24.1          
-##  [97] gridExtra_2.3            bdsmatrix_1.3-4          compiler_4.0.3          
-## [100] ellipse_0.4.2            crayon_1.4.0             Linnorm_2.14.0          
-## [103] htmltools_0.5.1.1        corpcor_1.6.9            mgcv_1.8-33             
-## [106] expm_0.999-6             lubridate_1.7.9.2        DBI_1.1.1               
-## [109] tweenr_1.0.1             ppcor_1.1                dbplyr_2.1.0            
-## [112] MASS_7.3-53              fpc_2.2-9                rappdirs_0.3.3          
-## [115] Matrix_1.2-18            permute_0.9-5            cli_2.3.0               
-## [118] naturalsort_0.1.3        rbibutils_2.0            gdata_2.18.0            
-## [121] parallel_4.0.3           metap_1.4                igraph_1.2.6            
-## [124] pkgconfig_2.0.3          pkgdown_1.6.1            sn_1.6-2                
-## [127] numDeriv_2016.8-1.1      xml2_1.3.2               multtest_2.46.0         
-## [130] rvest_0.3.6              digest_0.6.27            tsne_0.1-3              
-## [133] vegan_2.5-7              graph_1.68.0             rmarkdown_2.6           
-## [136] cellranger_1.1.0         harmonicmeanp_3.0        edgeR_3.32.1            
-## [139] kernlab_0.9-29           gtools_3.8.2             modeltools_0.2-23       
-## [142] graphite_1.36.0          lifecycle_0.2.0          nlme_3.1-149            
-## [145] jsonlite_1.7.2           desc_1.2.0               viridisLite_0.3.0       
-## [148] limma_3.46.0             pillar_1.4.7             lattice_0.20-41         
-## [151] fastmap_1.1.0            httr_1.4.2               plotrix_3.8-1           
-## [154] DEoptimR_1.0-8           survival_3.2-7           glue_1.4.2              
-## [157] CombinePValue_1.0        prabclus_2.3-2           bit_4.0.4               
-## [160] Rgraphviz_2.34.0         ggforce_0.3.2            class_7.3-17            
-## [163] stringi_1.5.3            blob_1.2.1               textshaping_0.2.1       
-## [166] org.Hs.eg.db_3.12.0      memoise_2.0.0            FMStable_0.1-2          
-## [169] snowfall_1.84-6.1        mathjaxr_1.2-0           e1071_1.7-4</code></pre>
+##   [1] rappdirs_0.3.3                rtracklayer_1.50.0           
+##   [3] prabclus_2.3-2                ragg_0.4.1                   
+##   [5] bit64_4.0.5                   knitr_1.31                   
+##   [7] multcomp_1.4-15               DelayedArray_0.16.1          
+##   [9] data.table_1.13.6             RCurl_1.98-1.2               
+##  [11] generics_0.1.0                GenomicFeatures_1.42.1       
+##  [13] metap_1.4                     TH.data_1.0-10               
+##  [15] RSQLite_2.2.3                 CombinePValue_1.0            
+##  [17] bit_4.0.4                     mutoss_0.1-12                
+##  [19] httpuv_1.5.5                  xml2_1.3.2                   
+##  [21] lubridate_1.7.9.2             assertthat_0.2.1             
+##  [23] viridis_0.5.1                 amap_0.8-18                  
+##  [25] xfun_0.20                     hms_1.0.0                    
+##  [27] promises_1.1.1                evaluate_0.14                
+##  [29] progress_1.2.2                DEoptimR_1.0-8               
+##  [31] dbplyr_2.1.0                  readxl_1.3.1                 
+##  [33] Rgraphviz_2.34.0              igraph_1.2.6                 
+##  [35] DBI_1.1.1                     tmvnsim_1.0-2                
+##  [37] apcluster_1.4.8               RcppArmadillo_0.10.1.2.2     
+##  [39] ellipsis_0.3.1                backports_1.2.1              
+##  [41] bookdown_0.21                 permute_0.9-5                
+##  [43] gbRd_0.4-11                   biomaRt_2.46.2               
+##  [45] harmonicmeanp_3.0             vctrs_0.3.6                  
+##  [47] Linnorm_2.14.0                abind_1.4-5                  
+##  [49] cachem_1.0.2                  RcppEigen_0.3.3.9.1          
+##  [51] withr_2.4.1                   ggforce_0.3.2                
+##  [53] sfsmisc_1.1-8                 robustbase_0.93-7            
+##  [55] bdsmatrix_1.3-4               checkmate_2.0.0              
+##  [57] GenomicAlignments_1.26.0      vegan_2.5-7                  
+##  [59] prettyunits_1.1.1             pcalg_2.7-1                  
+##  [61] mclust_5.4.7                  mnormt_2.0.2                 
+##  [63] cluster_2.1.0                 ExperimentHub_1.16.0         
+##  [65] GenomicDataCommons_1.14.0     crayon_1.4.0                 
+##  [67] ellipse_0.4.2                 FMStable_0.1-2               
+##  [69] edgeR_3.32.1                  pkgconfig_2.0.3              
+##  [71] labeling_0.4.2                tweenr_1.0.1                 
+##  [73] nlme_3.1-149                  ggm_2.5                      
+##  [75] nnet_7.3-14                   rlang_0.4.10                 
+##  [77] diptest_0.75-7                lifecycle_0.2.0              
+##  [79] sandwich_3.0-0                BiocFileCache_1.14.0         
+##  [81] mathjaxr_1.2-0                modelr_0.1.8                 
+##  [83] AnnotationHub_2.22.0          cellranger_1.1.0             
+##  [85] rprojroot_2.0.2               polyclip_1.10-0              
+##  [87] Matrix_1.2-18                 zoo_1.8-8                    
+##  [89] reprex_1.0.0                  viridisLite_0.3.0            
+##  [91] bitops_1.0-6                  Biostrings_2.58.0            
+##  [93] blob_1.2.1                    scales_1.1.1                 
+##  [95] memoise_2.0.0                 graphite_1.36.0              
+##  [97] magrittr_2.0.1                plyr_1.8.6                   
+##  [99] gdata_2.18.0                  zlibbioc_1.36.0              
+## [101] compiler_4.0.3                plotrix_3.8-1                
+## [103] clue_0.3-58                   Rsamtools_2.6.0              
+## [105] cli_2.3.0                     XVector_0.30.0               
+## [107] ps_1.5.0                      MASS_7.3-53                  
+## [109] mgcv_1.8-33                   tidyselect_1.1.0             
+## [111] stringi_1.5.3                 textshaping_0.2.1            
+## [113] highr_0.8                     yaml_2.2.1                   
+## [115] askpass_1.1                   locfit_1.5-9.4               
+## [117] ggrepel_0.9.1                 grid_4.0.3                   
+## [119] tools_4.0.3                   rstudioapi_0.13              
+## [121] snowfall_1.84-6.1             gridExtra_2.3                
+## [123] farver_2.0.3                  Rtsne_0.15                   
+## [125] digest_0.6.27                 BiocManager_1.30.10          
+## [127] shiny_1.6.0                   flexclust_1.4-0              
+## [129] mnem_1.6.5                    fpc_2.2-9                    
+## [131] ppcor_1.1                     Rcpp_1.0.6                   
+## [133] broom_0.7.4                   later_1.1.0.1                
+## [135] BiocVersion_3.12.0            httr_1.4.2                   
+## [137] ggdendro_0.1.22               kernlab_0.9-29               
+## [139] naturalsort_0.1.3             Rdpack_2.1                   
+## [141] colorspace_2.0-0              XML_3.99-0.5                 
+## [143] rvest_0.3.6                   fs_1.5.0                     
+## [145] splines_4.0.3                 RBGL_1.66.0                  
+## [147] statmod_1.4.35                sn_1.6-2                     
+## [149] expm_0.999-6                  pkgdown_1.6.1                
+## [151] graphlayouts_0.7.1            multtest_2.46.0              
+## [153] flexmix_2.3-17                systemfonts_0.3.2            
+## [155] xtable_1.8-4                  jsonlite_1.7.2               
+## [157] tidygraph_1.2.0               corpcor_1.6.9                
+## [159] modeltools_0.2-23             R6_2.5.0                     
+## [161] gmodels_2.18.1                TFisher_0.2.0                
+## [163] mime_0.9                      pillar_1.4.7                 
+## [165] htmltools_0.5.1.1             BiocParallel_1.24.1          
+## [167] glue_1.4.2                    fastmap_1.1.0                
+## [169] interactiveDisplayBase_1.28.0 class_7.3-17                 
+## [171] codetools_0.2-16              tsne_0.1-3                   
+## [173] mvtnorm_1.1-1                 lattice_0.20-41              
+## [175] logger_0.1                    numDeriv_2016.8-1.1          
+## [177] curl_4.3                      gtools_3.8.2                 
+## [179] openssl_1.4.3                 survival_3.2-7               
+## [181] limma_3.46.0                  rmarkdown_2.6                
+## [183] desc_1.2.0                    fastICA_1.2-2                
+## [185] munsell_0.5.0                 e1071_1.7-4                  
+## [187] fastcluster_1.1.25            GenomeInfoDbData_1.2.4       
+## [189] haven_2.3.1                   reshape2_1.4.4               
+## [191] gtable_0.3.0                  rbibutils_2.0</code></pre>
 </div>
 <div id="references" class="section level1 unnumbered">
 <h1 class="hasAnchor">
 <a href="#references" class="anchor"></a>References</h1>
 <div id="refs" class="references">
+<div id="ref-hanahan2011hallmarks">
+<p>Hanahan, Douglas, and Robert A Weinberg. 2011. “Hallmarks of Cancer: The Next Generation.” <em>Cell</em> 144 (5): 646–74.</p>
+</div>
 <div id="ref-kanehisa2004kegg">
 <p>Kanehisa, Minoru, Susumu Goto, Shuichi Kawashima, Yasushi Okuno, and Masahiro Hattori. 2004. “The Kegg Resource for Deciphering the Genome.” <em>Nucleic Acids Research</em> 32 (suppl_1): D277–D280.</p>
 </div>
 <div id="ref-pearl2010causal">
 <p>Pearl, Judea. 2010. “Causal Inference.” <em>Causality: Objectives and Assessment</em>, 39–58.</p>
+</div>
+<div id="ref-tomczak2015cancer">
+<p>Tomczak, Katarzyna, Patrycja Czerwińska, and Maciej Wiznerowicz. 2015. “The Cancer Genome Atlas (Tcga): An Immeasurable Source of Knowledge.” <em>Contemporary Oncology</em> 19 (1A): A68.</p>
 </div>
 </div>
 </div>
