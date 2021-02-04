@@ -15,7 +15,7 @@ vignette: >
 
 ## Load required packages
 
-Load the package with the library function.
+Load `dce` package and other required libraries.
 
 ```{r}
 # fix "object 'guide_edge_colourbar' of mode 'function' was not found"
@@ -30,32 +30,45 @@ library(dce)
 set.seed(42)
 ```
 
-# Simple example
+# Introductory example
 
-First we generate a random wild type network and then resample
-its edge weights to generate the mutant network.
+To demonstrate the basic idea of Differential Causal Effects (DCEs), we first create a wild-type network by setting up its adjacency matrix.
+The specified edge weights correspond to direct causal effects and total causal effects are defined accordingly [@pearl2010causal].
+In a biological setting, this could, for example, correspond to a KEGG pathway  [@kanehisa2004kegg]in a healthy cell.
+Here, the edge weights can correspond to proteins facilitating or inhibiting each others expression levels.
 
 ```{r}
-node_num <- 10
-edge_prob <- .5
+graph_wt <- matrix(c(0, 0, 0, 1, 0, 0, 1, 1, 0), 3, 3)
+rownames(graph_wt) <- colnames(graph_wt) <- c("A", "B", "C")
+graph_wt
+```
 
-graph_wt <- create_random_DAG(node_num, edge_prob)
-graph_mt <- resample_edge_weights(graph_wt)
+In case of a disease, these pathways can become dysregulated.
+This can be expressed by a change in edge weights.
+
+```{r}
+graph_mt <- graph_wt
+graph_mt["A", "B"] <- 2.5 # dysregulation happens here!
+graph_mt
 
 cowplot::plot_grid(
-  plot_network(as(graph_wt, "matrix")),
-  plot_network(as(graph_mt, "matrix"))
+  plot_network(graph_wt, edgescale_limits = c(-3, 3)),
+  plot_network(graph_mt, edgescale_limits = c(-3, 3)),
+  labels = c("WT", "MT")
 )
 ```
 
-We can then simulate data for these two networks.
+By propagating counts where were randomly initialized at root notes, we can generate synthetic expression data for each node in both networks. Both `X_wt` and `X_mt` then induce causal effects as defined in their respective adjacency matrices.
 
 ```{r}
 X_wt <- simulate_data(graph_wt)
 X_mt <- simulate_data(graph_mt)
+
+X_wt %>%
+  head
 ```
 
-Finally, it is possible to compute differential causal effects.
+Given the network topology (without edge weights!) and expression data from both WT and MT conditions, we can estimate the difference in causal effects for each edge between the two conditions. These are the aforementioned Differential Causal Effects (DCEs). 
 
 ```{r}
 res <- dce(graph_wt, X_wt, X_mt, solver = "lm")
@@ -65,10 +78,12 @@ res %>%
   drop_na
 ```
 
-The result can be visualized.
+Visualizing the result shows that we can recover the dysregulation of the edge from `A` to `B`.
+Note that since we are computing total causal effects, the edge from `A` to `C` shows the same effect.
 
 ```{r}
-plot(res)
+plot(res) +
+  ggtitle("Differential Causal Effects between WT and MT condition")
 ```
 
 # Session information
