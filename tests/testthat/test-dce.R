@@ -11,16 +11,21 @@ test_that("solver argument works", {
   rownames(graph_mt) <- colnames(graph_mt) <- node_names
   X_mt <- simulate_data(graph_mt)
 
-  custom_solver <- function(formula, data) {
+  custom_solver <- function(formula, data, solver_args = NULL) {
     fit <- lm(formula = formula, data = data)
     summary(fit)$coefficients
   }
 
   res_1 <- dce::dce(graph_wt, X_wt, X_mt, solver = "lm")
-  res_2 <- dce::dce(graph_wt, X_wt, X_mt, solver = lm)
-  res_3 <- dce::dce(graph_wt, X_wt, X_mt, solver = custom_solver)
-  res_4 <- dce::dce(graph_wt, X_wt, X_mt, solver = "glm2")
-  res_5 <- dce::dce(graph_wt, X_wt, X_mt, solver = glm2::glm2)
+  res_2 <- dce::dce(graph_wt, X_wt, X_mt, solver = lm, solver_args = NULL)
+  res_3 <- dce::dce(graph_wt, X_wt, X_mt, solver = custom_solver,
+                    solver_args = NULL)
+  res_4 <- dce::dce(graph_wt, X_wt, X_mt, solver = "glm2", solver_args =
+                      list(family = MASS::negative.binomial(theta = 100,
+                                                            link = identity)))
+  res_5 <- dce::dce(graph_wt, X_wt, X_mt, solver = glm2::glm2, solver_args =
+                      list(family = MASS::negative.binomial(theta = 100,
+                                                            link = identity)))
 
   expect_equal(res_1, res_2)
   expect_equal(res_2, res_3)

@@ -1,6 +1,6 @@
 library(testthat)
 library(dce)
-
+library(igraph)
 library(tidyverse)
 
 

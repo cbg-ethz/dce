@@ -80,7 +80,9 @@ dce(
 
 \item{solver}{character with name of solver function}
 
-\item{solver_args}{additional arguments for the solver function}
+\item{solver_args}{additional arguments for the solver function. please
+adress this argument, if you use your own solver function. the default
+argument works with glm functions in the packages MASS, stats and glm2}
 
 \item{adjustment_type}{character string for the method to define
 the adjustment set Z for the regression}

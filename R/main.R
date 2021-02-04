@@ -6,7 +6,9 @@
 #' @param df_expr_wt data frame with wild type expression values
 #' @param df_expr_mt data from with mutation type expression values
 #' @param solver character with name of solver function
-#' @param solver_args additional arguments for the solver function
+#' @param solver_args additional arguments for the solver function. please
+#' adress this argument, if you use your own solver function. the default
+#' argument works with glm functions in the packages MASS, stats and glm2
 #' @param adjustment_type character string for the method to define
 #' the adjustment set Z for the regression
 #' @param effect_type method of computing causal effects
@@ -64,6 +66,7 @@ setGeneric(
 # "igraph" is not a formal S4 class, make it compatible with `signature` call
 setOldClass("igraph")
 #' @rdname dce-methods
+#' @importFrom igraph V
 setMethod(
     "dce",
     signature = signature(graph = "igraph"),
@@ -600,7 +603,8 @@ get_adjustment_set <- function(
 glm_solver <- function(form, df, solver, solver_args) {
     # handle general functions
     if (is.function(solver)) {
-        return(solver(formula = form, data = df))
+        return(do.call(solver, c(list(formula = form,
+                                      data = df), solver_args)))
     }
 
     # lm solver
