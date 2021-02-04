@@ -46,7 +46,7 @@ Suggests:
     dagitty,
     lmtest,
     sandwich,
-    devtools
+    devtools,
     curatedTCGAData,
     TCGAutils,
     SummarizedExperiment
