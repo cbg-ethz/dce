@@ -488,7 +488,9 @@ estimate_latent_count <- function(X1, X2, method = "auto") {
                                 2, function(xx) quantile(xx, probs = quantile))
 
             # last which crosses the threshold
-            return(max(which(c(TRUE, svd(X)$d > thresholds))) - 1)
+            # limit to at most 10% of the number of data points or variables
+            limit <- ceiling(0.1 * r)
+            return(max(which(c(TRUE, (svd(X)$d > thresholds)[1:limit])) - 1))
         }
 
         q1 <- permutation_thresholding(X1)
