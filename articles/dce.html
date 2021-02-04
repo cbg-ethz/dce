@@ -103,7 +103,7 @@
 <div id="load-required-packages" class="section level2">
 <h2 class="hasAnchor">
 <a href="#load-required-packages" class="anchor"></a>Load required packages</h2>
-<p>Load the package with the library function.</p>
+<p>Load <code>dce</code> package and other required libraries.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># fix "object 'guide_edge_colourbar' of mode 'function' was not found"</span>
 <span class="co"># when building vignettes</span>
@@ -134,58 +134,69 @@
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span></code></pre></div>
 </div>
 </div>
-<div id="simple-example" class="section level1">
+<div id="introductory-example" class="section level1">
 <h1 class="hasAnchor">
-<a href="#simple-example" class="anchor"></a>Simple example</h1>
-<p>First we generate a random wild type network and then resample its edge weights to generate the mutant network.</p>
+<a href="#introductory-example" class="anchor"></a>Introductory example</h1>
+<p>To demonstrate the basic idea of Differential Causal Effects (DCEs), we first create a wild-type network by setting up its adjacency matrix. The specified edge weights correspond to direct causal effects and total causal effects are defined accordingly <span class="citation">(Pearl 2010)</span>. In a biological setting, this could, for example, correspond to a KEGG pathway <span class="citation">(Kanehisa et al. 2004)</span>in a healthy cell. Here, the edge weights can correspond to proteins facilitating or inhibiting each others expression levels.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">node_num</span> <span class="op">&lt;-</span> <span class="fl">10</span>
-<span class="va">edge_prob</span> <span class="op">&lt;-</span> <span class="fl">.5</span>
-
-<span class="va">graph_wt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_random_DAG.html">create_random_DAG</a></span><span class="op">(</span><span class="va">node_num</span>, <span class="va">edge_prob</span><span class="op">)</span>
-<span class="va">graph_mt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/resample_edge_weights.html">resample_edge_weights</a></span><span class="op">(</span><span class="va">graph_wt</span><span class="op">)</span>
-
-<span class="fu">cowplot</span><span class="fu">::</span><span class="fu"><a href="https://wilkelab.org/cowplot/reference/plot_grid.html">plot_grid</a></span><span class="op">(</span>
-  <span class="fu"><a href="../reference/plot_network.html">plot_network</a></span><span class="op">(</span><span class="fu">as</span><span class="op">(</span><span class="va">graph_wt</span>, <span class="st">"matrix"</span><span class="op">)</span><span class="op">)</span>,
-  <span class="fu"><a href="../reference/plot_network.html">plot_network</a></span><span class="op">(</span><span class="fu">as</span><span class="op">(</span><span class="va">graph_mt</span>, <span class="st">"matrix"</span><span class="op">)</span><span class="op">)</span>
-<span class="op">)</span></code></pre></div>
-<p><img src="dce_files/figure-html/unnamed-chunk-2-1.png" width="700"></p>
-<p>We can then simulate data for these two networks.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">X_wt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_data.html">simulate_data</a></span><span class="op">(</span><span class="va">graph_wt</span><span class="op">)</span>
-<span class="va">X_mt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_data.html">simulate_data</a></span><span class="op">(</span><span class="va">graph_mt</span><span class="op">)</span></code></pre></div>
-<p>Finally, it is possible to compute differential causal effects.</p>
+<code class="sourceCode R"><span class="va">graph_wt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">0</span><span class="op">)</span>, <span class="fl">3</span>, <span class="fl">3</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span><span class="op">(</span><span class="va">graph_wt</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span><span class="op">(</span><span class="va">graph_wt</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span><span class="op">)</span>
+<span class="va">graph_wt</span></code></pre></div>
+<pre><code>##   A B C
+## A 0 1 1
+## B 0 0 1
+## C 0 0 0</code></pre>
+<p>In case of a disease, these pathways can become dysregulated. This can be expressed by a change in edge weights.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">graph_mt</span> <span class="op">&lt;-</span> <span class="va">graph_wt</span>
+<span class="va">graph_mt</span><span class="op">[</span><span class="st">"A"</span>, <span class="st">"B"</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">2.5</span> <span class="co"># dysregulation happens here!</span>
+<span class="va">graph_mt</span></code></pre></div>
+<pre><code>##   A   B C
+## A 0 2.5 1
+## B 0 0.0 1
+## C 0 0.0 0</code></pre>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">cowplot</span><span class="fu">::</span><span class="fu"><a href="https://wilkelab.org/cowplot/reference/plot_grid.html">plot_grid</a></span><span class="op">(</span>
+  <span class="fu"><a href="../reference/plot_network.html">plot_network</a></span><span class="op">(</span><span class="va">graph_wt</span>, edgescale_limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">3</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span>,
+  <span class="fu"><a href="../reference/plot_network.html">plot_network</a></span><span class="op">(</span><span class="va">graph_mt</span>, edgescale_limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">3</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span>,
+  labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"WT"</span>, <span class="st">"MT"</span><span class="op">)</span>
+<span class="op">)</span></code></pre></div>
+<p><img src="dce_files/figure-html/unnamed-chunk-3-1.png" width="700"></p>
+<p>By propagating counts where were randomly initialized at root notes, we can generate synthetic expression data for each node in both networks. Both <code>X_wt</code> and <code>X_mt</code> then induce causal effects as defined in their respective adjacency matrices.</p>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">X_wt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_data.html">simulate_data</a></span><span class="op">(</span><span class="va">graph_wt</span><span class="op">)</span>
+<span class="va">X_mt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_data.html">simulate_data</a></span><span class="op">(</span><span class="va">graph_mt</span><span class="op">)</span>
+
+<span class="va">X_wt</span> <span class="op">%&gt;%</span>
+  <span class="va">head</span></code></pre></div>
+<pre><code>##         A   B    C
+## [1,] 1117 398  802
+## [2,]  964 244  501
+## [3,]  963 246  469
+## [4,] 1204 502 1032
+## [5,]  848 125  251
+## [6,] 1163 455  885</code></pre>
+<p>Given the network topology (without edge weights!) and expression data from both WT and MT conditions, we can estimate the difference in causal effects for each edge between the two conditions. These are the aforementioned Differential Causal Effects (DCEs).</p>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dce.html">dce</a></span><span class="op">(</span><span class="va">graph_wt</span>, <span class="va">X_wt</span>, <span class="va">X_mt</span>, solver <span class="op">=</span> <span class="st">"lm"</span><span class="op">)</span>
 
 <span class="va">res</span> <span class="op">%&gt;%</span>
   <span class="va">as.data.frame</span> <span class="op">%&gt;%</span>
   <span class="va">drop_na</span></code></pre></div>
-<pre><code>##    source target         dce dce_stderr    dce_pvalue
-## 1      n1     n3  0.03011432 0.01587330  5.927592e-02
-## 2      n1     n4 -0.01355104 0.01256995  2.823362e-01
-## 3      n2     n4  0.01476684 0.01656664  3.738291e-01
-## 4      n4     n5 -1.65160626 0.12697027  3.755243e-28
-## 5      n4     n6 -0.14358923 0.13830308  3.004727e-01
-## 6      n1     n7 -1.90252810 0.15516085  5.040755e-26
-## 7      n2     n7  1.42534811 0.25887572  1.142260e-07
-## 8      n4     n7 -0.28548562 0.51556409  5.804048e-01
-## 9      n6     n8  1.76607232 0.15817906  1.127722e-22
-## 10     n1     n9 -1.13649691 0.02314810 4.361180e-112
-## 11     n4     n9 -1.37578228 0.34677177  1.025480e-04
-## 12     n6     n9 -1.77848340 1.95408342  3.638797e-01
-## 13     n1    n10  2.25097254 0.04173958 1.575649e-119
-## 14     n6    n10  5.31646834 3.18555867  9.674462e-02
-## 15     n8    n10 -5.02920031 3.95149566  2.046359e-01</code></pre>
-<p>The result can be visualized.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span></code></pre></div>
-<p><img src="dce_files/figure-html/unnamed-chunk-5-1.png" width="700"></p>
+<pre><code>##   source target       dce dce_stderr    dce_pvalue
+## 1      A      B 1.5443343 0.03062434 3.373144e-114
+## 2      A      C 1.5234426 0.04449333  1.207257e-84
+## 3      B      C 0.1152442 0.17882577  5.200452e-01</code></pre>
+<p>Visualizing the result shows that we can recover the dysregulation of the edge from <code>A</code> to <code>B</code>. Note that since we are computing total causal effects, the edge from <code>A</code> to <code>C</code> shows the same effect.</p>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu">ggtitle</span><span class="op">(</span><span class="st">"Differential Causal Effects between WT and MT condition"</span><span class="op">)</span></code></pre></div>
+<p><img src="dce_files/figure-html/unnamed-chunk-6-1.png" width="700"></p>
 </div>
 <div id="session-information" class="section level1">
 <h1 class="hasAnchor">
 <a href="#session-information" class="anchor"></a>Session information</h1>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <pre><code>## R version 4.0.3 (2020-10-10)
 ## Platform: x86_64-apple-darwin17.0 (64-bit)
@@ -266,9 +277,17 @@
 ## [166] org.Hs.eg.db_3.12.0      memoise_2.0.0            FMStable_0.1-2          
 ## [169] snowfall_1.84-6.1        mathjaxr_1.2-0           e1071_1.7-4</code></pre>
 </div>
-<div id="references" class="section level1">
+<div id="references" class="section level1 unnumbered">
 <h1 class="hasAnchor">
 <a href="#references" class="anchor"></a>References</h1>
+<div id="refs" class="references">
+<div id="ref-kanehisa2004kegg">
+<p>Kanehisa, Minoru, Susumu Goto, Shuichi Kawashima, Yasushi Okuno, and Masahiro Hattori. 2004. “The Kegg Resource for Deciphering the Genome.” <em>Nucleic Acids Research</em> 32 (suppl_1): D277–D280.</p>
+</div>
+<div id="ref-pearl2010causal">
+<p>Pearl, Judea. 2010. “Causal Inference.” <em>Causality: Objectives and Assessment</em>, 39–58.</p>
+</div>
+</div>
 </div>
   </div>
 
