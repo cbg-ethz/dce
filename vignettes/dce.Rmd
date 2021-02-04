@@ -149,7 +149,9 @@ Luckily it shares all genes with the cancer data set.
 
 ```{r}
 shared_genes <- intersect(nodes(brca_pathway), rownames(brca_wt))
-glue::glue("Covered nodes: {length(shared_genes)}/{length(nodes(brca_pathway))}")
+glue::glue(
+  "Covered nodes: {length(shared_genes)}/{length(nodes(brca_pathway))}"
+)
 ```
 
 ## Estimate Differential Causal Effects
