@@ -11,9 +11,19 @@ vignette: >
     %\VignetteEncoding{UTF-8}
 ---
 
-# Environment Setup
+# Overview
 
-## Load required packages
+tbd
+
+# Installation
+
+```{r eval=FALSE}
+if (!require("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+BiocManager::install("dce")
+```
+
+# Load required packages
 
 Load `dce` package and other required libraries.
 
@@ -23,8 +33,13 @@ Load `dce` package and other required libraries.
 # (see also https://github.com/thomasp85/ggraph/issues/75)
 library(ggraph)
 
+library(curatedTCGAData)
+library(TCGAutils)
+library(SummarizedExperiment)
+
 library(tidyverse)
 library(cowplot)
+library(graph)
 library(dce)
 
 set.seed(42)
@@ -88,14 +103,6 @@ plot(res) +
 
 
 # Application to real data
-
-```{r message=FALSE}
-library(graph)
-
-library(curatedTCGAData)
-library(TCGAutils)
-library(SummarizedExperiment)
-```
 
 Pathway dysregulations are a common cancer hallmark [@hanahan2011hallmarks].
 It is thus of interest to investigate how the causal effects strength in relevant pathways varies between normal and tumor samples.
