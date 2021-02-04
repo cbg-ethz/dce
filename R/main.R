@@ -80,6 +80,7 @@ setMethod(
         log_level = logger::INFO
     ) {
         mat <- as(igraph::as_adjacency_matrix(graph), "matrix")
+        colnames(mat) <- rownames(mat) <- V(graph)
         dce(
             mat,
             df_expr_wt, df_expr_mt,

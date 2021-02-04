@@ -139,7 +139,7 @@ test_that("adjustment sets work", {
   ))
 
   expect_equal(
-    get_adjustment_set(
+    dce:::get_adjustment_set(
       as(graph, "matrix"),
       which(nodes(graph) == "B"), which(nodes(graph) == "C"),
       "parents"
@@ -147,7 +147,7 @@ test_that("adjustment sets work", {
     c("A")
   )
   expect_equal(
-    get_adjustment_set(
+    dce:::get_adjustment_set(
       as(graph, "matrix"),
       which(nodes(graph) == "A"), which(nodes(graph) == "B"),
       "minimal"

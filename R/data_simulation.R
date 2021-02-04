@@ -45,12 +45,10 @@ setMethod(
         link = negative.binomial.special()$linkfun,
         pop_size = 0, latent = 0
     ) {
-        edge_attrs <- igraph::edge_attr_names(graph)
-        simulate_data(
-            as(igraph::as_adjacency_matrix(
-                graph,
-                attr = if ("weight" %in% edge_attrs) "weight" else NULL
-            ), "matrix"),
+        mat <- as(igraph::as_adjacency_matrix(graph, attr='weight'),
+                  "matrix")
+        colnames(mat) <- rownames(mat) <- V(graph)
+        simulate_data(mat,
             n, dist_mean, dist_dispersion,
             link, pop_size, latent
         )
@@ -97,7 +95,9 @@ setMethod(
             start <- latent + 1
             p <- dim(graph)[[1]]
         }
-        if (pop_size < p) { pop_size <- p }
+        if (pop_size < p) {
+            pop_size <- p
+        }
 
         # sanity checks
         stopifnot(p >= 2)
@@ -131,6 +131,7 @@ setMethod(
                 X[, j] <- rpois(n, lambda = mu)
             }
         }
+
         X <- X[,naturalorder(colnames(X))]
         if (pop_size > p & latent == 0) {
             Y <- matrix(rnbinom(n * (pop_size - p),
