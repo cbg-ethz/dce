@@ -11,13 +11,13 @@ vignette: >
     %\VignetteEncoding{UTF-8}
 ---
 
-# Introduction
+# Environment Setup
 
 ## Load required packages
 
 Load `dce` package and other required libraries.
 
-```{r}
+```{r message=FALSE}
 # fix "object 'guide_edge_colourbar' of mode 'function' was not found"
 # when building vignettes
 # (see also https://github.com/thomasp85/ggraph/issues/75)
@@ -85,6 +85,93 @@ Note that since we are computing total causal effects, the edge from `A` to `C` 
 plot(res) +
   ggtitle("Differential Causal Effects between WT and MT condition")
 ```
+
+
+# Application to real data
+
+```{r message=FALSE}
+library(graph)
+
+library(curatedTCGAData)
+library(TCGAutils)
+library(SummarizedExperiment)
+```
+
+Pathway dysregulations are a common cancer hallmark [@hanahan2011hallmarks].
+It is thus of interest to investigate how the causal effects strength in relevant pathways varies between normal and tumor samples.
+
+## Retrieve gene expression data
+
+As a showcase, we download breast cancer (BRCA) RNA transcriptomics profiling data from TCGA [@tomczak2015cancer].
+
+```{r}
+brca <- curatedTCGAData(
+  diseaseCode = "BRCA",
+  assays = c("RNASeq2*"),
+  dry.run = FALSE
+)
+```
+
+This will retrieve all available samples for the requested data sets.
+These samples can be classified according to their site of origin.
+
+```{r}
+sampleTables(brca)
+
+sampleTypes %>%
+  filter(Code %in% c("01", "06", "11"))
+```
+
+We can extract Primary Solid Tumor and matched Solid Tissue Normale samples.
+
+```{r}
+# split assays
+brca_split <- splitAssays(brca, c("01", "11"))
+
+# only retain matching samples
+brca_matched <- as(brca_split, "MatchedAssayExperiment")
+
+brca_wt <- assay(brca_matched, "01_BRCA_RNASeq2GeneNorm-20160128")
+brca_mt <- assay(brca_matched, "11_BRCA_RNASeq2GeneNorm-20160128")
+```
+
+## Retrieve biological pathway of interest
+
+KEGG [@kanehisa2004kegg] provides the breast cancer related pathway `hsa05224`.
+It can be easily retrieved using `dce`.
+
+```{r}
+pathways <- get_pathways(pathway_list = list(kegg = c("Breast cancer")))
+brca_pathway <- pathways[[1]]$graph
+```
+
+Luckily it shares all genes with the cancer data set.
+
+```{r}
+shared_genes <- intersect(nodes(brca_pathway), rownames(brca_wt))
+glue::glue("Covered nodes: {length(shared_genes)}/{length(nodes(brca_pathway))}")
+```
+
+## Estimate Differential Causal Effects
+
+We can now estimate the differences in causal effects between matched tumor and normal samples on a breast cancer specific pathway.
+
+```{r warning=FALSE}
+res <- dce::dce(brca_pathway, t(brca_wt), t(brca_mt), solver = "lm")
+```
+
+Interpretations may now begin.
+
+```{r}
+res %>%
+  as.data.frame %>%
+  drop_na %>%
+  arrange(desc(abs(dce))) %>%
+  head
+
+plot(res, nodesize = 20, labelsize = 1, use_symlog = TRUE)
+```
+
 
 # Session information
 
