@@ -1,5 +1,7 @@
 # Benchmarking
 
+Benchmark `dce` method on synthetic data with the goal of understanding how our algorithm behaves under a wide range of parameters.
+
 ## Automated
 
 All important benchmarks shall be defined in `config/config.yaml`.

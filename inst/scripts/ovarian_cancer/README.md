@@ -1,5 +1,7 @@
 # Ovarian Cancer Analysis
 
+Investigate how ovarian cancer perturbs biological pathways using the `dce` method.
+
 * Data source:
     * Paper: https://clincancerres.aacrjournals.org/content/14/16/5198
     * Accession: GSE9899

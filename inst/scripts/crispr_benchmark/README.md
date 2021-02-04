@@ -1,5 +1,7 @@
 # CRISPR
 
+Benchmark `dce` method on CRISPR data. Here, we try to recover knockouts from pathway perturbations.
+
 * Data source:
     * Paper: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5315571/
     * Accession: GSE90546
