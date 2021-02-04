@@ -36,6 +36,7 @@ setGeneric(
 
 setOldClass("igraph")
 #' @rdname simulate_data-methods
+#' @importFrom igraph V
 setMethod(
     "simulate_data",
     signature = signature(graph = "igraph"),
@@ -45,7 +46,7 @@ setMethod(
         link = negative.binomial.special()$linkfun,
         pop_size = 0, latent = 0
     ) {
-        mat <- as(igraph::as_adjacency_matrix(graph, attr='weight'),
+        mat <- as(igraph::as_adjacency_matrix(graph, attr = "weight"),
                   "matrix")
         colnames(mat) <- rownames(mat) <- V(graph)
         simulate_data(mat,
@@ -132,7 +133,7 @@ setMethod(
             }
         }
 
-        X <- X[,naturalorder(colnames(X))]
+        X <- X[, naturalorder(colnames(X))]
         if (pop_size > p & latent == 0) {
             Y <- matrix(rnbinom(n * (pop_size - p),
                                 size = dist_dispersion,
