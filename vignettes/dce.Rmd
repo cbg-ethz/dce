@@ -74,7 +74,7 @@ cowplot::plot_grid(
 )
 ```
 
-By propagating counts where were randomly initialized at root notes, we can generate synthetic expression data for each node in both networks. Both `X_wt` and `X_mt` then induce causal effects as defined in their respective adjacency matrices.
+By propagating counts which were randomly initialized at root notes, we can generate synthetic expression data for each node in both networks. Both `X_wt` and `X_mt` then induce causal effects as defined in their respective adjacency matrices.
 
 ```{r}
 X_wt <- simulate_data(graph_wt)
