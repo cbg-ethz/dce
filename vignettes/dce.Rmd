@@ -49,8 +49,9 @@ set.seed(42)
 
 To demonstrate the basic idea of Differential Causal Effects (DCEs), we first create a wild-type network by setting up its adjacency matrix.
 The specified edge weights correspond to direct causal effects and total causal effects are defined accordingly [@pearl2010causal].
-In a biological setting, this could, for example, correspond to a KEGG pathway  [@kanehisa2004kegg]in a healthy cell.
-Here, the edge weights can correspond to proteins facilitating or inhibiting each others expression levels.
+This way, the detected dysregulations are endowed with a causal interpretation and spurious correlations are ignored. This can be achieved by assuming that the underlying network models causal relationships and selecting valid adjustment sets.
+In a biological setting, these networks correspond, for example, to a KEGG pathway  [@kanehisa2004kegg] in a healthy cell.
+Here, the edge weights correspond to proteins facilitating or inhibiting each others expression levels.
 
 ```{r}
 graph_wt <- matrix(c(0, 0, 0, 1, 0, 0, 1, 1, 0), 3, 3)
