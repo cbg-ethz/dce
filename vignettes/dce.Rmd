@@ -13,7 +13,13 @@ vignette: >
 
 # Overview
 
-tbd
+One cause of diseases like cancer is the de-regulation of signalling pathways. The interaction of two or more genes is changed and cell behaviour is changed in the malignant tissue.
+
+The estimation of causal effects from observational data has previously been used to elucidate gene interactions. We extended this notion to compute Differential Causal Effects (DCE). We compare the causal effects in malignant tissue (e.g., from a tumor) and healthy tissue to detect differences in the gene interactions.
+
+However, computing causal effects purely from observational data is difficult, because beforehand the gene network has to be reconstructed. To overcome this issue we use prior knowledge from literature. This largely improves performance and makes the estimation of DCEs more accurate.
+
+Overall we can detect pathways which play a prominent role in tumorigenesis. We can even pinpoint specific interaction in the pathway that make a large contribution to the rise of the disease.
 
 # Installation
 

@@ -1,6 +1,6 @@
 # CRISPR
 
-Benchmark `dce` method on CRISPR data. Here, we try to recover knockouts from pathway perturbations.
+Benchmark `dce` method on CRISPR data. Here, we  try to recover de-regulated pathway intreractions caused by a gene knock-out.
 
 * Data source:
     * Paper: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5315571/
