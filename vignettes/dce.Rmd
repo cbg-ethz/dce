@@ -106,7 +106,7 @@ plot(res) +
 # Application to real data
 
 Pathway dysregulations are a common cancer hallmark [@hanahan2011hallmarks].
-It is thus of interest to investigate how the causal effects strength in relevant pathways varies between normal and tumor samples.
+It is thus of interest to investigate how the causal effect magnitudes in relevant pathways vary between normal and tumor samples.
 
 ## Retrieve gene expression data
 
