@@ -88,7 +88,7 @@
       <h1 data-toc-skip>Get started</h1>
                         <h4 class="author">Kim Philipp Jablonski, Martin Pirkl</h4>
             
-            <h4 class="date">2021-02-04</h4>
+            <h4 class="date">2021-02-05</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/cbg-ethz/dce/blob/master/vignettes/dce.Rmd"><code>vignettes/dce.Rmd</code></a></small>
       <div class="hidden name"><code>dce.Rmd</code></div>
@@ -134,7 +134,7 @@
 <div id="introductory-example" class="section level1">
 <h1 class="hasAnchor">
 <a href="#introductory-example" class="anchor"></a>Introductory example</h1>
-<p>To demonstrate the basic idea of Differential Causal Effects (DCEs), we first create a wild-type network by setting up its adjacency matrix. The specified edge weights correspond to direct causal effects and total causal effects are defined accordingly <span class="citation">(Pearl 2010)</span>. In a biological setting, this could, for example, correspond to a KEGG pathway <span class="citation">(Kanehisa et al. 2004)</span>in a healthy cell. Here, the edge weights can correspond to proteins facilitating or inhibiting each others expression levels.</p>
+<p>To demonstrate the basic idea of Differential Causal Effects (DCEs), we first create a wild-type network by setting up its adjacency matrix. The specified edge weights correspond to direct causal effects and total causal effects are defined accordingly <span class="citation">(Pearl 2010)</span>. This way, the detected dysregulations are endowed with a causal interpretation and spurious correlations are ignored. This can be achieved by assuming that the underlying network models causal relationships and selecting valid adjustment sets. In a biological setting, these networks correspond, for example, to a KEGG pathway <span class="citation">(Kanehisa et al. 2004)</span> in a healthy cell. Here, the edge weights correspond to proteins facilitating or inhibiting each others expression levels.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">graph_wt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">0</span><span class="op">)</span>, <span class="fl">3</span>, <span class="fl">3</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span><span class="op">(</span><span class="va">graph_wt</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span><span class="op">(</span><span class="va">graph_wt</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span><span class="op">)</span>
@@ -204,7 +204,7 @@
   assays <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"RNASeq2*"</span><span class="op">)</span>,
   dry.run <span class="op">=</span> <span class="cn">FALSE</span>
 <span class="op">)</span></code></pre></div>
-<pre><code>## using temporary cache /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T//RtmpDkpjWM/BiocFileCache</code></pre>
+<pre><code>## using temporary cache /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T//RtmpAKr5gg/BiocFileCache</code></pre>
 <pre><code>## snapshotDate(): 2020-10-27</code></pre>
 <pre><code>## Working on: BRCA_RNASeq2GeneNorm-20160128</code></pre>
 <pre><code>## see ?curatedTCGAData and browseVignettes('curatedTCGAData') for documentation</code></pre>
@@ -260,7 +260,7 @@
 <p>KEGG <span class="citation">(Kanehisa et al. 2004)</span> provides the breast cancer related pathway <code>hsa05224</code>. It can be easily retrieved using <code>dce</code>.</p>
 <div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">pathways</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_pathways.html">get_pathways</a></span><span class="op">(</span>pathway_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>kegg <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Breast cancer"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<pre><code>## INFO [2021-02-04 19:26:44] Processing kegg</code></pre>
+<pre><code>## INFO [2021-02-05 08:42:28] Processing kegg</code></pre>
 <pre><code>## 'select()' returned 1:1 mapping between keys and columns
 ## 'select()' returned 1:1 mapping between keys and columns
 ## 'select()' returned 1:1 mapping between keys and columns
