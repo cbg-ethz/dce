@@ -36,6 +36,7 @@ permutation_test <- function(x, y, iter = 1000, fun = pcor, ...) {
 #' @export
 #' @return graph as adjacency matrix
 #' @examples
+#' @importFrom naturalsort naturalorder
 #' dag <- create_random_DAG(30, 0.2)
 #' adj <- as_adjmat(dag)
 as_adjmat <- function(g) {
@@ -45,6 +46,7 @@ as_adjmat <- function(g) {
         b <- gsub(".*\\|", "", p)
         adj[a, b] <- 1
     }
+    adj <- adj[naturalorder(rownames(adj)), naturalorder(colnames(adj))]
     return(adj)
 }
 
@@ -415,11 +417,13 @@ make.log.link <- function(base=exp(1)) {
 #' @importFrom pcalg causalEffect
 #' @import graph tidyverse
 #' @importFrom expm %^%
+#' @importFrom naturalsort naturalorder
 #' @examples
 #' graph.wt <- as(matrix(c(0,0,0,1,0,0,0,1,0), 3), "graphNEL")
 #' trueEffects(graph.wt)
 trueEffects <- function(g, partial = FALSE) {
-    a <- as(g, "matrix")
+    a <- as(g, 'matrix')
+    a <- a[naturalorder(rownames(a)), naturalorder(colnames(a))]
     if (partial) {
         ae <- a
     } else {

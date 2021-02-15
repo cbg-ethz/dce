@@ -134,7 +134,9 @@ df.bench <- purrr::pmap_dfr(
       if (sample.kegg) {
         graphs <- sample.graph.from.kegg(kegg.dag)
       } else {
-        graphs <- generate.random.graphs(node.num, beta.magnitude, true.positives)
+        graphs <- generate.random.graphs(node.num, beta.magnitude,
+                                         true.positives, max_par = 10,
+                                         mineff = 0)
       }
 
       wt.graph <- graphs$wt
@@ -188,8 +190,8 @@ df.bench <- purrr::pmap_dfr(
 
       # run models
       latent2 <- FALSE
-      if (latent > 0) {
-        latent2 <- 'kim'
+      if (varied.parameter == 'latent') {
+        latent2 <- 'auto'
       }
       res <- run.all.models(
         wt.graph, wt.X,
@@ -213,10 +215,8 @@ df.bench <- purrr::pmap_dfr(
       # modify predictions
       #  * if edge exists only in original graph (but not in perturbed one), it should be a false negative if truth != 0
       #  * for performance evaluation use all entries with edge in original or perturbed graph
-      tmp.graph <- as(wt.graph, "matrix")
-      tmp.graph <- tmp.graph[naturalorder(rownames(tmp.graph)), naturalorder(colnames(tmp.graph))]
-      tmp.graph.perturbed <- as(wt.graph.perturbed, "matrix")
-      tmp.graph.perturbed <- tmp.graph.perturbed[naturalorder(rownames(tmp.graph.perturbed)), naturalorder(colnames(tmp.graph.perturbed))]
+      tmp.graph <- as_adjmat(wt.graph)
+      tmp.graph.perturbed <- as_adjmat(wt.graph.perturbed)
       df.all <- bind_cols(
         data.frame(orig.edge = as.numeric(as.vector(tmp.graph) != 0)),
         data.frame(pert.edge = as.numeric(as.vector(tmp.graph.perturbed) != 0)),
@@ -238,6 +238,7 @@ df.bench <- purrr::pmap_dfr(
 
       apply.performance.measure(df.pvalues.mod, methods, compute.prauc, "pr-auc")
       apply.performance.measure(df.pvalues.mod, methods, compute.rocauc, "roc-auc")
+      cor(df.edges[c("truth", methods)], method = "spearman", use = "pairwise.complete.obs")
 
       # return performance computation
       data.frame() %>%

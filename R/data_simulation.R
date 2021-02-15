@@ -37,6 +37,7 @@ setGeneric(
 setOldClass("igraph")
 #' @rdname simulate_data-methods
 #' @importFrom igraph V
+#' @importFrom naturalsort naturalorder
 setMethod(
     "simulate_data",
     signature = signature(graph = "igraph"),
@@ -49,6 +50,7 @@ setMethod(
         mat <- as(igraph::as_adjacency_matrix(graph, attr = "weight"),
                   "matrix")
         colnames(mat) <- rownames(mat) <- V(graph)
+        mat <- mat[naturalorder(rownames(mat)), naturalorder(colnames(mat))]
         simulate_data(mat,
             n, dist_mean, dist_dispersion,
             link, pop_size, latent
@@ -67,8 +69,10 @@ setMethod(
         link = negative.binomial.special()$linkfun,
         pop_size = 0, latent = 0
     ) {
+        a <- as(graph, 'matrix')
+        a <- a[naturalorder(rownames(a)), naturalorder(colnames(a))]
         simulate_data(
-            as(graph, "matrix"),
+            a,
             n, dist_mean, dist_dispersion,
             link, pop_size, latent
         )
