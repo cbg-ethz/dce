@@ -49,9 +49,8 @@ def main(fname, out_dir):
                 print(f'[{pathway}] Skipping {idx}, no true positives...')
                 continue
 
-            # compute performance measures
-            #edge_score = group['dce_pvalue']
-            edge_score = abs(group['dce'])
+            # compute performance measures in detail
+            edge_score = group['dce_pvalue']
 
             precision_list, recall_list, pr_thresholds = precision_recall_curve(group['true_effect'], edge_score)
             fpr_list, tpr_list, roc_thresholds = roc_curve(group['true_effect'], edge_score)
@@ -86,11 +85,11 @@ def main(fname, out_dir):
                 '-o',
                 label=f'{app} ({pr_auc:.2})')
 
-            # competing methods
-            method_columns = ['cor', 'pcor']
+            # compute aggregated performance measures for all methods
+            method_list = ['dce', 'cor', 'pcor']
 
-            for method in method_columns:
-                fpr, tpr, auc_val = compute_roc(group[method], group['true_effect'])
+            for method in method_list:
+                fpr, tpr, auc_val = compute_roc(group[f'{method}_pvalue'], group['true_effect'])
 
                 cur_color = base_line.get_color()
                 ax_roc.plot(
@@ -109,23 +108,6 @@ def main(fname, out_dir):
 
                     'roc_auc': auc_val
                 })
-
-            # store results
-            tmp.append({
-                'method': 'dce',
-
-                'pathway': pathway,
-                'perturbed_gene': perturbed_gene,
-                'study': study,
-                'treatment': treatment,
-
-                'roc_auc': roc_auc,
-                'pr_auc': pr_auc,
-                'ap_score': ap_score,
-                'f1_score': f1_score_,
-
-                'optimal_roc_threshold': thres_opt
-            })
 
         # finalize figures
         ax_roc.plot([0, 1], [0, 1], color='grey', ls='dashed')

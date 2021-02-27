@@ -10,19 +10,6 @@ def main(dname, out_dir):
     out_dir.mkdir(parents=True, exist_ok=True)
     df = pd.read_csv(dname / 'measures.csv').set_index(['method', 'study', 'treatment', 'perturbed_gene', 'pathway'])
 
-    # general overview of DCE
-    plt.figure(figsize=(8, 6))
-
-    sns.boxplot(
-        data=pd.melt(df.loc['dce'].drop(columns=['optimal_roc_threshold'])),
-        x='variable', y='value')
-
-    plt.xlabel('Performance measure')
-    plt.ylabel('Score')
-
-    plt.tight_layout()
-    plt.savefig(out_dir / 'overview_boxplot.pdf')
-
     # compare methods
     df_sub = pd.melt(df.reset_index(level=['method', 'treatment'])[['method', 'treatment', 'roc_auc']], id_vars=['method', 'treatment'])
 
