@@ -17,7 +17,7 @@ df_info <- dce::get_pathway_info(database_list = database_list) %>%
 options(Ncpus = 4)
 dce::get_pathways(database_list = database_list) %>%
   purrr::map(function(x) {
-    id_clean <- str_remove(x$id, ":")
+    id_clean <- str_remove(x$pathway_id, ":")
     fname_csv <- file.path(target_dir, "csv_files", glue::glue("{id_clean}.csv")) # {x$database}_
 
     dce::graph2df(x$graph) %>%
