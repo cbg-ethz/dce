@@ -7,4 +7,5 @@ snakemake \
   --profile lsf \
   -pr \
   -j 100 \
+  --show-failed-logs \
   "$@"
