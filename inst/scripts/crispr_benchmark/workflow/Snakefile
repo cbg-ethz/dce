@@ -83,7 +83,7 @@ localrules: all, aggregate_expression_statistics, aggregate_dce_lists
 rule all:
     input:
         'results/pathway_statistics/',
-        'results/perturbation_analysis/expression_statistics.csv',
+        # 'results/perturbation_analysis/expression_statistics.csv',
         'results/performance/plots/',
         'results/aggregated_statistics/details/'
 
