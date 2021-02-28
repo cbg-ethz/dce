@@ -125,8 +125,8 @@ df_final <- res %>%
 
   # retain only values on pathway edges
   mutate(pathway_edge = melt(res$graph)$value) %>%
-  filter(pathway_edge == 1) %>%
-  select(-pathway_edge) %>%
+  dplyr::filter(pathway_edge == 1) %>%
+  dplyr::select(-pathway_edge) %>%
 
   # compute additional properties
   purrr::pmap_dfr(function(
@@ -173,7 +173,7 @@ df_volcano <- res %>%
 if (dim(df_volcano)[[1]] > 0) {
   EnhancedVolcano::EnhancedVolcano(
     df_volcano,
-    lab = df_volcano$edge, selectLab = filter(df_volcano, df_volcano$affected)$edge,
+    lab = df_volcano$edge, selectLab = dplyr::filter(df_volcano, df_volcano$affected)$edge,
     x = "dce", y = "dce_pvalue",
     pCutoff = .05, FCcutoff = 1,
     drawConnectors = TRUE,
@@ -186,7 +186,7 @@ if (dim(df_volcano)[[1]] > 0) {
 
 # p-value/network distance plot
 df_final %>%
-  filter(!is.infinite(distance)) %>%
+  dplyr::filter(!is.infinite(distance)) %>%
   drop_na %>%
 ggplot(aes(x = -log10(dce_pvalue), y = distance, color = dce)) +
   geom_point() +
