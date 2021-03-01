@@ -35,8 +35,8 @@ permutation_test <- function(x, y, iter = 1000, fun = pcor, ...) {
 #' @param g graphNEL object
 #' @export
 #' @return graph as adjacency matrix
-#' @examples
 #' @importFrom naturalsort naturalorder
+#' @examples
 #' dag <- create_random_DAG(30, 0.2)
 #' adj <- as_adjmat(dag)
 as_adjmat <- function(g) {
@@ -55,31 +55,54 @@ as_adjmat <- function(g) {
 #' Robust partial correlation of column variables of a
 #' numeric matrix
 #' @param x matrix
-#' @param ... additional arguments for functions 'cor'
+#' @param g related graph as adjacency matrix (optional)
+#' @param adjustment_type character string for the method
+#' to define the adjustment set Z for the regression
+#' @param ... additional arguments for function 'cor'
 #' @importFrom ppcor pcor
 #' @export
 #' @return matrix of partial correlations
 #' @examples
 #' x <- matrix(rnorm(100),10,10)
 #' pcor(x)
-pcor <- function(x, ...) {
-    rho <- try(ppcor::pcor(x, ...), silent = TRUE)
-    if (length(grep("Error", rho)) > 0) {
-        warning(paste0("Moore-Penrose generalized matrix invers in ",
-                       "function ppcor::pcor crashed. Using ",
-                       "MAAS::ginv instead."))
-        omega <- cor(x, ...)
-        p <- Gsolve(omega)
-        pdiag <- diag(p) %*% t(diag(p))
-        rho <- -p / (pdiag^0.5)
-        diag(rho) <- 1
-        rho[which(is.na(rho) | is.infinite(rho))] <- 0
+pcor <- function(x, g = NULL, adjustment_type = 'parents', ...) {
+    if (is.null(g)) {
+        rho <- try(ppcor::pcor(x, ...), silent = TRUE)
+        if (length(grep("Error", rho)) > 0) {
+            warning(paste0("Moore-Penrose generalized matrix invers in ",
+                           "function ppcor::pcor crashed. Using ",
+                           "MAAS::ginv instead."))
+            omega <- cor(x, ...)
+            p <- Gsolve(omega)
+            pdiag <- diag(p) %*% t(diag(p))
+            rho <- -p / (pdiag^0.5)
+            diag(rho) <- 1
+            rho[which(is.na(rho) | is.infinite(rho))] <- 0
+        } else {
+            rho <- rho$estimate
+        }
+        rownames(rho) <- colnames(rho) <- colnames(x)
     } else {
-        rho <- rho$estimate
+        edges <- which(g == 1, arr.ind=TRUE)
+        omega <- cor(x, ...)
+        rho <- omega*0
+        for (i in 1:nrow(edges)) {
+            x <- edges[i, 1]
+            y <- edges[i, 2]
+            z <- get_adjustment_set(
+                g, x, y,
+                adjustment_type,
+                effect_type = 'total'
+            )
+            z <- which(colnames(g) %in% z)
+            p <- Gsolve(omega[c(x,y,z),c(x,y,z)])
+            pdiag <- diag(p) %*% t(diag(p))
+            rhoz <- -p / (pdiag^0.5)
+            diag(rhoz) <- 1
+            rhoz[which(is.na(rhoz) | is.infinite(rhoz))] <- 0
+            rho[x,y] <- rhoz[1, 2]
+        }
     }
-
-    rownames(rho) <- colnames(rho) <- colnames(x)
-
     return(rho)
 }
 
@@ -531,4 +554,31 @@ estimate_latent_count <- function(X1, X2, method = "auto") {
         idx <- sum(clust == clust[1])
         return(idx)
     }
+}
+#' costum rlm function
+#' @param ... see ?MASS::rlm
+#' @importFrom MASS rlm
+rlm_dce <- function(...) {
+    x <- MASS::rlm(...)
+    class(x) <- 'rlm_dce'
+    return(x)
+}
+#' summary for rlm_dce
+#' @param object object of class 'rlm_dce'
+#' @param ... see ?MASS::summary.rlm
+#' @importFrom MASS summary.rlm
+#' @method summary rlm_dce
+summary.rlm_dce <- function(object, ...) {
+    class(object) <- 'rlm'
+    x <- MASS:::summary.rlm(object)
+    df <- max(x$df)
+    pt2 <- function(...) {
+        x <- 2*min(pt(...),1-pt(...))
+        return(x)
+    }
+    pvals <- unlist(lapply(x$coefficients[, 't value'], pt2, df = df))
+    x$coefficients <- cbind(x$coefficients, 'Pr(>|t|)' = pvals)
+    colnames(x$coefficients)[1] <- 'Estimate'
+    class(x) <- 'summary.rlm'
+    return(x)
 }

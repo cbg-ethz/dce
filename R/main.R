@@ -611,6 +611,11 @@ glm_solver <- function(form, df, solver, solver_args) {
         return(lm(formula = form, data = df))
     }
 
+    # rlm solver
+    if (solver == "rlm") {
+        return(rlm_dce(formula = as.formula(form), data = df))
+    }
+
     # glm solver
     solver_func <- switch(
         solver,

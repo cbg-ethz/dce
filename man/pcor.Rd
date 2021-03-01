@@ -4,12 +4,17 @@
 \alias{pcor}
 \title{Partial correlation}
 \usage{
-pcor(x, ...)
+pcor(x, g = NULL, adjustment_type = "parents", ...)
 }
 \arguments{
 \item{x}{matrix}
 
-\item{...}{additional arguments for functions 'cor'}
+\item{g}{related graph as adjacency matrix (optional)}
+
+\item{adjustment_type}{character string for the method
+to define the adjustment set Z for the regression}
+
+\item{...}{additional arguments for function 'cor'}
 }
 \value{
 matrix of partial correlations
