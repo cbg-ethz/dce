@@ -21,6 +21,11 @@ def compute_roc(class_prob, true_class):
     return fpr_list, tpr_list, roc_auc
 
 
+def score_edge(df, method):
+    """Compute measure which is used to estimate performance."""
+    return df[f'{method}_pvalue']
+
+
 def main(fname, out_dir):
     out_dir.mkdir(parents=True, exist_ok=True)
     df = pd.read_csv(fname)
@@ -50,7 +55,7 @@ def main(fname, out_dir):
                 continue
 
             # compute performance measures in detail
-            edge_score = group['dce_pvalue']
+            edge_score = score_edge(group, 'dce')
 
             precision_list, recall_list, pr_thresholds = precision_recall_curve(group['true_effect'], edge_score)
             fpr_list, tpr_list, roc_thresholds = roc_curve(group['true_effect'], edge_score)
@@ -89,7 +94,10 @@ def main(fname, out_dir):
             method_list = ['dce', 'cor', 'pcor']
 
             for method in method_list:
-                fpr, tpr, auc_val = compute_roc(group[f'{method}_pvalue'], group['true_effect'])
+                fpr, tpr, auc_val = compute_roc(
+                    score_edge(group, method),
+                    group['true_effect']
+                )
 
                 cur_color = base_line.get_color()
                 ax_roc.plot(
