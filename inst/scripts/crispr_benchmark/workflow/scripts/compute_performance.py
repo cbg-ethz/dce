@@ -23,7 +23,10 @@ def compute_roc(class_prob, true_class):
 
 def score_edge(df, method):
     """Compute measure which is used to estimate performance."""
-    return df[f'{method}_pvalue']
+    effect_size = df[method]
+    p_value = df[f'{method}_pvalue']
+
+    return abs(effect_size) * (p_value <= 0.05)
 
 
 def main(fname, out_dir):
