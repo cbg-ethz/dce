@@ -5,7 +5,7 @@ library(Rgraphviz) # for `layoutGraph`
 
 library(org.Hs.eg.db)
 
-devtools::load_all("../../")
+devtools::load_all("../../../")
 
 
 # load KEGG pathway

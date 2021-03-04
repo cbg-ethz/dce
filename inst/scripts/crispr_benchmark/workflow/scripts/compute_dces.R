@@ -1,6 +1,6 @@
-devtools::load_all("../../")
-
 library(tidyverse)
+
+devtools::load_all("../../../")
 
 
 # locate data

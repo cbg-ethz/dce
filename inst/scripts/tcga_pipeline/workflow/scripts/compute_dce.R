@@ -1,7 +1,7 @@
 library(tidyverse)
 library(magrittr)
 
-devtools::load_all("../../")
+devtools::load_all("../../../")
 
 
 # read data

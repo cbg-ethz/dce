@@ -1,6 +1,7 @@
 library(tidyverse)
 library(ggraph)
-library(dce)
+
+devtools::load_all("../../../")
 
 
 # load data
