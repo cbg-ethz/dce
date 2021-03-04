@@ -19,6 +19,8 @@ def main(dname, out_dir):
         data=df_sub,
         x='method', y='value', hue='treatment')
 
+    plt.ylim(-0.01, 1.01)
+
     plt.xlabel('Method')
     plt.ylabel('ROC-AUC')
 
