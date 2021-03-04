@@ -84,7 +84,10 @@ rule all:
     input:
         'results/pathway_statistics/',
         # 'results/perturbation_analysis/expression_statistics.csv',
-        'results/performance/plots/',
+        expand(
+            'results/performance/plots/threshold_{threshold}/',
+            threshold=[0.1, 0.05, 0.01]
+        ),
         'results/aggregated_statistics/details/'
 
 
@@ -198,15 +201,15 @@ rule compute_performance:
     input:
         fname = 'results/aggregated_statistics/dce_lists.csv'
     output:
-        out_dir = directory('results/performance/results/')
+        out_dir = directory('results/performance/results/threshold_{threshold}/')
     script:
         'scripts/compute_performance.py'
 
 
 rule plot_performance:
     input:
-        dname = 'results/performance/results/'
+        dname = 'results/performance/results/threshold_{threshold}/'
     output:
-        out_dir = directory('results/performance/plots/')
+        out_dir = directory('results/performance/plots/threshold_{threshold}/')
     script:
         'scripts/plot_performance.py'

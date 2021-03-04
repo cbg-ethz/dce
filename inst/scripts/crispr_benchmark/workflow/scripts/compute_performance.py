@@ -21,15 +21,15 @@ def compute_roc(class_prob, true_class):
     return fpr_list, tpr_list, roc_auc
 
 
-def score_edge(df, method):
+def score_edge(df, method, pvalue_threshold=0.05):
     """Compute measure which is used to estimate performance."""
     effect_size = df[method]
     p_value = df[f'{method}_pvalue']
 
-    return abs(effect_size) * (p_value <= 0.05)
+    return abs(effect_size) * (p_value <= pvalue_threshold)
 
 
-def main(fname, out_dir):
+def main(fname, out_dir, pvalue_threshold):
     out_dir.mkdir(parents=True, exist_ok=True)
     df = pd.read_csv(fname)
     # df['true_effect'] = (df['perturbed_gene'] == df['source']) | (df['perturbed_gene'] == df['target'])
@@ -58,7 +58,7 @@ def main(fname, out_dir):
                 continue
 
             # compute performance measures in detail
-            edge_score = score_edge(group, 'dce')
+            edge_score = score_edge(group, 'dce', pvalue_threshold=pvalue_threshold)
 
             precision_list, recall_list, pr_thresholds = precision_recall_curve(group['true_effect'], edge_score)
             fpr_list, tpr_list, roc_thresholds = roc_curve(group['true_effect'], edge_score)
@@ -98,8 +98,8 @@ def main(fname, out_dir):
 
             for method in method_list:
                 fpr, tpr, auc_val = compute_roc(
-                    score_edge(group, method),
-                    group['true_effect']
+                    score_edge(group, method, pvalue_threshold=pvalue_threshold),
+                    group['true_effect'],
                 )
 
                 cur_color = base_line.get_color()
@@ -141,4 +141,4 @@ def main(fname, out_dir):
 
 
 if __name__ == '__main__':
-    main(snakemake.input.fname, Path(snakemake.output.out_dir))
+    main(snakemake.input.fname, Path(snakemake.output.out_dir), float(snakemake.wildcards['threshold']))
