@@ -12,7 +12,7 @@ rule all:
     input:
         'results/summary/enrichments.csv',
         expand(
-            'results/plots/{project}/{project}.{pathway}.dce.pdf',
+            'results/plots/{project}.{pathway}/',
             project=config['projects'], pathway=config['pathways']),
         expand('results/drugs/results_{project}_{pathway}.csv', project=config['projects'], pathway=config['pathways'])
 
@@ -72,7 +72,7 @@ rule visualize:
         dce_fname = 'results/results/{project}/{project}.{pathway}.dce.rds',
         geneid_fname = 'results/kegg_data/{pathway}_geneids.csv'
     output:
-        plot_fname = 'results/plots/{project}/{project}.{pathway}.dce.pdf'
+        outdir = directory('cluster_data/plots/{project}.{pathway}/')
     resources:
         mem_mb = 10_000
     script:
