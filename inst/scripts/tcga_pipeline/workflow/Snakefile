@@ -72,8 +72,7 @@ rule visualize:
         dce_fname = 'results/results/{project}/{project}.{pathway}.dce.rds',
         geneid_fname = 'results/kegg_data/{pathway}_geneids.csv'
     output:
-        plot_fname = 'results/plots/{project}/{project}.{pathway}.dce.pdf',
-        heatmap_fname = 'results/plots/{project}/{project}.{pathway}.dce.heatmap.pdf'
+        plot_fname = 'results/plots/{project}/{project}.{pathway}.dce.pdf'
     resources:
         mem_mb = 10_000
     script:
