@@ -37,7 +37,11 @@ print(glue::glue("{input.fname} -> {target.dir} (methods) (parameters)"))
 # helper functions
 create.plots <- function(df.bench, plot.dir, varied.parameter) {
   # create performance plots
-  performance.measures <- c("correlation", "mse", "precision", "recall", "f1-score", "pr-auc", "roc-auc")
+  performance.measures <- c("correlation", "mse", "precision", "recall", "f1-score", "pr-auc", "ROC-AUC")
+
+  height <- 20
+  Npar <- length(table(df.bench$parameter))
+  width <- 8*Npar
 
   for (measure in performance.measures) {
     print(glue::glue("Plotting {measure}"))
@@ -47,7 +51,7 @@ create.plots <- function(df.bench, plot.dir, varied.parameter) {
       gather("variable", "value", -parameter, -type, -varied.parameter, -rng.seed) %>%
       ggplot(aes(x=parameter, y=value, fill=variable)) +
       geom_boxplot() +
-      ggtitle(paste("Variable:", varied.parameter)) +
+      ggtitle(paste(varied.parameter)) +
       ylab(glue::glue("{measure}")) +
       theme_minimal(base_size=20) +
       theme(plot.title=element_text(hjust=0.5))
@@ -58,7 +62,8 @@ create.plots <- function(df.bench, plot.dir, varied.parameter) {
       p <- p + ylim(0, 1)
     }
 
-    ggsave(file.path(plot.dir, glue::glue("benchmark_{measure}.pdf")), plot = p)
+    ggsave(file.path(plot.dir, glue::glue("benchmark_{measure}.pdf")), plot = p,
+           width = width, height = height, units = 'cm')
   }
 
 
@@ -71,11 +76,12 @@ create.plots <- function(df.bench, plot.dir, varied.parameter) {
     geom_boxplot() +
     scale_y_time() +
     facet_wrap(~ variable, scales="free") +
-    ggtitle(paste("Variable:", varied.parameter)) +
+    ggtitle(paste(varied.parameter)) +
     ylab("runtime") +
     theme_minimal() +
     theme(plot.title=element_text(hjust=0.5)) +
-    ggsave(file.path(plot.dir, "benchmark_runtime.pdf"))
+    ggsave(file.path(plot.dir, "benchmark_runtime.pdf"),
+           width = width, height = height, units = 'cm')
 
   meth <- colnames(df.bench)[1]
 
@@ -86,66 +92,72 @@ create.plots <- function(df.bench, plot.dir, varied.parameter) {
     scale_y_continuous(trans = 'log10') +
     # scale_y_log10() +
     geom_boxplot() +
-    ggtitle(paste("Variable:", varied.parameter)) +
+    ggtitle(paste(varied.parameter)) +
     ylab("value") +
     theme_minimal(base_size=20) +
     theme(plot.title=element_text(hjust=0.5)) +
-    ggsave(file.path(plot.dir, "benchmark_dce_range.pdf"))
+    ggsave(file.path(plot.dir, "benchmark_dce_range.pdf"),
+           width = width, height = height, units = 'cm')
 
   df.bench %>%
     dplyr::filter(grepl("^graph.", type)) %>%
     dplyr::select(!!colnames(df.bench)[1], type, parameter, varied.parameter) %>%
     ggplot(aes_string(x='parameter', y=meth, fill='type')) +
     geom_boxplot() +
-    ggtitle(paste("Variable:", varied.parameter)) +
+    ggtitle(paste(varied.parameter)) +
     ylab("value") +
     theme_minimal(base_size=20) +
     theme(plot.title=element_text(hjust=0.5)) +
-    ggsave(file.path(plot.dir, "benchmark_graph_features.pdf"))
+    ggsave(file.path(plot.dir, "benchmark_graph_features.pdf"),
+           width = width, height = height, units = 'cm')
 
   df.bench %>%
     dplyr::filter(grepl("^lib.", type)) %>%
     dplyr::select(!!colnames(df.bench)[1], type, parameter, varied.parameter) %>%
     ggplot(aes_string(x='parameter', y=meth, fill='type')) +
     geom_boxplot() +
-    ggtitle(paste("Variable:", varied.parameter)) +
+    ggtitle(paste(varied.parameter)) +
     ylab("value") +
     theme_minimal(base_size=20) +
     theme(plot.title=element_text(hjust=0.5)) +
-    ggsave(file.path(plot.dir, "benchmark_lib_size_stats.pdf"))
+    ggsave(file.path(plot.dir, "benchmark_lib_size_stats.pdf"),
+           width = width, height = height, units = 'cm')
 
   df.bench %>%
     dplyr::filter(grepl("^dispersion.", type)) %>%
     dplyr::select(!!colnames(df.bench)[1], type, parameter, varied.parameter) %>%
     ggplot(aes_string(x='parameter', y=meth, fill='type')) +
     geom_boxplot() +
-    ggtitle(paste("Variable:", varied.parameter)) +
+    ggtitle(paste(varied.parameter)) +
     ylab("value") +
     theme_minimal(base_size=20) +
     theme(plot.title=element_text(hjust=0.5)) +
-    ggsave(file.path(plot.dir, "benchmark_dispersion_estimate.pdf"))
+    ggsave(file.path(plot.dir, "benchmark_dispersion_estimate.pdf"),
+           width = width, height = height, units = 'cm')
 
   df.bench %>%
     dplyr::filter(grepl("^mean.", type)) %>%
     dplyr::select(!!colnames(df.bench)[1], type, parameter, varied.parameter) %>%
     ggplot(aes_string(x='parameter', y=meth, fill='type')) +
     geom_boxplot() +
-    ggtitle(paste("Variable:", varied.parameter)) +
+    ggtitle(paste(varied.parameter)) +
     ylab("value") +
     theme_minimal(base_size=20) +
     theme(plot.title=element_text(hjust=0.5)) +
-    ggsave(file.path(plot.dir, "benchmark_mean_estimate.pdf"))
+    ggsave(file.path(plot.dir, "benchmark_mean_estimate.pdf"),
+           width = width, height = height, units = 'cm')
 
   df.bench %>%
     dplyr::filter(grepl("^prevalence$", type)) %>%
     dplyr::select(!!colnames(df.bench)[1], type, parameter, varied.parameter) %>%
     ggplot(aes_string(x='parameter', y=meth, fill='type')) +
     geom_boxplot() +
-    ggtitle(paste("Variable:", varied.parameter)) +
+    ggtitle(paste(varied.parameter)) +
     ylab("value") +
     theme_minimal(base_size=20) +
     theme(plot.title=element_text(hjust=0.5)) +
-    ggsave(file.path(plot.dir, "benchmark_prevalence.pdf"))
+    ggsave(file.path(plot.dir, "benchmark_prevalence.pdf"),
+           width = width, height = height, units = 'cm')
 }
 
 
@@ -163,15 +175,16 @@ if (parameters[1]!='NULL') {
   df.bench <- df.bench[df.bench$parameter %in% parameters,]
 }
 
-# check amount of runs and NAs
-print('runs:')
-print(table(df.bench$parameter[df.bench$type=='correlation']))
-print('dce NAs for correlation:')
-print(summary(df.bench$dce.lm.tpm[df.bench$type=='correlation']))
-print(summary(df.bench$dce.tpm[df.bench$type=='correlation']))
-print('dce NAs for roc-auc:')
-print(summary(df.bench$dce.lm.tpm[df.bench$type=='roc-auc']))
-print(summary(df.bench$dce.tpm[df.bench$type=='roc-auc']))
+# rename variables for paper ready (;)) figures:
+df.bench$varied.parameter <- mgsub::mgsub(df.bench$varied.parameter,
+                                          c("adjustment.type", "beta.magnitude", "dispersion", "latent", "lib.size.range", "mt.samples", "node.num", "perturb", "true.positives"),
+                                          c("Adjustment set", "Effect magnitude", "Dispersion", "Latent variables", "Library size range", "Number of samples", "Network size", "Network perturbation", "Prevalence of positive edges"))
+colnames(df.bench) <- mgsub::mgsub(colnames(df.bench),
+                                   c('dce.lm.tpm','fggm','cor','pcorz','dce.nolib'),
+                                   c('DCE','FGGM','COR','PCOR','DCE (no library size correction)'))
+df.bench$type <- mgsub::mgsub(df.bench$type,
+                              c('roc-auc'),
+                              c('ROC-AUC'))
 
 tmp <- df.bench %>% pull(varied.parameter) %>% unique
 if (length(tmp) != 1) {
@@ -181,11 +194,13 @@ if (length(tmp) != 1) {
 } else {
   varied.parameter <- tmp
 }
+if (varied.parameter == 'Dispersion') {
+  df.bench$parameter <- 1/df.bench$parameter
+}
 
 if (!any(is.na(as.numeric(df.bench$parameter)))) {
   df.bench$parameter %<>% as.factor %>% fct_inseq
 }
-
 
 # create plots
 create.plots(df.bench, target.dir, varied.parameter)

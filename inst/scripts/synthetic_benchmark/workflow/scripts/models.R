@@ -30,6 +30,7 @@ run.all.models <- function(
   }
   # reduce data for correlations
   graph <- as(wt.graph, "matrix")
+  graph1 <- as_adjmat(wt.graph)
   wt.X.cor <- compute.tpm(wt.X)[, seq_len(ncol(graph))]
   mt.X.cor <- compute.tpm(mt.X)[, seq_len(ncol(graph))]
 
@@ -53,6 +54,16 @@ run.all.models <- function(
     res.pcor$dce_pvalue <- ground.truth$dce*0
   }
   time.pcor <- as.integer(difftime(Sys.time(), time.tmp, units = "secs"))
+
+  time.tmp <- Sys.time()
+  if (is.null(methods) || "pcorz" %in% methods) {
+    res.pcorz <- list(dce = pcor(mt.X.cor, g = graph1, method = 'spearman') - pcor(wt.X.cor, g = graph1, method = 'spearman', adjustment_type = adjustment.type))
+    res.pcorz$dce_pvalue <- permutation_test(wt.X.cor, mt.X.cor, fun = pcor, method = 'spearman', g = graph1, adjustment_type = adjustment.type)
+  } else {
+    res.pcorz <- ground.truth
+    res.pcorz$dce_pvalue <- ground.truth$dce*0
+  }
+  time.pcorz <- as.integer(difftime(Sys.time(), time.tmp, units = "secs"))
 
   # differential causal effects
   if (link.method == "log") {
@@ -78,11 +89,11 @@ run.all.models <- function(
 
   time.tmp <- Sys.time()
   if (is.null(methods) || "dce.nolib" %in% methods) {
-    res.dce.nolib <- dce::dce_nb(
+    res.dce.nolib <- dce(
       wt.graph.perturbed, wt.X, mt.X,
+      solver = "lm",
       adjustment_type = adjustment.type,
       effect_type = effect.type,
-      solver_args = solver.args,
       lib_size = FALSE
     )
   } else {
@@ -137,6 +148,23 @@ run.all.models <- function(
     res.dce.lm.tpm$dce_pvalue <- ground.truth$dce*0
   }
   time.dce.lm.tpm <- as.integer(difftime(Sys.time(), time.tmp, units = "secs"))
+
+  time.tmp <- Sys.time()
+  if (is.null(methods) || "dce.lm.tpm.HC" %in% methods) {
+    res.dce.lm.tpm.HC <- dce(
+      wt.graph.perturbed, compute.tpm(wt.X), compute.tpm(mt.X),
+      solver = "lm",
+      adjustment_type = adjustment.type,
+      effect_type = effect.type,
+      lib_size = FALSE,
+      deconfounding = latent,
+      test = 'vcovHC'
+    )
+  } else {
+    res.dce.lm.tpm.HC <- ground.truth
+    res.dce.lm.tpm.HC$dce_pvalue <- ground.truth$dce*0
+  }
+  time.dce.lm.tpm.HC <- as.integer(difftime(Sys.time(), time.tmp, units = "secs"))
 
   time.tmp <- Sys.time()
   if (is.null(methods) || "dce.lm.tpm.nolatent" %in% methods) {
@@ -246,11 +274,13 @@ run.all.models <- function(
     truth=as.vector(ground.truth$dce),
     cor=as.vector(res.cor$dce),
     pcor=as.vector(res.pcor$dce),
+    pcorz=as.vector(res.pcorz$dce),
     dce=as.vector(res.dce$dce),
     dce.nolib=as.vector(res.dce.nolib$dce),
     dce.tpm=as.vector(res.dce.tpm$dce),
     dce.tpm.nolatent=as.vector(res.dce.tpm.nolatent$dce),
     dce.lm.tpm=as.vector(res.dce.lm.tpm$dce),
+    dce.lm.tpm.HC=as.vector(res.dce.lm.tpm.HC$dce),
     dce.lm.tpm.nolatent=as.vector(res.dce.lm.tpm.nolatent$dce),
     ldgm=as.vector(res.ldgm$dce),
     fggm=as.vector(res.fggm$dce),
@@ -262,11 +292,13 @@ run.all.models <- function(
     truth=as.vector(ground.truth$dce),
     cor=as.vector(res.cor$dce_pvalue),
     pcor=as.vector(res.pcor$dce_pvalue),
+    pcorz=as.vector(res.pcorz$dce_pvalue),
     dce=as.vector(res.dce$dce_pvalue),
     dce.nolib=as.vector(res.dce.nolib$dce_pvalue),
     dce.tpm=as.vector(res.dce.tpm$dce_pvalue),
     dce.tpm.nolatent=as.vector(res.dce.tpm.nolatent$dce_pvalue),
     dce.lm.tpm=as.vector(res.dce.lm.tpm$dce_pvalue),
+    dce.lm.tpm.HC=as.vector(res.dce.lm.tpm.HC$dce_pvalue),
     dce.lm.tpm.nolatent=as.vector(res.dce.lm.tpm.nolatent$dce_pvalue),
     ldgm=as.vector(res.ldgm$dce_pvalue),
     fggm=as.vector(res.fggm$dce_pvalue),
@@ -277,11 +309,13 @@ run.all.models <- function(
   df.runtime <- data.frame(
     cor=time.cor,
     pcor=time.pcor,
+    pcorz=time.pcorz,
     dce=time.dce,
     dce.nolib=time.dce.nolib,
     dce.tpm=time.dce.tpm,
     dce.tpm.nolatent=time.dce.tpm.nolatent,
     dce.lm.tpm=time.dce.lm.tpm,
+    dce.lm.tpm.HC=time.dce.lm.tpm.HC,
     dce.lm.tpm.nolatent=time.dce.lm.tpm.nolatent,
     ldgm=time.ldgm,
     fggm=time.fggm,
