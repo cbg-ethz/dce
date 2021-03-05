@@ -35,7 +35,7 @@ purrr::transpose(list(plot = p.list, label = labels.list)) %>%
     label_clean <- x$label %>% str_replace(" ", "_")
     print(label_clean)
 
-    fname <- file.path(outdir, glue::glue("{label_clean}.dce.pdf"))
+    fname <- file.path(outdir, glue::glue("{label_clean}.pdf"))
     cowplot::save_plot(
       fname,
       x$plot,
@@ -45,7 +45,7 @@ purrr::transpose(list(plot = p.list, label = labels.list)) %>%
 
 # aggregate plot
 cowplot::save_plot(
-  file.path(outdir, "all_stages.dce.pdf"),
+  file.path(outdir, "all_stages.pdf"),
   p, ncol = length(p.list),
   base_height = 30, base_asp = 1, limitsize = FALSE
 )
