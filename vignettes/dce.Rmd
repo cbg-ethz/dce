@@ -13,13 +13,13 @@ vignette: >
 
 # Overview
 
-One cause of diseases like cancer is the de-regulation of signalling pathways. The interaction of two or more genes is changed and cell behaviour is changed in the malignant tissue.
+One cause of diseases like cancer is the deregulation of signalling pathways. The interaction of two or more genes is changed and cell behaviour is changed in the malignant tissue.
 
-The estimation of causal effects from observational data has previously been used to elucidate gene interactions. We extended this notion to compute Differential Causal Effects (DCE). We compare the causal effects in malignant tissue (e.g., from a tumor) and healthy tissue to detect differences in the gene interactions.
+The estimation of causal effects from observational data has previously been used to elucidate gene interactions. We extend this notion to compute Differential Causal Effects (DCE). We compare the causal effects between two conditions, such as a malignant tissue (e.g., from a tumor) and a healthy tissue to detect differences in the gene interactions.
 
-However, computing causal effects purely from observational data is difficult, because beforehand the gene network has to be reconstructed. To overcome this issue we use prior knowledge from literature. This largely improves performance and makes the estimation of DCEs more accurate.
+However, computing causal effects solely from given observations is difficult, because it requires reconstructing the gene network beforehand. To overcome this issue, we use prior knowledge from literature. This largely improves performance and makes the estimation of DCEs more accurate.
 
-Overall we can detect pathways which play a prominent role in tumorigenesis. We can even pinpoint specific interaction in the pathway that make a large contribution to the rise of the disease.
+Overall, we can detect pathways which play a prominent role in tumorigenesis. We can even pinpoint specific interaction in the pathway that make a large contribution to the rise of the disease.
 
 # Installation
 
@@ -53,9 +53,9 @@ set.seed(42)
 
 # Introductory example
 
-To demonstrate the basic idea of Differential Causal Effects (DCEs), we first create a wild-type network by setting up its adjacency matrix.
-The specified edge weights correspond to direct causal effects and total causal effects are defined accordingly [@pearl2010causal].
-This way, the detected dysregulations are endowed with a causal interpretation and spurious correlations are ignored. This can be achieved by assuming that the underlying network models causal relationships and selecting valid adjustment sets.
+To demonstrate the basic idea of Differential Causal Effects (DCEs), we first artificially create a wild-type network by setting up its adjacency matrix.
+The specified edge weights describe the direct causal effects and total causal effects are defined accordingly [@pearl2010causal].
+In this way, the detected dysregulations are endowed with a causal interpretation and spurious correlations are ignored. This can be achieved by using valid adjustment sets, assuming that the underlying network indeed models causal relationships accurately.
 In a biological setting, these networks correspond, for example, to a KEGG pathway  [@kanehisa2004kegg] in a healthy cell.
 Here, the edge weights correspond to proteins facilitating or inhibiting each others expression levels.
 
@@ -80,7 +80,7 @@ cowplot::plot_grid(
 )
 ```
 
-By propagating counts which were randomly initialized at root notes, we can generate synthetic expression data for each node in both networks. Both `X_wt` and `X_mt` then induce causal effects as defined in their respective adjacency matrices.
+By computing the counts based on the edge weights (root nodes are randomly initialized), we can generate synthetic expression data for each node in both networks. Both `X_wt` and `X_mt` then induce causal effects as defined in their respective adjacency matrices.
 
 ```{r}
 X_wt <- simulate_data(graph_wt)
@@ -101,7 +101,7 @@ res %>%
 ```
 
 Visualizing the result shows that we can recover the dysregulation of the edge from `A` to `B`.
-Note that since we are computing total causal effects, the edge from `A` to `C` shows the same effect.
+Note that since we are computing total causal effects, the causal effect of  `A` on `C` has changed as well.
 
 ```{r}
 plot(res) +
@@ -160,7 +160,7 @@ pathways <- get_pathways(pathway_list = list(kegg = c("Breast cancer")))
 brca_pathway <- pathways[[1]]$graph
 ```
 
-Luckily it shares all genes with the cancer data set.
+Luckily, it shares all genes with the cancer data set.
 
 ```{r}
 shared_genes <- intersect(nodes(brca_pathway), rownames(brca_wt))
