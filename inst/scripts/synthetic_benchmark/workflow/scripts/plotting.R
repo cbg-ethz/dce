@@ -37,7 +37,7 @@ print(glue::glue("{input.fname} -> {target.dir} (methods) (parameters)"))
 # helper functions
 create.plots <- function(df.bench, plot.dir, varied.parameter) {
   # create performance plots
-  performance.measures <- c("correlation", "mse", "precision", "recall", "f1-score", "pr-auc", "ROC-AUC")
+  performance.measures <- c("correlation", "mse", "precision", "recall", "f1-score", "pr-auc", "ROC-AUC","ROC-AUC (ES)")
 
   height <- 20
   Npar <- length(table(df.bench$parameter))
@@ -46,6 +46,17 @@ create.plots <- function(df.bench, plot.dir, varied.parameter) {
   for (measure in performance.measures) {
     print(glue::glue("Plotting {measure}"))
 
+    xlabel <- switch(unique(df.bench$varied.parameter),
+                     "Adjustment set" = 'confounders',
+                     "Effect magnitude" = 'maximum absolute effect size',
+                     "Dispersion" = 'dispersion strength',
+                     "Latent variables" = 'number of latent variables',
+                     "Library size range" = 'maximum library size factor',
+                     "Number of samples" = 'number of samples',
+                     "Network size" = 'number of genes in the network',
+                     "Network perturbation" = 'fraction of added/deleted edges',
+                     "Prevalence of positive edges" = 'prevelance of true differential effects')
+
     p <- df.bench %>%
       dplyr::filter(type == measure) %>%
       gather("variable", "value", -parameter, -type, -varied.parameter, -rng.seed) %>%
@@ -53,12 +64,13 @@ create.plots <- function(df.bench, plot.dir, varied.parameter) {
       geom_boxplot() +
       ggtitle(paste(varied.parameter)) +
       ylab(glue::glue("{measure}")) +
+      xlab(xlabel) +
       theme_minimal(base_size=20) +
       theme(plot.title=element_text(hjust=0.5))
 
     if (measure %in% c("correlation")) {
       p <- p + ylim(-1, 1)
-    } else if (measure %in% c("precision", "recall", "f1-score", "pr-auc", "roc-auc")) {
+    } else if (measure %in% c("precision", "recall", "f1-score", "pr-auc", "roc-auc", "roc-auc_es")) {
       p <- p + ylim(0, 1)
     }
 
@@ -181,10 +193,10 @@ df.bench$varied.parameter <- mgsub::mgsub(df.bench$varied.parameter,
                                           c("Adjustment set", "Effect magnitude", "Dispersion", "Latent variables", "Library size range", "Number of samples", "Network size", "Network perturbation", "Prevalence of positive edges"))
 colnames(df.bench) <- mgsub::mgsub(colnames(df.bench),
                                    c('dce.lm.tpm','fggm','cor','pcorz','dce.nolib'),
-                                   c('DCE','FGGM','COR','PCOR','DCE (no library size correction)'))
+                                   c('dce','fggm','cor','pcor','dce (no library size correction)'))
 df.bench$type <- mgsub::mgsub(df.bench$type,
-                              c('roc-auc'),
-                              c('ROC-AUC'))
+                              c('roc-auc','roc-auc_es'),
+                              c('ROC-AUC','ROC-AUC (ES)'))
 
 tmp <- df.bench %>% pull(varied.parameter) %>% unique
 if (length(tmp) != 1) {

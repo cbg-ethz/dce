@@ -222,6 +222,11 @@ df.bench <- purrr::pmap_dfr(
         data.frame(pert.edge = as.numeric(as.vector(tmp.graph.perturbed) != 0)),
         df.pvalues
       )
+      df.all.edges <- bind_cols(
+        data.frame(orig.edge = as.numeric(as.vector(tmp.graph) != 0)),
+        data.frame(pert.edge = as.numeric(as.vector(tmp.graph.perturbed) != 0)),
+        df.edges
+      )
 
       for (method in methods) {
         df.all[[method]] <- case_when(
@@ -232,10 +237,15 @@ df.bench <- purrr::pmap_dfr(
 
       df.all %<>%
         dplyr::filter(orig.edge | pert.edge)
+      df.all.edges %<>%
+        dplyr::filter(orig.edge | pert.edge)
 
       df.pvalues.mod <- df.all %>%
         select(-orig.edge, -pert.edge)
+      df.edges.mod <- df.all.edges %>%
+        select(-orig.edge, -pert.edge)
 
+      apply.performance.measure(df.edges.mod, methods, compute.rocauc_es, "roc-auc_es")
       apply.performance.measure(df.pvalues.mod, methods, compute.prauc, "pr-auc")
       apply.performance.measure(df.pvalues.mod, methods, compute.rocauc, "roc-auc")
       cor(df.edges[c("truth", methods)], method = "spearman", use = "pairwise.complete.obs")
@@ -244,7 +254,7 @@ df.bench <- purrr::pmap_dfr(
       data.frame() %>%
         bind_rows(
           as.data.frame(
-            cor(df.edges[c("truth", methods)], method = "spearman", use = "pairwise.complete.obs")
+            cor(df.edges.mod[c("truth", methods)], method = "spearman", use = "pairwise.complete.obs")
           ) %>%
             rownames_to_column() %>%
             dplyr::filter(rowname == "truth") %>%
@@ -261,12 +271,13 @@ df.bench <- purrr::pmap_dfr(
             as.data.frame %>%
             rownames_to_column(var = "type"),
 
-          apply.performance.measure(df.edges, methods, compute.mse, "mse"),
+          apply.performance.measure(df.edges.mod, methods, compute.mse, "mse"),
           apply.performance.measure(df.pvalues.mod, methods, compute.precision, "precision"),
           apply.performance.measure(df.pvalues.mod, methods, compute.recall, "recall"),
           apply.performance.measure(df.pvalues.mod, methods, compute.f1score, "f1-score"),
           apply.performance.measure(df.pvalues.mod, methods, compute.prauc, "pr-auc"),
           apply.performance.measure(df.pvalues.mod, methods, compute.rocauc, "roc-auc"),
+          apply.performance.measure(df.edges.mod, methods, compute.rocauc_es, "roc-auc_es"),
 
           df.runtime %>% mutate(type = "runtime"),
 

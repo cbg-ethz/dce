@@ -143,6 +143,36 @@ compute.rocauc <- function(df, col, seq = 1000) {
   return(auc)
 }
 
+compute.rocauc_es <- function(df, col) {
+  sens <- spec <- numeric(nrow(df))
+  auc <- 0
+  df <- abs(df)
+  alphas <- c(0, sort(df[, col]), max(sort(df[, col]))+1)
+  get.class.counts <- function(df, col, alpha = 0.05) {
+    y <- as.numeric(df$truth != 0)
+    y.hat <- as.numeric(df[[col]] > alpha)
+
+    list(
+      tp = sum(y.hat == 1 & y == 1, na.rm = TRUE),
+      fp = sum(y.hat == 1 & y == 0, na.rm = TRUE),
+      tn = sum(y.hat == 0 & y == 0, na.rm = TRUE),
+      fn = sum(y.hat == 0 & y == 1, na.rm = TRUE)
+    )
+  }
+  for (i in seq_len(length(alphas))) {
+    alpha <- alphas[i]
+    c <- get.class.counts(df, col, alpha = alpha)
+
+    sens[i] <- c$tp / (c$tp + c$fn)
+    spec[i] <- c$tn / (c$tn + c$fp)
+
+    if (i > 1) {
+      auc <- auc + (-spec[i-1]+spec[i])*((sens[i]+sens[i-1])/2)
+    }
+  }
+  return(auc)
+}
+
 apply.performance.measure <- function(df, methods, func, label, ...) {
   purrr::map_dfc(methods, function(method) {
     tmp <- data.frame(func(df, method, ...))
