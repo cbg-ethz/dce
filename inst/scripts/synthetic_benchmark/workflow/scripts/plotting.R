@@ -47,15 +47,15 @@ create.plots <- function(df.bench, plot.dir, varied.parameter) {
     print(glue::glue("Plotting {measure}"))
 
     xlabel <- switch(unique(df.bench$varied.parameter),
-                     "Adjustment set" = 'confounders',
-                     "Effect magnitude" = 'maximum absolute effect size',
-                     "Dispersion" = 'dispersion strength',
-                     "Latent variables" = 'number of latent variables',
-                     "Library size range" = 'maximum library size factor',
-                     "Number of samples" = 'number of samples',
-                     "Network size" = 'number of genes in the network',
-                     "Network perturbation" = 'fraction of added/deleted edges',
-                     "Prevalence of positive edges" = 'prevelance of true differential effects')
+                     "Adjustment set" = 'Confounders',
+                     "Effect magnitude" = 'Maximum absolute effect size',
+                     "Dispersion" = 'Dispersion strength',
+                     "Latent variables" = 'Number of latent variables',
+                     "Library size range" = 'Maximum library size factor',
+                     "Number of samples" = 'Number of samples',
+                     "Network size" = 'Number of genes in the network',
+                     "Network perturbation" = 'Fraction of added/deleted edges',
+                     "Prevalence of positive edges" = 'Prevelance of true differential effects')
 
     p <- df.bench %>%
       dplyr::filter(type == measure) %>%
@@ -66,11 +66,13 @@ create.plots <- function(df.bench, plot.dir, varied.parameter) {
       ylab(glue::glue("{measure}")) +
       xlab(xlabel) +
       theme_minimal(base_size=20) +
-      theme(plot.title=element_text(hjust=0.5))
+      theme(plot.title=element_text(hjust=0.5)) +
+      guides(fill=guide_legend(title="Methods",
+                               label.them = element_text(face = 'italic')))
 
     if (measure %in% c("correlation")) {
       p <- p + ylim(-1, 1)
-    } else if (measure %in% c("precision", "recall", "f1-score", "pr-auc", "roc-auc", "roc-auc_es")) {
+    } else if (measure %in% c("precision", "recall", "f1-score", "pr-auc", "roc-auc", "roc-auc_es", "ROC-AUC", "ROC-AUC (ES)")) {
       p <- p + ylim(0, 1)
     }
 
@@ -192,8 +194,11 @@ df.bench$varied.parameter <- mgsub::mgsub(df.bench$varied.parameter,
                                           c("adjustment.type", "beta.magnitude", "dispersion", "latent", "lib.size.range", "mt.samples", "node.num", "perturb", "true.positives"),
                                           c("Adjustment set", "Effect magnitude", "Dispersion", "Latent variables", "Library size range", "Number of samples", "Network size", "Network perturbation", "Prevalence of positive edges"))
 colnames(df.bench) <- mgsub::mgsub(colnames(df.bench),
-                                   c('dce.lm.tpm','fggm','cor','pcorz','dce.nolib'),
-                                   c('dce','fggm','cor','pcor','dce (no library size correction)'))
+                                   c('dce.lm.tpm', 'fggm', 'cor', 'pcorz', 'dce.nolib'),
+                                   c('dce', 'fggm', 'cor', 'pcor', 'dce (no library size correction)'))
+if (!'dce' %in% colnames(df.bench)) {
+  colnames(df.bench) <- gsub('.HC', '', colnames(df.bench))
+}
 df.bench$type <- mgsub::mgsub(df.bench$type,
                               c('roc-auc','roc-auc_es'),
                               c('ROC-AUC','ROC-AUC (ES)'))
