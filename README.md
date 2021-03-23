@@ -39,3 +39,5 @@ remotes::install_github("cbg-ethz/dce")
 * Documentation
     * Build locally: `Rscript -e "pkgdown::build_site()"`
     * Deploy: `Rscript -e "pkgdown::deploy_to_branch(new_process = FALSE)"`
+* Bioconductor
+    * The `bioc` branch stores changes specific to Bioconductor releases
