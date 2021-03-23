@@ -501,7 +501,7 @@ estimate_latent_count <- function(X1, X2, method = "auto") {
         # comparing the singular values to what they would be if the
         # variables were independent which is estimated by permuting the
         # columns of the data matrix
-        permutation_thresholding <- function(X, quantile=0.99) {
+        permutation_thresholding <- function(X, quantile = 0.99) {
             N <- 50
             r <- min(dim(X))
             X <- scale(X)
@@ -520,8 +520,8 @@ estimate_latent_count <- function(X1, X2, method = "auto") {
             return(max(which(c(TRUE, (svd(X)$d > thresholds)[1:limit])) - 1))
         }
 
-        q1 <- permutation_thresholding(X1)
-        q2 <- permutation_thresholding(X2)
+        q1 <- permutation_thresholding(X1[, colSums(is.na(X1)) == 0])
+        q2 <- permutation_thresholding(X2[, colSums(is.na(X2)) == 0])
 
         return(ceiling((q1 + q2) / 2))
     }
