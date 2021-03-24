@@ -93,7 +93,7 @@ plot_network <- function(
     }
 
     # create plot
-    as_tbl_graph(igraph::graph_from_adjacency_matrix(
+    as_tbl_graph(igraph::graph_from_adjacency_matrix(  # nolint
         adja_matrix, weighted = TRUE
     )) %>%
         activate(nodes) %>%
@@ -105,7 +105,7 @@ plot_network <- function(
             },
             nodesize = nodesize,
             is.highlighted = .data$label %in% highlighted_nodes
-        ) %T>%  # nolint
+        ) %T>%
         with({
             label_list <- as.data.frame(.)$label  # nolint
             extra_nodes <- setdiff(highlighted_nodes, label_list)

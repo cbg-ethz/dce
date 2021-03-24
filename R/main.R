@@ -661,7 +661,7 @@ as.data.frame.dce <- function(x, row.names = NULL, optional = FALSE, ...) {
         stop("row.names and optional arguments not supported")
     }
 
-    x$dce %>%
+    x$dce %>%  # nolint
         melt(.) %>%
         rename(dce = .data$value, source = .data$Var1, target = .data$Var2) %>%
         mutate(dce_stderr = melt(x$dce_stderr)$value) %>%
