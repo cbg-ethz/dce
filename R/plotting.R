@@ -105,14 +105,13 @@ plot_network <- function(
             },
             nodesize = nodesize,
             is.highlighted = .data$label %in% highlighted_nodes
-        ) %T>%
+        ) %T>%  # nolint
         with({
             label_list <- as.data.frame(.)$label  # nolint
             extra_nodes <- setdiff(highlighted_nodes, label_list)
 
             if (length(extra_nodes) > 0) {
-                label_str <- glue::glue_collapse(extra_nodes,
-                                                 sep = ", ")  # nolint
+                label_str <- glue::glue_collapse(extra_nodes, sep = ", ")  # nolint
                 warning(
                     glue::glue("Invalid highlighted nodes: {label_str}"),
                     call. = FALSE

@@ -639,6 +639,7 @@ glm_solver <- function(form, df, solver, solver_args) {
 #' @export
 #' @importFrom reshape2 melt
 #' @importFrom dplyr mutate rename
+#' @importFrom rlang .data
 #' @return data frame containing the dce output
 #' @method as.data.frame dce
 #' @examples
@@ -654,7 +655,7 @@ as.data.frame.dce <- function(x, row.names = NULL, optional = FALSE, ...) {
 
     x$dce %>%
         melt(.) %>%
-        rename(dce = value, source = Var1, target = Var2) %>%
+        rename(dce = .data$value, source = .data$Var1, target = .data$Var2) %>%
         mutate(dce_stderr = melt(x$dce_stderr)$value) %>%
         mutate(dce_pvalue = melt(x$dce_pvalue)$value)
 }

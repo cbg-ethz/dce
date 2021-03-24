@@ -6,6 +6,7 @@
 #'        per pathway. Takes longer!
 #' @import graphite graph glue purrr logger
 #' @importFrom dplyr pull
+#' @importFrom rlang .data
 #' @export
 #' @return data frame with pathway meta information
 #' @examples
@@ -16,8 +17,8 @@ get_pathway_info <- function(
 ) {
     if (is.null(database_list)) {
         database_list <- graphite::pathwayDatabases() %>%
-            filter(species == query_species) %>%
-            pull(database)
+            filter(.data$species == query_species) %>%
+            pull(.data$database)
     }
 
     database_list %>%
@@ -53,6 +54,7 @@ get_pathway_info <- function(
 #' @param pathway_list List mapping database name to
 #' vector of pathway names to download
 #' @import graphite glue purrr org.Hs.eg.db logger
+#' @importFrom rlang .data
 #' @export
 #' @return list of pathways
 #' @examples
@@ -72,8 +74,8 @@ get_pathways <- function(
         if (is.null(pathway_list)) {
             # user has no preference, use all
             database_list <- graphite::pathwayDatabases() %>%
-                filter(species == query_species) %>%
-                pull(database)
+                filter(.data$species == query_species) %>%
+                pull(.data$database)
         } else {
             # user wants certain pathways, only use respective databases
             database_list <- names(pathway_list)
@@ -92,7 +94,7 @@ get_pathways <- function(
 
             db_symbol <- graphite::convertIdentifiers(db, "SYMBOL")
 
-            graph_list <- purrr::map(as.list(db_symbol), function(pw) {
+            purrr::map(as.list(db_symbol), function(pw) {
                 # remove "SYMBOL:" prefix
                 graph <- graphite::pathwayGraph(pw, which = "proteins")
 
