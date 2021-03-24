@@ -83,13 +83,10 @@ setMethod(
         log_level = logger::INFO
     ) {
         mat <- as(igraph::as_adjacency_matrix(graph), "matrix")
-
-        if ("name" %in% igraph::vertex_attr_names(graph)) {
-            node_names <- igraph::vertex_attr(graph, "name")
-        } else {
+        if (is.null(rownames(mat))) {
             node_names <- as.character(seq_len(dim(mat)[[1]]))
+            rownames(mat) <- colnames(mat) <- node_names
         }
-        rownames(mat) <- colnames(mat) <- node_names
 
         dce(
             mat,
