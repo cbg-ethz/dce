@@ -61,7 +61,13 @@
     <loc>https://cbg-ethz.github.io/dce//reference/resample_edge_weights.html</loc>
   </url>
   <url>
+    <loc>https://cbg-ethz.github.io/dce//reference/rlm_dce.html</loc>
+  </url>
+  <url>
     <loc>https://cbg-ethz.github.io/dce//reference/simulate_data-methods.html</loc>
+  </url>
+  <url>
+    <loc>https://cbg-ethz.github.io/dce//reference/summary.rlm_dce.html</loc>
   </url>
   <url>
     <loc>https://cbg-ethz.github.io/dce//reference/topologically_ordering.html</loc>

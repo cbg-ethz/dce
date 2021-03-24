@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">dce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.3</span>
       </span>
     </div>
 
@@ -154,66 +154,63 @@
     <pre class="examples"><div class='input'><span class='va'>dag</span> <span class='op'>&lt;-</span> <span class='fu'><a href='create_random_DAG.html'>create_random_DAG</a></span><span class='op'>(</span><span class='fl'>30</span>, <span class='fl'>0.2</span><span class='op'>)</span>
 <span class='fu'>graph2df</span><span class='op'>(</span><span class='va'>dag</span><span class='op'>)</span>
 </div><div class='output co'>#&gt;    source sink
-#&gt; 1      n1   n6
-#&gt; 2      n1   n8
-#&gt; 3      n1  n13
-#&gt; 4      n1  n21
-#&gt; 5      n1  n30
-#&gt; 6      n2   n3
-#&gt; 7      n2  n12
-#&gt; 8      n2  n14
-#&gt; 9      n2  n19
-#&gt; 10     n5  n10
-#&gt; 11     n5  n16
-#&gt; 12     n9  n14
-#&gt; 13     n9  n15
-#&gt; 14     n9  n19
-#&gt; 15    n11  n13
-#&gt; 16     n6  n30
-#&gt; 17     n6  n28
-#&gt; 18     n3   n4
-#&gt; 19     n3  n10
-#&gt; 20     n3  n15
-#&gt; 21    n12  n14
-#&gt; 22    n12  n16
-#&gt; 23    n12  n18
-#&gt; 24    n12  n23
-#&gt; 25    n12  n22
-#&gt; 26     n4   n7
-#&gt; 27     n4   n8
-#&gt; 28     n4  n16
-#&gt; 29     n4  n21
-#&gt; 30     n4  n23
-#&gt; 31     n4  n17
-#&gt; 32    n10  n15
-#&gt; 33    n10  n20
-#&gt; 34    n10  n26
-#&gt; 35    n14  n18
-#&gt; 36    n14  n24
-#&gt; 37    n14  n27
-#&gt; 38    n14  n29
-#&gt; 39     n7  n13
-#&gt; 40     n7  n17
-#&gt; 41     n8  n20
-#&gt; 42     n8  n28
-#&gt; 43    n16  n21
-#&gt; 44    n15  n18
-#&gt; 45    n15  n23
-#&gt; 46    n15  n24
-#&gt; 47    n15  n26
-#&gt; 48    n15  n29
-#&gt; 49    n13  n17
-#&gt; 50    n13  n27
-#&gt; 51    n21  n24
-#&gt; 52    n18  n19
-#&gt; 53    n17  n20
-#&gt; 54    n24  n30
-#&gt; 55    n19  n22
-#&gt; 56    n19  n25
-#&gt; 57    n19  n26
-#&gt; 58    n20  n27
-#&gt; 59    n26  n28
-#&gt; 60    n28  n29</div></pre>
+#&gt; 1      n1   n5
+#&gt; 2      n1  n18
+#&gt; 3      n1  n20
+#&gt; 4      n1  n13
+#&gt; 5      n1  n19
+#&gt; 6      n1  n21
+#&gt; 7      n1  n27
+#&gt; 8      n1  n17
+#&gt; 9      n2   n6
+#&gt; 10     n2  n18
+#&gt; 11     n2  n29
+#&gt; 12     n3   n4
+#&gt; 13     n3  n10
+#&gt; 14     n3  n14
+#&gt; 15     n3  n21
+#&gt; 16     n3  n30
+#&gt; 17     n7  n19
+#&gt; 18    n12  n18
+#&gt; 19    n12  n20
+#&gt; 20    n12  n15
+#&gt; 21    n12  n24
+#&gt; 22    n12  n28
+#&gt; 23     n5   n8
+#&gt; 24     n6  n23
+#&gt; 25     n6  n13
+#&gt; 26     n6  n26
+#&gt; 27     n6  n25
+#&gt; 28     n6  n22
+#&gt; 29     n4   n9
+#&gt; 30     n4  n11
+#&gt; 31     n4  n16
+#&gt; 32     n4  n26
+#&gt; 33     n4  n29
+#&gt; 34    n18  n20
+#&gt; 35    n18  n24
+#&gt; 36     n8  n10
+#&gt; 37     n8  n14
+#&gt; 38    n23  n25
+#&gt; 39    n23  n30
+#&gt; 40     n9  n13
+#&gt; 41     n9  n19
+#&gt; 42     n9  n22
+#&gt; 43    n11  n26
+#&gt; 44    n11  n17
+#&gt; 45    n16  n28
+#&gt; 46    n14  n15
+#&gt; 47    n14  n27
+#&gt; 48    n13  n15
+#&gt; 49    n13  n24
+#&gt; 50    n13  n25
+#&gt; 51    n19  n21
+#&gt; 52    n19  n28
+#&gt; 53    n26  n27
+#&gt; 54    n15  n17
+#&gt; 55    n15  n22
+#&gt; 56    n22  n29
+#&gt; 57    n22  n30</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

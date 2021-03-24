@@ -73,7 +73,7 @@ numeric matrix" />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">dce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.3</span>
       </span>
     </div>
 
@@ -137,7 +137,7 @@ numeric matrix" />
 numeric matrix</p>
     </div>
 
-    <pre class="usage"><span class='fu'>pcor</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>...</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>pcor</span><span class='op'>(</span><span class='va'>x</span>, g <span class='op'>=</span> <span class='cn'>NULL</span>, adjustment_type <span class='op'>=</span> <span class='st'>"parents"</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -147,8 +147,17 @@ numeric matrix</p>
       <td><p>matrix</p></td>
     </tr>
     <tr>
+      <th>g</th>
+      <td><p>related graph as adjacency matrix (optional)</p></td>
+    </tr>
+    <tr>
+      <th>adjustment_type</th>
+      <td><p>character string for the method
+to define the adjustment set Z for the regression</p></td>
+    </tr>
+    <tr>
       <th>...</th>
-      <td><p>additional arguments for functions 'cor'</p></td>
+      <td><p>additional arguments for function 'cor'</p></td>
     </tr>
     </table>
 
@@ -159,28 +168,28 @@ numeric matrix</p>
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='va'>x</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='fl'>100</span><span class='op'>)</span>,<span class='fl'>10</span>,<span class='fl'>10</span><span class='op'>)</span>
 <span class='fu'>pcor</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='warning'>Warning: The inverse of variance-covariance matrix is calculated using Moore-Penrose generalized matrix invers due to its determinant of zero.</span></div><div class='output co'>#&gt; <span class='warning'>Warning: NaNs produced</span></div><div class='output co'>#&gt;             [,1]       [,2]       [,3]       [,4]       [,5]       [,6]
-#&gt;  [1,]  1.0000000 -0.8579579  0.9487457  0.9603579 -0.9393729 -0.9552945
-#&gt;  [2,] -0.8579579  1.0000000  0.8743053  0.9122698 -0.8651069 -0.8021461
-#&gt;  [3,]  0.9487457  0.8743053  1.0000000 -0.9819461  0.9418708  0.9323079
-#&gt;  [4,]  0.9603579  0.9122698 -0.9819461  1.0000000  0.9555057  0.9448043
-#&gt;  [5,] -0.9393729 -0.8651069  0.9418708  0.9555057  1.0000000 -0.9139370
-#&gt;  [6,] -0.9552945 -0.8021461  0.9323079  0.9448043 -0.9139370  1.0000000
-#&gt;  [7,]  0.9706507  0.8351625 -0.9613675 -0.9446335  0.8896827  0.9463466
-#&gt;  [8,] -0.8850715 -0.8892674  0.9075151  0.9558823 -0.9306771 -0.8837975
-#&gt;  [9,] -0.9404655 -0.9119485  0.9735961  0.9882241 -0.9430344 -0.9297478
-#&gt; [10,]  0.5920526  0.6218419 -0.6780509 -0.7027081  0.8138918  0.5660740
-#&gt;             [,7]       [,8]       [,9]      [,10]
-#&gt;  [1,]  0.9706507 -0.8850715 -0.9404655  0.5920526
-#&gt;  [2,]  0.8351625 -0.8892674 -0.9119485  0.6218419
-#&gt;  [3,] -0.9613675  0.9075151  0.9735961 -0.6780509
-#&gt;  [4,] -0.9446335  0.9558823  0.9882241 -0.7027081
-#&gt;  [5,]  0.8896827 -0.9306771 -0.9430344  0.8138918
-#&gt;  [6,]  0.9463466 -0.8837975 -0.9297478  0.5660740
-#&gt;  [7,]  1.0000000  0.8426972  0.9313421 -0.5222604
-#&gt;  [8,]  0.8426972  1.0000000 -0.9383320  0.7649470
-#&gt;  [9,]  0.9313421 -0.9383320  1.0000000  0.6875249
-#&gt; [10,] -0.5222604  0.7649470  0.6875249  1.0000000</div></pre>
+</div><div class='output co'>#&gt; <span class='warning'>Warning: The inverse of variance-covariance matrix is calculated using Moore-Penrose generalized matrix invers due to its determinant of zero.</span></div><div class='output co'>#&gt; <span class='warning'>Warning: NaNs produced</span></div><div class='output co'>#&gt;             [,1]        [,2]       [,3]        [,4]         [,5]       [,6]
+#&gt;  [1,]  1.0000000 -0.70055605  0.6979819  0.62859084  0.775515686 -0.8665417
+#&gt;  [2,] -0.7005560  1.00000000  0.9860288  0.72706574  0.968294586 -0.9376398
+#&gt;  [3,]  0.6979819  0.98602878  1.0000000 -0.71563606 -0.957360956  0.9351657
+#&gt;  [4,]  0.6285908  0.72706574 -0.7156361  1.00000000 -0.658494940  0.7279581
+#&gt;  [5,]  0.7755157  0.96829459 -0.9573610 -0.65849494  1.000000000  0.9502226
+#&gt;  [6,] -0.8665417 -0.93763984  0.9351657  0.72795814  0.950222565  1.0000000
+#&gt;  [7,]  0.7997415  0.98125003 -0.9762323 -0.74382805 -0.965824742  0.9750838
+#&gt;  [8,]  0.8381308  0.86001764 -0.8858015 -0.65146627 -0.859238465  0.9403969
+#&gt;  [9,]  0.2342361 -0.08592856  0.1168653  0.01078242  0.004489181  0.1695102
+#&gt; [10,] -0.6333095 -0.94430452  0.9450270  0.69940280  0.889756452 -0.9083258
+#&gt;              [,7]       [,8]         [,9]      [,10]
+#&gt;  [1,]  0.79974149  0.8381308  0.234236077 -0.6333095
+#&gt;  [2,]  0.98125003  0.8600176 -0.085928564 -0.9443045
+#&gt;  [3,] -0.97623227 -0.8858015  0.116865275  0.9450270
+#&gt;  [4,] -0.74382805 -0.6514663  0.010782425  0.6994028
+#&gt;  [5,] -0.96582474 -0.8592385  0.004489181  0.8897565
+#&gt;  [6,]  0.97508382  0.9403969  0.169510178 -0.9083258
+#&gt;  [7,]  1.00000000 -0.9223709 -0.017162694  0.9457788
+#&gt;  [8,] -0.92237087  1.0000000 -0.188467530  0.8819946
+#&gt;  [9,] -0.01716269 -0.1884675  1.000000000 -0.0122611
+#&gt; [10,]  0.94577884  0.8819946 -0.012261102  1.0000000</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

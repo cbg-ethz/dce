@@ -73,7 +73,7 @@ data" />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">dce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.3</span>
       </span>
     </div>
 
@@ -149,7 +149,7 @@ data</p>
   lib_size <span class='op'>=</span> <span class='cn'>FALSE</span>,
   deconfounding <span class='op'>=</span> <span class='cn'>FALSE</span>,
   conservative <span class='op'>=</span> <span class='cn'>FALSE</span>,
-  log_level <span class='op'>=</span> <span class='fu'>logger</span><span class='fu'>::</span><span class='va'><a href='https://rdrr.io/pkg/logger/man/log_levels.html'>INFO</a></span>
+  log_level <span class='op'>=</span> <span class='fu'>logger</span><span class='fu'>::</span><span class='va'><a href='https://daroczig.github.io/logger/reference/log_levels.html'>INFO</a></span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -228,26 +228,26 @@ for the variables in the adjustment set</p></td>
 <span class='va'>dag.mt</span> <span class='op'>&lt;-</span> <span class='fu'><a href='resample_edge_weights.html'>resample_edge_weights</a></span><span class='op'>(</span><span class='va'>dag</span><span class='op'>)</span>
 <span class='va'>X.mt</span> <span class='op'>&lt;-</span> <span class='fu'><a href='simulate_data.html'>simulate_data</a></span><span class='op'>(</span><span class='va'>dag</span><span class='op'>)</span>
 <span class='fu'>dce_nb</span><span class='op'>(</span><span class='va'>dag</span>,<span class='va'>X.wt</span>,<span class='va'>X.mt</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='warning'>Warning: Cycle(s) detected in network</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: iteration limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: iteration limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: iteration limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: iteration limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: iteration limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: iteration limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: iteration limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: iteration limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: iteration limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: iteration limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: iteration limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: iteration limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: iteration limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: iteration limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: iteration limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: iteration limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: iteration limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: iteration limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: iteration limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: iteration limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: iteration limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: iteration limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: iteration limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: iteration limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: iteration limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: iteration limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: alternation limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: alternation limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: alternation limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: alternation limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: alternation limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: glm.fit2: algorithm did not converge. Try increasing the maximum iterations</span></div><div class='output co'>#&gt; <span class='warning'>Warning: glm.fit2: algorithm did not converge. Try increasing the maximum iterations</span></div><div class='output co'>#&gt; <span class='warning'>Warning: glm.fit2: algorithm did not converge. Try increasing the maximum iterations</span></div><div class='output co'>#&gt; <span class='warning'>Warning: alternation limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: iteration limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: iteration limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: glm.fit2: algorithm did not converge. Try increasing the maximum iterations</span></div><div class='output co'>#&gt; <span class='warning'>Warning: alternation limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: glm.fit2: algorithm did not converge. Try increasing the maximum iterations</span></div><div class='output co'>#&gt; <span class='warning'>Warning: glm.fit2: algorithm did not converge. Try increasing the maximum iterations</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: alternation limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: alternation limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: glm.fit2: algorithm did not converge. Try increasing the maximum iterations</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: alternation limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: alternation limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; $graph
+</div><div class='output co'>#&gt; <span class='warning'>Warning: Cycle(s) detected in network</span></div><div class='output co'>#&gt; <span class='warning'>Warning: iteration limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: iteration limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: iteration limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: iteration limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: glm.fit2: algorithm did not converge. Try increasing the maximum iterations</span></div><div class='output co'>#&gt; <span class='warning'>Warning: alternation limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: iteration limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: iteration limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: alternation limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: alternation limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: alternation limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: iteration limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: iteration limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: iteration limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: iteration limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: iteration limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: iteration limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: iteration limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: iteration limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: iteration limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: iteration limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: iteration limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: iteration limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: iteration limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: iteration limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: iteration limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: iteration limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: iteration limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: iteration limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: iteration limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: iteration limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: iteration limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: iteration limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: iteration limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: iteration limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: iteration limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: iteration limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: alternation limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: glm.fit2: algorithm did not converge. Try increasing the maximum iterations</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: alternation limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: alternation limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: glm.fit2: algorithm did not converge. Try increasing the maximum iterations</span></div><div class='output co'>#&gt; <span class='warning'>Warning: glm.fit2: algorithm did not converge. Try increasing the maximum iterations</span></div><div class='output co'>#&gt; <span class='warning'>Warning: glm.fit2: algorithm did not converge. Try increasing the maximum iterations</span></div><div class='output co'>#&gt; <span class='warning'>Warning: glm.fit2: algorithm did not converge. Try increasing the maximum iterations</span></div><div class='output co'>#&gt; <span class='warning'>Warning: glm.fit2: algorithm did not converge. Try increasing the maximum iterations</span></div><div class='output co'>#&gt; <span class='warning'>Warning: glm.fit2: algorithm did not converge. Try increasing the maximum iterations</span></div><div class='output co'>#&gt; <span class='warning'>Warning: alternation limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: alternation limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: alternation limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: alternation limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: alternation limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: alternation limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: alternation limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: alternation limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: alternation limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: alternation limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: alternation limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: glm.fit2: algorithm did not converge. Try increasing the maximum iterations</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: alternation limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: alternation limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: alternation limit reached</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: step size truncated due to increasing deviance</span></div><div class='output co'>#&gt; <span class='warning'>Warning: inner loop 3; cannot correct step size</span></div><div class='output co'>#&gt; <span class='warning'>Warning: glm.fit2: algorithm did not converge. Try increasing the maximum iterations</span></div><div class='output co'>#&gt; <span class='warning'>Warning: glm.fit2: algorithm did not converge. Try increasing the maximum iterations</span></div><div class='output co'>#&gt; <span class='warning'>Warning: alternation limit reached</span></div><div class='output co'>#&gt; $graph
 #&gt;     n1 n2 n3 n4 n5 n6 n7 n8 n9 n10 n11 n12 n13 n14 n15 n16 n17 n18 n19 n20 n21
-#&gt; n1   0  0  0  1  0  0  0  0  0   0   0   1   0   0   0   0   0   0   0   0   0
-#&gt; n2   0  0  0  0  1  0  0  0  0   0   0   1   0   0   0   0   0   0   0   1   0
-#&gt; n3   0  0  0  1  0  1  0  1  0   0   0   0   1   1   1   0   0   0   0   0   1
-#&gt; n4   0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   1   0   0   0   0
-#&gt; n5   0  0  0  0  0  0  0  0  0   1   0   0   0   1   0   0   0   0   0   0   0
-#&gt; n6   0  0  0  0  0  0  0  0  1   0   0   0   1   0   0   0   0   0   0   0   0
-#&gt; n7   0  0  0  0  0  0  0  0  0   1   0   0   0   0   1   0   1   0   1   0   0
-#&gt; n8   0  0  0  0  0  0  0  0  1   0   0   0   0   0   0   0   0   0   1   1   0
-#&gt; n9   0  0  0  0  0  0  0  0  0   1   0   0   0   0   0   0   0   0   0   0   0
-#&gt; n10  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   1   0   0   0   0   0
-#&gt; n11  0  0  0  0  0  0  0  0  0   0   0   0   1   1   0   0   0   1   0   1   0
-#&gt; n12  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0   0
-#&gt; n13  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0   0
-#&gt; n14  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   1   0   0   0   0
-#&gt; n15  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   0   1   0   0
-#&gt; n16  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0   0
-#&gt; n17  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   1   0   0   1
-#&gt; n18  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0   1
+#&gt; n1   0  0  1  0  0  0  1  0  0   0   0   0   0   0   0   1   0   0   0   0   1
+#&gt; n2   0  0  0  1  0  0  0  1  1   0   1   0   1   0   0   0   1   0   0   0   0
+#&gt; n3   0  0  0  0  0  0  1  0  0   0   0   0   1   1   0   0   1   1   0   1   0
+#&gt; n4   0  0  0  0  0  0  0  0  0   0   0   0   0   0   1   1   0   0   0   0   0
+#&gt; n5   0  0  0  0  0  0  0  0  0   1   0   0   0   0   0   0   0   0   0   0   0
+#&gt; n6   0  0  0  0  0  0  1  1  0   0   0   1   0   1   0   0   0   0   0   0   0
+#&gt; n7   0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   0   1   1   0
+#&gt; n8   0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0   0
+#&gt; n9   0  0  0  0  0  0  0  0  0   0   1   0   0   0   0   0   0   0   0   0   0
+#&gt; n10  0  0  0  0  0  0  0  0  0   0   0   0   1   0   0   0   0   1   0   1   0
+#&gt; n11  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0   0
+#&gt; n12  0  0  0  0  0  0  0  0  0   0   0   0   0   0   1   0   0   0   0   0   1
+#&gt; n13  0  0  0  0  0  0  0  0  0   0   0   0   0   0   1   0   0   0   0   0   0
+#&gt; n14  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   0   1   0   0
+#&gt; n15  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0   0
+#&gt; n16  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0   1
+#&gt; n17  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0   0
+#&gt; n18  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   0   1   0   0
 #&gt; n19  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0   0
 #&gt; n20  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0   0
 #&gt; n21  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0   0
@@ -262,478 +262,509 @@ for the variables in the adjustment set</p></td>
 #&gt; n30  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0   0
 #&gt;     n22 n23 n24 n25 n26 n27 n28 n29 n30
 #&gt; n1    0   0   0   0   0   0   0   0   0
-#&gt; n2    0   0   1   1   0   0   0   0   0
+#&gt; n2    0   0   0   0   0   0   0   0   0
 #&gt; n3    0   0   0   0   0   0   0   0   0
-#&gt; n4    0   0   0   0   0   0   0   0   0
-#&gt; n5    0   1   1   0   0   0   0   0   0
-#&gt; n6    1   0   0   0   0   0   0   0   0
-#&gt; n7    0   1   0   0   0   1   0   0   0
-#&gt; n8    0   1   1   0   0   0   0   0   0
-#&gt; n9    1   0   0   0   0   0   1   0   0
-#&gt; n10   0   0   0   0   0   0   0   0   0
-#&gt; n11   0   0   0   0   0   1   0   0   0
-#&gt; n12   0   0   0   1   1   0   0   0   0
+#&gt; n4    1   0   0   1   0   0   0   0   1
+#&gt; n5    0   0   0   0   0   0   0   1   0
+#&gt; n6    0   0   0   0   0   0   0   0   1
+#&gt; n7    0   0   0   0   0   1   1   0   0
+#&gt; n8    0   1   0   0   0   0   0   0   0
+#&gt; n9    0   1   0   0   0   1   0   1   0
+#&gt; n10   0   0   0   0   0   0   1   0   0
+#&gt; n11   1   0   0   0   0   0   0   0   0
+#&gt; n12   0   0   0   0   0   0   0   0   1
 #&gt; n13   0   0   0   0   0   0   0   0   0
-#&gt; n14   0   0   0   0   0   0   0   1   0
-#&gt; n15   0   0   0   0   1   0   0   0   0
-#&gt; n16   0   0   0   0   0   0   1   0   0
-#&gt; n17   0   0   0   0   0   0   0   0   0
-#&gt; n18   0   0   0   0   0   0   0   0   0
-#&gt; n19   0   0   0   0   0   0   0   1   0
-#&gt; n20   0   0   0   0   0   0   0   0   1
-#&gt; n21   0   0   0   0   0   0   1   0   1
-#&gt; n22   0   0   0   0   0   0   0   0   0
-#&gt; n23   0   0   0   1   0   1   0   1   0
-#&gt; n24   0   0   0   0   1   0   0   0   0
+#&gt; n14   0   0   0   0   1   0   0   0   0
+#&gt; n15   0   0   1   0   1   0   0   0   0
+#&gt; n16   1   0   1   1   0   0   1   0   0
+#&gt; n17   0   0   0   0   1   0   0   0   0
+#&gt; n18   0   0   0   0   0   1   0   1   0
+#&gt; n19   0   0   0   0   0   0   0   0   0
+#&gt; n20   0   0   0   0   0   0   0   0   0
+#&gt; n21   0   0   0   0   0   0   0   0   0
+#&gt; n22   0   1   1   0   0   0   0   0   0
+#&gt; n23   0   0   0   1   0   0   0   0   0
+#&gt; n24   0   0   0   0   0   0   0   0   0
 #&gt; n25   0   0   0   0   0   0   0   0   0
 #&gt; n26   0   0   0   0   0   0   0   0   0
-#&gt; n27   0   0   0   0   0   0   0   0   1
+#&gt; n27   0   0   0   0   0   0   0   0   0
 #&gt; n28   0   0   0   0   0   0   0   0   0
 #&gt; n29   0   0   0   0   0   0   0   0   0
 #&gt; n30   0   0   0   0   0   0   0   0   0
 #&gt; 
 #&gt; $dce
-#&gt;     n1 n2 n3           n4          n5          n6 n7          n8        n9
-#&gt; n1  NA NA NA -0.001915045          NA          NA NA          NA        NA
-#&gt; n2  NA NA NA           NA -0.00247593          NA NA          NA        NA
-#&gt; n3  NA NA NA  0.012004600          NA 0.006235398 NA -0.01157185        NA
-#&gt; n4  NA NA NA           NA          NA          NA NA          NA        NA
-#&gt; n5  NA NA NA           NA          NA          NA NA          NA        NA
-#&gt; n6  NA NA NA           NA          NA          NA NA          NA 0.9169369
-#&gt; n7  NA NA NA           NA          NA          NA NA          NA        NA
-#&gt; n8  NA NA NA           NA          NA          NA NA          NA 0.1356265
-#&gt; n9  NA NA NA           NA          NA          NA NA          NA        NA
-#&gt; n10 NA NA NA           NA          NA          NA NA          NA        NA
-#&gt; n11 NA NA NA           NA          NA          NA NA          NA        NA
-#&gt; n12 NA NA NA           NA          NA          NA NA          NA        NA
-#&gt; n13 NA NA NA           NA          NA          NA NA          NA        NA
-#&gt; n14 NA NA NA           NA          NA          NA NA          NA        NA
-#&gt; n15 NA NA NA           NA          NA          NA NA          NA        NA
-#&gt; n16 NA NA NA           NA          NA          NA NA          NA        NA
-#&gt; n17 NA NA NA           NA          NA          NA NA          NA        NA
-#&gt; n18 NA NA NA           NA          NA          NA NA          NA        NA
-#&gt; n19 NA NA NA           NA          NA          NA NA          NA        NA
-#&gt; n20 NA NA NA           NA          NA          NA NA          NA        NA
-#&gt; n21 NA NA NA           NA          NA          NA NA          NA        NA
-#&gt; n22 NA NA NA           NA          NA          NA NA          NA        NA
-#&gt; n23 NA NA NA           NA          NA          NA NA          NA        NA
-#&gt; n24 NA NA NA           NA          NA          NA NA          NA        NA
-#&gt; n25 NA NA NA           NA          NA          NA NA          NA        NA
-#&gt; n26 NA NA NA           NA          NA          NA NA          NA        NA
-#&gt; n27 NA NA NA           NA          NA          NA NA          NA        NA
-#&gt; n28 NA NA NA           NA          NA          NA NA          NA        NA
-#&gt; n29 NA NA NA           NA          NA          NA NA          NA        NA
-#&gt; n30 NA NA NA           NA          NA          NA NA          NA        NA
-#&gt;             n10 n11          n12         n13         n14         n15
-#&gt; n1           NA  NA -0.008882651          NA          NA          NA
-#&gt; n2           NA  NA  0.056247088          NA          NA          NA
-#&gt; n3           NA  NA           NA  0.05891037  0.08038121  0.14522904
-#&gt; n4           NA  NA           NA          NA          NA          NA
-#&gt; n5  0.580125439  NA           NA          NA -0.27459213          NA
-#&gt; n6           NA  NA           NA -1.10945859          NA          NA
-#&gt; n7  0.002657656  NA           NA          NA          NA -0.08590916
-#&gt; n8           NA  NA           NA          NA          NA          NA
-#&gt; n9  0.513313780  NA           NA          NA          NA          NA
-#&gt; n10          NA  NA           NA          NA          NA          NA
-#&gt; n11          NA  NA           NA -0.18372418  0.03834805          NA
-#&gt; n12          NA  NA           NA          NA          NA          NA
-#&gt; n13          NA  NA           NA          NA          NA          NA
-#&gt; n14          NA  NA           NA          NA          NA          NA
-#&gt; n15          NA  NA           NA          NA          NA          NA
-#&gt; n16          NA  NA           NA          NA          NA          NA
-#&gt; n17          NA  NA           NA          NA          NA          NA
-#&gt; n18          NA  NA           NA          NA          NA          NA
-#&gt; n19          NA  NA           NA          NA          NA          NA
-#&gt; n20          NA  NA           NA          NA          NA          NA
-#&gt; n21          NA  NA           NA          NA          NA          NA
-#&gt; n22          NA  NA           NA          NA          NA          NA
-#&gt; n23          NA  NA           NA          NA          NA          NA
-#&gt; n24          NA  NA           NA          NA          NA          NA
-#&gt; n25          NA  NA           NA          NA          NA          NA
-#&gt; n26          NA  NA           NA          NA          NA          NA
-#&gt; n27          NA  NA           NA          NA          NA          NA
-#&gt; n28          NA  NA           NA          NA          NA          NA
-#&gt; n29          NA  NA           NA          NA          NA          NA
-#&gt; n30          NA  NA           NA          NA          NA          NA
-#&gt;             n16         n17         n18         n19        n20         n21
-#&gt; n1           NA          NA          NA          NA         NA          NA
-#&gt; n2           NA          NA          NA          NA  0.1189344          NA
-#&gt; n3           NA          NA          NA          NA         NA -0.01923174
-#&gt; n4           NA -1.27314137          NA          NA         NA          NA
-#&gt; n5           NA          NA          NA          NA         NA          NA
-#&gt; n6           NA          NA          NA          NA         NA          NA
-#&gt; n7           NA -0.05862983          NA -0.03687252         NA          NA
-#&gt; n8           NA          NA          NA  0.22367603 -0.4491681          NA
-#&gt; n9           NA          NA          NA          NA         NA          NA
-#&gt; n10 -0.02870708          NA          NA          NA         NA          NA
-#&gt; n11          NA          NA -0.03423198          NA  0.1106612          NA
-#&gt; n12          NA          NA          NA          NA         NA          NA
-#&gt; n13          NA          NA          NA          NA         NA          NA
-#&gt; n14          NA -0.31616874          NA          NA         NA          NA
-#&gt; n15          NA          NA          NA  0.23604196         NA          NA
-#&gt; n16          NA          NA          NA          NA         NA          NA
-#&gt; n17          NA          NA  0.05285949          NA         NA -0.62365202
-#&gt; n18          NA          NA          NA          NA         NA  0.04692750
-#&gt; n19          NA          NA          NA          NA         NA          NA
-#&gt; n20          NA          NA          NA          NA         NA          NA
-#&gt; n21          NA          NA          NA          NA         NA          NA
-#&gt; n22          NA          NA          NA          NA         NA          NA
-#&gt; n23          NA          NA          NA          NA         NA          NA
-#&gt; n24          NA          NA          NA          NA         NA          NA
-#&gt; n25          NA          NA          NA          NA         NA          NA
-#&gt; n26          NA          NA          NA          NA         NA          NA
-#&gt; n27          NA          NA          NA          NA         NA          NA
-#&gt; n28          NA          NA          NA          NA         NA          NA
-#&gt; n29          NA          NA          NA          NA         NA          NA
-#&gt; n30          NA          NA          NA          NA         NA          NA
-#&gt;            n22         n23         n24           n25       n26        n27
-#&gt; n1          NA          NA          NA            NA        NA         NA
-#&gt; n2          NA          NA  0.01147046 -0.0547375469        NA         NA
-#&gt; n3          NA          NA          NA            NA        NA         NA
-#&gt; n4          NA          NA          NA            NA        NA         NA
-#&gt; n5          NA  0.73087768 -0.31975838            NA        NA         NA
-#&gt; n6  0.07548785          NA          NA            NA        NA         NA
-#&gt; n7          NA -0.01831014          NA            NA        NA -0.2351807
-#&gt; n8          NA -0.23316022 -0.11824637            NA        NA         NA
-#&gt; n9  0.08510950          NA          NA            NA        NA         NA
-#&gt; n10         NA          NA          NA            NA        NA         NA
-#&gt; n11         NA          NA          NA            NA        NA -0.0611826
-#&gt; n12         NA          NA          NA -0.0009812514 0.2234449         NA
-#&gt; n13         NA          NA          NA            NA        NA         NA
-#&gt; n14         NA          NA          NA            NA        NA         NA
-#&gt; n15         NA          NA          NA            NA 0.6869669         NA
-#&gt; n16         NA          NA          NA            NA        NA         NA
-#&gt; n17         NA          NA          NA            NA        NA         NA
-#&gt; n18         NA          NA          NA            NA        NA         NA
-#&gt; n19         NA          NA          NA            NA        NA         NA
-#&gt; n20         NA          NA          NA            NA        NA         NA
-#&gt; n21         NA          NA          NA            NA        NA         NA
-#&gt; n22         NA          NA          NA            NA        NA         NA
-#&gt; n23         NA          NA          NA  0.1657499078        NA  0.7043841
-#&gt; n24         NA          NA          NA            NA 0.3078053         NA
-#&gt; n25         NA          NA          NA            NA        NA         NA
-#&gt; n26         NA          NA          NA            NA        NA         NA
-#&gt; n27         NA          NA          NA            NA        NA         NA
-#&gt; n28         NA          NA          NA            NA        NA         NA
-#&gt; n29         NA          NA          NA            NA        NA         NA
-#&gt; n30         NA          NA          NA            NA        NA         NA
-#&gt;             n28         n29        n30
-#&gt; n1           NA          NA         NA
-#&gt; n2           NA          NA         NA
-#&gt; n3           NA          NA         NA
-#&gt; n4           NA          NA         NA
-#&gt; n5           NA          NA         NA
-#&gt; n6           NA          NA         NA
-#&gt; n7           NA          NA         NA
-#&gt; n8           NA          NA         NA
-#&gt; n9   0.08018817          NA         NA
-#&gt; n10          NA          NA         NA
-#&gt; n11          NA          NA         NA
-#&gt; n12          NA          NA         NA
-#&gt; n13          NA          NA         NA
-#&gt; n14          NA -0.05403548         NA
-#&gt; n15          NA          NA         NA
-#&gt; n16 -0.29248119          NA         NA
-#&gt; n17          NA          NA         NA
-#&gt; n18          NA          NA         NA
-#&gt; n19          NA  0.17140371         NA
-#&gt; n20          NA          NA -0.2749582
-#&gt; n21 -0.06465306          NA -2.8798966
-#&gt; n22          NA          NA         NA
-#&gt; n23          NA  0.02493643         NA
-#&gt; n24          NA          NA         NA
-#&gt; n25          NA          NA         NA
-#&gt; n26          NA          NA         NA
-#&gt; n27          NA          NA  0.4890587
-#&gt; n28          NA          NA         NA
-#&gt; n29          NA          NA         NA
-#&gt; n30          NA          NA         NA
+#&gt;     n1 n2         n3           n4 n5 n6         n7         n8           n9
+#&gt; n1  NA NA -0.0019266           NA NA NA -0.5056183         NA           NA
+#&gt; n2  NA NA         NA -0.001028854 NA NA         NA -0.4069352 -0.009903173
+#&gt; n3  NA NA         NA           NA NA NA  0.5335927         NA           NA
+#&gt; n4  NA NA         NA           NA NA NA         NA         NA           NA
+#&gt; n5  NA NA         NA           NA NA NA         NA         NA           NA
+#&gt; n6  NA NA         NA           NA NA NA -0.1400093  0.4613418           NA
+#&gt; n7  NA NA         NA           NA NA NA         NA         NA           NA
+#&gt; n8  NA NA         NA           NA NA NA         NA         NA           NA
+#&gt; n9  NA NA         NA           NA NA NA         NA         NA           NA
+#&gt; n10 NA NA         NA           NA NA NA         NA         NA           NA
+#&gt; n11 NA NA         NA           NA NA NA         NA         NA           NA
+#&gt; n12 NA NA         NA           NA NA NA         NA         NA           NA
+#&gt; n13 NA NA         NA           NA NA NA         NA         NA           NA
+#&gt; n14 NA NA         NA           NA NA NA         NA         NA           NA
+#&gt; n15 NA NA         NA           NA NA NA         NA         NA           NA
+#&gt; n16 NA NA         NA           NA NA NA         NA         NA           NA
+#&gt; n17 NA NA         NA           NA NA NA         NA         NA           NA
+#&gt; n18 NA NA         NA           NA NA NA         NA         NA           NA
+#&gt; n19 NA NA         NA           NA NA NA         NA         NA           NA
+#&gt; n20 NA NA         NA           NA NA NA         NA         NA           NA
+#&gt; n21 NA NA         NA           NA NA NA         NA         NA           NA
+#&gt; n22 NA NA         NA           NA NA NA         NA         NA           NA
+#&gt; n23 NA NA         NA           NA NA NA         NA         NA           NA
+#&gt; n24 NA NA         NA           NA NA NA         NA         NA           NA
+#&gt; n25 NA NA         NA           NA NA NA         NA         NA           NA
+#&gt; n26 NA NA         NA           NA NA NA         NA         NA           NA
+#&gt; n27 NA NA         NA           NA NA NA         NA         NA           NA
+#&gt; n28 NA NA         NA           NA NA NA         NA         NA           NA
+#&gt; n29 NA NA         NA           NA NA NA         NA         NA           NA
+#&gt; n30 NA NA         NA           NA NA NA         NA         NA           NA
+#&gt;             n10          n11          n12         n13        n14         n15
+#&gt; n1           NA           NA           NA          NA         NA          NA
+#&gt; n2           NA 0.0008019597           NA  0.03988692         NA          NA
+#&gt; n3           NA           NA           NA -0.72961527 0.59789568          NA
+#&gt; n4           NA           NA           NA          NA         NA  0.78965543
+#&gt; n5  -0.01031017           NA           NA          NA         NA          NA
+#&gt; n6           NA           NA -0.008256052          NA 0.02874309          NA
+#&gt; n7           NA           NA           NA          NA         NA          NA
+#&gt; n8           NA           NA           NA          NA         NA          NA
+#&gt; n9           NA 0.1560422962           NA          NA         NA          NA
+#&gt; n10          NA           NA           NA -0.92292551         NA          NA
+#&gt; n11          NA           NA           NA          NA         NA          NA
+#&gt; n12          NA           NA           NA          NA         NA  0.07362861
+#&gt; n13          NA           NA           NA          NA         NA -0.03181770
+#&gt; n14          NA           NA           NA          NA         NA          NA
+#&gt; n15          NA           NA           NA          NA         NA          NA
+#&gt; n16          NA           NA           NA          NA         NA          NA
+#&gt; n17          NA           NA           NA          NA         NA          NA
+#&gt; n18          NA           NA           NA          NA         NA          NA
+#&gt; n19          NA           NA           NA          NA         NA          NA
+#&gt; n20          NA           NA           NA          NA         NA          NA
+#&gt; n21          NA           NA           NA          NA         NA          NA
+#&gt; n22          NA           NA           NA          NA         NA          NA
+#&gt; n23          NA           NA           NA          NA         NA          NA
+#&gt; n24          NA           NA           NA          NA         NA          NA
+#&gt; n25          NA           NA           NA          NA         NA          NA
+#&gt; n26          NA           NA           NA          NA         NA          NA
+#&gt; n27          NA           NA           NA          NA         NA          NA
+#&gt; n28          NA           NA           NA          NA         NA          NA
+#&gt; n29          NA           NA           NA          NA         NA          NA
+#&gt; n30          NA           NA           NA          NA         NA          NA
+#&gt;            n16          n17         n18        n19          n20        n21
+#&gt; n1   0.0604322           NA          NA         NA           NA 0.08195617
+#&gt; n2          NA -0.001410181          NA         NA           NA         NA
+#&gt; n3          NA -1.206198287 -0.02706278         NA  0.080017550         NA
+#&gt; n4  -0.4098639           NA          NA         NA           NA         NA
+#&gt; n5          NA           NA          NA         NA           NA         NA
+#&gt; n6          NA           NA          NA         NA           NA         NA
+#&gt; n7          NA           NA          NA 0.03890390 -0.006652563         NA
+#&gt; n8          NA           NA          NA         NA           NA         NA
+#&gt; n9          NA           NA          NA         NA           NA         NA
+#&gt; n10         NA           NA  0.23759635         NA -0.138753337         NA
+#&gt; n11         NA           NA          NA         NA           NA         NA
+#&gt; n12         NA           NA          NA         NA           NA 0.21537791
+#&gt; n13         NA           NA          NA         NA           NA         NA
+#&gt; n14         NA           NA          NA 0.06832781           NA         NA
+#&gt; n15         NA           NA          NA         NA           NA         NA
+#&gt; n16         NA           NA          NA         NA           NA 0.25965838
+#&gt; n17         NA           NA          NA         NA           NA         NA
+#&gt; n18         NA           NA          NA 0.43299555           NA         NA
+#&gt; n19         NA           NA          NA         NA           NA         NA
+#&gt; n20         NA           NA          NA         NA           NA         NA
+#&gt; n21         NA           NA          NA         NA           NA         NA
+#&gt; n22         NA           NA          NA         NA           NA         NA
+#&gt; n23         NA           NA          NA         NA           NA         NA
+#&gt; n24         NA           NA          NA         NA           NA         NA
+#&gt; n25         NA           NA          NA         NA           NA         NA
+#&gt; n26         NA           NA          NA         NA           NA         NA
+#&gt; n27         NA           NA          NA         NA           NA         NA
+#&gt; n28         NA           NA          NA         NA           NA         NA
+#&gt; n29         NA           NA          NA         NA           NA         NA
+#&gt; n30         NA           NA          NA         NA           NA         NA
+#&gt;            n22        n23         n24         n25       n26        n27
+#&gt; n1          NA         NA          NA          NA        NA         NA
+#&gt; n2          NA         NA          NA          NA        NA         NA
+#&gt; n3          NA         NA          NA          NA        NA         NA
+#&gt; n4   0.1052378         NA          NA -0.17847662        NA         NA
+#&gt; n5          NA         NA          NA          NA        NA         NA
+#&gt; n6          NA         NA          NA          NA        NA         NA
+#&gt; n7          NA         NA          NA          NA        NA  0.7809119
+#&gt; n8          NA -0.2969402          NA          NA        NA         NA
+#&gt; n9          NA  0.8198119          NA          NA        NA  2.4369579
+#&gt; n10         NA         NA          NA          NA        NA         NA
+#&gt; n11 -0.1217159         NA          NA          NA        NA         NA
+#&gt; n12         NA         NA          NA          NA        NA         NA
+#&gt; n13         NA         NA          NA          NA        NA         NA
+#&gt; n14         NA         NA          NA          NA 1.2874862         NA
+#&gt; n15         NA         NA  0.04694864          NA 0.1511906         NA
+#&gt; n16  0.3375581         NA -0.40989006  0.09715774        NA         NA
+#&gt; n17         NA         NA          NA          NA 0.5286962         NA
+#&gt; n18         NA         NA          NA          NA        NA -0.1948778
+#&gt; n19         NA         NA          NA          NA        NA         NA
+#&gt; n20         NA         NA          NA          NA        NA         NA
+#&gt; n21         NA         NA          NA          NA        NA         NA
+#&gt; n22         NA -0.1166849 -0.13546430          NA        NA         NA
+#&gt; n23         NA         NA          NA  0.06230933        NA         NA
+#&gt; n24         NA         NA          NA          NA        NA         NA
+#&gt; n25         NA         NA          NA          NA        NA         NA
+#&gt; n26         NA         NA          NA          NA        NA         NA
+#&gt; n27         NA         NA          NA          NA        NA         NA
+#&gt; n28         NA         NA          NA          NA        NA         NA
+#&gt; n29         NA         NA          NA          NA        NA         NA
+#&gt; n30         NA         NA          NA          NA        NA         NA
+#&gt;            n28        n29           n30
+#&gt; n1          NA         NA            NA
+#&gt; n2          NA         NA            NA
+#&gt; n3          NA         NA            NA
+#&gt; n4          NA         NA -0.1165703549
+#&gt; n5          NA -0.2005439            NA
+#&gt; n6          NA         NA -0.0006286575
+#&gt; n7   0.4021111         NA            NA
+#&gt; n8          NA         NA            NA
+#&gt; n9          NA -0.2785238            NA
+#&gt; n10 -2.1187049         NA            NA
+#&gt; n11         NA         NA            NA
+#&gt; n12         NA         NA  0.0209643780
+#&gt; n13         NA         NA            NA
+#&gt; n14         NA         NA            NA
+#&gt; n15         NA         NA            NA
+#&gt; n16 -1.1159071         NA            NA
+#&gt; n17         NA         NA            NA
+#&gt; n18         NA  1.0077808            NA
+#&gt; n19         NA         NA            NA
+#&gt; n20         NA         NA            NA
+#&gt; n21         NA         NA            NA
+#&gt; n22         NA         NA            NA
+#&gt; n23         NA         NA            NA
+#&gt; n24         NA         NA            NA
+#&gt; n25         NA         NA            NA
+#&gt; n26         NA         NA            NA
+#&gt; n27         NA         NA            NA
+#&gt; n28         NA         NA            NA
+#&gt; n29         NA         NA            NA
+#&gt; n30         NA         NA            NA
 #&gt; 
 #&gt; $dce_stderr
-#&gt;     n1 n2 n3          n4          n5          n6 n7          n8         n9
-#&gt; n1  NA NA NA 0.012503711          NA          NA NA          NA         NA
-#&gt; n2  NA NA NA          NA 0.009709911          NA NA          NA         NA
-#&gt; n3  NA NA NA 0.007702071          NA 0.009422768 NA 0.009646737         NA
-#&gt; n4  NA NA NA          NA          NA          NA NA          NA         NA
-#&gt; n5  NA NA NA          NA          NA          NA NA          NA         NA
-#&gt; n6  NA NA NA          NA          NA          NA NA          NA 0.13588487
-#&gt; n7  NA NA NA          NA          NA          NA NA          NA         NA
-#&gt; n8  NA NA NA          NA          NA          NA NA          NA 0.07825841
-#&gt; n9  NA NA NA          NA          NA          NA NA          NA         NA
-#&gt; n10 NA NA NA          NA          NA          NA NA          NA         NA
-#&gt; n11 NA NA NA          NA          NA          NA NA          NA         NA
-#&gt; n12 NA NA NA          NA          NA          NA NA          NA         NA
-#&gt; n13 NA NA NA          NA          NA          NA NA          NA         NA
-#&gt; n14 NA NA NA          NA          NA          NA NA          NA         NA
-#&gt; n15 NA NA NA          NA          NA          NA NA          NA         NA
-#&gt; n16 NA NA NA          NA          NA          NA NA          NA         NA
-#&gt; n17 NA NA NA          NA          NA          NA NA          NA         NA
-#&gt; n18 NA NA NA          NA          NA          NA NA          NA         NA
-#&gt; n19 NA NA NA          NA          NA          NA NA          NA         NA
-#&gt; n20 NA NA NA          NA          NA          NA NA          NA         NA
-#&gt; n21 NA NA NA          NA          NA          NA NA          NA         NA
-#&gt; n22 NA NA NA          NA          NA          NA NA          NA         NA
-#&gt; n23 NA NA NA          NA          NA          NA NA          NA         NA
-#&gt; n24 NA NA NA          NA          NA          NA NA          NA         NA
-#&gt; n25 NA NA NA          NA          NA          NA NA          NA         NA
-#&gt; n26 NA NA NA          NA          NA          NA NA          NA         NA
-#&gt; n27 NA NA NA          NA          NA          NA NA          NA         NA
-#&gt; n28 NA NA NA          NA          NA          NA NA          NA         NA
-#&gt; n29 NA NA NA          NA          NA          NA NA          NA         NA
-#&gt; n30 NA NA NA          NA          NA          NA NA          NA         NA
-#&gt;           n10 n11        n12        n13        n14       n15        n16
-#&gt; n1         NA  NA 0.09939040         NA         NA        NA         NA
-#&gt; n2         NA  NA 0.02309315         NA         NA        NA         NA
-#&gt; n3         NA  NA         NA 0.12183379 0.05409754 0.0420840         NA
-#&gt; n4         NA  NA         NA         NA         NA        NA         NA
-#&gt; n5  1.4753155  NA         NA         NA 1.28232387        NA         NA
-#&gt; n6         NA  NA         NA 0.66650704         NA        NA         NA
-#&gt; n7  0.1779553  NA         NA         NA         NA 0.1506978         NA
-#&gt; n8         NA  NA         NA         NA         NA        NA         NA
-#&gt; n9  0.4983273  NA         NA         NA         NA        NA         NA
-#&gt; n10        NA  NA         NA         NA         NA        NA 0.01887388
-#&gt; n11        NA  NA         NA 0.01164669 0.15868305        NA         NA
-#&gt; n12        NA  NA         NA         NA         NA        NA         NA
-#&gt; n13        NA  NA         NA         NA         NA        NA         NA
-#&gt; n14        NA  NA         NA         NA         NA        NA         NA
-#&gt; n15        NA  NA         NA         NA         NA        NA         NA
-#&gt; n16        NA  NA         NA         NA         NA        NA         NA
-#&gt; n17        NA  NA         NA         NA         NA        NA         NA
-#&gt; n18        NA  NA         NA         NA         NA        NA         NA
-#&gt; n19        NA  NA         NA         NA         NA        NA         NA
-#&gt; n20        NA  NA         NA         NA         NA        NA         NA
-#&gt; n21        NA  NA         NA         NA         NA        NA         NA
-#&gt; n22        NA  NA         NA         NA         NA        NA         NA
-#&gt; n23        NA  NA         NA         NA         NA        NA         NA
-#&gt; n24        NA  NA         NA         NA         NA        NA         NA
-#&gt; n25        NA  NA         NA         NA         NA        NA         NA
-#&gt; n26        NA  NA         NA         NA         NA        NA         NA
-#&gt; n27        NA  NA         NA         NA         NA        NA         NA
-#&gt; n28        NA  NA         NA         NA         NA        NA         NA
-#&gt; n29        NA  NA         NA         NA         NA        NA         NA
-#&gt; n30        NA  NA         NA         NA         NA        NA         NA
-#&gt;            n17        n18        n19        n20         n21        n22
-#&gt; n1          NA         NA         NA         NA          NA         NA
-#&gt; n2          NA         NA         NA 0.09120377          NA         NA
-#&gt; n3          NA         NA         NA         NA 0.009619823         NA
-#&gt; n4  3.82968791         NA         NA         NA          NA         NA
-#&gt; n5          NA         NA         NA         NA          NA         NA
-#&gt; n6          NA         NA         NA         NA          NA 0.12696352
-#&gt; n7  0.06407428         NA 0.01309919         NA          NA         NA
-#&gt; n8          NA         NA 0.33486717 1.01741273          NA         NA
-#&gt; n9          NA         NA         NA         NA          NA 0.08779198
-#&gt; n10         NA         NA         NA         NA          NA         NA
-#&gt; n11         NA 0.08878281         NA 0.18947009          NA         NA
-#&gt; n12         NA         NA         NA         NA          NA         NA
-#&gt; n13         NA         NA         NA         NA          NA         NA
-#&gt; n14 1.18398864         NA         NA         NA          NA         NA
-#&gt; n15         NA         NA 0.06869856         NA          NA         NA
-#&gt; n16         NA         NA         NA         NA          NA         NA
-#&gt; n17         NA 0.26187188         NA         NA 0.118171968         NA
-#&gt; n18         NA         NA         NA         NA 0.464955398         NA
-#&gt; n19         NA         NA         NA         NA          NA         NA
-#&gt; n20         NA         NA         NA         NA          NA         NA
-#&gt; n21         NA         NA         NA         NA          NA         NA
-#&gt; n22         NA         NA         NA         NA          NA         NA
-#&gt; n23         NA         NA         NA         NA          NA         NA
-#&gt; n24         NA         NA         NA         NA          NA         NA
-#&gt; n25         NA         NA         NA         NA          NA         NA
-#&gt; n26         NA         NA         NA         NA          NA         NA
-#&gt; n27         NA         NA         NA         NA          NA         NA
-#&gt; n28         NA         NA         NA         NA          NA         NA
-#&gt; n29         NA         NA         NA         NA          NA         NA
-#&gt; n30         NA         NA         NA         NA          NA         NA
-#&gt;            n23       n24        n25       n26       n27       n28       n29
-#&gt; n1          NA        NA         NA        NA        NA        NA        NA
-#&gt; n2          NA 0.1333830 0.01528856        NA        NA        NA        NA
-#&gt; n3          NA        NA         NA        NA        NA        NA        NA
-#&gt; n4          NA        NA         NA        NA        NA        NA        NA
-#&gt; n5  0.54472853 1.1769770         NA        NA        NA        NA        NA
-#&gt; n6          NA        NA         NA        NA        NA        NA        NA
-#&gt; n7  0.07269033        NA         NA        NA 0.1339378        NA        NA
-#&gt; n8  0.43414567 0.4004135         NA        NA        NA        NA        NA
-#&gt; n9          NA        NA         NA        NA        NA 0.2090260        NA
-#&gt; n10         NA        NA         NA        NA        NA        NA        NA
-#&gt; n11         NA        NA         NA        NA 0.1023979        NA        NA
-#&gt; n12         NA        NA 0.11960225 0.2130493        NA        NA        NA
-#&gt; n13         NA        NA         NA        NA        NA        NA        NA
-#&gt; n14         NA        NA         NA        NA        NA        NA 0.2386859
-#&gt; n15         NA        NA         NA 0.5787444        NA        NA        NA
-#&gt; n16         NA        NA         NA        NA        NA 4.2348848        NA
-#&gt; n17         NA        NA         NA        NA        NA        NA        NA
-#&gt; n18         NA        NA         NA        NA        NA        NA        NA
-#&gt; n19         NA        NA         NA        NA        NA        NA 1.5326990
-#&gt; n20         NA        NA         NA        NA        NA        NA        NA
-#&gt; n21         NA        NA         NA        NA        NA 0.4525824        NA
-#&gt; n22         NA        NA         NA        NA        NA        NA        NA
-#&gt; n23         NA        NA 0.22293239        NA 0.9527962        NA 0.3004643
-#&gt; n24         NA        NA         NA 0.2063593        NA        NA        NA
-#&gt; n25         NA        NA         NA        NA        NA        NA        NA
-#&gt; n26         NA        NA         NA        NA        NA        NA        NA
-#&gt; n27         NA        NA         NA        NA        NA        NA        NA
-#&gt; n28         NA        NA         NA        NA        NA        NA        NA
-#&gt; n29         NA        NA         NA        NA        NA        NA        NA
-#&gt; n30         NA        NA         NA        NA        NA        NA        NA
-#&gt;           n30
-#&gt; n1         NA
-#&gt; n2         NA
-#&gt; n3         NA
-#&gt; n4         NA
-#&gt; n5         NA
-#&gt; n6         NA
-#&gt; n7         NA
-#&gt; n8         NA
-#&gt; n9         NA
-#&gt; n10        NA
-#&gt; n11        NA
-#&gt; n12        NA
-#&gt; n13        NA
-#&gt; n14        NA
-#&gt; n15        NA
-#&gt; n16        NA
-#&gt; n17        NA
-#&gt; n18        NA
-#&gt; n19        NA
-#&gt; n20 0.6450921
-#&gt; n21 1.1830747
-#&gt; n22        NA
-#&gt; n23        NA
-#&gt; n24        NA
-#&gt; n25        NA
-#&gt; n26        NA
-#&gt; n27 0.7433656
-#&gt; n28        NA
-#&gt; n29        NA
-#&gt; n30        NA
+#&gt;     n1 n2          n3          n4 n5 n6         n7        n8          n9
+#&gt; n1  NA NA 0.006572353          NA NA NA 0.07976851        NA          NA
+#&gt; n2  NA NA          NA 0.008078024 NA NA         NA 0.1319566 0.008314453
+#&gt; n3  NA NA          NA          NA NA NA 1.13362766        NA          NA
+#&gt; n4  NA NA          NA          NA NA NA         NA        NA          NA
+#&gt; n5  NA NA          NA          NA NA NA         NA        NA          NA
+#&gt; n6  NA NA          NA          NA NA NA 0.18472296 0.1488418          NA
+#&gt; n7  NA NA          NA          NA NA NA         NA        NA          NA
+#&gt; n8  NA NA          NA          NA NA NA         NA        NA          NA
+#&gt; n9  NA NA          NA          NA NA NA         NA        NA          NA
+#&gt; n10 NA NA          NA          NA NA NA         NA        NA          NA
+#&gt; n11 NA NA          NA          NA NA NA         NA        NA          NA
+#&gt; n12 NA NA          NA          NA NA NA         NA        NA          NA
+#&gt; n13 NA NA          NA          NA NA NA         NA        NA          NA
+#&gt; n14 NA NA          NA          NA NA NA         NA        NA          NA
+#&gt; n15 NA NA          NA          NA NA NA         NA        NA          NA
+#&gt; n16 NA NA          NA          NA NA NA         NA        NA          NA
+#&gt; n17 NA NA          NA          NA NA NA         NA        NA          NA
+#&gt; n18 NA NA          NA          NA NA NA         NA        NA          NA
+#&gt; n19 NA NA          NA          NA NA NA         NA        NA          NA
+#&gt; n20 NA NA          NA          NA NA NA         NA        NA          NA
+#&gt; n21 NA NA          NA          NA NA NA         NA        NA          NA
+#&gt; n22 NA NA          NA          NA NA NA         NA        NA          NA
+#&gt; n23 NA NA          NA          NA NA NA         NA        NA          NA
+#&gt; n24 NA NA          NA          NA NA NA         NA        NA          NA
+#&gt; n25 NA NA          NA          NA NA NA         NA        NA          NA
+#&gt; n26 NA NA          NA          NA NA NA         NA        NA          NA
+#&gt; n27 NA NA          NA          NA NA NA         NA        NA          NA
+#&gt; n28 NA NA          NA          NA NA NA         NA        NA          NA
+#&gt; n29 NA NA          NA          NA NA NA         NA        NA          NA
+#&gt; n30 NA NA          NA          NA NA NA         NA        NA          NA
+#&gt;             n10        n11         n12        n13       n14       n15
+#&gt; n1           NA         NA          NA         NA        NA        NA
+#&gt; n2           NA 0.01100006          NA 0.03490248        NA        NA
+#&gt; n3           NA         NA          NA 0.89492165 1.0299745        NA
+#&gt; n4           NA         NA          NA         NA        NA 0.2377438
+#&gt; n5  0.006028095         NA          NA         NA        NA        NA
+#&gt; n6           NA         NA 0.009613657         NA 0.0107383        NA
+#&gt; n7           NA         NA          NA         NA        NA        NA
+#&gt; n8           NA         NA          NA         NA        NA        NA
+#&gt; n9           NA 0.22951492          NA         NA        NA        NA
+#&gt; n10          NA         NA          NA 1.20093128        NA        NA
+#&gt; n11          NA         NA          NA         NA        NA        NA
+#&gt; n12          NA         NA          NA         NA        NA 0.8927191
+#&gt; n13          NA         NA          NA         NA        NA 0.2254387
+#&gt; n14          NA         NA          NA         NA        NA        NA
+#&gt; n15          NA         NA          NA         NA        NA        NA
+#&gt; n16          NA         NA          NA         NA        NA        NA
+#&gt; n17          NA         NA          NA         NA        NA        NA
+#&gt; n18          NA         NA          NA         NA        NA        NA
+#&gt; n19          NA         NA          NA         NA        NA        NA
+#&gt; n20          NA         NA          NA         NA        NA        NA
+#&gt; n21          NA         NA          NA         NA        NA        NA
+#&gt; n22          NA         NA          NA         NA        NA        NA
+#&gt; n23          NA         NA          NA         NA        NA        NA
+#&gt; n24          NA         NA          NA         NA        NA        NA
+#&gt; n25          NA         NA          NA         NA        NA        NA
+#&gt; n26          NA         NA          NA         NA        NA        NA
+#&gt; n27          NA         NA          NA         NA        NA        NA
+#&gt; n28          NA         NA          NA         NA        NA        NA
+#&gt; n29          NA         NA          NA         NA        NA        NA
+#&gt; n30          NA         NA          NA         NA        NA        NA
+#&gt;            n16       n17       n18        n19        n20        n21       n22
+#&gt; n1  0.01509549        NA        NA         NA         NA 0.06853885        NA
+#&gt; n2          NA 0.0108024        NA         NA         NA         NA        NA
+#&gt; n3          NA 1.5633887 0.2388031         NA 0.10939560         NA        NA
+#&gt; n4  0.40918066        NA        NA         NA         NA         NA 0.2753036
+#&gt; n5          NA        NA        NA         NA         NA         NA        NA
+#&gt; n6          NA        NA        NA         NA         NA         NA        NA
+#&gt; n7          NA        NA        NA 0.09823996 0.04760488         NA        NA
+#&gt; n8          NA        NA        NA         NA         NA         NA        NA
+#&gt; n9          NA        NA        NA         NA         NA         NA        NA
+#&gt; n10         NA        NA 0.3306565         NA 0.23747952         NA        NA
+#&gt; n11         NA        NA        NA         NA         NA         NA 0.1553663
+#&gt; n12         NA        NA        NA         NA         NA 0.52646776        NA
+#&gt; n13         NA        NA        NA         NA         NA         NA        NA
+#&gt; n14         NA        NA        NA 0.21980759         NA         NA        NA
+#&gt; n15         NA        NA        NA         NA         NA         NA        NA
+#&gt; n16         NA        NA        NA         NA         NA 0.67386241 0.2675873
+#&gt; n17         NA        NA        NA         NA         NA         NA        NA
+#&gt; n18         NA        NA        NA 0.86722420         NA         NA        NA
+#&gt; n19         NA        NA        NA         NA         NA         NA        NA
+#&gt; n20         NA        NA        NA         NA         NA         NA        NA
+#&gt; n21         NA        NA        NA         NA         NA         NA        NA
+#&gt; n22         NA        NA        NA         NA         NA         NA        NA
+#&gt; n23         NA        NA        NA         NA         NA         NA        NA
+#&gt; n24         NA        NA        NA         NA         NA         NA        NA
+#&gt; n25         NA        NA        NA         NA         NA         NA        NA
+#&gt; n26         NA        NA        NA         NA         NA         NA        NA
+#&gt; n27         NA        NA        NA         NA         NA         NA        NA
+#&gt; n28         NA        NA        NA         NA         NA         NA        NA
+#&gt; n29         NA        NA        NA         NA         NA         NA        NA
+#&gt; n30         NA        NA        NA         NA         NA         NA        NA
+#&gt;           n23       n24       n25       n26       n27       n28        n29
+#&gt; n1         NA        NA        NA        NA        NA        NA         NA
+#&gt; n2         NA        NA        NA        NA        NA        NA         NA
+#&gt; n3         NA        NA        NA        NA        NA        NA         NA
+#&gt; n4         NA        NA 0.2131014        NA        NA        NA         NA
+#&gt; n5         NA        NA        NA        NA        NA        NA 0.03059335
+#&gt; n6         NA        NA        NA        NA        NA        NA         NA
+#&gt; n7         NA        NA        NA        NA 0.1940786 0.2051827         NA
+#&gt; n8  0.2309778        NA        NA        NA        NA        NA         NA
+#&gt; n9  0.6296630        NA        NA        NA 0.7301934        NA 0.96228214
+#&gt; n10        NA        NA        NA        NA        NA 2.0878787         NA
+#&gt; n11        NA        NA        NA        NA        NA        NA         NA
+#&gt; n12        NA        NA        NA        NA        NA        NA         NA
+#&gt; n13        NA        NA        NA        NA        NA        NA         NA
+#&gt; n14        NA        NA        NA 0.6877286        NA        NA         NA
+#&gt; n15        NA 0.1362036        NA 0.2019389        NA        NA         NA
+#&gt; n16        NA 0.1723508 0.1152134        NA        NA 0.5538110         NA
+#&gt; n17        NA        NA        NA 0.5199219        NA        NA         NA
+#&gt; n18        NA        NA        NA        NA 1.0185028        NA 0.81249778
+#&gt; n19        NA        NA        NA        NA        NA        NA         NA
+#&gt; n20        NA        NA        NA        NA        NA        NA         NA
+#&gt; n21        NA        NA        NA        NA        NA        NA         NA
+#&gt; n22 0.2785837 0.1158673        NA        NA        NA        NA         NA
+#&gt; n23        NA        NA 0.2135967        NA        NA        NA         NA
+#&gt; n24        NA        NA        NA        NA        NA        NA         NA
+#&gt; n25        NA        NA        NA        NA        NA        NA         NA
+#&gt; n26        NA        NA        NA        NA        NA        NA         NA
+#&gt; n27        NA        NA        NA        NA        NA        NA         NA
+#&gt; n28        NA        NA        NA        NA        NA        NA         NA
+#&gt; n29        NA        NA        NA        NA        NA        NA         NA
+#&gt; n30        NA        NA        NA        NA        NA        NA         NA
+#&gt;            n30
+#&gt; n1          NA
+#&gt; n2          NA
+#&gt; n3          NA
+#&gt; n4  0.57131659
+#&gt; n5          NA
+#&gt; n6  0.00902194
+#&gt; n7          NA
+#&gt; n8          NA
+#&gt; n9          NA
+#&gt; n10         NA
+#&gt; n11         NA
+#&gt; n12 0.07288826
+#&gt; n13         NA
+#&gt; n14         NA
+#&gt; n15         NA
+#&gt; n16         NA
+#&gt; n17         NA
+#&gt; n18         NA
+#&gt; n19         NA
+#&gt; n20         NA
+#&gt; n21         NA
+#&gt; n22         NA
+#&gt; n23         NA
+#&gt; n24         NA
+#&gt; n25         NA
+#&gt; n26         NA
+#&gt; n27         NA
+#&gt; n28         NA
+#&gt; n29         NA
+#&gt; n30         NA
 #&gt; 
 #&gt; $dce_pvalue
-#&gt;     n1 n2 n3        n4        n5        n6 n7      n8           n9       n10
-#&gt; n1  NA NA NA 0.8782735        NA        NA NA      NA           NA        NA
-#&gt; n2  NA NA NA        NA 0.7987309        NA NA      NA           NA        NA
-#&gt; n3  NA NA NA 0.1190864        NA 0.5081396 NA 0.23031           NA        NA
-#&gt; n4  NA NA NA        NA        NA        NA NA      NA           NA        NA
-#&gt; n5  NA NA NA        NA        NA        NA NA      NA           NA 0.6941561
-#&gt; n6  NA NA NA        NA        NA        NA NA      NA 1.500050e-11        NA
-#&gt; n7  NA NA NA        NA        NA        NA NA      NA           NA 0.9880845
-#&gt; n8  NA NA NA        NA        NA        NA NA      NA 8.308513e-02        NA
-#&gt; n9  NA NA NA        NA        NA        NA NA      NA           NA 0.3029755
-#&gt; n10 NA NA NA        NA        NA        NA NA      NA           NA        NA
-#&gt; n11 NA NA NA        NA        NA        NA NA      NA           NA        NA
-#&gt; n12 NA NA NA        NA        NA        NA NA      NA           NA        NA
-#&gt; n13 NA NA NA        NA        NA        NA NA      NA           NA        NA
-#&gt; n14 NA NA NA        NA        NA        NA NA      NA           NA        NA
-#&gt; n15 NA NA NA        NA        NA        NA NA      NA           NA        NA
-#&gt; n16 NA NA NA        NA        NA        NA NA      NA           NA        NA
-#&gt; n17 NA NA NA        NA        NA        NA NA      NA           NA        NA
-#&gt; n18 NA NA NA        NA        NA        NA NA      NA           NA        NA
-#&gt; n19 NA NA NA        NA        NA        NA NA      NA           NA        NA
-#&gt; n20 NA NA NA        NA        NA        NA NA      NA           NA        NA
-#&gt; n21 NA NA NA        NA        NA        NA NA      NA           NA        NA
-#&gt; n22 NA NA NA        NA        NA        NA NA      NA           NA        NA
-#&gt; n23 NA NA NA        NA        NA        NA NA      NA           NA        NA
-#&gt; n24 NA NA NA        NA        NA        NA NA      NA           NA        NA
-#&gt; n25 NA NA NA        NA        NA        NA NA      NA           NA        NA
-#&gt; n26 NA NA NA        NA        NA        NA NA      NA           NA        NA
-#&gt; n27 NA NA NA        NA        NA        NA NA      NA           NA        NA
-#&gt; n28 NA NA NA        NA        NA        NA NA      NA           NA        NA
-#&gt; n29 NA NA NA        NA        NA        NA NA      NA           NA        NA
-#&gt; n30 NA NA NA        NA        NA        NA NA      NA           NA        NA
-#&gt;     n11        n12          n13       n14          n15       n16       n17
-#&gt; n1   NA 0.92878682           NA        NA           NA        NA        NA
-#&gt; n2   NA 0.01486459           NA        NA           NA        NA        NA
-#&gt; n3   NA         NA 6.287190e-01 0.1373169 0.0005586543        NA        NA
-#&gt; n4   NA         NA           NA        NA           NA        NA 0.7395571
-#&gt; n5   NA         NA           NA 0.8304407           NA        NA        NA
-#&gt; n6   NA         NA 9.599529e-02        NA           NA        NA        NA
-#&gt; n7   NA         NA           NA        NA 0.5686262477        NA 0.3601764
-#&gt; n8   NA         NA           NA        NA           NA        NA        NA
-#&gt; n9   NA         NA           NA        NA           NA        NA        NA
-#&gt; n10  NA         NA           NA        NA           NA 0.1282611        NA
-#&gt; n11  NA         NA 4.638445e-56 0.8090402           NA        NA        NA
-#&gt; n12  NA         NA           NA        NA           NA        NA        NA
-#&gt; n13  NA         NA           NA        NA           NA        NA        NA
-#&gt; n14  NA         NA           NA        NA           NA        NA 0.7894407
-#&gt; n15  NA         NA           NA        NA           NA        NA        NA
-#&gt; n16  NA         NA           NA        NA           NA        NA        NA
-#&gt; n17  NA         NA           NA        NA           NA        NA        NA
-#&gt; n18  NA         NA           NA        NA           NA        NA        NA
-#&gt; n19  NA         NA           NA        NA           NA        NA        NA
-#&gt; n20  NA         NA           NA        NA           NA        NA        NA
-#&gt; n21  NA         NA           NA        NA           NA        NA        NA
-#&gt; n22  NA         NA           NA        NA           NA        NA        NA
-#&gt; n23  NA         NA           NA        NA           NA        NA        NA
-#&gt; n24  NA         NA           NA        NA           NA        NA        NA
-#&gt; n25  NA         NA           NA        NA           NA        NA        NA
-#&gt; n26  NA         NA           NA        NA           NA        NA        NA
-#&gt; n27  NA         NA           NA        NA           NA        NA        NA
-#&gt; n28  NA         NA           NA        NA           NA        NA        NA
-#&gt; n29  NA         NA           NA        NA           NA        NA        NA
-#&gt; n30  NA         NA           NA        NA           NA        NA        NA
-#&gt;           n18          n19       n20          n21       n22       n23       n24
-#&gt; n1         NA           NA        NA           NA        NA        NA        NA
-#&gt; n2         NA           NA 0.1922162           NA        NA        NA 0.9314693
-#&gt; n3         NA           NA        NA 4.558909e-02        NA        NA        NA
-#&gt; n4         NA           NA        NA           NA        NA        NA        NA
-#&gt; n5         NA           NA        NA           NA        NA 0.1796841 0.7858699
-#&gt; n6         NA           NA        NA           NA 0.5521354        NA        NA
-#&gt; n7         NA 0.0048797026        NA           NA        NA 0.8011242        NA
-#&gt; n8         NA 0.5041626500 0.6588650           NA        NA 0.5912294 0.7677566
-#&gt; n9         NA           NA        NA           NA 0.3323232        NA        NA
-#&gt; n10        NA           NA        NA           NA        NA        NA        NA
-#&gt; n11 0.6998152           NA 0.5591826           NA        NA        NA        NA
-#&gt; n12        NA           NA        NA           NA        NA        NA        NA
-#&gt; n13        NA           NA        NA           NA        NA        NA        NA
-#&gt; n14        NA           NA        NA           NA        NA        NA        NA
-#&gt; n15        NA 0.0005905704        NA           NA        NA        NA        NA
-#&gt; n16        NA           NA        NA           NA        NA        NA        NA
-#&gt; n17 0.8400321           NA        NA 1.309615e-07        NA        NA        NA
-#&gt; n18        NA           NA        NA 9.196068e-01        NA        NA        NA
-#&gt; n19        NA           NA        NA           NA        NA        NA        NA
-#&gt; n20        NA           NA        NA           NA        NA        NA        NA
-#&gt; n21        NA           NA        NA           NA        NA        NA        NA
-#&gt; n22        NA           NA        NA           NA        NA        NA        NA
-#&gt; n23        NA           NA        NA           NA        NA        NA        NA
-#&gt; n24        NA           NA        NA           NA        NA        NA        NA
-#&gt; n25        NA           NA        NA           NA        NA        NA        NA
-#&gt; n26        NA           NA        NA           NA        NA        NA        NA
-#&gt; n27        NA           NA        NA           NA        NA        NA        NA
-#&gt; n28        NA           NA        NA           NA        NA        NA        NA
-#&gt; n29        NA           NA        NA           NA        NA        NA        NA
-#&gt; n30        NA           NA        NA           NA        NA        NA        NA
-#&gt;              n25       n26        n27       n28       n29        n30
-#&gt; n1            NA        NA         NA        NA        NA         NA
-#&gt; n2  0.0003432082        NA         NA        NA        NA         NA
-#&gt; n3            NA        NA         NA        NA        NA         NA
-#&gt; n4            NA        NA         NA        NA        NA         NA
-#&gt; n5            NA        NA         NA        NA        NA         NA
-#&gt; n6            NA        NA         NA        NA        NA         NA
-#&gt; n7            NA        NA 0.07910643        NA        NA         NA
-#&gt; n8            NA        NA         NA        NA        NA         NA
-#&gt; n9            NA        NA         NA 0.7012544        NA         NA
-#&gt; n10           NA        NA         NA        NA        NA         NA
-#&gt; n11           NA        NA 0.55017446        NA        NA         NA
-#&gt; n12 0.9934539984 0.2942726         NA        NA        NA         NA
-#&gt; n13           NA        NA         NA        NA        NA         NA
-#&gt; n14           NA        NA         NA        NA 0.8209001         NA
-#&gt; n15           NA 0.2352295         NA        NA        NA         NA
-#&gt; n16           NA        NA         NA 0.9449381        NA         NA
-#&gt; n17           NA        NA         NA        NA        NA         NA
-#&gt; n18           NA        NA         NA        NA        NA         NA
-#&gt; n19           NA        NA         NA        NA 0.9109572         NA
-#&gt; n20           NA        NA         NA        NA        NA 0.66993952
-#&gt; n21           NA        NA         NA 0.8864057        NA 0.01492279
-#&gt; n22           NA        NA         NA        NA        NA         NA
-#&gt; n23 0.4571799110        NA 0.45973643        NA 0.9338571         NA
-#&gt; n24           NA 0.1358044         NA        NA        NA         NA
-#&gt; n25           NA        NA         NA        NA        NA         NA
-#&gt; n26           NA        NA         NA        NA        NA         NA
-#&gt; n27           NA        NA         NA        NA        NA 0.51060376
-#&gt; n28           NA        NA         NA        NA        NA         NA
-#&gt; n29           NA        NA         NA        NA        NA         NA
-#&gt; n30           NA        NA         NA        NA        NA         NA
+#&gt;     n1 n2        n3        n4 n5 n6           n7          n8        n9
+#&gt; n1  NA NA 0.7694174        NA NA NA 2.319068e-10          NA        NA
+#&gt; n2  NA NA        NA 0.8986518 NA NA           NA 0.002043366 0.2336225
+#&gt; n3  NA NA        NA        NA NA NA 6.378586e-01          NA        NA
+#&gt; n4  NA NA        NA        NA NA NA           NA          NA        NA
+#&gt; n5  NA NA        NA        NA NA NA           NA          NA        NA
+#&gt; n6  NA NA        NA        NA NA NA 4.484858e-01 0.001938180        NA
+#&gt; n7  NA NA        NA        NA NA NA           NA          NA        NA
+#&gt; n8  NA NA        NA        NA NA NA           NA          NA        NA
+#&gt; n9  NA NA        NA        NA NA NA           NA          NA        NA
+#&gt; n10 NA NA        NA        NA NA NA           NA          NA        NA
+#&gt; n11 NA NA        NA        NA NA NA           NA          NA        NA
+#&gt; n12 NA NA        NA        NA NA NA           NA          NA        NA
+#&gt; n13 NA NA        NA        NA NA NA           NA          NA        NA
+#&gt; n14 NA NA        NA        NA NA NA           NA          NA        NA
+#&gt; n15 NA NA        NA        NA NA NA           NA          NA        NA
+#&gt; n16 NA NA        NA        NA NA NA           NA          NA        NA
+#&gt; n17 NA NA        NA        NA NA NA           NA          NA        NA
+#&gt; n18 NA NA        NA        NA NA NA           NA          NA        NA
+#&gt; n19 NA NA        NA        NA NA NA           NA          NA        NA
+#&gt; n20 NA NA        NA        NA NA NA           NA          NA        NA
+#&gt; n21 NA NA        NA        NA NA NA           NA          NA        NA
+#&gt; n22 NA NA        NA        NA NA NA           NA          NA        NA
+#&gt; n23 NA NA        NA        NA NA NA           NA          NA        NA
+#&gt; n24 NA NA        NA        NA NA NA           NA          NA        NA
+#&gt; n25 NA NA        NA        NA NA NA           NA          NA        NA
+#&gt; n26 NA NA        NA        NA NA NA           NA          NA        NA
+#&gt; n27 NA NA        NA        NA NA NA           NA          NA        NA
+#&gt; n28 NA NA        NA        NA NA NA           NA          NA        NA
+#&gt; n29 NA NA        NA        NA NA NA           NA          NA        NA
+#&gt; n30 NA NA        NA        NA NA NA           NA          NA        NA
+#&gt;            n10       n11       n12       n13         n14          n15
+#&gt; n1          NA        NA        NA        NA          NA           NA
+#&gt; n2          NA 0.9418817        NA 0.2531173          NA           NA
+#&gt; n3          NA        NA        NA 0.4149098 0.561580425           NA
+#&gt; n4          NA        NA        NA        NA          NA 0.0008954912
+#&gt; n5  0.08720058        NA        NA        NA          NA           NA
+#&gt; n6          NA        NA 0.3904598        NA 0.007435332           NA
+#&gt; n7          NA        NA        NA        NA          NA           NA
+#&gt; n8          NA        NA        NA        NA          NA           NA
+#&gt; n9          NA 0.4965813        NA        NA          NA           NA
+#&gt; n10         NA        NA        NA 0.4421853          NA           NA
+#&gt; n11         NA        NA        NA        NA          NA           NA
+#&gt; n12         NA        NA        NA        NA          NA 0.9342675735
+#&gt; n13         NA        NA        NA        NA          NA 0.8877618849
+#&gt; n14         NA        NA        NA        NA          NA           NA
+#&gt; n15         NA        NA        NA        NA          NA           NA
+#&gt; n16         NA        NA        NA        NA          NA           NA
+#&gt; n17         NA        NA        NA        NA          NA           NA
+#&gt; n18         NA        NA        NA        NA          NA           NA
+#&gt; n19         NA        NA        NA        NA          NA           NA
+#&gt; n20         NA        NA        NA        NA          NA           NA
+#&gt; n21         NA        NA        NA        NA          NA           NA
+#&gt; n22         NA        NA        NA        NA          NA           NA
+#&gt; n23         NA        NA        NA        NA          NA           NA
+#&gt; n24         NA        NA        NA        NA          NA           NA
+#&gt; n25         NA        NA        NA        NA          NA           NA
+#&gt; n26         NA        NA        NA        NA          NA           NA
+#&gt; n27         NA        NA        NA        NA          NA           NA
+#&gt; n28         NA        NA        NA        NA          NA           NA
+#&gt; n29         NA        NA        NA        NA          NA           NA
+#&gt; n30         NA        NA        NA        NA          NA           NA
+#&gt;              n16       n17       n18       n19       n20       n21       n22
+#&gt; n1  6.245766e-05        NA        NA        NA        NA 0.2317894        NA
+#&gt; n2            NA 0.8961366        NA        NA        NA        NA        NA
+#&gt; n3            NA 0.4403940 0.9097715        NA 0.4645036        NA        NA
+#&gt; n4  3.165031e-01        NA        NA        NA        NA        NA 0.7022678
+#&gt; n5            NA        NA        NA        NA        NA        NA        NA
+#&gt; n6            NA        NA        NA        NA        NA        NA        NA
+#&gt; n7            NA        NA        NA 0.6920984 0.8888611        NA        NA
+#&gt; n8            NA        NA        NA        NA        NA        NA        NA
+#&gt; n9            NA        NA        NA        NA        NA        NA        NA
+#&gt; n10           NA        NA 0.4724124        NA 0.5590353        NA        NA
+#&gt; n11           NA        NA        NA        NA        NA        NA 0.4333852
+#&gt; n12           NA        NA        NA        NA        NA 0.6824663        NA
+#&gt; n13           NA        NA        NA        NA        NA        NA        NA
+#&gt; n14           NA        NA        NA 0.7559125        NA        NA        NA
+#&gt; n15           NA        NA        NA        NA        NA        NA        NA
+#&gt; n16           NA        NA        NA        NA        NA 0.6999941 0.2071332
+#&gt; n17           NA        NA        NA        NA        NA        NA        NA
+#&gt; n18           NA        NA        NA 0.6175758        NA        NA        NA
+#&gt; n19           NA        NA        NA        NA        NA        NA        NA
+#&gt; n20           NA        NA        NA        NA        NA        NA        NA
+#&gt; n21           NA        NA        NA        NA        NA        NA        NA
+#&gt; n22           NA        NA        NA        NA        NA        NA        NA
+#&gt; n23           NA        NA        NA        NA        NA        NA        NA
+#&gt; n24           NA        NA        NA        NA        NA        NA        NA
+#&gt; n25           NA        NA        NA        NA        NA        NA        NA
+#&gt; n26           NA        NA        NA        NA        NA        NA        NA
+#&gt; n27           NA        NA        NA        NA        NA        NA        NA
+#&gt; n28           NA        NA        NA        NA        NA        NA        NA
+#&gt; n29           NA        NA        NA        NA        NA        NA        NA
+#&gt; n30           NA        NA        NA        NA        NA        NA        NA
+#&gt;           n23        n24       n25        n26          n27        n28
+#&gt; n1         NA         NA        NA         NA           NA         NA
+#&gt; n2         NA         NA        NA         NA           NA         NA
+#&gt; n3         NA         NA        NA         NA           NA         NA
+#&gt; n4         NA         NA 0.4023004         NA           NA         NA
+#&gt; n5         NA         NA        NA         NA           NA         NA
+#&gt; n6         NA         NA        NA         NA           NA         NA
+#&gt; n7         NA         NA        NA         NA 5.729379e-05 0.05002257
+#&gt; n8  0.1985900         NA        NA         NA           NA         NA
+#&gt; n9  0.1929214         NA        NA         NA 8.456173e-04         NA
+#&gt; n10        NA         NA        NA         NA           NA 0.31021815
+#&gt; n11        NA         NA        NA         NA           NA         NA
+#&gt; n12        NA         NA        NA         NA           NA         NA
+#&gt; n13        NA         NA        NA         NA           NA         NA
+#&gt; n14        NA         NA        NA 0.06119487           NA         NA
+#&gt; n15        NA 0.73032397        NA 0.45404099           NA         NA
+#&gt; n16        NA 0.01739589 0.3990689         NA           NA 0.04390882
+#&gt; n17        NA         NA        NA 0.30921230           NA         NA
+#&gt; n18        NA         NA        NA         NA 8.482612e-01         NA
+#&gt; n19        NA         NA        NA         NA           NA         NA
+#&gt; n20        NA         NA        NA         NA           NA         NA
+#&gt; n21        NA         NA        NA         NA           NA         NA
+#&gt; n22 0.6753254 0.24235002        NA         NA           NA         NA
+#&gt; n23        NA         NA 0.7705047         NA           NA         NA
+#&gt; n24        NA         NA        NA         NA           NA         NA
+#&gt; n25        NA         NA        NA         NA           NA         NA
+#&gt; n26        NA         NA        NA         NA           NA         NA
+#&gt; n27        NA         NA        NA         NA           NA         NA
+#&gt; n28        NA         NA        NA         NA           NA         NA
+#&gt; n29        NA         NA        NA         NA           NA         NA
+#&gt; n30        NA         NA        NA         NA           NA         NA
+#&gt;              n29       n30
+#&gt; n1            NA        NA
+#&gt; n2            NA        NA
+#&gt; n3            NA        NA
+#&gt; n4            NA 0.8383237
+#&gt; n5  5.558678e-11        NA
+#&gt; n6            NA 0.9444476
+#&gt; n7            NA        NA
+#&gt; n8            NA        NA
+#&gt; n9  7.722440e-01        NA
+#&gt; n10           NA        NA
+#&gt; n11           NA        NA
+#&gt; n12           NA 0.7736349
+#&gt; n13           NA        NA
+#&gt; n14           NA        NA
+#&gt; n15           NA        NA
+#&gt; n16           NA        NA
+#&gt; n17           NA        NA
+#&gt; n18 2.148464e-01        NA
+#&gt; n19           NA        NA
+#&gt; n20           NA        NA
+#&gt; n21           NA        NA
+#&gt; n22           NA        NA
+#&gt; n23           NA        NA
+#&gt; n24           NA        NA
+#&gt; n25           NA        NA
+#&gt; n26           NA        NA
+#&gt; n27           NA        NA
+#&gt; n28           NA        NA
+#&gt; n29           NA        NA
+#&gt; n30           NA        NA
 #&gt; 
 #&gt; $pathway_pvalue
-#&gt; [1] 0.4852498
+#&gt; [1] 0.4456554
 #&gt; 
 #&gt; attr(,"class")
 #&gt; [1] "dce"</div></pre>
