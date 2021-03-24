@@ -34,6 +34,7 @@ remotes::install_github("cbg-ethz/dce")
 
 * Check package locally:
     * `Rscript -e "lintr::lint_package()"`
+    * `Rscript -e "devtools::test()"`
     * `Rscript -e "devtools::check(error_on = 'warning')"`
     * `R CMD BiocCheck`
 * Documentation
