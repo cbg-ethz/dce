@@ -6,6 +6,7 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^\.lintr$
+\.RData
 
 ^doc$
 ^Meta$
@@ -17,3 +18,4 @@
 ^pkgdown$
 
 \.ipynb_checkpoints
+\.snakemake
