@@ -560,25 +560,26 @@ estimate_latent_count <- function(X1, X2, method = "auto") {
 #' @importFrom MASS rlm
 rlm_dce <- function(...) {
     x <- MASS::rlm(...)
-    class(x) <- 'rlm_dce'
+    class(x) <- "rlm_dce"
     return(x)
 }
 #' summary for rlm_dce
 #' @param object object of class 'rlm_dce'
 #' @param ... see ?MASS::summary.rlm
-#' @importFrom MASS summary.rlm
 #' @method summary rlm_dce
 summary.rlm_dce <- function(object, ...) {
-    class(object) <- 'rlm'
-    x <- MASS:::summary.rlm(object)
-    df <- max(x$df)
-    pt2 <- function(...) {
-        x <- 2*min(pt(...),1-pt(...))
-        return(x)
-    }
-    pvals <- unlist(lapply(x$coefficients[, 't value'], pt2, df = df))
-    x$coefficients <- cbind(x$coefficients, 'Pr(>|t|)' = pvals)
-    colnames(x$coefficients)[1] <- 'Estimate'
-    class(x) <- 'summary.rlm'
-    return(x)
+    # TODO: fix this...
+    stop("MASS:::summary.rlm is unexported...")
+    # class(object) <- "rlm"
+    # x <- MASS:::summary.rlm(object)
+    # df <- max(x$df)
+    # pt2 <- function(...) {
+    #     x <- 2 * min(pt(...), 1 - pt(...))
+    #     return(x)
+    # }
+    # pvals <- unlist(lapply(x$coefficients[, "t value"], pt2, df = df))
+    # x$coefficients <- cbind(x$coefficients, "Pr(>|t|)" = pvals)
+    # colnames(x$coefficients)[1] <- "Estimate"
+    # class(x) <- "summary.rlm"
+    # return(x)
 }
