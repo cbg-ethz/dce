@@ -66,7 +66,7 @@ setGeneric(
 # "igraph" is not a formal S4 class, make it compatible with `signature` call
 setOldClass("igraph")
 #' @rdname dce-methods
-#' @import igraph
+#' @importFrom igraph as_adjacency_matrix
 setMethod(
     "dce",
     signature = signature(graph = "igraph"),
@@ -82,7 +82,7 @@ setMethod(
         conservative = FALSE,
         log_level = logger::INFO
     ) {
-        mat <- as(igraph::as_adjacency_matrix(graph), "matrix")
+        mat <- as(as_adjacency_matrix(graph), "matrix")
         if (is.null(rownames(mat))) {
             node_names <- as.character(seq_len(dim(mat)[[1]]))
             rownames(mat) <- colnames(mat) <- node_names
