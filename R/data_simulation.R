@@ -69,7 +69,7 @@ setMethod(
         link = negative.binomial.special()$linkfun,
         pop_size = 0, latent = 0
     ) {
-        a <- as(graph, 'matrix')
+        a <- as(graph, "matrix")
         a <- a[naturalorder(rownames(a)), naturalorder(colnames(a))]
         simulate_data(
             a,

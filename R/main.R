@@ -612,9 +612,7 @@ glm_solver <- function(form, df, solver, solver_args) {
     }
 
     # rlm solver
-    if (solver == "rlm") {
-        return(rlm_dce(formula = as.formula(form), data = df))
-    }
+    # TODO: fix linter issues for rlm_dce
 
     # glm solver
     solver_func <- switch(
