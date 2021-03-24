@@ -153,14 +153,6 @@ test_that("adjustment sets work", {
   )
 
   # TODO: fix pcalg::adjustment crashing whole R instance
-  # expect_equal(
-  #   dce:::get_adjustment_set(
-  #     as(graph, "matrix"),
-  #     which(nodes(graph) == "A"), which(nodes(graph) == "B"),
-  #     "minimal"
-  #   ),
-  #   character(0)
-  # )
 })
 
 
