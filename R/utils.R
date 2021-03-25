@@ -207,31 +207,31 @@ Gsolve <- function(a, b=NULL, ...) {
 get_prediction_counts <- function(truth, inferred, cutoff = 0.5) {
     tp <- sum(
         abs(truth) > cutoff &
-            abs(inferred) > cutoff &
-            sign(truth) == sign(inferred) & inferred != 0,
+        abs(inferred) > cutoff &
+        sign(truth) == sign(inferred) & inferred != 0,
         na.rm = TRUE
     )
     fn <- sum(
         abs(truth) > cutoff &
-            abs(inferred) <= cutoff &
-            inferred != 0,
+        abs(inferred) <= cutoff &
+        inferred != 0,
         na.rm = TRUE
     )
     fp <- sum(
         abs(truth) <= cutoff &
-            abs(inferred) > cutoff |
-            (
-                abs(truth) > cutoff &
-                    abs(inferred) > cutoff &
-                    sign(truth) != sign(inferred)
-            ) &
-            inferred != 0,
+        abs(inferred) > cutoff |
+        (
+            abs(truth) > cutoff &
+            abs(inferred) > cutoff &
+            sign(truth) != sign(inferred)
+        ) &
+        inferred != 0,
         na.rm = TRUE
     )
     tn <- sum(
         abs(truth) <= cutoff &
-            abs(inferred) <= cutoff &
-            inferred != 0,
+        abs(inferred) <= cutoff &
+        inferred != 0,
         na.rm = TRUE
     )
 
@@ -484,13 +484,13 @@ estimate_latent_count <- function(X1, X2, method = "auto") {
         # comparing the singular values to what they would be if the
         # variables were independent which is estimated by permuting the
         # columns of the data matrix
-        permutation_thresholding <- function(X, quantile=0.99) {
+        permutation_thresholding <- function(X, quantile = 0.99) {
             N <- 50
             X <- scale(X)
             X <- X[, !is.na(apply(X, 2, sum))]
             X <- X[, sort(apply(X, 2, sd),
                           index.return = TRUE,
-                          decreasing = TRUE)$ix[1:min(1000, ncol(X))]]
+                          decreasing = TRUE)$ix[seq_len(min(1000, ncol(X)))]]
             r <- min(dim(X))
 
             evals <- matrix(0, nrow = N, ncol = r)
@@ -498,8 +498,10 @@ estimate_latent_count <- function(X1, X2, method = "auto") {
                 X_perm <- apply(X, 2, function(xx) sample(xx))
                 evals[i, ] <- svd(X_perm, nu = 0, nv = 0)$d[seq_len(r)]
             }
-            thresholds <- apply(evals,
-                                2, function(xx) quantile(xx, probs = quantile))
+            thresholds <- apply(
+                evals, 2,
+                function(xx) quantile(xx, probs = quantile)
+            )
 
             # limit number of confounders to at most 10% of
             # the number of data points or variables
@@ -536,9 +538,15 @@ estimate_latent_count <- function(X1, X2, method = "auto") {
         fit_pca <- prcomp(scale(X))
 
         scree <- fit_pca$sdev
-        clust <- kmeans(scree, centers = c(scree[1], scree[2],
-                                           scree[round(length(scree) / 2 + 1)],
-                                           scree[length(scree)]))$cluster
+        clust <- kmeans(
+            scree,
+            centers = c(
+                scree[1],
+                scree[2],
+                scree[round(length(scree) / 2 + 1)],
+                scree[length(scree)]
+            )
+        )$cluster
         idx <- sum(clust == clust[1])
         return(idx)
     }
