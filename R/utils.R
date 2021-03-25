@@ -65,7 +65,7 @@ as_adjmat <- function(g) {
 #' @examples
 #' x <- matrix(rnorm(100),10,10)
 #' pcor(x)
-pcor <- function(x, g = NULL, adjustment_type = 'parents', ...) {
+pcor <- function(x, g = NULL, adjustment_type = "parents", ...) {
     if (is.null(g)) {
         rho <- try(ppcor::pcor(x, ...), silent = TRUE)
         if (length(grep("Error", rho)) > 0) {
@@ -83,24 +83,24 @@ pcor <- function(x, g = NULL, adjustment_type = 'parents', ...) {
         }
         rownames(rho) <- colnames(rho) <- colnames(x)
     } else {
-        edges <- which(g == 1, arr.ind=TRUE)
+        edges <- which(g == 1, arr.ind = TRUE)
         omega <- cor(x, ...)
-        rho <- omega*0
-        for (i in 1:nrow(edges)) {
+        rho <- omega * 0
+        for (i in seq_len(nrow(edges))) {
             x <- edges[i, 1]
             y <- edges[i, 2]
             z <- get_adjustment_set(
                 g, x, y,
                 adjustment_type,
-                effect_type = 'total'
+                effect_type = "total"
             )
             z <- which(colnames(g) %in% z)
-            p <- Gsolve(omega[c(x,y,z),c(x,y,z)])
+            p <- Gsolve(omega[c(x, y, z), c(x, y, z)])
             pdiag <- diag(p) %*% t(diag(p))
             rhoz <- -p / (pdiag^0.5)
             diag(rhoz) <- 1
             rhoz[which(is.na(rhoz) | is.infinite(rhoz))] <- 0
-            rho[x,y] <- rhoz[1, 2]
+            rho[x, y] <- rhoz[1, 2]
         }
     }
     return(rho)
@@ -207,34 +207,34 @@ Gsolve <- function(a, b=NULL, ...) {
 get_prediction_counts <- function(truth, inferred, cutoff = 0.5) {
     tp <- sum(
         abs(truth) > cutoff &
-        abs(inferred) > cutoff &
-        sign(truth) == sign(inferred) & inferred != 0,
+            abs(inferred) > cutoff &
+            sign(truth) == sign(inferred) & inferred != 0,
         na.rm = TRUE
     )
     fn <- sum(
         abs(truth) > cutoff &
-        abs(inferred) <= cutoff &
-        inferred != 0,
+            abs(inferred) <= cutoff &
+            inferred != 0,
         na.rm = TRUE
     )
     fp <- sum(
         abs(truth) <= cutoff &
-        abs(inferred) > cutoff |
-        (
-            abs(truth) > cutoff &
-            abs(inferred) > cutoff &
-            sign(truth) != sign(inferred)
-        ) &
-        inferred != 0,
+            abs(inferred) > cutoff |
+            (
+                abs(truth) > cutoff &
+                    abs(inferred) > cutoff &
+                    sign(truth) != sign(inferred)
+            ) &
+            inferred != 0,
         na.rm = TRUE
     )
     tn <- sum(
         abs(truth) <= cutoff &
-        abs(inferred) <= cutoff &
-        inferred != 0,
+            abs(inferred) <= cutoff &
+            inferred != 0,
         na.rm = TRUE
     )
-
+    
     return(data.frame(
         true.positive = tp,
         false.positive = fp,
@@ -275,12 +275,12 @@ create_random_DAG <- function(
         is.numeric(eff_max),
         eff_min <= eff_max
     )
-
+    
     # create (directed) adjacency matrix
     mat <- matrix(rbinom(node_num * node_num, 1, prob), node_num, node_num)
     mat[lower.tri(mat)] <- 0
     diag(mat) <- 0
-
+    
     # make sure to abide to max parents
     mat <- apply(mat, 2, function(x) {
         if (sum(x) > max_par) {
@@ -289,19 +289,19 @@ create_random_DAG <- function(
         }
         return(x)
     })
-
+    
     # assign effects
     mat[mat != 0] <- runif(sum(mat != 0), min = eff_min, max = eff_max)
-
+    
     # set node labels
     rownames(mat) <- colnames(mat) <- node_labels
-
+    
     # topologically sort graph
     nodes_sorted <- igraph::topo_sort(
         igraph::graph_from_adjacency_matrix(mat, weighted = TRUE)
     )
     mat <- mat[nodes_sorted, nodes_sorted]
-
+    
     # return graph
     igraph::as_graphnel(
         igraph::graph_from_adjacency_matrix(mat, weighted = TRUE)
@@ -445,7 +445,7 @@ make.log.link <- function(base=exp(1)) {
 #' graph.wt <- as(matrix(c(0,0,0,1,0,0,0,1,0), 3), "graphNEL")
 #' trueEffects(graph.wt)
 trueEffects <- function(g, partial = FALSE) {
-    a <- as(g, 'matrix')
+    a <- as(g, "matrix")
     a <- a[naturalorder(rownames(a)), naturalorder(colnames(a))]
     if (partial) {
         ae <- a
@@ -456,32 +456,6 @@ trueEffects <- function(g, partial = FALSE) {
         }
     }
     return(ae)
-}
-
-#' @noRd
-permutation_thresholding <- function(X, quantile=0.99) {
-    N <- 50
-    X <- scale(X)
-    X <- X[, !is.na(apply(X, 2, sum))]
-    X <- X[, sort(apply(X, 2, sd),
-                  index.return = TRUE,
-                  decreasing = TRUE)$ix[1:min(1000, ncol(X))]]
-    r <- min(dim(X))
-    
-    evals <- matrix(0, nrow = N, ncol = r)
-    for (i in seq_len(N)) {
-        X_perm <- apply(X, 2, function(xx) sample(xx))
-        evals[i, ] <- svd(X_perm, nu = 0, nv = 0)$d[seq_len(r)]
-    }
-    thresholds <- apply(evals,
-                        2, function(xx) quantile(xx, probs = quantile))
-    
-    # limit number of confounders to at most 10% of
-    # the number of data points or variables
-    limit <- min(ceiling(0.1 * r), 15)
-    # last which crosses the threshold
-    crosses <- (svd(X, nu = 0, nv = 0)$d > thresholds)[1:limit]
-    return(max(which(c(TRUE, crosses)) - 1))
 }
 
 #' Estimate number of latent confounders
@@ -518,7 +492,7 @@ estimate_latent_count <- function(X1, X2, method = "auto") {
                           index.return = TRUE,
                           decreasing = TRUE)$ix[1:min(1000, ncol(X))]]
             r <- min(dim(X))
-
+            
             evals <- matrix(0, nrow = N, ncol = r)
             for (i in seq_len(N)) {
                 X_perm <- apply(X, 2, function(xx) sample(xx))
@@ -526,7 +500,7 @@ estimate_latent_count <- function(X1, X2, method = "auto") {
             }
             thresholds <- apply(evals,
                                 2, function(xx) quantile(xx, probs = quantile))
-
+            
             # limit number of confounders to at most 10% of
             # the number of data points or variables
             limit <- min(ceiling(0.1 * r), 15)
@@ -534,38 +508,38 @@ estimate_latent_count <- function(X1, X2, method = "auto") {
             crosses <- (svd(X, nu = 0, nv = 0)$d > thresholds)[1:limit]
             return(max(which(c(TRUE, crosses)) - 1))
         }
-
+        
         q1 <- permutation_thresholding(X1)
         q2 <- permutation_thresholding(X2)
-
+        
         return(ceiling((q1 + q2) / 2))
     }
 
     if (method == "kim") {
         # This function looks at the knee point of a scree plot.
-
+        
         X <- cbind(X1, X2)
         fit_pca <- prcomp(scale(X))
-
+        
         scree <- fit_pca$sdev
         scree <- scree[seq_len(round(length(scree) / 2))]
         values <- seq(length(scree))
-
+        
         d1 <- diff(scree) / diff(values) # first derivative
         d2 <- diff(d1) / diff(values[-1]) # second derivative
         idx <- which.max(abs(d2))
-
+        
         return(idx)
     }
-
+    
     if (method == "cluster") {
         X <- cbind(X1, X2)
         fit_pca <- prcomp(scale(X))
-
+        
         scree <- fit_pca$sdev
         clust <- kmeans(scree, centers = c(scree[1], scree[2],
-                                        scree[round(length(scree) / 2 + 1)],
-                                        scree[length(scree)]))$cluster
+                                           scree[round(length(scree) / 2 + 1)],
+                                           scree[length(scree)]))$cluster
         idx <- sum(clust == clust[1])
         return(idx)
     }
@@ -575,25 +549,14 @@ estimate_latent_count <- function(X1, X2, method = "auto") {
 #' @importFrom MASS rlm
 rlm_dce <- function(...) {
     x <- MASS::rlm(...)
-    class(x) <- 'rlm_dce'
+    class(x) <- "rlm_dce"
     return(x)
 }
 #' summary for rlm_dce
 #' @param object object of class 'rlm_dce'
 #' @param ... see ?MASS::summary.rlm
-#' @importFrom MASS summary.rlm
 #' @method summary rlm_dce
 summary.rlm_dce <- function(object, ...) {
-    class(object) <- 'rlm'
-    x <- MASS:::summary.rlm(object)
-    df <- max(x$df)
-    pt2 <- function(...) {
-        x <- 2*min(pt(...),1-pt(...))
-        return(x)
-    }
-    pvals <- unlist(lapply(x$coefficients[, 't value'], pt2, df = df))
-    x$coefficients <- cbind(x$coefficients, 'Pr(>|t|)' = pvals)
-    colnames(x$coefficients)[1] <- 'Estimate'
-    class(x) <- 'summary.rlm'
-    return(x)
+    # TODO: fix this...
+    stop("MASS:::summary.rlm is unexported...")
 }

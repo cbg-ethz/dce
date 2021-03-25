@@ -87,7 +87,7 @@ setMethod(
             node_names <- as.character(seq_len(dim(mat)[[1]]))
             rownames(mat) <- colnames(mat) <- node_names
         }
-
+        
         dce(
             mat,
             df_expr_wt, df_expr_mt,
@@ -155,16 +155,16 @@ setMethod(
         log_level = logger::INFO
     ) {
         logger::log_threshold(log_level)
-
+        
         # preparations
         graph[graph != 0] <- 1 # ignore edge weights
-
+        
         # detect cycles in DAG
         graph <- topologically_ordering(graph)
         if (any(graph[lower.tri(graph)] == 1)) {
             warning("Cycle(s) detected in network")
         }
-
+        
         # validate input
         if (!all(colnames(graph) %in% colnames(df_expr_wt))) {
             stop("Not all nodes have expression vector in WT data")
@@ -172,7 +172,7 @@ setMethod(
         if (!all(colnames(graph) %in% colnames(df_expr_mt))) {
             stop("Not all nodes have expression vector in MT data")
         }
-
+        
         # fit model
         .dce(
             graph, df_expr_wt, df_expr_mt,
@@ -279,7 +279,7 @@ dce_nb <- function(
             )
             logger::log_info("Estimated {deconfounding} latent confounders")
         }
-
+        
         if (deconfounding > 0) {
             estimate_latent_proxies <- function(X, q) {
                 X <- scale(X)
@@ -291,14 +291,14 @@ dce_nb <- function(
                     X,
                     nu = q,
                     nv = 0,
-                    )$u
+                )$u
                 return(ret)
             }
-
+            
             lat_data <- rbind(
                 estimate_latent_proxies(df_expr_wt, deconfounding),
                 estimate_latent_proxies(df_expr_mt, deconfounding)
-                )
+            )
             colnames(lat_data) <- paste0("H", seq_len(deconfounding))
         }
     }
@@ -310,14 +310,14 @@ dce_nb <- function(
             lib_size <- round(lib_size / (10^min(round(log10(lib_size)))))
         }
     }
-
+    
     if (length(unique(lib_size)) == 1 & lib_size[1] != FALSE) {
         logger::log_warn(
             "Only single library size detected, disabling correction!"
         )
         lib_size <- FALSE
     }
-
+    
     # set labels if none are given
     if (
         is.null(rownames(graph)) &&
@@ -329,16 +329,16 @@ dce_nb <- function(
         rownames(graph) <- colnames(graph) <- node_names
         colnames(df_expr_wt) <- colnames(df_expr_mt) <- node_names
     }
-
+    
     # subset expression data to pathway genes
     df_expr_wt <- df_expr_wt[, which(colnames(df_expr_wt) %in% colnames(graph))]
     df_expr_mt <- df_expr_mt[, which(colnames(df_expr_mt) %in% colnames(graph))]
-
+    
     # ensure the data and graph have the same order of genes
     df_expr_wt <- df_expr_wt[, naturalorder(colnames(df_expr_wt))]
     df_expr_mt <- df_expr_mt[, naturalorder(colnames(df_expr_mt))]
     graph <- graph[naturalorder(rownames(graph)), naturalorder(colnames(graph))]
-
+    
     # handle empty graph (no edges)
     if (sum(graph) == 0) {
         return(structure(list(
@@ -348,7 +348,7 @@ dce_nb <- function(
             pathway_pvalue = NA
         ), class = "dce"))
     }
-
+    
     # compute DCEs
     res <- purrr::pmap_dfr(
         as.data.frame(which(graph != 0, arr.ind = TRUE)),
@@ -362,7 +362,7 @@ dce_nb <- function(
                     p_value = NA
                 ))
             }
-
+            
             # concatenate data
             df_data <- data.frame(
                 X = c(
@@ -378,14 +378,14 @@ dce_nb <- function(
                     rep(1, dim(df_expr_mt)[[1]])
                 )
             )
-
+            
             # incorporate adjustment set
             valid_adjustment_set <- get_adjustment_set(
                 graph, row, col,
                 adjustment_type,
                 effect_type
             )
-
+            
             form_adjustment_suffix <- ""
             for (idx in valid_adjustment_set) {
                 name <- paste0("Z_", idx)
@@ -401,7 +401,7 @@ dce_nb <- function(
                 )
                 df_data[, name] <- c(df_expr_wt[, idx], df_expr_mt[, idx])
             }
-
+            
             # fit model
             if (!is.numeric(lib_size)) {
                 form <- paste0("Y ~ N * X", form_adjustment_suffix)
@@ -415,16 +415,16 @@ dce_nb <- function(
                                paste(paste0("N*H", seq_len(deconfounding)),
                                      collapse = " + "))
             }
-
+            
             logger::log_trace("{head(df_data)}")
             logger::log_trace(form)
             logger::log_trace("\n")
-
+            
             fit <- glm_solver(
                 form = form, df = df_data,
                 solver = solver, solver_args = solver_args
             )
-
+            
             # extract results
             if (is.matrix(fit)) {
                 # better support for custom solver functions
@@ -432,11 +432,11 @@ dce_nb <- function(
             } else {
                 coef_mat <- summary(fit)$coefficients
             }
-
+            
             coef_xn <- NA
             stderr_xn <- NA
             pval_xn <- NA
-
+            
             if (test == "lr") {
                 if (!is.numeric(lib_size)) {
                     form2 <- paste0("Y ~ N + X", form_adjustment_suffix)
@@ -446,14 +446,14 @@ dce_nb <- function(
                         form_adjustment_suffix
                     )
                 }
-
+                
                 logger::log_trace(form2)
-
+                
                 fit2 <- glm_solver(
                     form = form2, df = df_data,
                     solver = solver, solver_args = solver_args
                 )
-
+                
                 if (length(grep("N:X", rownames(coef_mat))) != 0) {
                     coef_xn <- coef_mat["N:X", "Estimate"]
                     stderr_xn <- coef_mat["N:X", "Std. Error"]
@@ -465,7 +465,7 @@ dce_nb <- function(
             ) {
                 coef_xn <- coef_mat["N:X", "Estimate"]
                 stderr_xn <- coef_mat["N:X", "Std. Error"]
-
+                
                 if (!is.character(solver)) {
                     solver_name <- as.character(quote(solver))
                 } else {
@@ -481,13 +481,13 @@ dce_nb <- function(
             ) {
                 coef_xn <- coef_mat["N:X", "Estimate"]
                 stderr_xn <- coef_mat["N:X", "Std. Error"]
-
+                
                 robust <- lmtest::coeftest(
                     fit, vcov = sandwich::vcovHC(fit, type = "HC0")
                 )
                 pval_xn <- robust["N:X", "Pr(>|t|)"]
             }
-
+            
             data.frame(
                 row = row,
                 col = col,
@@ -497,33 +497,33 @@ dce_nb <- function(
             )
         }
     )
-
+    
     # process result
     dce_mat <- as.matrix(Matrix::sparseMatrix(
         res$row, res$col, x = res$dce, dims = dim(graph)
     ))
     rownames(dce_mat) <- colnames(dce_mat) <- rownames(graph)
-
+    
     dce_stderr_mat <- as.matrix(Matrix::sparseMatrix(
         res$row, res$col, x = res$stderr, dims = dim(graph)
     ))
     rownames(dce_stderr_mat) <- colnames(dce_stderr_mat) <- rownames(graph)
-
+    
     dce_pvalue_mat <- as.matrix(Matrix::sparseMatrix(
         res$row, res$col, x = res$p_value, dims = dim(graph)
     ))
     rownames(dce_pvalue_mat) <- colnames(dce_pvalue_mat) <- rownames(graph)
-
+    
     # make uncomputed values NA
     diag(dce_mat) <- NA
     dce_mat[which(graph == 0)] <- NA
-
+    
     diag(dce_stderr_mat) <- NA
     dce_stderr_mat[which(graph == 0)] <- NA
-
+    
     diag(dce_pvalue_mat) <- NA
     dce_pvalue_mat[which(graph == 0)] <- NA
-
+    
     # compute overall pathway enrichment
     tmp <- dce_pvalue_mat[!is.na(dce_pvalue_mat)]
     if ((length(tmp) > 0) && (sum(tmp != 0) == 0)) {
@@ -545,7 +545,7 @@ dce_nb <- function(
             pathway_pvalue <- do.call(p_method, list(p = tmp))$p
         }
     }
-
+    
     # return appropriate object
     structure(list(
         graph = graph,
@@ -594,7 +594,7 @@ get_adjustment_set <- function(
         },
         minimal = {
             tmp <- pcalg::adjustment(graph, "dag", x, y, "minimal")
-
+            
             if (length(tmp) > 0) {
                 set <- rownames(graph)[tmp[[1]]]
             } else {
@@ -621,15 +621,15 @@ glm_solver <- function(form, df, solver, solver_args) {
         return(do.call(solver, c(list(formula = form,
                                       data = df), solver_args)))
     }
-
+    
     # lm solver
     if (solver == "lm") {
         return(lm(formula = form, data = df))
     }
-
+    
     # rlm solver
     # TODO: fix linter issues for rlm_dce
-
+    
     # glm solver
     solver_func <- switch(
         solver,
@@ -640,7 +640,7 @@ glm_solver <- function(form, df, solver, solver_args) {
     if (is.null(solver_func)) {
         stop(paste("Invalid solver", solver))
     }
-
+    
     func_args <- c(list(formula = form, data = df), solver_args)
     do.call(solver_func, func_args)
 }
@@ -668,7 +668,7 @@ as.data.frame.dce <- function(x, row.names = NULL, optional = FALSE, ...) {
     if (!is.null(row.names) || optional) {
         stop("row.names and optional arguments not supported")
     }
-
+    
     x$dce %>%  # nolint
         melt(.) %>%
         rename(dce = .data$value, source = .data$Var1, target = .data$Var2) %>%
