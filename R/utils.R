@@ -234,7 +234,7 @@ get_prediction_counts <- function(truth, inferred, cutoff = 0.5) {
             inferred != 0,
         na.rm = TRUE
     )
-    
+
     return(data.frame(
         true.positive = tp,
         false.positive = fp,
@@ -275,12 +275,12 @@ create_random_DAG <- function(
         is.numeric(eff_max),
         eff_min <= eff_max
     )
-    
+
     # create (directed) adjacency matrix
     mat <- matrix(rbinom(node_num * node_num, 1, prob), node_num, node_num)
     mat[lower.tri(mat)] <- 0
     diag(mat) <- 0
-    
+
     # make sure to abide to max parents
     mat <- apply(mat, 2, function(x) {
         if (sum(x) > max_par) {
@@ -289,19 +289,19 @@ create_random_DAG <- function(
         }
         return(x)
     })
-    
+
     # assign effects
     mat[mat != 0] <- runif(sum(mat != 0), min = eff_min, max = eff_max)
-    
+
     # set node labels
     rownames(mat) <- colnames(mat) <- node_labels
-    
+
     # topologically sort graph
     nodes_sorted <- igraph::topo_sort(
         igraph::graph_from_adjacency_matrix(mat, weighted = TRUE)
     )
     mat <- mat[nodes_sorted, nodes_sorted]
-    
+
     # return graph
     igraph::as_graphnel(
         igraph::graph_from_adjacency_matrix(mat, weighted = TRUE)
@@ -492,7 +492,7 @@ estimate_latent_count <- function(X1, X2, method = "auto") {
                           index.return = TRUE,
                           decreasing = TRUE)$ix[1:min(1000, ncol(X))]]
             r <- min(dim(X))
-            
+
             evals <- matrix(0, nrow = N, ncol = r)
             for (i in seq_len(N)) {
                 X_perm <- apply(X, 2, function(xx) sample(xx))
@@ -500,7 +500,7 @@ estimate_latent_count <- function(X1, X2, method = "auto") {
             }
             thresholds <- apply(evals,
                                 2, function(xx) quantile(xx, probs = quantile))
-            
+
             # limit number of confounders to at most 10% of
             # the number of data points or variables
             limit <- min(ceiling(0.1 * r), 15)
@@ -508,34 +508,34 @@ estimate_latent_count <- function(X1, X2, method = "auto") {
             crosses <- (svd(X, nu = 0, nv = 0)$d > thresholds)[1:limit]
             return(max(which(c(TRUE, crosses)) - 1))
         }
-        
+
         q1 <- permutation_thresholding(X1)
         q2 <- permutation_thresholding(X2)
-        
+
         return(ceiling((q1 + q2) / 2))
     }
 
     if (method == "kim") {
         # This function looks at the knee point of a scree plot.
-        
+
         X <- cbind(X1, X2)
         fit_pca <- prcomp(scale(X))
-        
+
         scree <- fit_pca$sdev
         scree <- scree[seq_len(round(length(scree) / 2))]
         values <- seq(length(scree))
-        
+
         d1 <- diff(scree) / diff(values) # first derivative
         d2 <- diff(d1) / diff(values[-1]) # second derivative
         idx <- which.max(abs(d2))
-        
+
         return(idx)
     }
-    
+
     if (method == "cluster") {
         X <- cbind(X1, X2)
         fit_pca <- prcomp(scale(X))
-        
+
         scree <- fit_pca$sdev
         clust <- kmeans(scree, centers = c(scree[1], scree[2],
                                            scree[round(length(scree) / 2 + 1)],
