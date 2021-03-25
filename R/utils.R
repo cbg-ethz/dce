@@ -527,9 +527,8 @@ estimate_latent_count <- function(X1, X2, method = "auto") {
     }
 
     if (method == "kim") {
-        # This function looks at the knee point of a scree plot.
-
-        X <- cbind(X1, X2)
+        # this approach looks at the knee point of a scree plot
+        X <- rbind(X1, X2)
         fit_pca <- prcomp(scale(X))
 
         scree <- fit_pca$sdev
@@ -544,7 +543,7 @@ estimate_latent_count <- function(X1, X2, method = "auto") {
     }
 
     if (method == "cluster") {
-        X <- cbind(X1, X2)
+        X <- rbind(X1, X2)
         fit_pca <- prcomp(scale(X))
 
         scree <- fit_pca$sdev
