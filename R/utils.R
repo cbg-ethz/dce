@@ -65,7 +65,7 @@ as_adjmat <- function(g) {
 #' @examples
 #' x <- matrix(rnorm(100),10,10)
 #' pcor(x)
-pcor <- function(x, g = NULL, adjustment_type = 'parents', ...) {
+pcor <- function(x, g = NULL, adjustment_type = "parents", ...) {
     if (is.null(g)) {
         rho <- try(ppcor::pcor(x, ...), silent = TRUE)
         if (length(grep("Error", rho)) > 0) {
@@ -83,24 +83,24 @@ pcor <- function(x, g = NULL, adjustment_type = 'parents', ...) {
         }
         rownames(rho) <- colnames(rho) <- colnames(x)
     } else {
-        edges <- which(g == 1, arr.ind=TRUE)
+        edges <- which(g == 1, arr.ind = TRUE)
         omega <- cor(x, ...)
-        rho <- omega*0
-        for (i in 1:nrow(edges)) {
+        rho <- omega * 0
+        for (i in seq_len(nrow(edges))) {
             x <- edges[i, 1]
             y <- edges[i, 2]
             z <- get_adjustment_set(
                 g, x, y,
                 adjustment_type,
-                effect_type = 'total'
+                effect_type = "total"
             )
             z <- which(colnames(g) %in% z)
-            p <- Gsolve(omega[c(x,y,z),c(x,y,z)])
+            p <- Gsolve(omega[c(x, y, z), c(x, y, z)])
             pdiag <- diag(p) %*% t(diag(p))
             rhoz <- -p / (pdiag^0.5)
             diag(rhoz) <- 1
             rhoz[which(is.na(rhoz) | is.infinite(rhoz))] <- 0
-            rho[x,y] <- rhoz[1, 2]
+            rho[x, y] <- rhoz[1, 2]
         }
     }
     return(rho)
@@ -445,7 +445,7 @@ make.log.link <- function(base=exp(1)) {
 #' graph.wt <- as(matrix(c(0,0,0,1,0,0,0,1,0), 3), "graphNEL")
 #' trueEffects(graph.wt)
 trueEffects <- function(g, partial = FALSE) {
-    a <- as(g, 'matrix')
+    a <- as(g, "matrix")
     a <- a[naturalorder(rownames(a)), naturalorder(colnames(a))]
     if (partial) {
         ae <- a
@@ -461,27 +461,18 @@ trueEffects <- function(g, partial = FALSE) {
 #' @noRd
 permutation_thresholding <- function(X, quantile=0.99) {
     N <- 50
-    X <- scale(X)
-    X <- X[, !is.na(apply(X, 2, sum))]
-    X <- X[, sort(apply(X, 2, sd),
-                  index.return = TRUE,
-                  decreasing = TRUE)$ix[1:min(1000, ncol(X))]]
     r <- min(dim(X))
-    
+    X <- scale(X)
+
     evals <- matrix(0, nrow = N, ncol = r)
     for (i in seq_len(N)) {
         X_perm <- apply(X, 2, function(xx) sample(xx))
-        evals[i, ] <- svd(X_perm, nu = 0, nv = 0)$d[seq_len(r)]
+        evals[i, ] <- svd(scale(X_perm))$d[seq_len(r)]
     }
-    thresholds <- apply(evals,
-                        2, function(xx) quantile(xx, probs = quantile))
-    
-    # limit number of confounders to at most 10% of
-    # the number of data points or variables
-    limit <- min(ceiling(0.1 * r), 15)
+    thresholds <- apply(evals, 2, function(xx) quantile(xx, probs = quantile))
+
     # last which crosses the threshold
-    crosses <- (svd(X, nu = 0, nv = 0)$d > thresholds)[1:limit]
-    return(max(which(c(TRUE, crosses)) - 1))
+    return(max(which(c(TRUE, svd(X)$d > thresholds))) - 1)
 }
 
 #' Estimate number of latent confounders
@@ -510,33 +501,27 @@ estimate_latent_count <- function(X1, X2, method = "auto") {
         # comparing the singular values to what they would be if the
         # variables were independent which is estimated by permuting the
         # columns of the data matrix
-        permutation_thresholding <- function(X, quantile=0.99) {
+        permutation_thresholding <- function(X, quantile = 0.99) {
             N <- 50
-            X <- scale(X)
-            X <- X[, !is.na(apply(X, 2, sum))]
-            X <- X[, sort(apply(X, 2, sd),
-                          index.return = TRUE,
-                          decreasing = TRUE)$ix[1:min(1000, ncol(X))]]
             r <- min(dim(X))
+            X <- scale(X)
 
             evals <- matrix(0, nrow = N, ncol = r)
             for (i in seq_len(N)) {
                 X_perm <- apply(X, 2, function(xx) sample(xx))
-                evals[i, ] <- svd(X_perm, nu = 0, nv = 0)$d[seq_len(r)]
+                evals[i, ] <- svd(scale(X_perm))$d[seq_len(r)]
             }
             thresholds <- apply(evals,
                                 2, function(xx) quantile(xx, probs = quantile))
 
-            # limit number of confounders to at most 10% of
-            # the number of data points or variables
-            limit <- min(ceiling(0.1 * r), 15)
             # last which crosses the threshold
-            crosses <- (svd(X, nu = 0, nv = 0)$d > thresholds)[1:limit]
-            return(max(which(c(TRUE, crosses)) - 1))
+            # limit to at most 10% of the number of data points or variables
+            limit <- ceiling(0.1 * r)
+            return(max(which(c(TRUE, (svd(X)$d > thresholds)[1:limit])) - 1))
         }
 
-        q1 <- permutation_thresholding(X1)
-        q2 <- permutation_thresholding(X2)
+        q1 <- permutation_thresholding(X1[, colSums(is.na(X1)) == 0])
+        q2 <- permutation_thresholding(X2[, colSums(is.na(X2)) == 0])
 
         return(ceiling((q1 + q2) / 2))
     }
@@ -575,25 +560,14 @@ estimate_latent_count <- function(X1, X2, method = "auto") {
 #' @importFrom MASS rlm
 rlm_dce <- function(...) {
     x <- MASS::rlm(...)
-    class(x) <- 'rlm_dce'
+    class(x) <- "rlm_dce"
     return(x)
 }
 #' summary for rlm_dce
 #' @param object object of class 'rlm_dce'
 #' @param ... see ?MASS::summary.rlm
-#' @importFrom MASS summary.rlm
 #' @method summary rlm_dce
 summary.rlm_dce <- function(object, ...) {
-    class(object) <- 'rlm'
-    x <- MASS:::summary.rlm(object)
-    df <- max(x$df)
-    pt2 <- function(...) {
-        x <- 2*min(pt(...),1-pt(...))
-        return(x)
-    }
-    pvals <- unlist(lapply(x$coefficients[, 't value'], pt2, df = df))
-    x$coefficients <- cbind(x$coefficients, 'Pr(>|t|)' = pvals)
-    colnames(x$coefficients)[1] <- 'Estimate'
-    class(x) <- 'summary.rlm'
-    return(x)
+    # TODO: fix this...
+    stop("MASS:::summary.rlm is unexported...")
 }

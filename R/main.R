@@ -281,24 +281,13 @@ dce_nb <- function(
         }
 
         if (deconfounding > 0) {
-            estimate_latent_proxies <- function(X, q) {
-                X <- scale(X)
-                X <- X[, !is.na(apply(X, 2, sum))]
-                X <- X[, sort(apply(X, 2, sd),
-                              index.return = TRUE,
-                              decreasing = TRUE)$ix[1:min(1000, ncol(X))]]
-                ret <- nrow(X)^0.5 * svd(
-                    X,
-                    nu = q,
-                    nv = 0,
-                    )$u
-                return(ret)
-            }
-
-            lat_data <- rbind(
-                estimate_latent_proxies(df_expr_wt, deconfounding),
-                estimate_latent_proxies(df_expr_mt, deconfounding)
-                )
+            lat_wt <- nrow(df_expr_wt)^0.5 * svd(
+                scale(df_expr_wt)
+            )$u[, seq_len(deconfounding), drop = FALSE]
+            lat_mt <- nrow(df_expr_mt)^0.5 * svd(
+                scale(df_expr_mt)
+            )$u[, seq_len(deconfounding), drop = FALSE]
+            lat_data <- rbind(lat_wt, lat_mt)
             colnames(lat_data) <- paste0("H", seq_len(deconfounding))
         }
     }
