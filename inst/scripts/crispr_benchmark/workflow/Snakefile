@@ -2,8 +2,11 @@ import os
 
 import pandas as pd
 
+from snakemake.utils import Paramspace
+
 
 configfile: 'config/config.yaml'
+paramspace = Paramspace(pd.read_csv('config/params.csv', comment='#'))
 
 
 # gather input configuration
@@ -71,7 +74,8 @@ def aggregate_dce_results(wildcards):
         for study, gene, treatment in case_list:
             # check if perturbed genes occur in pathway
             if set(gene.split(',')) & pathway_nodes:
-                file_list.append(f'results/dce_results/{pathway}/{gene}/{study}/{treatment}/')
+                for param in paramspace.instance_patterns:
+                    file_list.append(f'results/dce_results/{pathway}/{gene}/{study}/{treatment}/{param}/')
 
     return file_list
 
@@ -85,10 +89,18 @@ rule all:
         'results/pathway_statistics/',
         # 'results/perturbation_analysis/expression_statistics.csv',
         expand(
-            'results/performance/plots/threshold_{threshold}/',
+            'results/performance/plots/{params}/threshold_{threshold}/',
+            params=paramspace.instance_patterns,
             threshold=[0.1, 0.05, 0.01]
         ),
-        'results/aggregated_statistics/details/'
+        expand(
+            'results/aggregated_statistics/{params}/details/',
+            params=paramspace.instance_patterns
+        ),
+        expand(
+            'results/performance/comparison/threshold_{threshold}/',
+            threshold=[0.1, 0.05, 0.01]
+        )
 
 
 checkpoint retrieve_pathways:
@@ -155,7 +167,9 @@ rule compute_dces:
         count_mt_file = 'resources/data/{study}/Counts_{gene}_{treatment}.csv',
         graph_file = 'results/pathways/csv_files/{pathway}.csv'
     output:
-        out_dir = directory('results/dce_results/{pathway}/{gene}/{study}/{treatment}/')
+        out_dir = directory(f'results/dce_results/{{pathway}}/{{gene}}/{{study}}/{{treatment}}/{paramspace.wildcard_pattern}/')
+    params:
+        computation = paramspace.instance
     resources:
         mem_mb = 10_000
     script:
@@ -166,14 +180,14 @@ rule aggregate_dce_lists:
     input:
         dir_list = aggregate_dce_results
     output:
-        fname = 'results/aggregated_statistics/dce_lists.csv'
+        fname = f'results/aggregated_statistics/{paramspace.wildcard_pattern}/dce_lists.csv'
     run:
         import pandas as pd
         from tqdm import tqdm
 
         df_list = []
         for dir_ in tqdm(input.dir_list):
-            *_, pathway, gene, study, treatment = dir_.split('/')
+            *_, pathway, gene, study, treatment, deconf_param = dir_.split('/')
             fname = os.path.join(dir_, f'dce_list_{pathway}_{gene}.csv')
 
             tmp = pd.read_csv(fname)
@@ -190,26 +204,39 @@ rule aggregate_dce_lists:
 
 rule aggregated_statistics:
     input:
-        fname = 'results/aggregated_statistics/dce_lists.csv'
+        fname = f'results/aggregated_statistics/{paramspace.wildcard_pattern}/dce_lists.csv'
     output:
-        out_dir = directory('results/aggregated_statistics/details/')
+        out_dir = directory(f'results/aggregated_statistics/{paramspace.wildcard_pattern}/details/')
     script:
         'scripts/aggregated_statistics.R'
 
 
 rule compute_performance:
     input:
-        fname = 'results/aggregated_statistics/dce_lists.csv'
+        fname = f'results/aggregated_statistics/{paramspace.wildcard_pattern}/dce_lists.csv'
     output:
-        out_dir = directory('results/performance/results/threshold_{threshold}/')
+        out_dir = directory(f'results/performance/results/{paramspace.wildcard_pattern}/threshold_{{threshold}}/')
     script:
         'scripts/compute_performance.py'
 
 
 rule plot_performance:
     input:
-        dname = 'results/performance/results/threshold_{threshold}/'
+        dname = f'results/performance/results/{paramspace.wildcard_pattern}/threshold_{{threshold}}/'
     output:
-        out_dir = directory('results/performance/plots/threshold_{threshold}/')
+        out_dir = directory(f'results/performance/plots/{paramspace.wildcard_pattern}/threshold_{{threshold}}/')
     script:
         'scripts/plot_performance.py'
+
+
+rule compare_performance:
+    input:
+        dname_list = expand(
+            'results/performance/results/{params}/threshold_{threshold}/',
+            params=paramspace.instance_patterns,
+            allow_missing=True
+        )
+    output:
+        dname = directory('results/performance/comparison/threshold_{threshold}/')
+    script:
+        'scripts/compare_performance.py'

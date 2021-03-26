@@ -15,6 +15,15 @@ pathway <- snakemake@wildcards$pathway
 perturbed.gene <- snakemake@wildcards$gene
 appendix <- glue::glue("{pathway}_{perturbed.gene}")
 
+params <- snakemake@params
+if (params$computation$deconfounding == "is_true") {
+  params$computation$deconfounding <- TRUE
+}
+if (params$computation$deconfounding == "is_false") {
+  params$computation$deconfounding <- FALSE
+}
+print(params)
+
 # read data
 X.wt <- read_csv(fname.expr.wt) %>%
   column_to_rownames("X1") %>%
@@ -30,7 +39,8 @@ common.genes <- intersect(igraph::vertex_attr(graph, "name"), colnames(X.wt))
 res <- dce::dce(
   igraph::induced_subgraph(graph, common.genes),
   X.wt, X.mt,
-  solver = "lm"
+  solver = "lm",
+  deconfounding = params$computation$deconfounding
 )
 
 # run competing models
