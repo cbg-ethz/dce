@@ -520,6 +520,10 @@ estimate_latent_count <- function(X1, X2, method = "auto") {
     if (method == "kim") {
         # this approach looks at the knee point of a scree plot
         X <- rbind(X1, X2)
+
+        # fix "cannot rescale a constant/zero column to unit variance" in PCA
+        X <- Filter(function(x) min(x) != max(x), as.data.frame(X))
+
         fit_pca <- prcomp(scale(X))
 
         scree <- fit_pca$sdev
@@ -535,6 +539,7 @@ estimate_latent_count <- function(X1, X2, method = "auto") {
 
     if (method == "cluster") {
         X <- rbind(X1, X2)
+        X <- Filter(function(x) min(x) != max(x), as.data.frame(X))
         fit_pca <- prcomp(scale(X))
 
         scree <- fit_pca$sdev
