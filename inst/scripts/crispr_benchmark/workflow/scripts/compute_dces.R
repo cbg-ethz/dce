@@ -18,9 +18,14 @@ appendix <- glue::glue("{pathway}_{perturbed.gene}")
 params <- snakemake@params
 if (params$computation$deconfounding == "is_true") {
   params$computation$deconfounding <- TRUE
-}
-if (params$computation$deconfounding == "is_false") {
+} else if (params$computation$deconfounding == "is_false") {
   params$computation$deconfounding <- FALSE
+} else {
+  conv <- as.numeric(params$computation$deconfounding)
+  if (!is.na(conv)) {
+    # parameter is a number (otherwise string of method name)
+    params$computation$deconfounding <- conv
+  }
 }
 print(params)
 
