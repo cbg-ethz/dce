@@ -271,8 +271,8 @@ dce_nb <- function(
     log_level
 ) {
     # handle latent variables
-    if (deconfounding != FALSE) {
-        if (is.numeric(deconfounding) == FALSE) {
+    if (deconfounding != FALSE) {  # because deconfounding can be string
+        if (!is.numeric(deconfounding)) {
             deconfounding <- estimate_latent_count(
                 df_expr_wt, df_expr_mt,
                 ifelse(is.character(deconfounding), deconfounding, "auto")
