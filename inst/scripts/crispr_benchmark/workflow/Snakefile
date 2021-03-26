@@ -74,8 +74,15 @@ def aggregate_dce_results(wildcards):
         for study, gene, treatment in case_list:
             # check if perturbed genes occur in pathway
             if set(gene.split(',')) & pathway_nodes:
-                for param in paramspace.instance_patterns:
-                    file_list.append(f'results/dce_results/{pathway}/{gene}/{study}/{treatment}/{param}/')
+                # TODO choose correct one from wildcards
+                param = paramspace.wildcard_pattern.format(
+                    **{k: v.iloc[0]
+                       for k, v in paramspace.instance(wildcards).items()}
+                )
+
+                file_list.append(
+                    f'results/dce_results/{pathway}/{gene}/{study}/{treatment}/{param}/'
+                )
 
     return file_list
 
