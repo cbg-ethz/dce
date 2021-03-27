@@ -129,16 +129,17 @@ propagate_gene_edges <- function(graph) {
 #' @param graph Network
 #' @export
 #' @importFrom dplyr rename
+#' @importFrom rlang .data
 #' @return data frame
 #' @examples
 #' dag <- create_random_DAG(30, 0.2)
 #' graph2df(dag)
 graph2df <- function(graph) {
     graph %>%
-        igraph::igraph.from.graphNEL(.) %>%
-        igraph::get.edgelist(.) %>%
+        igraph::igraph.from.graphNEL(.) %>%  # nolint
+        igraph::get.edgelist(.) %>%  # nolint
         as.data.frame %>%
-        dplyr::rename(source = V1, sink = V2)
+        dplyr::rename(source = .data$V1, sink = .data$V2)
 }
 
 #' Topological ordering

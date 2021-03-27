@@ -93,7 +93,7 @@ plot_network <- function(
     }
 
     # create plot
-    as_tbl_graph(igraph::graph_from_adjacency_matrix(
+    as_tbl_graph(igraph::graph_from_adjacency_matrix(  # nolint
         adja_matrix, weighted = TRUE
     )) %>%
         activate(nodes) %>%
@@ -111,8 +111,7 @@ plot_network <- function(
             extra_nodes <- setdiff(highlighted_nodes, label_list)
 
             if (length(extra_nodes) > 0) {
-                label_str <- glue::glue_collapse(extra_nodes,
-                                                 sep = ", ")  # nolint
+                label_str <- glue::glue_collapse(extra_nodes, sep = ", ")  # nolint
                 warning(
                     glue::glue("Invalid highlighted nodes: {label_str}"),
                     call. = FALSE

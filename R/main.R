@@ -66,7 +66,7 @@ setGeneric(
 # "igraph" is not a formal S4 class, make it compatible with `signature` call
 setOldClass("igraph")
 #' @rdname dce-methods
-#' @importFrom igraph V
+#' @importFrom igraph as_adjacency_matrix
 setMethod(
     "dce",
     signature = signature(graph = "igraph"),
@@ -82,7 +82,12 @@ setMethod(
         conservative = FALSE,
         log_level = logger::INFO
     ) {
-        mat <- as(igraph::as_adjacency_matrix(graph), "matrix")
+        mat <- as(as_adjacency_matrix(graph), "matrix")
+        if (is.null(rownames(mat))) {
+            node_names <- as.character(seq_len(dim(mat)[[1]]))
+            rownames(mat) <- colnames(mat) <- node_names
+        }
+
         dce(
             mat,
             df_expr_wt, df_expr_mt,
@@ -266,8 +271,8 @@ dce_nb <- function(
     log_level
 ) {
     # handle latent variables
-    if (deconfounding != FALSE) {
-        if (is.numeric(deconfounding) == FALSE) {
+    if (deconfounding != FALSE) {  # because deconfounding can be string
+        if (!is.numeric(deconfounding)) {
             deconfounding <- estimate_latent_count(
                 df_expr_wt, df_expr_mt,
                 ifelse(is.character(deconfounding), deconfounding, "auto")
@@ -276,13 +281,25 @@ dce_nb <- function(
         }
 
         if (deconfounding > 0) {
-            lat_wt <- nrow(df_expr_wt)^0.5 * svd(
-                scale(df_expr_wt)
-            )$u[, seq_len(deconfounding), drop = FALSE]
-            lat_mt <- nrow(df_expr_mt)^0.5 * svd(
-                scale(df_expr_mt)
-            )$u[, seq_len(deconfounding), drop = FALSE]
-            lat_data <- rbind(lat_wt, lat_mt)
+            estimate_latent_proxies <- function(X, q) {
+                X <- scale(X)
+                X <- X[, !is.na(apply(X, 2, sum))]
+                X <- X[, sort(apply(X, 2, sd),
+                              index.return = TRUE,
+                              decreasing = TRUE
+                              )$ix[seq_len(min(1000, ncol(X)))]]
+                ret <- nrow(X)^0.5 * svd(
+                    X,
+                    nu = q,
+                    nv = 0,
+                )$u
+                return(ret)
+            }
+
+            lat_data <- rbind(
+                estimate_latent_proxies(df_expr_wt, deconfounding),
+                estimate_latent_proxies(df_expr_mt, deconfounding)
+            )
             colnames(lat_data) <- paste0("H", seq_len(deconfounding))
         }
     }
@@ -612,9 +629,7 @@ glm_solver <- function(form, df, solver, solver_args) {
     }
 
     # rlm solver
-    if (solver == "rlm") {
-        return(rlm_dce(formula = as.formula(form), data = df))
-    }
+    # TODO: fix linter issues for rlm_dce
 
     # glm solver
     solver_func <- switch(
@@ -641,6 +656,7 @@ glm_solver <- function(form, df, solver, solver_args) {
 #' @export
 #' @importFrom reshape2 melt
 #' @importFrom dplyr mutate rename
+#' @importFrom rlang .data
 #' @return data frame containing the dce output
 #' @method as.data.frame dce
 #' @examples
@@ -654,9 +670,9 @@ as.data.frame.dce <- function(x, row.names = NULL, optional = FALSE, ...) {
         stop("row.names and optional arguments not supported")
     }
 
-    x$dce %>%
+    x$dce %>%  # nolint
         melt(.) %>%
-        rename(dce = value, source = Var1, target = Var2) %>%
+        rename(dce = .data$value, source = .data$Var1, target = .data$Var2) %>%
         mutate(dce_stderr = melt(x$dce_stderr)$value) %>%
         mutate(dce_pvalue = melt(x$dce_pvalue)$value)
 }

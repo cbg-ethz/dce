@@ -1,5 +1,6 @@
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 
 import seaborn as sns
@@ -23,10 +24,11 @@ def compute_roc(class_prob, true_class):
 
 def score_edge(df, method, pvalue_threshold=0.05):
     """Compute measure which is used to estimate performance."""
-    effect_size = df[method]
+    # effect_size = df[method]
     p_value = df[f'{method}_pvalue']
 
-    return abs(effect_size) * (p_value <= pvalue_threshold)
+    # return abs(effect_size) * (p_value <= pvalue_threshold)
+    return -np.log10(p_value)
 
 
 def main(fname, out_dir, pvalue_threshold):
