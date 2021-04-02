@@ -5,6 +5,8 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 
+sns.set_context('talk')
+
 
 def main(dname, out_dir):
     out_dir.mkdir(parents=True, exist_ok=True)
