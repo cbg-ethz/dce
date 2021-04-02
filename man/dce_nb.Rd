@@ -11,7 +11,7 @@ dce_nb(
   solver_args = list(method = "glm.dce.nb.fit", link = "identity"),
   adjustment_type = "parents",
   effect_type = "total",
-  p_method = "mean",
+  p_method = "hmp",
   test = "wald",
   lib_size = FALSE,
   deconfounding = FALSE,
