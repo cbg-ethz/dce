@@ -58,7 +58,7 @@ create.plots <- function(df.bench, plot.dir, varied.parameter) {
                      "Prevalence of positive edges" = 'Prevelance of true differential effects')
 
     meth_order <- c('dce', 'cor', 'pcor', 'fggm', 'rand', 'dce (no library size correction)', 'dce (no latent correction)')
-    meth_color <- c('red', 'lightblue', 'blue', 'orange', 'grey', 'lightred', 'darkred')
+    meth_color <- c('red', 'lightblue', 'blue', 'orange', 'grey', '#ff7777', 'darkred')
     meth_color <- meth_color[meth_order %in% colnames(df.bench)]
     meth_order <- meth_order[meth_order %in% colnames(df.bench)]
 
