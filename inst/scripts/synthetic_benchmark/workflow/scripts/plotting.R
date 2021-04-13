@@ -57,11 +57,20 @@ create.plots <- function(df.bench, plot.dir, varied.parameter) {
                      "Network perturbation" = 'Fraction of added/deleted edges',
                      "Prevalence of positive edges" = 'Prevelance of true differential effects')
 
+    meth_order <- c('dce', 'cor', 'pcor', 'fggm', 'rand', 'dce (no library size correction)', 'dce (no latent correction)')
+    meth_color <- c('red', 'lightblue', 'blue', 'orange', 'grey', '#ff7777', 'darkred')
+    meth_color <- meth_color[meth_order %in% colnames(df.bench)]
+    meth_order <- meth_order[meth_order %in% colnames(df.bench)]
+
+    options(ggplot.discrete.fill = meth_color)
+
     p <- df.bench %>%
       dplyr::filter(type == measure) %>%
       gather("variable", "value", -parameter, -type, -varied.parameter, -rng.seed) %>%
+      mutate(variable=factor(variable, levels=meth_order)) %>%
       ggplot(aes(x=parameter, y=value, fill=variable)) +
       geom_boxplot() +
+      scale_fill_manual(values=meth_color) +
       ggtitle(paste(varied.parameter)) +
       ylab(glue::glue("{measure}")) +
       xlab(xlabel) +
@@ -182,8 +191,11 @@ if (!dir.exists(target.dir)) {
 
 df.bench <- read_csv(input.fname)
 if (methods[1]!='NULL') {
-    df.bench <- df.bench[,colnames(df.bench) %in% c(methods,'type','parameter','varied.parameter','rng.seed')]
+  df.bench <- df.bench[,colnames(df.bench) %in% c(methods,'type','parameter','varied.parameter','rng.seed')]
 }
+df.bench <- df.bench[, apply(df.bench[df.bench$type == 'roc-auc', ], 2, function(x) {
+  return(!all(is.na(x)))
+})]
 
 if (parameters[1]!='NULL') {
   df.bench <- df.bench[df.bench$parameter %in% parameters,]
@@ -194,8 +206,8 @@ df.bench$varied.parameter <- mgsub::mgsub(df.bench$varied.parameter,
                                           c("adjustment.type", "beta.magnitude", "dispersion", "latent", "lib.size.range", "mt.samples", "node.num", "perturb", "true.positives"),
                                           c("Adjustment set", "Effect magnitude", "Dispersion", "Latent variables", "Library size range", "Number of samples", "Network size", "Network perturbation", "Prevalence of positive edges"))
 colnames(df.bench) <- mgsub::mgsub(colnames(df.bench),
-                                   c('dce.lm.tpm', 'fggm', 'cor', 'pcorz', 'dce.nolib'),
-                                   c('dce', 'fggm', 'cor', 'pcor', 'dce (no library size correction)'))
+                                   c('dce.lm.tpm', 'fggm', 'cor', 'pcorz', 'dce.nolib', 'dce.lm.tpm.nolatent'),
+                                   c('dce', 'fggm', 'cor', 'pcor', 'dce (no library size correction)', 'dce (no latent correction)'))
 if (!'dce' %in% colnames(df.bench)) {
   colnames(df.bench) <- gsub('.HC', '', colnames(df.bench))
 }
