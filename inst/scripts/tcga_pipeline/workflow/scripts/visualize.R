@@ -54,3 +54,20 @@ cowplot::save_plot(
   p, ncol = length(p.list),
   base_height = 30, base_asp = 1, limitsize = FALSE
 )
+
+# create overview table
+purrr::map_dfr(res, function(x) {
+  x %>%
+    as.data.frame %>%
+    mutate(
+      source = geneid.map[as.character(source)],
+      target = geneid.map[as.character(target)],
+      dce_pvalue_str = format.pval(dce_pvalue)
+    ) %>%
+    arrange(desc(abs(dce))) #%>%
+    # dplyr::filter(dce_pvalue <= 0.05 & abs(dce) > 1)
+}, .id = "condition") %>%
+  arrange(dce_pvalue) %>%
+  select(-dce_pvalue) %>%
+  rename(dce_pvalue = dce_pvalue_str) %>%
+  mutate(dce_symlog = symlog(dce))
