@@ -180,7 +180,7 @@ plot_network <- function(
             },  # nolint
             breaks = custom_breaks,
             name = if (use_symlog) {
-                glue("{legend_title} (symlog)")
+                glue("symlog({legend_title})")
             } else {
                 legend_title
             },  # nolint
