@@ -7,6 +7,7 @@
 #'        (should contain 0). Useful to make plot comparable to others
 #' @param nodesize Node sizes
 #' @param labelsize Node label sizes
+#' @param node_color Which color to plot nodes in
 #' @param show_edge_labels Whether to show edge labels (DCEs)
 #' @param use_symlog Scale edge colors using dce::symlog
 #' @param highlighted_nodes List of nodes to highlight
@@ -32,6 +33,7 @@ plot_network <- function(
     adja_matrix,
     nodename_map = NULL, edgescale_limits = NULL,
     nodesize = 17, labelsize = 3,
+    node_color = "black",
     show_edge_labels = FALSE, use_symlog = FALSE,
     highlighted_nodes = c(),
     legend_title = "edge weight",
@@ -149,7 +151,7 @@ plot_network <- function(
     ggraph(layout = coords_dot) + # "sugiyama"
         geom_node_circle(
             aes(r = .data$nodesize, fill = .data$is.highlighted),
-            color = "black"
+            color = node_color
         ) +
         geom_edge_diagonal(
             aes(

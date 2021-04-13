@@ -10,6 +10,7 @@ plot_network(
   edgescale_limits = NULL,
   nodesize = 17,
   labelsize = 3,
+  node_color = "black",
   show_edge_labels = FALSE,
   use_symlog = FALSE,
   highlighted_nodes = c(),
@@ -29,6 +30,8 @@ plot_network(
 \item{nodesize}{Node sizes}
 
 \item{labelsize}{Node label sizes}
+
+\item{node_color}{Which color to plot nodes in}
 
 \item{show_edge_labels}{Whether to show edge labels (DCEs)}
 
