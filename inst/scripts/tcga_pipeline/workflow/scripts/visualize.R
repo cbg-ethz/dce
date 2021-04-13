@@ -56,7 +56,7 @@ cowplot::save_plot(
 )
 
 # create overview table
-purrr::map_dfr(res, function(x) {
+dce_table <- purrr::map_dfr(res, function(x) {
   x %>%
     as.data.frame %>%
     mutate(
@@ -68,6 +68,55 @@ purrr::map_dfr(res, function(x) {
     # dplyr::filter(dce_pvalue <= 0.05 & abs(dce) > 1)
 }, .id = "condition") %>%
   arrange(dce_pvalue) %>%
-  select(-dce_pvalue) %>%
-  rename(dce_pvalue = dce_pvalue_str) %>%
-  mutate(dce_symlog = symlog(dce))
+  mutate(
+    dce_symlog = symlog(dce),
+    edge_name = paste0(source, "->", target)
+  )
+
+dce_table %>%
+  head
+
+# volcano plot summary
+color_map <- ifelse(
+  dce_table$condition == "stage i",
+  "red",
+  ifelse(
+    dce_table$condition == "stage ii",
+    "green",
+    ifelse(
+      dce_table$condition == "stage iii",
+      "blue",
+      "grey"
+    )
+  )
+)
+names(color_map)[color_map == "red"] <- "stage i"
+names(color_map)[color_map == "green"] <- "stage ii"
+names(color_map)[color_map == "blue"] <- "stage iii"
+table(color_map)
+
+edge_selection <- dce_table %>%
+  dplyr::filter(
+    (
+      grepl("DLL3", edge_name) |
+        grepl("FGF", edge_name)
+    ) & (
+      abs(dce_symlog) > 1
+    ) |
+      dce_pvalue < 1e-50
+  ) %>%
+  pull(edge_name)
+
+EnhancedVolcano::EnhancedVolcano(
+  dce_table,
+  lab = dce_table$edge_name, selectLab = edge_selection,
+  x = "dce_symlog", y = "dce_pvalue",
+  colCustom = color_map,
+  pCutoff = .05, FCcutoff = 1,
+  drawConnectors = TRUE,
+  title = NULL, subtitle = NULL, caption = NULL,
+  xlab = bquote(~symlog(DCE)), ylab = bquote(~-Log[10]~italic(pvalue)),
+  legendLabels = c("NS", "DCE", "p-value", "p-value and DCE"),
+  axisLabSize = 30, pointSize = 5, labSize = 8, legendLabSize = 30, legendIconSize = 10,
+)
+ggsave(file.path(outdir, glue::glue("volcanoplot.pdf")), width = 20, height = 20)
