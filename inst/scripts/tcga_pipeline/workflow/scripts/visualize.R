@@ -19,7 +19,12 @@ geneid.map <- geneid.map[which(duplicated(names(geneid.map)) == FALSE)]
 dce.abs.max <- max(sapply(res, function(x) { max(abs(x$dce), na.rm = TRUE) }))
 custom.limits <- c(-dce.abs.max, dce.abs.max)
 
-p.list <- lapply(res, plot, nodename_map = geneid.map, edgescale_limits = custom.limits, use_symlog = TRUE)
+p.list <- lapply(
+  res, plot,
+  nodename_map = geneid.map,
+  node_color = "grey", labelsize = 1,
+  edgescale_limits = custom.limits, use_symlog = TRUE
+)
 
 # labels.list <- purrr::map2(names(p.list), res, ~ glue::glue("{.x} (Enrichment: {.y$pathway_pvalue})")) %>% unlist
 labels.list <- names(p.list) %>% unlist
@@ -39,7 +44,7 @@ purrr::transpose(list(plot = p.list, label = labels.list)) %>%
     cowplot::save_plot(
       fname,
       x$plot,
-      base_height = 30, base_asp = 1, limitsize = FALSE
+      base_height = 10, base_asp = 1, limitsize = FALSE
     )
   })
 
