@@ -9,6 +9,8 @@
 #' @param labelsize Node label sizes
 #' @param node_color Which color to plot nodes in
 #' @param show_edge_labels Whether to show edge labels (DCEs)
+#' @param visualize_edge_weights Whether to change edge color/width/alpha
+#'        relative to edge weight
 #' @param use_symlog Scale edge colors using dce::symlog
 #' @param highlighted_nodes List of nodes to highlight
 #' @param legend_title Title of edge weight legend
@@ -33,8 +35,10 @@ plot_network <- function(
     adja_matrix,
     nodename_map = NULL, edgescale_limits = NULL,
     nodesize = 17, labelsize = 3,
-    node_color = "black",
-    show_edge_labels = FALSE, use_symlog = FALSE,
+    node_color = "white",
+    show_edge_labels = FALSE,
+    visualize_edge_weights = TRUE,
+    use_symlog = FALSE,
     highlighted_nodes = c(),
     legend_title = "edge weight",
     value_matrix = NULL,
@@ -95,7 +99,7 @@ plot_network <- function(
     }
 
     # create plot
-    as_tbl_graph(igraph::graph_from_adjacency_matrix(  # nolint
+    p <- as_tbl_graph(igraph::graph_from_adjacency_matrix(  # nolint
         adja_matrix, weighted = TRUE
     )) %>%
         activate(nodes) %>%
@@ -150,14 +154,21 @@ plot_network <- function(
         ) %>%
     ggraph(layout = coords_dot) + # "sugiyama"
         geom_node_circle(
-            aes(r = .data$nodesize, fill = .data$is.highlighted),
-            color = node_color
+            aes(r = .data$nodesize, fill = .data$is.highlighted)
         ) +
         geom_edge_diagonal(
             aes(
-                color = if (use_symlog) .data$dce.symlog else .data$dce,
-                alpha = abs(.data$dce),
-                width = abs(.data$dce),
+                color = if (visualize_edge_weights) {
+                    if (use_symlog) {
+                        .data$dce.symlog
+                    } else {
+                        .data$dce
+                    }
+                } else {
+                    NULL
+                },
+                alpha = if (visualize_edge_weights) abs(.data$dce) else NULL,
+                width = if (visualize_edge_weights) abs(.data$dce) else NULL,
                 label = if (show_edge_labels) .data$label else NULL,
                 linetype = is.na(.data$dce),
                 start_cap = circle(.data$node1.nodesize, unit = "native"),
@@ -169,7 +180,7 @@ plot_network <- function(
         geom_node_text(aes(label = .data$label), size = labelsize) +
         coord_fixed() +
         scale_fill_manual(
-            values = c("FALSE" = "white", "TRUE" = "red"), guide = FALSE
+            values = c("FALSE" = node_color, "TRUE" = "red"), guide = FALSE
         ) +
         scale_edge_color_gradient2(
             low = "red", mid = "grey", high = "blue", midpoint = 0,
@@ -204,6 +215,12 @@ plot_network <- function(
         theme(
             panel.background = element_rect(fill = "white")
         )
+
+    if (!visualize_edge_weights) {
+        p <- p + theme(legend.position = "none")
+    }
+
+    p
 }
 
 #' Plot dce object

@@ -10,8 +10,9 @@ plot_network(
   edgescale_limits = NULL,
   nodesize = 17,
   labelsize = 3,
-  node_color = "black",
+  node_color = "white",
   show_edge_labels = FALSE,
+  visualize_edge_weights = TRUE,
   use_symlog = FALSE,
   highlighted_nodes = c(),
   legend_title = "edge weight",
@@ -34,6 +35,9 @@ plot_network(
 \item{node_color}{Which color to plot nodes in}
 
 \item{show_edge_labels}{Whether to show edge labels (DCEs)}
+
+\item{visualize_edge_weights}{Whether to change edge color/width/alpha
+relative to edge weight}
 
 \item{use_symlog}{Scale edge colors using dce::symlog}
 
