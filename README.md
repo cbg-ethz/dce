@@ -42,3 +42,7 @@ remotes::install_github("cbg-ethz/dce")
     * Deploy: `Rscript -e "pkgdown::deploy_to_branch(new_process = FALSE)"`
 * Bioconductor
     * The `bioc` branch stores changes specific to Bioconductor releases
+    * Update workflow (after `git remote add upstream git@git.bioconductor.org:packages/dce.git`):
+        * `git checkout bioc`
+        * `git merge master`
+        * `git push upstream bioc:master`
