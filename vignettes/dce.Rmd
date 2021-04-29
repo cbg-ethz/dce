@@ -90,7 +90,7 @@ X_wt %>%
   head
 ```
 
-Given the network topology (without edge weights!) and expression data from both WT and MT conditions, we can estimate the difference in causal effects for each edge between the two conditions. These are the aforementioned Differential Causal Effects (DCEs). 
+Given the network topology (without edge weights!) and expression data from both WT and MT conditions, we can estimate the difference in causal effects for each edge between the two conditions. These are the aforementioned Differential Causal Effects (DCEs).
 
 ```{r}
 res <- dce(graph_wt, X_wt, X_mt, solver = "lm")
@@ -133,6 +133,7 @@ These samples can be classified according to their site of origin.
 ```{r}
 sampleTables(brca)
 
+data(sampleTypes, package = "TCGAutils")
 sampleTypes %>%
   filter(Code %in% c("01", "06", "11"))
 ```
