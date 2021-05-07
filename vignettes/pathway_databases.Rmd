@@ -58,8 +58,7 @@ It is easily possible to plot pathways:
 ```{r}
 pathways <- get_pathways(
   pathway_list = list(
-    kegg = c("Citrate cycle (TCA cycle)"),
-    biocarta = c("erk1/erk2 mapk signaling pathway")
+    kegg = c("Citrate cycle (TCA cycle)")
   )
 )
 
