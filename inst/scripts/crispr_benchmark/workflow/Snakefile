@@ -76,8 +76,7 @@ def aggregate_dce_results(wildcards):
             if set(gene.split(',')) & pathway_nodes:
                 # TODO choose correct one from wildcards
                 param = paramspace.wildcard_pattern.format(
-                    **{k: v.iloc[0]
-                       for k, v in paramspace.instance(wildcards).items()}
+                    **paramspace.instance(wildcards)
                 )
 
                 file_list.append(
