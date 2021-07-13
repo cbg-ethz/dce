@@ -1,7 +1,7 @@
 Package: dce
 Type: Package
 Title: Pathway Enrichment Based on Differential Causal Effects
-Version: 0.99.3
+Version: 0.99.6
 Authors@R:
     c(
         person(
@@ -36,7 +36,7 @@ License: GPL-3
 Encoding: UTF-8
 LazyData: true
 Depends:
-    R (>= 4.0)
+    R (>= 4.1)
 Suggests:
     knitr,
     rmarkdown,
