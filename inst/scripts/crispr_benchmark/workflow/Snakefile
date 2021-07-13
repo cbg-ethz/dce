@@ -97,7 +97,7 @@ rule all:
         expand(
             'results/performance/plots/{params}/threshold_{threshold}/',
             params=paramspace.instance_patterns,
-            threshold=[0.1, 0.05, 0.01]
+            threshold=config['pvalue_thresholds']
         ),
         expand(
             'results/aggregated_statistics/{params}/details/',
@@ -105,7 +105,7 @@ rule all:
         ),
         expand(
             'results/performance/comparison/threshold_{threshold}/',
-            threshold=[0.1, 0.05, 0.01]
+            threshold=config['pvalue_thresholds']
         )
 
 

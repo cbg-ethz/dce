@@ -16,3 +16,6 @@ databases:
     # - nci
     # - panther
     # - pharmgkb
+
+pvalue_thresholds:
+    - 0.05
