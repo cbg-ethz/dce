@@ -8,9 +8,11 @@ LDGM <- function(wt.X,mt.X,g) {
     write.table(wt.LC,file=wt.f,row.names=FALSE,col.names=FALSE,sep=",")
     write.table(mt.LC,file=mt.f,row.names=FALSE,col.names=FALSE,sep=",")
     theta.f <- paste0("Theta.",runif(1),".csv")
-    system(paste0("matlab -batch \"Sigma1 = readmatrix('",mt.f,"'); Sigma2 = readmatrix('",wt.f,"'); lambda = 0.26924; cd('LDGM'); Theta = differential_graph(Sigma1,Sigma2,lambda); writematrix(Theta,'",theta.f,"'); exit\""))
-    Theta <- as(read.csv(paste0("LDGM/",theta.f),header=FALSE),"matrix")
+    system(paste0("matlab -batch \"Sigma1 = readmatrix('",mt.f,"'); Sigma2 = readmatrix('",wt.f,"'); lambda = 0.26924; cd('workflow/scripts/LDGM'); Theta = differential_graph(Sigma1,Sigma2,lambda); writematrix(Theta,'",theta.f,"'); exit\""))
+    Theta <- as(read.csv(paste0("workflow/scripts/LDGM/",theta.f),header=FALSE),"matrix")
     Theta [g == 0] <- 0
-    system(paste0("rm ", wt.f, " ", mt.f, " LDGM/", theta.f))
+    system(paste0("rm ", wt.f))
+    system(paste0("rm ", mt.f))
+    system(paste0("rm, workflow/scripts/LDGM/", theta.f))    
     return(Theta)
 }

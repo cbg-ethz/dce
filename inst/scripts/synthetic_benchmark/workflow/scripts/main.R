@@ -10,6 +10,7 @@ source("workflow/scripts/models.R")
 source("workflow/scripts/performance_measures.R")
 source("workflow/scripts/LDGM.R")
 source("workflow/scripts/FastGGM.R")
+source("workflow/scripts/Carnival.R")
 
 # parse commandline arguments
 "

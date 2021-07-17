@@ -13,15 +13,23 @@
 #' x <- matrix(rnorm(100),10,10)
 #' y <- matrix(rnorm(100),10,10)
 #' permutation_test(x,y,iter=10)
-permutation_test <- function(x, y, iter = 1000, fun = pcor, ...) {
-    z <- fun(y, ...) - fun(x, ...)
+permutation_test <- function(x, y, iter = 1000, fun = pcor, , mode = 1, ...) {
+    if (mode == 1) {
+        z <- fun(y, ...) - fun(x, ...)
+    } else {
+        z <- fun(x, y, ...)
+    }
     p <- z * 0
     for (i in seq_len(iter)) {
         xy <- rbind(x, y)
         xyp <- xy[sample(seq_len(nrow(xy)), nrow(xy)), ]
         xp <- xyp[seq_len(nrow(x)), ]
         yp <- xyp[-seq_len(nrow(x)), ]
-        zp <- fun(yp, ...) - fun(xp, ...)
+        if (mode == 1) {
+            z <- fun(yp, ...) - fun(xp, ...)
+        } else {
+            z <- fun(xp, yp, ...)
+        }
         idx <- which(abs(zp) >= abs(z))
         p[idx] <- p[idx] + 1
     }
