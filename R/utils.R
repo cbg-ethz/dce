@@ -13,7 +13,7 @@
 #' x <- matrix(rnorm(100),10,10)
 #' y <- matrix(rnorm(100),10,10)
 #' permutation_test(x,y,iter=10)
-permutation_test <- function(x, y, iter = 1000, fun = pcor, , mode = 1, ...) {
+permutation_test <- function(x, y, iter = 1000, fun = pcor, mode = 1, ...) {
     if (mode == 1) {
         z <- fun(y, ...) - fun(x, ...)
     } else {
@@ -26,9 +26,9 @@ permutation_test <- function(x, y, iter = 1000, fun = pcor, , mode = 1, ...) {
         xp <- xyp[seq_len(nrow(x)), ]
         yp <- xyp[-seq_len(nrow(x)), ]
         if (mode == 1) {
-            z <- fun(yp, ...) - fun(xp, ...)
+            zp <- fun(yp, ...) - fun(xp, ...)
         } else {
-            z <- fun(xp, yp, ...)
+            zp <- fun(xp, yp, ...)
         }
         idx <- which(abs(zp) >= abs(z))
         p[idx] <- p[idx] + 1

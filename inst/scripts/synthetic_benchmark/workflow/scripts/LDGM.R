@@ -13,6 +13,6 @@ LDGM <- function(wt.X,mt.X,g) {
     Theta [g == 0] <- 0
     system(paste0("rm ", wt.f))
     system(paste0("rm ", mt.f))
-    system(paste0("rm, workflow/scripts/LDGM/", theta.f))    
+    system(paste0("rm workflow/scripts/LDGM/", theta.f))    
     return(Theta)
 }
