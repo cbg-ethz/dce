@@ -4,7 +4,7 @@
 \alias{permutation_test}
 \title{Permutation test for (partial) correlation on non-Gaussian data}
 \usage{
-permutation_test(x, y, iter = 1000, fun = pcor, ...)
+permutation_test(x, y, iter = 1000, fun = pcor, mode = 1, ...)
 }
 \arguments{
 \item{x}{wild type data set}

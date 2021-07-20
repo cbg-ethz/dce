@@ -2,10 +2,11 @@ library(CARNIVAL)
 library(edgeR)
 
 carWrap <- function(X,Y,G) {
-  rownames(G) <- colnames(G) <- 1:ncol(G)
+  rownames(G) <- colnames(G) <- paste0("Node",1:ncol(G))
   Gmat2list <- function(G) {
     edges <- which(abs(G)>0,arr.ind=TRUE)
     L <- data.frame(source = rownames(G)[edges[,1]], interaction = rep(1,nrow(edges)), target = rownames(G)[edges[,2]])
+    return(as_tibble(L))
   }
   carnivalOptions <- defaultLpSolveCarnivalOptions()
   group <- factor(c(rep(1,nrow(X)),rep(2,nrow(Y))))
@@ -17,8 +18,9 @@ carWrap <- function(X,Y,G) {
   qlf <- glmQLFTest(fit,coef=2)
   L <- Gmat2list(G)
   data <- abs(qlf$table$logFC)
-  names(data) <- 1:ncol(G)
-  res <- runInverseCarnival(measurements = data[1:ncol(G)],
+  names(data) <- paste0("Node",1:length(data))
+  data <- data[names(data) %in% unlist(c(L[,1],L[,3]))]
+  res <- runInverseCarnival(measurements = data,
                             priorKnowledgeNetwork = L, 
                             carnivalOptions = carnivalOptions)
   dce <- G*0

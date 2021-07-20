@@ -15,7 +15,8 @@
 #' @param p_method character string. "mean", "sum" for standard summary
 #' functions, "hmp" for harmonic mean, "test" for the selfcontained
 #' test of package 'CombinePValue' or any method from package 'metap',
-#' e.g., "meanp" or "sump".
+#' e.g., "meanp" or "sump". Alternatively, "vcovHC" can improve results
+#' for zero-inflated date, i.e., from single cell RNAseq experiments.
 #' @param test either "wald" for testing significance with the
 #' wald test or "lr" for using a likelihood ratio test
 #' @param lib_size either a numeric vector of the same length as the

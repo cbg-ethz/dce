@@ -195,7 +195,7 @@ run.all.models <- function(
   # Carnival?
   time.tmp <- Sys.time()
   if (is.null(methods) || "car" %in% methods) {
-    res.car <- list(dce = carWrap(log(wt.X.cor+1),log(mt.X.cor+1),as(wt.graph,"matrix")))
+    res.car <- carWrap(wt.X.cor,mt.X.cor,as(wt.graph,"matrix"))
   } else {
     res.car <- ground.truth
     res.car$dce_pvalue <- ground.truth$dce*0
