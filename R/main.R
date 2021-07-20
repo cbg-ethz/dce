@@ -487,6 +487,8 @@ dce_nb <- function(
                     fit, vcov = sandwich::vcovHC(fit, type = "HC0")
                 )
                 pval_xn <- robust["N:X", "Pr(>|t|)"]
+            } else {
+                stop("No valid test found.")
             }
 
             data.frame(
