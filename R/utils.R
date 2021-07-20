@@ -6,6 +6,9 @@
 #' @param y mutant data set
 #' @param iter number of iterations (permutations)
 #' @param fun function to compute the statistic, e.g., cor or pcor
+#' @param mode either 1 for a function that takes a single data set
+#' and produces an output of class matrix, and 2, if the function takes
+#' two data sets
 #' @param ... additional arguments for function 'fun'
 #' @return matrix of p-values
 #' @export

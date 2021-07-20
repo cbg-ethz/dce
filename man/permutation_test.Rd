@@ -15,6 +15,10 @@ permutation_test(x, y, iter = 1000, fun = pcor, mode = 1, ...)
 
 \item{fun}{function to compute the statistic, e.g., cor or pcor}
 
+\item{mode}{either 1 for a function that takes a single data set
+and produces an output of class matrix, and 2, if the function takes
+two data sets}
+
 \item{...}{additional arguments for function 'fun'}
 }
 \value{
