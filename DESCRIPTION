@@ -51,7 +51,6 @@ Suggests:
     curatedTCGAData,
     TCGAutils,
     SummarizedExperiment,
-    devtools,
     RcppParallel,
     docopt,
     CARNIVAL
