@@ -51,8 +51,11 @@ def main(fname, out_dir, pvalue_threshold):
         ]), leave=False):
             study, treatment, perturbed_gene = idx
 
-            # TODO: find better way of handling NAs
+            # TODO: find better way of handling NAs and 0s
             group.dropna(inplace=True)
+
+            min_ = group.loc[group['dce_pvalue'] > 0, 'dce_pvalue'].min()
+            group.replace(0, min_, inplace=True)
 
             # sanity checks
             if group['true_effect'].sum() == 0:
