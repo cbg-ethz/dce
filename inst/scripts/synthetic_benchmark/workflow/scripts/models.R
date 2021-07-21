@@ -205,7 +205,7 @@ run.all.models <- function(
   # differential expression?
   time.tmp <- Sys.time()
   if (is.null(methods) || "dge" %in% methods) {
-    res.dge <- dge_net(wt.X.cor,mt.X.cor,as(wt.graph,"matrix"))
+    res.dge <- dge_net(wt.X,mt.X,as(wt.graph,"matrix"))
   } else {
     res.dge <- ground.truth
     res.dge$dce_pvalue <- ground.truth$dce*0

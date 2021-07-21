@@ -1,7 +1,7 @@
 library(edgeR)
 library(harmonicmeanp)
 
-dge_net <- function(X,Y,G,mode=1) {
+dge_net <- function(X,Y,G) {
   group <- factor(c(rep(1,nrow(X)),rep(2,nrow(Y))))
   y <- DGEList(counts=cbind(t(X),t(Y)),group=group)
   y <- calcNormFactors(y)
@@ -12,9 +12,9 @@ dge_net <- function(X,Y,G,mode=1) {
   fc <- qlf$table$logFC
   pval <- qlf$table$PValue
   pval[pval < 1e-50] <- 1e-50
-  edges <- which(G == 1, arr.ind = TRUE)
+  edges <- which(G != 0, arr.ind = TRUE)
   dce <- dcep <- G
-  for (i in 1:ncol(edges)) {
+  for (i in 1:nrow(edges)) {
     x <- edges[i,1]
     y <- edges[i,2]
     dce[x,y] <- fc[y]-fc[x]
