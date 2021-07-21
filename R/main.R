@@ -533,6 +533,11 @@ dce_nb <- function(
     } else {
         tmp[tmp == 0] <- min(tmp[tmp != 0])
         if (p_method == "hmp") {
+            # fix for crash:
+            # Error in tailsEstable(x, stableParamObj):
+            #   NA/NaN/Inf in foreign function call (arg 7)
+            tmp[tmp < 1e-100] <- 1e-100
+
             pathway_pvalue <- as.numeric(harmonicmeanp::p.hmp(
                 tmp, L = length(tmp)
             ))
