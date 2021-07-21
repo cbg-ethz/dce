@@ -191,7 +191,7 @@ run.all.models <- function(
     res.ldgm$dce_pvalue <- ground.truth$dce*0
   }
   time.ldgm <- as.integer(difftime(Sys.time(), time.tmp, units = "secs"))
-  
+
   # Carnival?
   time.tmp <- Sys.time()
   if (is.null(methods) || "car" %in% methods) {
@@ -201,7 +201,17 @@ run.all.models <- function(
     res.car$dce_pvalue <- ground.truth$dce*0
   }
   time.car <- as.integer(difftime(Sys.time(), time.tmp, units = "secs"))
-  
+
+  # differential expression?
+  time.tmp <- Sys.time()
+  if (is.null(methods) || "dge" %in% methods) {
+    res.dge <- dge_net(wt.X.cor,mt.X.cor,as(wt.graph,"matrix"))
+  } else {
+    res.dge <- ground.truth
+    res.dge$dce_pvalue <- ground.truth$dce*0
+  }
+  time.dge <- as.integer(difftime(Sys.time(), time.tmp, units = "secs"))
+
   # Diff with FastGGM
   time.tmp <- Sys.time()
   if (is.null(methods) || "fggm" %in% methods) {
@@ -294,6 +304,7 @@ run.all.models <- function(
     dce.lm.tpm.nolatent=as.vector(res.dce.lm.tpm.nolatent$dce),
     ldgm=as.vector(res.ldgm$dce),
     car=as.vector(res.car$dce),
+    dge=as.vector(res.dge$dce),
     fggm=as.vector(res.fggm$dce),
     rand=as.vector(res.rand$dce),
     causaldag=as.vector(res.causaldag$dce)
@@ -313,6 +324,7 @@ run.all.models <- function(
     dce.lm.tpm.nolatent=as.vector(res.dce.lm.tpm.nolatent$dce_pvalue),
     ldgm=as.vector(res.ldgm$dce_pvalue),
     car=as.vector(res.car$dce_pvalue),
+    dge=as.vector(res.dge$dce_pvalue),
     fggm=as.vector(res.fggm$dce_pvalue),
     rand=as.vector(res.rand$dce_pvalue),
     causaldag=as.vector(res.causaldag$dce_pvalue)
@@ -331,6 +343,7 @@ run.all.models <- function(
     dce.lm.tpm.nolatent=time.dce.lm.tpm.nolatent,
     ldgm=time.ldgm,
     car=time.car,
+    dge=time.dge,
     fggm=time.fggm,
     rand=time.rand,
     causaldag=time.causaldag
