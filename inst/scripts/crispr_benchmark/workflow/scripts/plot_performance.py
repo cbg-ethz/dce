@@ -64,6 +64,7 @@ def main(dname, out_dir):
     )
 
     g.set_axis_labels('Method', 'ROC-AUC')
+    g._legend.set_title('Perturbed gene(s)')
 
     g.savefig(out_dir / 'method_comparison_stratified.pdf')
 
