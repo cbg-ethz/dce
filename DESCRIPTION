@@ -13,7 +13,7 @@ Authors@R:
         person(
             given = "Martin", family = "Pirkl",
             role = c("aut"),
-            email = "martin.pirkl@bsse.ethz.ch"
+            email = "martinpirkl@yahoo.de"
         )
     )
 Description: Compute differential causal effects (dce) on (biological) networks.
@@ -50,7 +50,10 @@ Suggests:
     devtools,
     curatedTCGAData,
     TCGAutils,
-    SummarizedExperiment
+    SummarizedExperiment,
+    RcppParallel,
+    docopt,
+    CARNIVAL
 VignetteBuilder: knitr
 RoxygenNote: 7.1.1
 Imports:

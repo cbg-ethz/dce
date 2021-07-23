@@ -1,6 +1,5 @@
 library(tidyverse)
 
-
 # parse commandline arguments
 "
 Benchmark DCE performance and runtime.
@@ -57,8 +56,8 @@ create.plots <- function(df.bench, plot.dir, varied.parameter) {
                      "Network perturbation" = 'Fraction of added/deleted edges',
                      "Prevalence of positive edges" = 'Prevelance of true differential effects')
 
-    meth_order <- c('dce', 'cor', 'pcor', 'fggm', 'rand', 'dce (no library size correction)', 'dce (no latent correction)')
-    meth_color <- c('red', 'lightblue', 'blue', 'orange', 'grey', '#ff7777', 'darkred')
+    meth_order <- c('dce', 'cor', 'pcor', 'fggm', 'ldgm', 'car', 'dge', 'rand', 'dce (no library size correction)', 'dce (no latent correction)')
+    meth_color <- c('red', 'lightblue', 'blue', 'orange', 'brown', 'green', 'purple', 'grey', '#ff7777', 'darkred')
     meth_color <- meth_color[meth_order %in% colnames(df.bench)]
     meth_order <- meth_order[meth_order %in% colnames(df.bench)]
 
@@ -91,7 +90,7 @@ create.plots <- function(df.bench, plot.dir, varied.parameter) {
 
 
   # create special plots
-  df.bench %>%
+  p <- df.bench %>%
     dplyr::filter(type == "runtime") %>%
     gather("variable", "value", -parameter, -type, -varied.parameter, -rng.seed) %>%
     mutate(value=lubridate::as.duration(value)) %>%
@@ -102,13 +101,13 @@ create.plots <- function(df.bench, plot.dir, varied.parameter) {
     ggtitle(paste(varied.parameter)) +
     ylab("runtime") +
     theme_minimal() +
-    theme(plot.title=element_text(hjust=0.5)) +
+    theme(plot.title=element_text(hjust=0.5))
     ggsave(file.path(plot.dir, "benchmark_runtime.pdf"),
-           width = width, height = height, units = 'cm')
+           width = width, height = height, units = 'cm', plot = p)
 
   meth <- colnames(df.bench)[1]
 
-  df.bench %>%
+  p <- df.bench %>%
     dplyr::filter(grepl("^dce.", type)) %>%
     dplyr::select(!!colnames(df.bench)[1], type, parameter, varied.parameter, meth) %>%
     ggplot(aes_string(x='parameter', y=meth, fill='type')) +
@@ -118,11 +117,11 @@ create.plots <- function(df.bench, plot.dir, varied.parameter) {
     ggtitle(paste(varied.parameter)) +
     ylab("value") +
     theme_minimal(base_size=20) +
-    theme(plot.title=element_text(hjust=0.5)) +
+    theme(plot.title=element_text(hjust=0.5))
     ggsave(file.path(plot.dir, "benchmark_dce_range.pdf"),
-           width = width, height = height, units = 'cm')
+           width = width, height = height, units = 'cm', plot = p)
 
-  df.bench %>%
+  p <- df.bench %>%
     dplyr::filter(grepl("^graph.", type)) %>%
     dplyr::select(!!colnames(df.bench)[1], type, parameter, varied.parameter) %>%
     ggplot(aes_string(x='parameter', y=meth, fill='type')) +
@@ -130,11 +129,11 @@ create.plots <- function(df.bench, plot.dir, varied.parameter) {
     ggtitle(paste(varied.parameter)) +
     ylab("value") +
     theme_minimal(base_size=20) +
-    theme(plot.title=element_text(hjust=0.5)) +
+    theme(plot.title=element_text(hjust=0.5))
     ggsave(file.path(plot.dir, "benchmark_graph_features.pdf"),
-           width = width, height = height, units = 'cm')
+           width = width, height = height, units = 'cm', plot = p)
 
-  df.bench %>%
+  p <- df.bench %>%
     dplyr::filter(grepl("^lib.", type)) %>%
     dplyr::select(!!colnames(df.bench)[1], type, parameter, varied.parameter) %>%
     ggplot(aes_string(x='parameter', y=meth, fill='type')) +
@@ -142,11 +141,11 @@ create.plots <- function(df.bench, plot.dir, varied.parameter) {
     ggtitle(paste(varied.parameter)) +
     ylab("value") +
     theme_minimal(base_size=20) +
-    theme(plot.title=element_text(hjust=0.5)) +
+    theme(plot.title=element_text(hjust=0.5))
     ggsave(file.path(plot.dir, "benchmark_lib_size_stats.pdf"),
-           width = width, height = height, units = 'cm')
+           width = width, height = height, units = 'cm', plot = p)
 
-  df.bench %>%
+  p <- df.bench %>%
     dplyr::filter(grepl("^dispersion.", type)) %>%
     dplyr::select(!!colnames(df.bench)[1], type, parameter, varied.parameter) %>%
     ggplot(aes_string(x='parameter', y=meth, fill='type')) +
@@ -154,11 +153,11 @@ create.plots <- function(df.bench, plot.dir, varied.parameter) {
     ggtitle(paste(varied.parameter)) +
     ylab("value") +
     theme_minimal(base_size=20) +
-    theme(plot.title=element_text(hjust=0.5)) +
+    theme(plot.title=element_text(hjust=0.5))
     ggsave(file.path(plot.dir, "benchmark_dispersion_estimate.pdf"),
-           width = width, height = height, units = 'cm')
+           width = width, height = height, units = 'cm', plot = p)
 
-  df.bench %>%
+  p <- df.bench %>%
     dplyr::filter(grepl("^mean.", type)) %>%
     dplyr::select(!!colnames(df.bench)[1], type, parameter, varied.parameter) %>%
     ggplot(aes_string(x='parameter', y=meth, fill='type')) +
@@ -166,11 +165,11 @@ create.plots <- function(df.bench, plot.dir, varied.parameter) {
     ggtitle(paste(varied.parameter)) +
     ylab("value") +
     theme_minimal(base_size=20) +
-    theme(plot.title=element_text(hjust=0.5)) +
+    theme(plot.title=element_text(hjust=0.5))
     ggsave(file.path(plot.dir, "benchmark_mean_estimate.pdf"),
-           width = width, height = height, units = 'cm')
+           width = width, height = height, units = 'cm', plot = p)
 
-  df.bench %>%
+  p <- df.bench %>%
     dplyr::filter(grepl("^prevalence$", type)) %>%
     dplyr::select(!!colnames(df.bench)[1], type, parameter, varied.parameter) %>%
     ggplot(aes_string(x='parameter', y=meth, fill='type')) +
@@ -178,9 +177,9 @@ create.plots <- function(df.bench, plot.dir, varied.parameter) {
     ggtitle(paste(varied.parameter)) +
     ylab("value") +
     theme_minimal(base_size=20) +
-    theme(plot.title=element_text(hjust=0.5)) +
+    theme(plot.title=element_text(hjust=0.5))
     ggsave(file.path(plot.dir, "benchmark_prevalence.pdf"),
-           width = width, height = height, units = 'cm')
+           width = width, height = height, units = 'cm', plot = p)
 }
 
 

@@ -17,7 +17,9 @@
 #' test of package 'CombinePValue' or any method from package 'metap',
 #' e.g., "meanp" or "sump".
 #' @param test either "wald" for testing significance with the
-#' wald test or "lr" for using a likelihood ratio test
+#' wald test or "lr" for using a likelihood ratio test. Alternatively,
+#' "vcovHC" can improve results
+#' for zero-inflated date, i.e., from single cell RNAseq experiments.
 #' @param lib_size either a numeric vector of the same length as the
 #' sum of wild type and mutant samples or a logical. If TRUE, it is
 #' recommended that both data sets include not only the genes
@@ -270,6 +272,11 @@ dce_nb <- function(
     conservative,
     log_level
 ) {
+    test <- match.arg(test, c("lr", "wald", "vcovHC"))
+    p_method <- match.arg(
+        p_method,
+        c("hmp", "meanp", "mean", "sum", "sump", "test")
+    )
     # handle latent variables
     if (deconfounding != FALSE) {  # because deconfounding can be string
         if (!is.numeric(deconfounding)) {
