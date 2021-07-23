@@ -160,6 +160,8 @@ topologically_ordering <- function(adja_mat, alt = FALSE) {
         nodes_sorted <- igraph::topo_sort(graph)
         return(adja_mat[nodes_sorted, nodes_sorted])
     } else {
+        adja_mat[adja_mat != 0] <- 1
+        adja_mat <- mnem::transitive.closure(adja_mat)
         ord <- order(
             apply(adja_mat, 1, sum) - apply(adja_mat, 2, sum),
             decreasing = 1
