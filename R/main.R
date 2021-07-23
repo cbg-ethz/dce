@@ -273,8 +273,10 @@ dce_nb <- function(
     log_level
 ) {
     test <- match.arg(test, c("lr", "wald", "vcovHC"))
-    p_method <- match.arg(p_method, c("hmp", "meanp", "mean", "sum", "sump",
-                                      "test"))
+    p_method <- match.arg(
+        p_method,
+        c("hmp", "meanp", "mean", "sum", "sump", "test")
+    )
     # handle latent variables
     if (deconfounding != FALSE) {  # because deconfounding can be string
         if (!is.numeric(deconfounding)) {
