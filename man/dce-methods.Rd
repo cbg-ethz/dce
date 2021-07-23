@@ -92,11 +92,12 @@ the adjustment set Z for the regression}
 \item{p_method}{character string. "mean", "sum" for standard summary
 functions, "hmp" for harmonic mean, "test" for the selfcontained
 test of package 'CombinePValue' or any method from package 'metap',
-e.g., "meanp" or "sump". Alternatively, "vcovHC" can improve results
-for zero-inflated date, i.e., from single cell RNAseq experiments.}
+e.g., "meanp" or "sump".}
 
 \item{test}{either "wald" for testing significance with the
-wald test or "lr" for using a likelihood ratio test}
+wald test or "lr" for using a likelihood ratio test. Alternatively,
+"vcovHC" can improve results
+for zero-inflated date, i.e., from single cell RNAseq experiments.}
 
 \item{lib_size}{either a numeric vector of the same length as the
 sum of wild type and mutant samples or a logical. If TRUE, it is
