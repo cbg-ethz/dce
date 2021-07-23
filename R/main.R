@@ -486,7 +486,7 @@ dce_nb <- function(
                 robust <- lmtest::coeftest(
                     fit, vcov = sandwich::vcovHC(fit, type = "HC0")
                 )
-                pval_xn <- robust["N:X", "Pr(>|t|)"]
+                pval_xn <- robust["N:X", "Pr(>|z|)"]
             }
 
             data.frame(
