@@ -14,7 +14,7 @@ dge_net <- function(X,Y,G) {
   pval[pval < 1e-50] <- 1e-50
   edges <- which(G != 0, arr.ind = TRUE)
   dce <- dcep <- G
-  for (i in 1:nrow(edges)) {
+  for (i in seq_len(nrow(edges))) {
     x <- edges[i,1]
     y <- edges[i,2]
     dce[x,y] <- fc[y]-fc[x]
