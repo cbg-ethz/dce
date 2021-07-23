@@ -137,7 +137,7 @@ on permutations of the observations" />
 on permutations of the observations</p>
     </div>
 
-    <pre class="usage"><span class='fu'>permutation_test</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>y</span>, iter <span class='op'>=</span> <span class='fl'>1000</span>, fun <span class='op'>=</span> <span class='va'>pcor</span>, <span class='va'>...</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>permutation_test</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>y</span>, iter <span class='op'>=</span> <span class='fl'>1000</span>, fun <span class='op'>=</span> <span class='va'>pcor</span>, mode <span class='op'>=</span> <span class='fl'>1</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -157,6 +157,12 @@ on permutations of the observations</p>
     <tr>
       <th>fun</th>
       <td><p>function to compute the statistic, e.g., cor or pcor</p></td>
+    </tr>
+    <tr>
+      <th>mode</th>
+      <td><p>either 1 for a function that takes a single data set
+and produces an output of class matrix, and 2, if the function takes
+two data sets</p></td>
     </tr>
     <tr>
       <th>...</th>

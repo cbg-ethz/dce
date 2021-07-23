@@ -248,7 +248,9 @@ e.g., "meanp" or "sump".</p></td>
     <tr>
       <th>test</th>
       <td><p>either "wald" for testing significance with the
-wald test or "lr" for using a likelihood ratio test</p></td>
+wald test or "lr" for using a likelihood ratio test. Alternatively,
+"vcovHC" can improve results
+for zero-inflated date, i.e., from single cell RNAseq experiments.</p></td>
     </tr>
     <tr>
       <th>lib_size</th>
@@ -286,7 +288,7 @@ for the variables in the adjustment set</p></td>
 <span class='va'>dag.mt</span> <span class='op'>&lt;-</span> <span class='fu'><a href='resample_edge_weights.html'>resample_edge_weights</a></span><span class='op'>(</span><span class='va'>dag</span><span class='op'>)</span>
 <span class='va'>X.mt</span> <span class='op'>&lt;-</span> <span class='fu'><a href='simulate_data.html'>simulate_data</a></span><span class='op'>(</span><span class='va'>dag</span><span class='op'>)</span>
 <span class='fu'>dce</span><span class='op'>(</span><span class='va'>dag</span>,<span class='va'>X.wt</span>,<span class='va'>X.mt</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='warning'>Warning: Cycle(s) detected in network</span></div><div class='output co'>#&gt; $graph
+</div><div class='output co'>#&gt; $graph
 #&gt;     n1 n2 n3 n4 n5 n6 n7 n8 n9 n10 n11 n12 n13 n14 n15 n16 n17 n18 n19 n20 n21
 #&gt; n1   0  0  1  0  0  0  0  0  0   0   0   0   0   1   1   1   1   0   0   0   0
 #&gt; n2   0  0  0  0  0  0  0  1  0   0   0   0   0   0   0   0   0   1   0   0   0
