@@ -1,7 +1,16 @@
 library(CARNIVAL)
 library(edgeR)
 
-carWrap <- function(X,Y,G) {
+carWrap <- function(X,Y,G,stats = NULL) {
+  if (is.null(stats)) {
+    group <- factor(c(rep(1, nrow(X)), rep(2,nrow(Y))))
+    y <- DGEList(counts=cbind(t(X), t(Y)), group=group)
+    y <- calcNormFactors(y)
+    design <- model.matrix( ~ group)
+    y <- estimateDisp(y, design)
+    fit <- glmQLFit(y, design)
+    stats <- glmQLFTest(fit, coef = 2)
+  }
   rownames(G) <- colnames(G) <- paste0("Node",1:ncol(G))
   Gmat2list <- function(G) {
     edges <- which(abs(G)>0,arr.ind=TRUE)
@@ -9,15 +18,8 @@ carWrap <- function(X,Y,G) {
     return(as_tibble(L))
   }
   carnivalOptions <- defaultLpSolveCarnivalOptions()
-  group <- factor(c(rep(1,nrow(X)),rep(2,nrow(Y))))
-  y <- DGEList(counts=cbind(t(X),t(Y)),group=group)
-  y <- calcNormFactors(y)
-  design <- model.matrix(~group)
-  y <- estimateDisp(y,design)
-  fit <- glmQLFit(y,design)
-  qlf <- glmQLFTest(fit,coef=2)
   L <- Gmat2list(G)
-  data <- abs(qlf$table$logFC)
+  data <- abs(stats$table$logFC)
   names(data) <- paste0("Node",1:length(data))
   data <- data[names(data) %in% unlist(c(L[,1],L[,3]))]
   res <- runInverseCarnival(measurements = data,

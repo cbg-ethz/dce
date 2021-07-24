@@ -89,12 +89,16 @@ setMethod(
         graph, n = 100,
         dist_mean = 1000, dist_dispersion = 100,
         link = negative.binomial.special()$linkfun,
-        pop_size = 0, latent = 0
+        pop_size = 0, latent = 0, latent.fun = "unif"
     ) {
         start <- 2
         p <- dim(graph)[[1]]
         if (latent > 0) {
-            H1 <- matrix(runif(p * latent, -1, 1), latent, p)
+            if (latent.fun == "unif") {
+                H1 <- matrix(runif(p * latent, -1, 1), latent, p)
+            } else if (latent.fun == "exp") {
+                H1 <- matrix(exp(p * latent), latent, p)
+            }
             H0 <- matrix(0, p + latent, latent)
             graph <- cbind(H0, rbind(H1, graph))
             start <- latent + 1
