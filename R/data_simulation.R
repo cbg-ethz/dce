@@ -11,6 +11,8 @@
 #' @param pop_size numeric for the population size, e.g., pop_size=1000 adds
 #' 1000-n random genes not in the graph
 #' @param latent number of latent variables
+#' @param latent.fun uniform "unif" or exponential "exp" distribution of latent
+#' coefficients
 #' @return graph
 #' @export
 #' @rdname simulate_data-methods
@@ -26,7 +28,7 @@ setGeneric(
         graph, n = 100,
         dist_mean = 1000, dist_dispersion = 100,
         link = negative.binomial.special()$linkfun,
-        pop_size = 0, latent = 0
+        pop_size = 0, latent = 0, latent.fun = "unif"
     ) {
         standardGeneric("simulate_data")
     },
@@ -45,7 +47,7 @@ setMethod(
         graph, n = 100,
         dist_mean = 1000, dist_dispersion = 100,
         link = negative.binomial.special()$linkfun,
-        pop_size = 0, latent = 0
+        pop_size = 0, latent = 0, latent.fun = "unif"
     ) {
         mat <- as(igraph::as_adjacency_matrix(graph, attr = "weight"),
                   "matrix")
@@ -67,7 +69,7 @@ setMethod(
         graph, n = 100,
         dist_mean = 1000, dist_dispersion = 100,
         link = negative.binomial.special()$linkfun,
-        pop_size = 0, latent = 0
+        pop_size = 0, latent = 0, latent.fun = "unif"
     ) {
         a <- as(graph, "matrix")
         a <- a[naturalorder(rownames(a)), naturalorder(colnames(a))]
