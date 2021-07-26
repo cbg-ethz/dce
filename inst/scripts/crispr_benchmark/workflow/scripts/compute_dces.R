@@ -45,6 +45,7 @@ res <- dce::dce(
   igraph::induced_subgraph(graph, common.genes),
   X.wt, X.mt,
   solver = "lm",
+  test = "vcovHC",
   deconfounding = params$computation$deconfounding
 )
 
