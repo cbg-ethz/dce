@@ -106,6 +106,10 @@ rule all:
         expand(
             'results/performance/comparison/threshold_{threshold}/',
             threshold=config['pvalue_thresholds']
+        ),
+        expand(
+            'results/aggregated_statistics/{params}/additional_statistics.csv',
+            params=paramspace.instance_patterns
         )
 
 
@@ -206,6 +210,16 @@ rule aggregate_dce_lists:
 
         df = pd.concat(df_list)
         df.to_csv(output.fname, index=False)
+
+
+rule additional_statistics:
+    input:
+        dir_list = aggregate_dce_results
+    output:
+        fname = f'results/aggregated_statistics/{paramspace.wildcard_pattern}/additional_statistics.csv',
+        out_dir = directory(f'results/aggregated_statistics/{paramspace.wildcard_pattern}/additional_statistics_plots/')
+    script:
+        'scripts/additional_statistics.py'
 
 
 rule aggregated_statistics:
