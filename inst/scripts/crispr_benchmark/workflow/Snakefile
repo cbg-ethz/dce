@@ -218,6 +218,8 @@ rule additional_statistics:
     output:
         fname = f'results/aggregated_statistics/{paramspace.wildcard_pattern}/additional_statistics.csv',
         out_dir = directory(f'results/aggregated_statistics/{paramspace.wildcard_pattern}/additional_statistics_plots/')
+    resources:
+        mem_mb = 10_000
     script:
         'scripts/additional_statistics.py'
 
