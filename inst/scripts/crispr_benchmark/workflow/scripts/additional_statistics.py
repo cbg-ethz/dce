@@ -38,7 +38,7 @@ def read_data(dir_list):
                         'type': 'pathway_degree',
                         'gene': gene,
                         'source': f'{pathway} -- {g}',
-                        'value': graph.degree[g] if g in graph else pd.NA,
+                        'value': graph.degree[g] if g in graph else np.nan,
                     },
                     {
                         'type': 'mean_expression_count',
