@@ -8,6 +8,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 from tqdm import tqdm
+from natsort import natsorted
 
 
 sns.set_context('talk')
@@ -62,9 +63,17 @@ def main(dir_list, fname, out_dir):
 
     # create plots
     plt.figure(figsize=(8, 6))
-    sns.boxplot(data=df[df['type'] == 'pathway_degree'], x='gene', y='value')
+    sns.boxplot(
+        data=df[df['type'] == 'pathway_degree'],
+        x='gene',
+        y='value',
+        order=natsorted(df['gene'].unique()),
+    )
     plt.xlabel('Perturbed gene(s)')
     plt.ylabel('Pathway degree')
+    for label in plt.gca().get_xticklabels():
+        label.set_ha('right')
+        label.set_rotation(45)
     plt.tight_layout()
     plt.savefig(out_dir / 'degrees.pdf')
 
@@ -76,9 +85,17 @@ def main(dir_list, fname, out_dir):
         x='gene',
         y='value',
         hue='treatment',
+        hue_order=['1', '2', '3'],
+        order=natsorted(df['gene'].unique()),
     )
     plt.xlabel('Perturbed gene(s)')
     plt.ylabel('Mean expression')
+    for label in plt.gca().get_xticklabels():
+        label.set_ha('right')
+        label.set_rotation(45)
+    plt.legend(
+        title='treatment', bbox_to_anchor=(1.05, 1), loc='upper left', frameon=False
+    )
     plt.tight_layout()
     plt.savefig(out_dir / 'counts.pdf')
 
