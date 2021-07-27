@@ -42,10 +42,16 @@ def read_data(dir_list):
                         'value': graph.degree[g] if g in graph else np.nan,
                     },
                     {
-                        'type': 'mean_expression_count',
+                        'type': 'expression_count_mean',
                         'gene': gene,
                         'source': f'{treatment} -- {g}',
                         'value': df.loc[g].mean(),
+                    },
+                    {
+                        'type': 'expression_count_std',
+                        'gene': gene,
+                        'source': f'{treatment} -- {g}',
+                        'value': df.loc[g].std(),
                     },
                 ]
             )
@@ -62,7 +68,7 @@ def main(dir_list, fname, out_dir):
     df.to_csv(fname, index=False)
 
     # create plots
-    plt.figure(figsize=(8, 6))
+    plt.figure(figsize=(16, 12))
     sns.boxplot(
         data=df[df['type'] == 'pathway_degree'],
         x='gene',
@@ -77,9 +83,9 @@ def main(dir_list, fname, out_dir):
     plt.tight_layout()
     plt.savefig(out_dir / 'degrees.pdf')
 
-    plt.figure(figsize=(8, 6))
+    plt.figure(figsize=(16, 12))
     sns.boxplot(
-        data=df[df['type'] == 'mean_expression_count'].assign(
+        data=df[df['type'] == 'expression_count_mean'].assign(
             treatment=lambda x: x['source'].str.split(' -- ').str[0]
         ),
         x='gene',
@@ -97,7 +103,29 @@ def main(dir_list, fname, out_dir):
         title='treatment', bbox_to_anchor=(1.05, 1), loc='upper left', frameon=False
     )
     plt.tight_layout()
-    plt.savefig(out_dir / 'counts.pdf')
+    plt.savefig(out_dir / 'counts_mean.pdf')
+
+    plt.figure(figsize=(16, 12))
+    sns.boxplot(
+        data=df[df['type'] == 'expression_count_std'].assign(
+            treatment=lambda x: x['source'].str.split(' -- ').str[0]
+        ),
+        x='gene',
+        y='value',
+        hue='treatment',
+        hue_order=['1', '2', '3'],
+        order=natsorted(df['gene'].unique()),
+    )
+    plt.xlabel('Perturbed gene(s)')
+    plt.ylabel('Expression standard deviation')
+    for label in plt.gca().get_xticklabels():
+        label.set_ha('right')
+        label.set_rotation(45)
+    plt.legend(
+        title='treatment', bbox_to_anchor=(1.05, 1), loc='upper left', frameon=False
+    )
+    plt.tight_layout()
+    plt.savefig(out_dir / 'counts_std.pdf')
 
 
 if __name__ == '__main__':
