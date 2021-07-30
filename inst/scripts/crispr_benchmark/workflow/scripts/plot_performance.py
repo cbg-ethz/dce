@@ -63,6 +63,10 @@ def main(dname, out_dir):
         aspect=2,
     )
 
+    g.map(
+        lambda **kwargs: plt.axhline(0.5, ls='dashed', color='gray', alpha=1, zorder=-1)
+    )
+
     g.set_axis_labels('Method', 'ROC-AUC')
     g._legend.set_title('Perturbed gene(s)')
 

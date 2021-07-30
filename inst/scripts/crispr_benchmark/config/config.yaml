@@ -1,6 +1,5 @@
 # `pathway_constraints` is ignored if `pathway_list` is non-null
-pathway_list:
-    - hsa04141
+pathway_list: null
 
 pathway_constraints:
     min_pathway_node_size: 5
