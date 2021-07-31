@@ -47,6 +47,7 @@ mt.samples <- 200
 
 beta.magnitude <- 1
 beta.dist <- 1
+latent.dist <- 1
 dist.mean <- 100
 dispersion <- 1
 adjustment.type <- "parents"
@@ -117,6 +118,7 @@ df.bench <- purrr::pmap_dfr(
         mt.samples = { mt.samples <- parameter },
         beta.magnitude = { beta.magnitude <- parameter },
         beta.dist = { beta.dist <- parameter },
+        latent.dist = { latent.dist <- parameter },
         dispersion = { dispersion <- parameter },
         adjustment.type = { adjustment.type <- parameter },
         effect.type = { effect.type <- parameter },
@@ -131,7 +133,7 @@ df.bench <- purrr::pmap_dfr(
         }
       )
 
-      print(glue::glue("seed={rng.seed} node.num={node.num} wt.samples={wt.samples} mt.samples={mt.samples} beta.magnitude={beta.magnitude} beta.dist={beta.dist} dispersion={dispersion} adjustment.type={adjustment.type} effect.type={effect.type} perturb={perturb} true.positives={true.positives} lib.size.range={lib.size.range} latent={latent}"))
+      print(glue::glue("seed={rng.seed} node.num={node.num} wt.samples={wt.samples} mt.samples={mt.samples} beta.magnitude={beta.magnitude} beta.dist={beta.dist} latent.dist={latent.dist} dispersion={dispersion} adjustment.type={adjustment.type} effect.type={effect.type} perturb={perturb} true.positives={true.positives} lib.size.range={lib.size.range} latent={latent}"))
 
 
       # generate graphs
@@ -158,6 +160,11 @@ df.bench <- purrr::pmap_dfr(
 
       # generate data
       pop.size <- 10000
+      if (latent.dist == 1) {
+        latent.fun <- "unif"
+      } else {
+        latent.fun <- "exp"
+      }
       wt.X <- simulate_data(wt.graph, n = wt.samples, dist_dispersion = dispersion, dist_mean = dist.mean, pop_size = pop.size, latent = latent, latent.fun = latent.fun)
       mt.X <- simulate_data(mt.graph, n = mt.samples, dist_dispersion = dispersion, dist_mean = dist.mean, pop_size = pop.size, latent = latent, latent.fun = latent.fun)
 
