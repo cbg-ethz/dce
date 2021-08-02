@@ -161,32 +161,9 @@
   <span class="fu"><a href="../reference/plot_network.html">plot_network</a></span><span class="op">(</span><span class="va">graph_mt</span>, edgescale_limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">3</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span>,
   labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"WT"</span>, <span class="st">"MT"</span><span class="op">)</span>
 <span class="op">)</span></code></pre></div>
-<pre><code>## Warning: It is deprecated to specify `guide = FALSE` to remove a guide. Please
-## use `guide = "none"` instead.
-
-## Warning: It is deprecated to specify `guide = FALSE` to remove a guide. Please
-## use `guide = "none"` instead.
-
-## Warning: It is deprecated to specify `guide = FALSE` to remove a guide. Please
-## use `guide = "none"` instead.
-
-## Warning: It is deprecated to specify `guide = FALSE` to remove a guide. Please
-## use `guide = "none"` instead.
-
-## Warning: It is deprecated to specify `guide = FALSE` to remove a guide. Please
-## use `guide = "none"` instead.
-
-## Warning: It is deprecated to specify `guide = FALSE` to remove a guide. Please
-## use `guide = "none"` instead.
-
-## Warning: It is deprecated to specify `guide = FALSE` to remove a guide. Please
-## use `guide = "none"` instead.
-
-## Warning: It is deprecated to specify `guide = FALSE` to remove a guide. Please
-## use `guide = "none"` instead.</code></pre>
 <p><img src="dce_files/figure-html/unnamed-chunk-4-1.png" width="700"></p>
 <p>By computing the counts based on the edge weights (root nodes are randomly initialized), we can generate synthetic expression data for each node in both networks. Both <code>X_wt</code> and <code>X_mt</code> then induce causal effects as defined in their respective adjacency matrices.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">X_wt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_data.html">simulate_data</a></span><span class="op">(</span><span class="va">graph_wt</span><span class="op">)</span>
 <span class="va">X_mt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_data.html">simulate_data</a></span><span class="op">(</span><span class="va">graph_mt</span><span class="op">)</span>
 
@@ -200,7 +177,7 @@
 ## [5,]  848 125  251
 ## [6,] 1163 455  885</code></pre>
 <p>Given the network topology (without edge weights!) and expression data from both WT and MT conditions, we can estimate the difference in causal effects for each edge between the two conditions. These are the aforementioned Differential Causal Effects (DCEs).</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dce.html">dce</a></span><span class="op">(</span><span class="va">graph_wt</span>, <span class="va">X_wt</span>, <span class="va">X_mt</span>, solver <span class="op">=</span> <span class="st">"lm"</span><span class="op">)</span>
 
 <span class="va">res</span> <span class="op">%&gt;%</span>
@@ -211,20 +188,9 @@
 ## 2      A      C 1.5234426 0.04449333  1.207257e-84
 ## 3      B      C 0.1152442 0.17882577  5.200452e-01</code></pre>
 <p>Visualizing the result shows that we can recover the dysregulation of the edge from <code>A</code> to <code>B</code>. Note that since we are computing total causal effects, the causal effect of <code>A</code> on <code>C</code> has changed as well.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu">ggtitle</span><span class="op">(</span><span class="st">"Differential Causal Effects between WT and MT condition"</span><span class="op">)</span></code></pre></div>
-<pre><code>## Warning: It is deprecated to specify `guide = FALSE` to remove a guide. Please
-## use `guide = "none"` instead.
-
-## Warning: It is deprecated to specify `guide = FALSE` to remove a guide. Please
-## use `guide = "none"` instead.
-
-## Warning: It is deprecated to specify `guide = FALSE` to remove a guide. Please
-## use `guide = "none"` instead.
-
-## Warning: It is deprecated to specify `guide = FALSE` to remove a guide. Please
-## use `guide = "none"` instead.</code></pre>
 <p><img src="dce_files/figure-html/unnamed-chunk-7-1.png" width="700"></p>
 </div>
 <div id="application-to-real-data" class="section level1">
@@ -235,7 +201,7 @@
 <h2 class="hasAnchor">
 <a href="#retrieve-gene-expression-data" class="anchor"></a>Retrieve gene expression data</h2>
 <p>As a showcase, we download breast cancer (BRCA) RNA transcriptomics profiling data from TCGA <span class="citation">(Tomczak, Czerwińska, and Wiznerowicz 2015)</span>.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">brca</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/curatedTCGAData/man/curatedTCGAData.html">curatedTCGAData</a></span><span class="op">(</span>
   diseaseCode <span class="op">=</span> <span class="st">"BRCA"</span>,
   assays <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"RNASeq2*"</span><span class="op">)</span>,
@@ -272,7 +238,7 @@
 ##   removing 13161 sampleMap rows not in names(experiments)
 ##   removing 5 colData rownames not in sampleMap 'primary'</code></pre>
 <p>This will retrieve all available samples for the requested data sets. These samples can be classified according to their site of origin.</p>
-<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/TCGAutils/man/curatedTCGAData-helpers.html">sampleTables</a></span><span class="op">(</span><span class="va">brca</span><span class="op">)</span></code></pre></div>
 <pre><code>## $`BRCA_RNASeq2Gene-20160128`
 ## 
@@ -283,7 +249,7 @@
 ## 
 ##   01   06   11 
 ## 1093    7  112</code></pre>
-<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">sampleTypes</span>, package <span class="op">=</span> <span class="st">"TCGAutils"</span><span class="op">)</span>
 <span class="va">sampleTypes</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">Code</span> <span class="op">%in%</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"01"</span>, <span class="st">"06"</span>, <span class="st">"11"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
@@ -292,13 +258,13 @@
 ## 2   06          Metastatic                TM
 ## 3   11 Solid Tissue Normal                NT</code></pre>
 <p>We can extract Primary Solid Tumor and matched Solid Tissue Normale samples.</p>
-<div class="sourceCode" id="cb47"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># split assays</span>
 <span class="va">brca_split</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/TCGAutils/man/curatedTCGAData-helpers.html">splitAssays</a></span><span class="op">(</span><span class="va">brca</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"01"</span>, <span class="st">"11"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <pre><code>## Warning: 'splitAssays' is deprecated.
 ## Use 'TCGAsplitAssays' instead.
 ## See help("Deprecated")</code></pre>
-<div class="sourceCode" id="cb49"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb47"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># only retain matching samples</span>
 <span class="va">brca_matched</span> <span class="op">&lt;-</span> <span class="fu">as</span><span class="op">(</span><span class="va">brca_split</span>, <span class="st">"MatchedAssayExperiment"</span><span class="op">)</span>
 
@@ -309,7 +275,7 @@
 <h2 class="hasAnchor">
 <a href="#retrieve-biological-pathway-of-interest" class="anchor"></a>Retrieve biological pathway of interest</h2>
 <p>KEGG <span class="citation">(Kanehisa et al. 2004)</span> provides the breast cancer related pathway <code>hsa05224</code>. It can be easily retrieved using <code>dce</code>.</p>
-<div class="sourceCode" id="cb50"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb48"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">pathways</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_pathways.html">get_pathways</a></span><span class="op">(</span>pathway_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>kegg <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Breast cancer"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <pre><code>## 'select()' returned 1:1 mapping between keys and columns
 ## 'select()' returned 1:1 mapping between keys and columns
@@ -317,10 +283,10 @@
 ## 'select()' returned 1:1 mapping between keys and columns
 ## 'select()' returned 1:1 mapping between keys and columns
 ## 'select()' returned 1:1 mapping between keys and columns</code></pre>
-<div class="sourceCode" id="cb52"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb50"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">brca_pathway</span> <span class="op">&lt;-</span> <span class="va">pathways</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">graph</span></code></pre></div>
 <p>Luckily, it shares all genes with the cancer data set.</p>
-<div class="sourceCode" id="cb53"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb51"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">shared_genes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sets.html">intersect</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/graph/man/graphNEL-class.html">nodes</a></span><span class="op">(</span><span class="va">brca_pathway</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span><span class="op">(</span><span class="va">brca_wt</span><span class="op">)</span><span class="op">)</span>
 <span class="fu">glue</span><span class="fu">::</span><span class="fu"><a href="https://glue.tidyverse.org/reference/glue.html">glue</a></span><span class="op">(</span>
   <span class="st">"Covered nodes: {length(shared_genes)}/{length(nodes(brca_pathway))}"</span>
@@ -331,10 +297,10 @@
 <h2 class="hasAnchor">
 <a href="#estimate-differential-causal-effects" class="anchor"></a>Estimate Differential Causal Effects</h2>
 <p>We can now estimate the differences in causal effects between matched tumor and normal samples on a breast cancer specific pathway.</p>
-<div class="sourceCode" id="cb55"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb53"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu">dce</span><span class="fu">::</span><span class="fu"><a href="../reference/dce.html">dce</a></span><span class="op">(</span><span class="va">brca_pathway</span>, <span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span><span class="op">(</span><span class="va">brca_wt</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span><span class="op">(</span><span class="va">brca_mt</span><span class="op">)</span>, solver <span class="op">=</span> <span class="st">"lm"</span><span class="op">)</span></code></pre></div>
 <p>Interpretations may now begin.</p>
-<div class="sourceCode" id="cb56"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb54"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">res</span> <span class="op">%&gt;%</span>
   <span class="va">as.data.frame</span> <span class="op">%&gt;%</span>
   <span class="va">drop_na</span> <span class="op">%&gt;%</span>
@@ -347,26 +313,15 @@
 ## 4  WNT7A   FZD4 -1334.3963   598.5797 2.680676e-02
 ## 5  FGF21  FGFR1  -917.1445  1128.4631 4.172471e-01
 ## 6  WNT8A   FZD7   817.6733   954.3545 3.924979e-01</code></pre>
-<div class="sourceCode" id="cb58"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb56"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">res</span>, nodesize <span class="op">=</span> <span class="fl">20</span>, labelsize <span class="op">=</span> <span class="fl">1</span>, use_symlog <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
-<pre><code>## Warning: It is deprecated to specify `guide = FALSE` to remove a guide. Please
-## use `guide = "none"` instead.
-
-## Warning: It is deprecated to specify `guide = FALSE` to remove a guide. Please
-## use `guide = "none"` instead.
-
-## Warning: It is deprecated to specify `guide = FALSE` to remove a guide. Please
-## use `guide = "none"` instead.
-
-## Warning: It is deprecated to specify `guide = FALSE` to remove a guide. Please
-## use `guide = "none"` instead.</code></pre>
 <p><img src="dce_files/figure-html/unnamed-chunk-14-1.png" width="700"></p>
 </div>
 </div>
 <div id="session-information" class="section level1">
 <h1 class="hasAnchor">
 <a href="#session-information" class="anchor"></a>Session information</h1>
-<div class="sourceCode" id="cb60"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb57"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <pre><code>## R version 4.1.0 (2021-05-18)
 ## Platform: x86_64-apple-darwin17.0 (64-bit)
@@ -500,7 +455,7 @@
 ## [195] desc_1.3.0                    munsell_0.5.0                
 ## [197] e1071_1.7-8                   fastcluster_1.2.3            
 ## [199] GenomeInfoDbData_1.2.6        reshape2_1.4.4               
-## [201] haven_2.4.1                   gtable_0.3.0                 
+## [201] haven_2.4.2                   gtable_0.3.0                 
 ## [203] rbibutils_2.2.2</code></pre>
 </div>
 <div id="references" class="section level1 unnumbered">
