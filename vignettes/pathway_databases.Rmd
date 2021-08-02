@@ -58,7 +58,9 @@ It is easily possible to plot pathways:
 ```{r}
 pathways <- get_pathways(
   pathway_list = list(
-    kegg = c("Citrate cycle (TCA cycle)")
+    pathbank = c("Lactose Synthesis"),
+    kegg = c("Fatty acid biosynthesis"),
+    wikipathways = c("TGF-beta Receptor Signaling")
   )
 )
 
