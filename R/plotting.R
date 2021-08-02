@@ -175,7 +175,7 @@ plot_network <- function(
                 end_cap = circle(.data$node2.nodesize, unit = "native")
             ),
             strength = 0.5,
-            arrow = arrow(type = "closed", length = unit(3, "mm"))
+            arrow = arrow(type = "closed", length = unit(2, "mm"))
         ) +
         geom_node_text(aes(label = .data$label), size = labelsize) +
         coord_fixed() +
