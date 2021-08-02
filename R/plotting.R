@@ -16,6 +16,7 @@
 #' @param legend_title Title of edge weight legend
 #' @param value_matrix Optional matrix of edge weights if different
 #'        from adjacency matrix
+#' @param shadowtext Draw white outline around node labels
 #' @param ... additional parameters
 #' @author Martin Pirkl, Kim Philipp Jablonski
 #' @return plot of dag and dces
@@ -28,6 +29,7 @@
 #' @importFrom rlang .data
 #' @importFrom igraph graph_from_adjacency_matrix
 #' @importFrom Rgraphviz agopen
+#' @importFrom shadowtext geom_shadowtext
 #' @examples
 #' adj <- matrix(c(0,0,0,1,0,0,0,1,0),3,3)
 #' plot_network(adj)
@@ -42,6 +44,7 @@ plot_network <- function(
     highlighted_nodes = c(),
     legend_title = "edge weight",
     value_matrix = NULL,
+    shadowtext = FALSE,
     ...
 ) {
     # sanitize input
@@ -96,6 +99,15 @@ plot_network <- function(
         } else {
             return(round(breaks, 1))
         }
+    }
+
+    # handle shadowtext
+    if (shadowtext) {
+        geom_custom_labels <- function(...) {
+            geom_shadowtext(..., bg.color = "white")
+        }
+    } else {
+        geom_custom_labels <- geom_node_text
     }
 
     # create plot
@@ -177,7 +189,11 @@ plot_network <- function(
             strength = 0.5,
             arrow = arrow(type = "closed", length = unit(2, "mm"))
         ) +
-        geom_node_text(aes(label = .data$label), size = labelsize) +
+        geom_custom_labels(
+            aes(label = .data$label, x = .data$x, y = .data$y),
+            size = labelsize,
+            color = "black"
+        ) +
         coord_fixed() +
         scale_fill_manual(
             values = c("FALSE" = node_color, "TRUE" = "red"), guide = FALSE

@@ -87,4 +87,5 @@ Imports:
     Rgraphviz,
     harmonicmeanp,
     org.Hs.eg.db,
-    logger
+    logger,
+    shadowtext

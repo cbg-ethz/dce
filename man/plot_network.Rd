@@ -17,6 +17,7 @@ plot_network(
   highlighted_nodes = c(),
   legend_title = "edge weight",
   value_matrix = NULL,
+  shadowtext = FALSE,
   ...
 )
 }
@@ -47,6 +48,8 @@ relative to edge weight}
 
 \item{value_matrix}{Optional matrix of edge weights if different
 from adjacency matrix}
+
+\item{shadowtext}{Draw white outline around node labels}
 
 \item{...}{additional parameters}
 }
