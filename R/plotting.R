@@ -196,7 +196,7 @@ plot_network <- function(
         ) +
         coord_fixed() +
         scale_fill_manual(
-            values = c("FALSE" = node_color, "TRUE" = "red"), guide = FALSE
+            values = c("FALSE" = node_color, "TRUE" = "red"), guide = "none"
         ) +
         scale_edge_color_gradient2(
             low = "red", mid = "grey", high = "blue", midpoint = 0,
@@ -217,16 +217,16 @@ plot_network <- function(
         scale_edge_width(
             range = c(1, 3), limits = c(0, edgescale_limits[[2]]),
             na.value = 1,
-            guide = FALSE
+            guide = "none"
         ) +
         scale_edge_alpha(
             range = c(.1, 1), limits = c(0, edgescale_limits[[2]]),
             na.value = 1,
-            guide = FALSE
+            guide = "none"
         ) +
         scale_edge_linetype_manual(
             values = c("FALSE" = "solid", "TRUE" = "dashed"),
-            guide = FALSE
+            guide = "none"
         ) +
         theme(
             panel.background = element_rect(fill = "white")
