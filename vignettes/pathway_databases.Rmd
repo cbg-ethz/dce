@@ -63,7 +63,11 @@ pathways <- get_pathways(
 )
 
 lapply(pathways, function(x) {
-  plot_network(as(x$graph, "matrix"), visualize_edge_weights = FALSE) +
+  plot_network(
+    as(x$graph, "matrix"),
+    visualize_edge_weights = FALSE,
+    shadowtext = TRUE
+  ) +
     ggtitle(x$pathway_name)
 })
 ```
