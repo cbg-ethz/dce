@@ -174,9 +174,16 @@ df_final %>%
   write_csv(file.path(out.dir, glue::glue("dce_list_{appendix}.csv")))
 
 # network plot
-plot(res, labelsize = 1, highlighted_nodes = strsplit(perturbed.gene, ",")[[1]]) +
+plot(
+  res,
+  labelsize = 0,
+  node_color = "grey",
+  node_border_size = 0.2,
+  arrow_size = 0.02,
+  highlighted_nodes = strsplit(perturbed.gene, ",")[[1]]
+) +
   ggtitle(glue::glue("{pathway}: {perturbed.gene}"))
-ggsave(file.path(out.dir, glue::glue("network_{appendix}.pdf")), width = 20, height = 20)
+ggsave(file.path(out.dir, glue::glue("network_{appendix}.pdf")), width = 6, height = 6)
 
 # volcano plot
 df_volcano <- res %>%
