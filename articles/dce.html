@@ -314,7 +314,13 @@
 ## 5  FGF21  FGFR1  -917.1445  1128.4631 4.172471e-01
 ## 6  WNT8A   FZD7   817.6733   954.3545 3.924979e-01</code></pre>
 <div class="sourceCode" id="cb56"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">res</span>, nodesize <span class="op">=</span> <span class="fl">20</span>, labelsize <span class="op">=</span> <span class="fl">1</span>, use_symlog <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span>
+  <span class="va">res</span>,
+  nodesize <span class="op">=</span> <span class="fl">20</span>, labelsize <span class="op">=</span> <span class="fl">1</span>,
+  node_border_size <span class="op">=</span> <span class="fl">0.05</span>, arrow_size <span class="op">=</span> <span class="fl">0.01</span>,
+  use_symlog <span class="op">=</span> <span class="cn">TRUE</span>,
+  shadowtext <span class="op">=</span> <span class="cn">TRUE</span>
+<span class="op">)</span></code></pre></div>
 <p><img src="dce_files/figure-html/unnamed-chunk-14-1.png" width="700"></p>
 </div>
 </div>
