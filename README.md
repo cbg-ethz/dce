@@ -3,6 +3,7 @@
 [![lint](https://github.com/cbg-ethz/dce/workflows/lint/badge.svg)](https://github.com/cbg-ethz/dce/actions)
 [![check-bioc](https://github.com/cbg-ethz/dce/workflows/check-bioc/badge.svg)](https://github.com/cbg-ethz/dce/actions)
 [![pkgdown](https://github.com/cbg-ethz/dce/workflows/pkgdown/badge.svg)](https://github.com/cbg-ethz/dce/actions)
+[![BioC status](http://www.bioconductor.org/shields/build/devel/bioc/dce.svg)](https://bioconductor.org/checkResults/devel/bioc-LATEST/dce)
 
 Compute differential causal effects on (biological) networks.
 
