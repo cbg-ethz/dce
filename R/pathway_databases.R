@@ -5,7 +5,7 @@
 #' @param include_network_statistics Compute some useful statistics
 #'        per pathway. Takes longer!
 #' @import graphite graph glue purrr logger
-#' @importFrom dplyr pull
+#' @importFrom dplyr pull filter
 #' @importFrom rlang .data
 #' @export
 #' @return data frame with pathway meta information
@@ -17,7 +17,7 @@ get_pathway_info <- function(
 ) {
     if (is.null(database_list)) {
         database_list <- graphite::pathwayDatabases() %>%
-            filter(.data$species == query_species) %>%
+            dplyr::filter(.data$species == query_species) %>%
             pull(.data$database)
     }
 
