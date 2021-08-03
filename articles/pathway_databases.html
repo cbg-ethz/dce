@@ -105,41 +105,24 @@
 <a href="#load-required-packages" class="anchor"></a>Load required packages</h2>
 <p>Load the package with the library function.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org">tidyverse</a></span><span class="op">)</span></code></pre></div>
-<pre><code>## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.1 ──</code></pre>
-<pre><code>## ✔ ggplot2 3.3.5     ✔ purrr   0.3.4
-## ✔ tibble  3.1.3     ✔ dplyr   1.0.7
-## ✔ tidyr   1.1.3     ✔ stringr 1.4.0
-## ✔ readr   2.0.0     ✔ forcats 0.5.1</code></pre>
-<pre><code>## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-## ✖ dplyr::filter() masks stats::filter()
-## ✖ dplyr::lag()    masks stats::lag()</code></pre>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org">tidyverse</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span>
 
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/cbg-ethz/dce">dce</a></span><span class="op">)</span></code></pre></div>
-<pre><code>## </code></pre>
-<pre><code>## Registered S3 methods overwritten by 'RcppEigen':
-##   method               from         
-##   predict.fastLm       RcppArmadillo
-##   print.fastLm         RcppArmadillo
-##   summary.fastLm       RcppArmadillo
-##   print.summary.fastLm RcppArmadillo</code></pre>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span></code></pre></div>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/cbg-ethz/dce">dce</a></span><span class="op">)</span>
+
+<span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span></code></pre></div>
+</div>
+</div>
+<div id="pathway-database-overview" class="section level1">
+<h1 class="hasAnchor">
+<a href="#pathway-database-overview" class="anchor"></a>Pathway database overview</h1>
+<p>We provide access to the following topological pathway databases using graphite <span class="citation">(Sales et al. 2012)</span> in a processed format. This format looks as follows:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu">dce</span><span class="fu">::</span><span class="va"><a href="../reference/df_pathway_statistics.html">df_pathway_statistics</a></span> <span class="op">%&gt;%</span>
-  <span class="fu">sample_n</span><span class="op">(</span><span class="fl">10</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu">arrange</span><span class="op">(</span><span class="fu">desc</span><span class="op">(</span><span class="va">node_num</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <table class="table">
-<colgroup>
-<col width="7%">
-<col width="9%">
-<col width="66%">
-<col width="7%">
-<col width="7%">
-</colgroup>
 <thead><tr class="header">
 <th align="left">database</th>
 <th align="left">pathway_id</th>
@@ -149,84 +132,79 @@
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="left">kegg</td>
-<td align="left">hsa:04151</td>
-<td align="left">PI3K-Akt signaling pathway</td>
-<td align="right">354</td>
-<td align="right">4552</td>
+<td align="left">reactome</td>
+<td align="left">R-HSA-162582</td>
+<td align="left">Signaling Pathways</td>
+<td align="right">2479</td>
+<td align="right">61904</td>
 </tr>
 <tr class="even">
-<td align="left">kegg</td>
-<td align="left">hsa:04371</td>
-<td align="left">Apelin signaling pathway</td>
-<td align="right">134</td>
-<td align="right">942</td>
+<td align="left">reactome</td>
+<td align="left">R-HSA-1430728</td>
+<td align="left">Metabolism</td>
+<td align="right">2047</td>
+<td align="right">82767</td>
 </tr>
 <tr class="odd">
-<td align="left">kegg</td>
-<td align="left">hsa:04520</td>
-<td align="left">Adherens junction</td>
-<td align="right">68</td>
-<td align="right">170</td>
+<td align="left">reactome</td>
+<td align="left">R-HSA-392499</td>
+<td align="left">Metabolism of proteins</td>
+<td align="right">1962</td>
+<td align="right">53074</td>
 </tr>
 <tr class="even">
-<td align="left">kegg</td>
-<td align="left">hsa:04970</td>
-<td align="left">Salivary secretion</td>
-<td align="right">48</td>
-<td align="right">96</td>
+<td align="left">reactome</td>
+<td align="left">R-HSA-168256</td>
+<td align="left">Immune System</td>
+<td align="right">1771</td>
+<td align="right">58241</td>
 </tr>
 <tr class="odd">
-<td align="left">kegg</td>
-<td align="left">hsa:05321</td>
-<td align="left">Inflammatory bowel disease</td>
-<td align="right">48</td>
-<td align="right">81</td>
+<td align="left">reactome</td>
+<td align="left">R-HSA-1643685</td>
+<td align="left">Disease</td>
+<td align="right">1730</td>
+<td align="right">54865</td>
 </tr>
 <tr class="even">
-<td align="left">nci</td>
-<td align="left">pid_4166</td>
-<td align="left">Beta2 integrin cell surface interactions</td>
-<td align="right">29</td>
-<td align="right">140</td>
+<td align="left">panther</td>
+<td align="left">P00057</td>
+<td align="left">Wnt signaling pathway</td>
+<td align="right">1644</td>
+<td align="right">195344</td>
 </tr>
 <tr class="odd">
-<td align="left">kegg</td>
-<td align="left">hsa:00563</td>
-<td align="left">Glycosylphosphatidylinositol (GPI)-anchor biosynthesis</td>
-<td align="right">23</td>
-<td align="right">116</td>
+<td align="left">reactome</td>
+<td align="left">R-HSA-74160</td>
+<td align="left">Gene expression (Transcription)</td>
+<td align="right">1472</td>
+<td align="right">32476</td>
 </tr>
 <tr class="even">
-<td align="left">kegg</td>
-<td align="left">hsa:00900</td>
-<td align="left">Terpenoid backbone biosynthesis</td>
-<td align="right">21</td>
-<td align="right">69</td>
+<td align="left">reactome</td>
+<td align="left">R-HSA-597592</td>
+<td align="left">Post-translational protein modification</td>
+<td align="right">1393</td>
+<td align="right">26392</td>
 </tr>
 <tr class="odd">
-<td align="left">biocarta</td>
-<td align="left">pid_10459</td>
-<td align="left">rna polymerase iii transcription</td>
-<td align="right">7</td>
-<td align="right">42</td>
+<td align="left">reactome</td>
+<td align="left">R-HSA-73857</td>
+<td align="left">RNA Polymerase II Transcription</td>
+<td align="right">1339</td>
+<td align="right">25277</td>
 </tr>
 <tr class="even">
-<td align="left">biocarta</td>
-<td align="left">pid_9732</td>
-<td align="left">estrogen responsive protein efp controls cell cycle and breast tumors growth</td>
-<td align="right">4</td>
-<td align="right">2</td>
+<td align="left">kegg</td>
+<td align="left">hsa:01100</td>
+<td align="left">Metabolic pathways</td>
+<td align="right">1314</td>
+<td align="right">21552</td>
 </tr>
 </tbody>
 </table>
-</div>
-</div>
-<div id="pathway-database-overview" class="section level1">
-<h1 class="hasAnchor">
-<a href="#pathway-database-overview" class="anchor"></a>Pathway database overview</h1>
-<p>We provide access to the following topological pathway databases using graphite <span class="citation">(Sales et al. 2012)</span>:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<p>Let’s see how many pathways each database provides:</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu">dce</span><span class="fu">::</span><span class="va"><a href="../reference/df_pathway_statistics.html">df_pathway_statistics</a></span> <span class="op">%&gt;%</span>
   <span class="fu">count</span><span class="op">(</span><span class="va">database</span>, sort <span class="op">=</span> <span class="cn">TRUE</span>, name <span class="op">=</span> <span class="st">"pathway_number"</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
@@ -237,16 +215,24 @@
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="left">kegg</td>
-<td align="right">317</td>
+<td align="left">pathbank</td>
+<td align="right">48685</td>
 </tr>
 <tr class="even">
-<td align="left">biocarta</td>
-<td align="right">247</td>
+<td align="left">smpdb</td>
+<td align="right">48671</td>
 </tr>
 <tr class="odd">
-<td align="left">nci</td>
-<td align="right">212</td>
+<td align="left">reactome</td>
+<td align="right">2390</td>
+</tr>
+<tr class="even">
+<td align="left">wikipathways</td>
+<td align="right">601</td>
+</tr>
+<tr class="odd">
+<td align="left">kegg</td>
+<td align="right">321</td>
 </tr>
 <tr class="even">
 <td align="left">panther</td>
@@ -254,11 +240,12 @@
 </tr>
 <tr class="odd">
 <td align="left">pharmgkb</td>
-<td align="right">66</td>
+<td align="right">90</td>
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<p>Next, we can see how the pathway sizes are distributed for each database:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu">dce</span><span class="fu">::</span><span class="va"><a href="../reference/df_pathway_statistics.html">df_pathway_statistics</a></span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">node_num</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_histogram.html">geom_histogram</a></span><span class="op">(</span>bins <span class="op">=</span> <span class="fl">30</span><span class="op">)</span> <span class="op">+</span>
@@ -270,34 +257,20 @@
 <h1 class="hasAnchor">
 <a href="#plotting-pathways" class="anchor"></a>Plotting pathways</h1>
 <p>It is easily possible to plot pathways:</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">pathways</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_pathways.html">get_pathways</a></span><span class="op">(</span>
   pathway_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>
     pathbank <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Lactose Synthesis"</span><span class="op">)</span>,
     kegg <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Fatty acid biosynthesis"</span><span class="op">)</span>,
     wikipathways <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"TGF-beta Receptor Signaling"</span><span class="op">)</span>
   <span class="op">)</span>
-<span class="op">)</span></code></pre></div>
-<pre><code>## 'select()' returned 1:1 mapping between keys and columns
-## 'select()' returned 1:1 mapping between keys and columns</code></pre>
-<pre><code>## 'select()' returned 1:many mapping between keys and columns
-## 'select()' returned 1:many mapping between keys and columns
-## 'select()' returned 1:many mapping between keys and columns
-## 'select()' returned 1:many mapping between keys and columns</code></pre>
-<pre><code>## 'select()' returned 1:1 mapping between keys and columns
-## 'select()' returned 1:1 mapping between keys and columns
-## 'select()' returned 1:1 mapping between keys and columns
-## 'select()' returned 1:1 mapping between keys and columns
-## 'select()' returned 1:1 mapping between keys and columns
-## 'select()' returned 1:1 mapping between keys and columns
-## 'select()' returned 1:1 mapping between keys and columns
-## 'select()' returned 1:1 mapping between keys and columns
-## 'select()' returned 1:1 mapping between keys and columns</code></pre>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="va">pathways</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span>
+<span class="op">)</span>
+
+<span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="va">pathways</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span>
   <span class="fu"><a href="../reference/plot_network.html">plot_network</a></span><span class="op">(</span>
     <span class="fu">as</span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">graph</span>, <span class="st">"matrix"</span><span class="op">)</span>,
     visualize_edge_weights <span class="op">=</span> <span class="cn">FALSE</span>,
+    arrow_size <span class="op">=</span> <span class="fl">0.02</span>,
     shadowtext <span class="op">=</span> <span class="cn">TRUE</span>
   <span class="op">)</span> <span class="op">+</span>
     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ggtitle</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">pathway_name</span><span class="op">)</span>
@@ -314,7 +287,7 @@
 <div id="session-information" class="section level1">
 <h1 class="hasAnchor">
 <a href="#session-information" class="anchor"></a>Session information</h1>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <pre><code>## R version 4.1.0 (2021-05-18)
 ## Platform: x86_64-apple-darwin17.0 (64-bit)
