@@ -17,7 +17,7 @@ vignette: >
 
 Load the package with the library function.
 
-```{r}
+```{r message=FALSE}
 library(tidyverse)
 library(ggplot2)
 
@@ -26,23 +26,28 @@ library(dce)
 set.seed(42)
 ```
 
-```{r}
-dce::df_pathway_statistics %>%
-  sample_n(10) %>%
-  arrange(desc(node_num)) %>%
-  knitr::kable()
-```
-
 # Pathway database overview
 
 We provide access to the following topological pathway databases using
-graphite [@sales2012graphite]:
+graphite [@sales2012graphite] in a processed format.
+This format looks as follows:
+
+```{r}
+dce::df_pathway_statistics %>%
+  arrange(desc(node_num)) %>%
+  head(10) %>%
+  knitr::kable()
+```
+
+Let's see how many pathways each database provides:
 
 ```{r}
 dce::df_pathway_statistics %>%
   count(database, sort = TRUE, name = "pathway_number") %>%
   knitr::kable()
 ```
+
+Next, we can see how the pathway sizes are distributed for each database:
 
 ```{r}
 dce::df_pathway_statistics %>%
@@ -55,7 +60,7 @@ dce::df_pathway_statistics %>%
 # Plotting pathways
 
 It is easily possible to plot pathways:
-```{r}
+```{r message=FALSE}
 pathways <- get_pathways(
   pathway_list = list(
     pathbank = c("Lactose Synthesis"),
@@ -68,6 +73,7 @@ lapply(pathways, function(x) {
   plot_network(
     as(x$graph, "matrix"),
     visualize_edge_weights = FALSE,
+    arrow_size = 0.02,
     shadowtext = TRUE
   ) +
     ggtitle(x$pathway_name)
