@@ -19,8 +19,16 @@ geneid.map <- geneid.map[which(duplicated(names(geneid.map)) == FALSE)]
 dce.abs.max <- max(sapply(res, function(x) { max(abs(x$dce), na.rm = TRUE) }))
 custom.limits <- c(-dce.abs.max, dce.abs.max)
 
+custom_plot <- function(...) {
+  plot(...) +
+    theme(
+      legend.title = element_text(size = rel(1.5)),
+      legend.text = element_text(size = rel(1.2))
+    )
+}
+
 p.list <- lapply(
-  res, plot,
+  res, custom_plot,
   nodename_map = geneid.map,
   node_color = "grey", labelsize = 0,
   node_border_size = 0.2, arrow_size = 0.01,
