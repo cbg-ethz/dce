@@ -72,7 +72,7 @@ rule visualize:
         dce_fname = 'results/results/{project}/{project}.{pathway}.dce.rds',
         geneid_fname = 'results/kegg_data/{pathway}_geneids.csv'
     output:
-        outdir = directory('cluster_data/plots/{project}.{pathway}/')
+        outdir = directory('results/plots/{project}.{pathway}/')
     resources:
         mem_mb = 10_000
     script:
