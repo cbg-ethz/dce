@@ -187,7 +187,13 @@ res %>%
   arrange(desc(abs(dce))) %>%
   head
 
-plot(res, nodesize = 20, labelsize = 1, use_symlog = TRUE)
+plot(
+  res,
+  nodesize = 20, labelsize = 1,
+  node_border_size = 0.05, arrow_size = 0.01,
+  use_symlog = TRUE,
+  shadowtext = TRUE
+)
 ```
 
 
