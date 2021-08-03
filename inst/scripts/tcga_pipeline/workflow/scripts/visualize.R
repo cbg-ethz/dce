@@ -22,7 +22,8 @@ custom.limits <- c(-dce.abs.max, dce.abs.max)
 p.list <- lapply(
   res, plot,
   nodename_map = geneid.map,
-  node_color = "grey", labelsize = 1,
+  node_color = "grey", labelsize = 0,
+  node_border_size = 0.2, arrow_size = 0.01,
   edgescale_limits = custom.limits, use_symlog = TRUE
 )
 
@@ -44,7 +45,7 @@ purrr::transpose(list(plot = p.list, label = labels.list)) %>%
     cowplot::save_plot(
       fname,
       x$plot,
-      base_height = 10, base_asp = 1, limitsize = FALSE
+      base_height = 4, base_asp = 2, limitsize = FALSE
     )
   })
 
