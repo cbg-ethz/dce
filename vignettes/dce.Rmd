@@ -93,7 +93,7 @@ X_wt %>%
 Given the network topology (without edge weights!) and expression data from both WT and MT conditions, we can estimate the difference in causal effects for each edge between the two conditions. These are the aforementioned Differential Causal Effects (DCEs).
 
 ```{r}
-res <- dce(graph_wt, X_wt, X_mt, solver = "lm")
+res <- dce(graph_wt, X_wt, X_mt)
 
 res %>%
   as.data.frame %>%
@@ -175,7 +175,7 @@ glue::glue(
 We can now estimate the differences in causal effects between matched tumor and normal samples on a breast cancer specific pathway.
 
 ```{r warning=FALSE}
-res <- dce::dce(brca_pathway, t(brca_wt), t(brca_mt), solver = "lm")
+res <- dce::dce(brca_pathway, t(brca_wt), t(brca_mt))
 ```
 
 Interpretations may now begin.

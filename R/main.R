@@ -49,7 +49,7 @@ setGeneric(
     "dce",
     function(
         graph, df_expr_wt, df_expr_mt,
-        solver = "glm2", solver_args = list(method = glm.dce.fit),
+        solver = "lm", solver_args = list(),
         adjustment_type = "parents",
         effect_type = "total",
         p_method = "hmp",
@@ -74,7 +74,7 @@ setMethod(
     signature = signature(graph = "igraph"),
     function(
         graph, df_expr_wt, df_expr_mt,
-        solver = "glm2", solver_args = list(method = glm.dce.fit),
+        solver = "lm", solver_args = list(),
         adjustment_type = "parents",
         effect_type = "total",
         p_method = "hmp",
@@ -113,7 +113,7 @@ setMethod(
     signature = signature(graph = "graphNEL"),
     function(
         graph, df_expr_wt, df_expr_mt,
-        solver = "glm2", solver_args = list(method = glm.dce.fit),
+        solver = "lm", solver_args = list(),
         adjustment_type = "parents",
         effect_type = "total",
         p_method = "hmp",
@@ -146,7 +146,7 @@ setMethod(
     signature = signature(graph = "matrix"),
     function(
         graph, df_expr_wt, df_expr_mt,
-        solver = "glm2", solver_args = list(method = glm.dce.fit),
+        solver = "lm", solver_args = list(),
         adjustment_type = "parents",
         effect_type = "total",
         p_method = "hmp",
@@ -637,7 +637,8 @@ glm_solver <- function(form, df, solver, solver_args) {
 
     # lm solver
     if (solver == "lm") {
-        return(lm(formula = form, data = df))
+        func_args <- c(list(formula = form, data = df), solver_args)
+        return(do.call(lm, func_args))
     }
 
     # rlm solver
