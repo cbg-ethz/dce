@@ -227,7 +227,7 @@ plot_network <- function(
         scale_edge_width(
             range = c(0.1, scale_edge_width_max),
             limits = c(0, edgescale_limits[[2]]),
-            na.value = 1,
+            na.value = 0.2,
             guide = "none"
         ) +
         scale_edge_alpha(
