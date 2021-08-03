@@ -4,8 +4,8 @@
 #' @param database_list Which databases to query. Query all if `NULL`.
 #' @param include_network_statistics Compute some useful statistics
 #'        per pathway. Takes longer!
-#' @import graphite graph glue purrr logger
-#' @importFrom dplyr pull filter
+#' @import graphite graph glue purrr logger dplyr
+#' @importFrom dplyr pull
 #' @importFrom rlang .data
 #' @export
 #' @return data frame with pathway meta information
