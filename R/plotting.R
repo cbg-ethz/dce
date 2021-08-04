@@ -33,6 +33,7 @@
 #' @importFrom igraph graph_from_adjacency_matrix
 #' @importFrom Rgraphviz agopen
 #' @importFrom shadowtext geom_shadowtext
+#' @importFrom magrittr %T>%
 #' @examples
 #' adj <- matrix(c(0,0,0,1,0,0,0,1,0),3,3)
 #' plot_network(adj)

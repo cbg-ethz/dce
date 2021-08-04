@@ -83,6 +83,7 @@ Imports:
     graphite,
     reshape2,
     dplyr,
+    magrittr,
     glue,
     Rgraphviz,
     harmonicmeanp,

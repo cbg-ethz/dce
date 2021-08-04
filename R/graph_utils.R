@@ -136,9 +136,9 @@ propagate_gene_edges <- function(graph) {
 #' graph2df(dag)
 graph2df <- function(graph) {
     graph %>%
-        igraph::igraph.from.graphNEL(.) %>%  # nolint
-        igraph::get.edgelist(.) %>%  # nolint
-        as.data.frame %>%
+        igraph::igraph.from.graphNEL() %>%  # nolint
+        igraph::get.edgelist() %>%  # nolint
+        as.data.frame() %>%
         dplyr::rename(source = .data$V1, sink = .data$V2)
 }
 

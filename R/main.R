@@ -695,7 +695,7 @@ as.data.frame.dce <- function(x, row.names = NULL, optional = FALSE, ...) {
     }
 
     x$dce %>%  # nolint
-        melt(.) %>%
+        melt() %>%
         rename(dce = .data$value, source = .data$Var1, target = .data$Var2) %>%
         mutate(dce_stderr = melt(x$dce_stderr)$value) %>%
         mutate(dce_pvalue = melt(x$dce_pvalue)$value)
