@@ -251,6 +251,7 @@ plot_network <- function(
     p
 }
 
+
 #' Plot dce object
 #'
 #' This function takes a differential causal effects object and plots
