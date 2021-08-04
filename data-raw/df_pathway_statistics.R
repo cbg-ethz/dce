@@ -1,4 +1,4 @@
-devtools::load_all("../")
+devtools::load_all()
 
 df_pathway_statistics <- get_pathway_info(include_network_statistics = TRUE)
 
