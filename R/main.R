@@ -493,7 +493,18 @@ dce_nb <- function(
                 robust <- lmtest::coeftest(
                     fit, vcov = sandwich::vcovHC(fit, type = "HC0")
                 )
-                pval_xn <- robust["N:X", "Pr(>|z|)"]
+
+                if ("Pr(>|t|)" %in% colnames(robust)) {
+                    # old package version
+                    pvalue_colname <- "Pr(>|t|)"
+                } else if ("Pr(>|z|)" %in% colnames(robust)) {
+                    # new package version
+                    pvalue_colname <- "Pr(>|z|)"
+                } else {
+                    stop("Could not detect p-value column.")
+                }
+
+                pval_xn <- robust["N:X", pvalue_colname]
             }
 
             data.frame(
