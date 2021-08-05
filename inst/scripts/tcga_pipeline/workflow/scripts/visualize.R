@@ -73,59 +73,82 @@ dce_table <- purrr::map_dfr(res, function(x) {
       target = geneid.map[as.character(target)],
       dce_pvalue_str = format.pval(dce_pvalue)
     ) %>%
-    arrange(desc(abs(dce))) #%>%
-    # dplyr::filter(dce_pvalue <= 0.05 & abs(dce) > 1)
+    arrange(desc(abs(dce)))
 }, .id = "condition") %>%
   arrange(dce_pvalue) %>%
   mutate(
     dce_symlog = symlog(dce),
-    edge_name = paste0(source, "->", target)
-  )
+    edge_name = paste0(source, "→", target)
+  ) %>%
+  drop_na
 
 dce_table %>%
   head
 
+dce_table %>%
+  dim
+
+dce_table %>%
+  dplyr::filter(dce_pvalue > 0.05 & abs(dce) < 1) %>%
+  dim
+
 # volcano plot summary
-color_map <- ifelse(
-  dce_table$condition == "stage i",
-  "red",
-  ifelse(
-    dce_table$condition == "stage ii",
-    "green",
-    ifelse(
-      dce_table$condition == "stage iii",
-      "blue",
-      "grey"
+# custom labels because `selectLab` behaves weirdly for non-unique labels
+volcano_table <- dce_table %>%
+  mutate(
+    edge_label = case_when(
+      abs(dce_symlog) > 4.2 ~ edge_name,
+      dce_pvalue < 1e-20 ~ edge_name,
+      abs(dce_symlog) > 1 & -log10(dce_pvalue) > 12 ~ edge_name,
+      dce_pvalue < 1e-14 ~ edge_name,
+      dce_symlog < -4 ~ edge_name,
+      TRUE ~ ""
     )
   )
+
+# volcano_table %>%
+#   arrange(dce_pvalue) %>%
+#   view
+
+# we also order them to have a nice legend in the plot, but only the first few
+# rows, because otherwise the point overlaps produce misleading colors
+old_dim <- dim(volcano_table)
+
+slice_offset <- 50
+volcano_table <- bind_rows(
+  volcano_table %>%
+    slice(1:slice_offset) %>%
+    arrange(condition),
+  volcano_table %>%
+    slice(slice_offset + 1:n())
+)
+
+stopifnot(old_dim == dim(volcano_table))
+volcano_table %>%
+  head
+
+# determine color scale
+color_map <- case_when(
+  volcano_table$condition == "stage i" ~ "red",
+  volcano_table$condition == "stage ii" ~ "green",
+  volcano_table$condition == "stage iii" ~ "blue",
+  TRUE ~ "grey"
 )
 names(color_map)[color_map == "red"] <- "stage i"
 names(color_map)[color_map == "green"] <- "stage ii"
 names(color_map)[color_map == "blue"] <- "stage iii"
 table(color_map)
 
-edge_selection <- dce_table %>%
-  dplyr::filter(
-    (
-      grepl("DLL3", edge_name) |
-        grepl("FGF", edge_name)
-    ) & (
-      abs(dce_symlog) > 1
-    ) |
-      dce_pvalue < 1e-50
-  ) %>%
-  pull(edge_name)
-
+# create actual plot
 EnhancedVolcano::EnhancedVolcano(
-  dce_table,
-  lab = dce_table$edge_name, selectLab = edge_selection,
+  volcano_table,
+  lab = volcano_table$edge_label, selectLab = volcano_table$edge_label,
   x = "dce_symlog", y = "dce_pvalue",
   colCustom = color_map,
   pCutoff = .05, FCcutoff = 1,
   drawConnectors = TRUE,
   title = NULL, subtitle = NULL, caption = NULL,
-  xlab = bquote(~symlog(DCE)), ylab = bquote(~-Log[10]~italic(pvalue)),
-  legendLabels = c("NS", "DCE", "p-value", "p-value and DCE"),
-  axisLabSize = 30, pointSize = 5, labSize = 8, legendLabSize = 30, legendIconSize = 10,
+  xlab = bquote(~symlog(DCE)), ylab = bquote(~-log[10]~italic(pvalue)),
+  axisLabSize = 30, pointSize = 4, labSize = 8, legendLabSize = 30, legendIconSize = 10
 )
 ggsave(file.path(outdir, glue::glue("volcanoplot.pdf")), width = 20, height = 20)
