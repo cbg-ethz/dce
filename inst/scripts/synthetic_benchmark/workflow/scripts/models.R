@@ -17,7 +17,7 @@ run.all.models <- function(
   latent,
   method
 ) {
-  if (any(c("car","dge") %in% methods)) {
+  if (any(c("car","dge") %in% methods) | is.null(methods)) {
     group <- factor(c(rep(1,nrow(wt.X)),rep(2,nrow(mt.X))))
     y <- DGEList(counts=cbind(t(wt.X),t(mt.X)),group=group)
     y <- calcNormFactors(y)

@@ -27,7 +27,12 @@ carWrap <- function(X,Y,G,stats = NULL) {
                             carnivalOptions = carnivalOptions)
   dce <- G*0
   idx <- which(res$weightedSIF$Node1 != "Perturbation")
-  dce[cbind(res$weightedSIF$Node1,res$weightedSIF$Node2)[idx,]] <- res$weightedSIF$Weight[idx]*res$weightedSIF$Sign[idx]
+  if (length(idx) > 1) {
+    dce[cbind(res$weightedSIF$Node1,res$weightedSIF$Node2)[idx,]] <- res$weightedSIF$Weight[idx]*res$weightedSIF$Sign[idx]
+  } else {
+    idx1 <- which(res$weightedSIF$Node1 != "Perturbation")
+    dce[res$weightedSIF$Node1[idx1],res$weightedSIF$Node2[idx1]] <- 100
+  }
   pval <- 1-abs(dce)/100
   system("rm parsedData* lpFile*")
   return(list(dce=-dce,dce_pvalue=pval))
