@@ -49,7 +49,7 @@ setGeneric(
     "dce",
     function(
         graph, df_expr_wt, df_expr_mt,
-        solver = "glm2", solver_args = list(method = glm.dce.fit),
+        solver = "lm", solver_args = list(),
         adjustment_type = "parents",
         effect_type = "total",
         p_method = "hmp",
@@ -74,7 +74,7 @@ setMethod(
     signature = signature(graph = "igraph"),
     function(
         graph, df_expr_wt, df_expr_mt,
-        solver = "glm2", solver_args = list(method = glm.dce.fit),
+        solver = "lm", solver_args = list(),
         adjustment_type = "parents",
         effect_type = "total",
         p_method = "hmp",
@@ -113,7 +113,7 @@ setMethod(
     signature = signature(graph = "graphNEL"),
     function(
         graph, df_expr_wt, df_expr_mt,
-        solver = "glm2", solver_args = list(method = glm.dce.fit),
+        solver = "lm", solver_args = list(),
         adjustment_type = "parents",
         effect_type = "total",
         p_method = "hmp",
@@ -146,7 +146,7 @@ setMethod(
     signature = signature(graph = "matrix"),
     function(
         graph, df_expr_wt, df_expr_mt,
-        solver = "glm2", solver_args = list(method = glm.dce.fit),
+        solver = "lm", solver_args = list(),
         adjustment_type = "parents",
         effect_type = "total",
         p_method = "hmp",
@@ -493,7 +493,18 @@ dce_nb <- function(
                 robust <- lmtest::coeftest(
                     fit, vcov = sandwich::vcovHC(fit, type = "HC0")
                 )
-                pval_xn <- robust["N:X", "Pr(>|z|)"]
+
+                if ("Pr(>|t|)" %in% colnames(robust)) {
+                    # old package version
+                    pvalue_colname <- "Pr(>|t|)"
+                } else if ("Pr(>|z|)" %in% colnames(robust)) {
+                    # new package version
+                    pvalue_colname <- "Pr(>|z|)"
+                } else {
+                    stop("Could not detect p-value column.")
+                }
+
+                pval_xn <- robust["N:X", pvalue_colname]
             }
 
             data.frame(
@@ -637,7 +648,8 @@ glm_solver <- function(form, df, solver, solver_args) {
 
     # lm solver
     if (solver == "lm") {
-        return(lm(formula = form, data = df))
+        func_args <- c(list(formula = form, data = df), solver_args)
+        return(do.call(lm, func_args))
     }
 
     # rlm solver
@@ -683,7 +695,7 @@ as.data.frame.dce <- function(x, row.names = NULL, optional = FALSE, ...) {
     }
 
     x$dce %>%  # nolint
-        melt(.) %>%
+        melt() %>%
         rename(dce = .data$value, source = .data$Var1, target = .data$Var2) %>%
         mutate(dce_stderr = melt(x$dce_stderr)$value) %>%
         mutate(dce_pvalue = melt(x$dce_pvalue)$value)

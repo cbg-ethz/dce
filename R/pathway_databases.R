@@ -17,7 +17,7 @@ get_pathway_info <- function(
 ) {
     if (is.null(database_list)) {
         database_list <- graphite::pathwayDatabases() %>%
-            filter(.data$species == query_species) %>%
+            dplyr::filter(.data$species == query_species) %>%
             pull(.data$database)
     }
 

@@ -8,6 +8,9 @@
 #' @param nodesize Node sizes
 #' @param labelsize Node label sizes
 #' @param node_color Which color to plot nodes in
+#' @param node_border_size Thickness of node's border stroke
+#' @param arrow_size Size of edge arrows
+#' @param scale_edge_width_max Max range for `scale_edge_width`
 #' @param show_edge_labels Whether to show edge labels (DCEs)
 #' @param visualize_edge_weights Whether to change edge color/width/alpha
 #'        relative to edge weight
@@ -16,6 +19,7 @@
 #' @param legend_title Title of edge weight legend
 #' @param value_matrix Optional matrix of edge weights if different
 #'        from adjacency matrix
+#' @param shadowtext Draw white outline around node labels
 #' @param ... additional parameters
 #' @author Martin Pirkl, Kim Philipp Jablonski
 #' @return plot of dag and dces
@@ -28,6 +32,8 @@
 #' @importFrom rlang .data
 #' @importFrom igraph graph_from_adjacency_matrix
 #' @importFrom Rgraphviz agopen
+#' @importFrom shadowtext geom_shadowtext
+#' @importFrom magrittr %T>%
 #' @examples
 #' adj <- matrix(c(0,0,0,1,0,0,0,1,0),3,3)
 #' plot_network(adj)
@@ -36,12 +42,16 @@ plot_network <- function(
     nodename_map = NULL, edgescale_limits = NULL,
     nodesize = 17, labelsize = 3,
     node_color = "white",
+    node_border_size = 0.5,
+    arrow_size = 0.05,
+    scale_edge_width_max = 1,
     show_edge_labels = FALSE,
     visualize_edge_weights = TRUE,
     use_symlog = FALSE,
     highlighted_nodes = c(),
     legend_title = "edge weight",
     value_matrix = NULL,
+    shadowtext = FALSE,
     ...
 ) {
     # sanitize input
@@ -96,6 +106,15 @@ plot_network <- function(
         } else {
             return(round(breaks, 1))
         }
+    }
+
+    # handle shadowtext
+    if (shadowtext) {
+        geom_custom_labels <- function(...) {
+            geom_shadowtext(..., bg.color = "white")
+        }
+    } else {
+        geom_custom_labels <- geom_node_text
     }
 
     # create plot
@@ -154,7 +173,8 @@ plot_network <- function(
         ) %>%
     ggraph(layout = coords_dot) + # "sugiyama"
         geom_node_circle(
-            aes(r = .data$nodesize, fill = .data$is.highlighted)
+            aes(r = .data$nodesize, fill = .data$is.highlighted),
+            size = node_border_size
         ) +
         geom_edge_diagonal(
             aes(
@@ -175,12 +195,19 @@ plot_network <- function(
                 end_cap = circle(.data$node2.nodesize, unit = "native")
             ),
             strength = 0.5,
-            arrow = arrow(type = "closed", length = unit(3, "mm"))
+            arrow = arrow(
+                type = "closed",
+                length = unit(arrow_size, "native")
+            )
         ) +
-        geom_node_text(aes(label = .data$label), size = labelsize) +
+        geom_custom_labels(
+            aes(label = .data$label, x = .data$x, y = .data$y),
+            size = labelsize,
+            color = "black"
+        ) +
         coord_fixed() +
         scale_fill_manual(
-            values = c("FALSE" = node_color, "TRUE" = "red"), guide = FALSE
+            values = c("FALSE" = node_color, "TRUE" = "red"), guide = "none"
         ) +
         scale_edge_color_gradient2(
             low = "red", mid = "grey", high = "blue", midpoint = 0,
@@ -199,18 +226,19 @@ plot_network <- function(
             guide = ggraph::guide_edge_colorbar()
         ) +
         scale_edge_width(
-            range = c(1, 3), limits = c(0, edgescale_limits[[2]]),
-            na.value = 1,
-            guide = FALSE
+            range = c(0.1, scale_edge_width_max),
+            limits = c(0, edgescale_limits[[2]]),
+            na.value = 0.2,
+            guide = "none"
         ) +
         scale_edge_alpha(
-            range = c(.1, 1), limits = c(0, edgescale_limits[[2]]),
+            range = c(.5, 1), limits = c(0, edgescale_limits[[2]]),
             na.value = 1,
-            guide = FALSE
+            guide = "none"
         ) +
         scale_edge_linetype_manual(
             values = c("FALSE" = "solid", "TRUE" = "dashed"),
-            guide = FALSE
+            guide = "none"
         ) +
         theme(
             panel.background = element_rect(fill = "white")
@@ -222,6 +250,7 @@ plot_network <- function(
 
     p
 }
+
 
 #' Plot dce object
 #'

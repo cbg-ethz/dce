@@ -11,12 +11,16 @@ plot_network(
   nodesize = 17,
   labelsize = 3,
   node_color = "white",
+  node_border_size = 0.5,
+  arrow_size = 0.05,
+  scale_edge_width_max = 1,
   show_edge_labels = FALSE,
   visualize_edge_weights = TRUE,
   use_symlog = FALSE,
   highlighted_nodes = c(),
   legend_title = "edge weight",
   value_matrix = NULL,
+  shadowtext = FALSE,
   ...
 )
 }
@@ -34,6 +38,12 @@ plot_network(
 
 \item{node_color}{Which color to plot nodes in}
 
+\item{node_border_size}{Thickness of node's border stroke}
+
+\item{arrow_size}{Size of edge arrows}
+
+\item{scale_edge_width_max}{Max range for `scale_edge_width`}
+
 \item{show_edge_labels}{Whether to show edge labels (DCEs)}
 
 \item{visualize_edge_weights}{Whether to change edge color/width/alpha
@@ -47,6 +57,8 @@ relative to edge weight}
 
 \item{value_matrix}{Optional matrix of edge weights if different
 from adjacency matrix}
+
+\item{shadowtext}{Draw white outline around node labels}
 
 \item{...}{additional parameters}
 }

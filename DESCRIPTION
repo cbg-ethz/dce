@@ -44,6 +44,7 @@ Suggests:
     BiocStyle,
     formatR,
     cowplot,
+    ggplotify,
     dagitty,
     lmtest,
     sandwich,
@@ -83,8 +84,10 @@ Imports:
     graphite,
     reshape2,
     dplyr,
+    magrittr,
     glue,
     Rgraphviz,
     harmonicmeanp,
     org.Hs.eg.db,
-    logger
+    logger,
+    shadowtext

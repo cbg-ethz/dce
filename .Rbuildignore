@@ -19,3 +19,4 @@
 
 \.ipynb_checkpoints
 \.snakemake
+^data-raw$
