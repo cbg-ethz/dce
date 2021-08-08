@@ -196,7 +196,11 @@ run.all.models <- function(
   time.tmp <- Sys.time()
   if (is.null(methods) || "ldgm" %in% methods) {
     res.ldgm <- list(dce = LDGM(log(wt.X.cor+1),log(mt.X.cor+1)))
-    res.ldgm$dce_pvalue <- 2*pnorm(-abs(res.ldgm$dce)) # permutation_test(log(wt.X.cor+1),log(mt.X.cor+1),fun=LDGM,mode=2,g=as(wt.graph,"matrix"),iter=10)
+    if (ncol(wt.X.cor) > 10) {
+      res.ldgm$dce_pvalue <- 2*pnorm(-abs(res.ldgm$dce))
+    } else {
+      res.ldgm$dce_pvalue <- permutation_test(log(wt.X.cor+1),log(mt.X.cor+1),fun=LDGM,mode=2)
+    }
   } else {
     res.ldgm <- ground.truth
     res.ldgm$dce_pvalue <- ground.truth$dce*0
