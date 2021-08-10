@@ -210,7 +210,7 @@ df.bench <- purrr::pmap_dfr(
 
       # run models
       latent2 <- FALSE
-      if (varied.parameter == 'latent') {
+      if (varied.parameter == 'latent' | varied.parameter == 'latent.dist') {
         latent2 <- 'auto'
       }
       res <- run.all.models(
