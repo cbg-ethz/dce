@@ -74,6 +74,10 @@ parameter.list <- unlist(
   purrr::map(strsplit(arguments$values, ",")[[1]], type.convert)
 )
 
+if (varied.parameter == "latent.dist") {
+  latent <- 10
+}
+
 output.fname <- arguments$output
 replicate.count <- as.numeric(arguments$replicates)
 append <- as.logical(arguments$append)
