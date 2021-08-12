@@ -1,4 +1,4 @@
-# dce
+# dce <img src="man/figures/logo.png" align="right" alt="dce logo" width="120" />
 
 [![lint](https://github.com/cbg-ethz/dce/workflows/lint/badge.svg)](https://github.com/cbg-ethz/dce/actions)
 [![check-bioc](https://github.com/cbg-ethz/dce/workflows/check-bioc/badge.svg)](https://github.com/cbg-ethz/dce/actions)
