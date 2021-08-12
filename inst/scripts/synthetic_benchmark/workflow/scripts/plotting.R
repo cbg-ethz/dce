@@ -191,6 +191,10 @@ if (!dir.exists(target.dir)) {
 }
 
 df.bench <- read_csv(input.fname)
+
+ld.idx <- which(df.bench$varied.parameter == "latent.dist")
+df.bench$parameter[ld.idx] <- mgsub::mgsub(df.bench$parameter[ld.idx], c("1","2"), c("uniform", "exponential"))
+
 df.bench <- df.bench[!is.na(df.bench$varied.parameter), ]
 if (methods[1]!='NULL') {
   df.bench <- df.bench[,colnames(df.bench) %in% c(methods,'type','parameter','varied.parameter','rng.seed')]
