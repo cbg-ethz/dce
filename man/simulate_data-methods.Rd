@@ -15,7 +15,7 @@ simulate_data(
   link = negative.binomial.special()$linkfun,
   pop_size = 0,
   latent = 0,
-  latent.fun = "unif"
+  latent_fun = "unif"
 )
 
 \S4method{simulate_data}{igraph}(
@@ -26,7 +26,7 @@ simulate_data(
   link = negative.binomial.special()$linkfun,
   pop_size = 0,
   latent = 0,
-  latent.fun = "unif"
+  latent_fun = "unif"
 )
 
 \S4method{simulate_data}{graphNEL}(
@@ -37,7 +37,7 @@ simulate_data(
   link = negative.binomial.special()$linkfun,
   pop_size = 0,
   latent = 0,
-  latent.fun = "unif"
+  latent_fun = "unif"
 )
 
 \S4method{simulate_data}{matrix}(
@@ -48,7 +48,7 @@ simulate_data(
   link = negative.binomial.special()$linkfun,
   pop_size = 0,
   latent = 0,
-  latent.fun = "unif"
+  latent_fun = "unif"
 )
 }
 \arguments{
@@ -69,7 +69,7 @@ distribution}
 
 \item{latent}{number of latent variables}
 
-\item{latent.fun}{uniform "unif" or exponential "exp" distribution of latent
+\item{latent_fun}{uniform "unif" or exponential "exp" distribution of latent
 coefficients}
 }
 \value{

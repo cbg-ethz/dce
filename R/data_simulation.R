@@ -11,7 +11,7 @@
 #' @param pop_size numeric for the population size, e.g., pop_size=1000 adds
 #' 1000-n random genes not in the graph
 #' @param latent number of latent variables
-#' @param latent.fun uniform "unif" or exponential "exp" distribution of latent
+#' @param latent_fun uniform "unif" or exponential "exp" distribution of latent
 #' coefficients
 #' @return graph
 #' @export
@@ -28,7 +28,7 @@ setGeneric(
         graph, n = 100,
         dist_mean = 1000, dist_dispersion = 100,
         link = negative.binomial.special()$linkfun,
-        pop_size = 0, latent = 0, latent.fun = "unif"
+        pop_size = 0, latent = 0, latent_fun = "unif"
     ) {
         standardGeneric("simulate_data")
     },
@@ -47,7 +47,7 @@ setMethod(
         graph, n = 100,
         dist_mean = 1000, dist_dispersion = 100,
         link = negative.binomial.special()$linkfun,
-        pop_size = 0, latent = 0, latent.fun = "unif"
+        pop_size = 0, latent = 0, latent_fun = "unif"
     ) {
         mat <- as(igraph::as_adjacency_matrix(graph, attr = "weight"),
                   "matrix")
@@ -69,7 +69,7 @@ setMethod(
         graph, n = 100,
         dist_mean = 1000, dist_dispersion = 100,
         link = negative.binomial.special()$linkfun,
-        pop_size = 0, latent = 0, latent.fun = "unif"
+        pop_size = 0, latent = 0, latent_fun = "unif"
     ) {
         a <- as(graph, "matrix")
         a <- a[naturalorder(rownames(a)), naturalorder(colnames(a))]
@@ -91,14 +91,14 @@ setMethod(
         graph, n = 100,
         dist_mean = 1000, dist_dispersion = 100,
         link = negative.binomial.special()$linkfun,
-        pop_size = 0, latent = 0, latent.fun = "unif"
+        pop_size = 0, latent = 0, latent_fun = "unif"
     ) {
         start <- 2
         p <- dim(graph)[[1]]
         if (latent > 0) {
-            if (latent.fun == "unif") {
+            if (latent_fun == "unif") {
                 H1 <- matrix(runif(p * latent, -1, 1), latent, p)
-            } else if (latent.fun == "exp") {
+            } else if (latent_fun == "exp") {
                 H1 <- matrix(exp(p * latent), latent, p)
             }
             H0 <- matrix(0, p + latent, latent)

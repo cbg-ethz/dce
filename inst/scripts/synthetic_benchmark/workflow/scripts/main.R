@@ -165,12 +165,12 @@ df.bench <- purrr::pmap_dfr(
       # generate data
       pop.size <- 10000
       if (latent.dist == 1) {
-        latent.fun <- "unif"
+        latent_fun <- "unif"
       } else {
-        latent.fun <- "exp"
+        latent_fun <- "exp"
       }
-      wt.X <- simulate_data(wt.graph, n = wt.samples, dist_dispersion = dispersion, dist_mean = dist.mean, pop_size = pop.size, latent = latent, latent.fun = latent.fun)
-      mt.X <- simulate_data(mt.graph, n = mt.samples, dist_dispersion = dispersion, dist_mean = dist.mean, pop_size = pop.size, latent = latent, latent.fun = latent.fun)
+      wt.X <- simulate_data(wt.graph, n = wt.samples, dist_dispersion = dispersion, dist_mean = dist.mean, pop_size = pop.size, latent = latent, latent_fun = latent_fun)
+      mt.X <- simulate_data(mt.graph, n = mt.samples, dist_dispersion = dispersion, dist_mean = dist.mean, pop_size = pop.size, latent = latent, latent_fun = latent_fun)
 
       # library size difference
       lib.size.mean <- (lib.size.range+1)/2
