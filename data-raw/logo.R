@@ -25,3 +25,6 @@ ggsave("man/figures/logo.png")
 for (i in seq_len(5)) {
   knitr::plot_crop("man/figures/logo.png")
 }
+
+# make remaining white background transparent
+system2("convert", c("man/figures/logo.png", "-transparent", "white", "man/figures/logo.png"))
