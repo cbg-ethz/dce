@@ -14,7 +14,8 @@ simulate_data(
   dist_dispersion = 100,
   link = negative.binomial.special()$linkfun,
   pop_size = 0,
-  latent = 0
+  latent = 0,
+  latent_fun = "unif"
 )
 
 \S4method{simulate_data}{igraph}(
@@ -24,7 +25,8 @@ simulate_data(
   dist_dispersion = 100,
   link = negative.binomial.special()$linkfun,
   pop_size = 0,
-  latent = 0
+  latent = 0,
+  latent_fun = "unif"
 )
 
 \S4method{simulate_data}{graphNEL}(
@@ -34,7 +36,8 @@ simulate_data(
   dist_dispersion = 100,
   link = negative.binomial.special()$linkfun,
   pop_size = 0,
-  latent = 0
+  latent = 0,
+  latent_fun = "unif"
 )
 
 \S4method{simulate_data}{matrix}(
@@ -44,7 +47,8 @@ simulate_data(
   dist_dispersion = 100,
   link = negative.binomial.special()$linkfun,
   pop_size = 0,
-  latent = 0
+  latent = 0,
+  latent_fun = "unif"
 )
 }
 \arguments{
@@ -64,6 +68,9 @@ distribution}
 1000-n random genes not in the graph}
 
 \item{latent}{number of latent variables}
+
+\item{latent_fun}{uniform "unif" or exponential "exp" distribution of latent
+coefficients}
 }
 \value{
 graph

@@ -46,6 +46,8 @@ wt.samples <- 200
 mt.samples <- 200
 
 beta.magnitude <- 1
+beta.dist <- 1
+latent.dist <- 1
 dist.mean <- 100
 dispersion <- 1
 adjustment.type <- "parents"
@@ -71,6 +73,10 @@ varied.parameter <- arguments$variable
 parameter.list <- unlist(
   purrr::map(strsplit(arguments$values, ",")[[1]], type.convert)
 )
+
+if (varied.parameter == "latent.dist") {
+  latent <- 10
+}
 
 output.fname <- arguments$output
 replicate.count <- as.numeric(arguments$replicates)
@@ -115,6 +121,8 @@ df.bench <- purrr::pmap_dfr(
         wt.samples = { wt.samples <- parameter },
         mt.samples = { mt.samples <- parameter },
         beta.magnitude = { beta.magnitude <- parameter },
+        beta.dist = { beta.dist <- parameter },
+        latent.dist = { latent.dist <- parameter },
         dispersion = { dispersion <- parameter },
         adjustment.type = { adjustment.type <- parameter },
         effect.type = { effect.type <- parameter },
@@ -129,16 +137,21 @@ df.bench <- purrr::pmap_dfr(
         }
       )
 
-      print(glue::glue("seed={rng.seed} node.num={node.num} wt.samples={wt.samples} mt.samples={mt.samples} beta.magnitude={beta.magnitude} dispersion={dispersion} adjustment.type={adjustment.type} effect.type={effect.type} perturb={perturb} true.positives={true.positives} lib.size.range={lib.size.range} latent={latent}"))
+      print(glue::glue("seed={rng.seed} node.num={node.num} wt.samples={wt.samples} mt.samples={mt.samples} beta.magnitude={beta.magnitude} beta.dist={beta.dist} latent.dist={latent.dist} dispersion={dispersion} adjustment.type={adjustment.type} effect.type={effect.type} perturb={perturb} true.positives={true.positives} lib.size.range={lib.size.range} latent={latent}"))
 
 
       # generate graphs
       if (sample.kegg) {
         graphs <- sample.graph.from.kegg(kegg.dag)
       } else {
+        if (beta.dist == 1) {
+          betameth <- "unif"
+        } else {
+          betameth <- "exp"
+        }
         graphs <- generate.random.graphs(node.num, beta.magnitude,
                                          true.positives, max_par = 10,
-                                         mineff = 0)
+                                         mineff = 0, method = betameth)
       }
 
       wt.graph <- graphs$wt
@@ -151,8 +164,13 @@ df.bench <- purrr::pmap_dfr(
 
       # generate data
       pop.size <- 10000
-      wt.X <- simulate_data(wt.graph, n = wt.samples, dist_dispersion = dispersion, dist_mean = dist.mean, pop_size = pop.size, latent = latent)
-      mt.X <- simulate_data(mt.graph, n = mt.samples, dist_dispersion = dispersion, dist_mean = dist.mean, pop_size = pop.size, latent = latent)
+      if (latent.dist == 1) {
+        latent_fun <- "unif"
+      } else {
+        latent_fun <- "exp"
+      }
+      wt.X <- simulate_data(wt.graph, n = wt.samples, dist_dispersion = dispersion, dist_mean = dist.mean, pop_size = pop.size, latent = latent, latent_fun = latent_fun)
+      mt.X <- simulate_data(mt.graph, n = mt.samples, dist_dispersion = dispersion, dist_mean = dist.mean, pop_size = pop.size, latent = latent, latent_fun = latent_fun)
 
       # library size difference
       lib.size.mean <- (lib.size.range+1)/2
@@ -192,7 +210,7 @@ df.bench <- purrr::pmap_dfr(
 
       # run models
       latent2 <- FALSE
-      if (varied.parameter == 'latent') {
+      if (varied.parameter == 'latent' | varied.parameter == 'latent.dist') {
         latent2 <- 'auto'
       }
       res <- run.all.models(

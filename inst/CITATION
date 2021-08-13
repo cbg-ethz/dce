@@ -1,7 +1,7 @@
 bibentry(
   bibtype = "article",
-  title = "tba",
-  author = "tba",
-  journal = "tba",
-  year = "tba"
+  title = "Identifying cancer pathway dysregulations using differential causal effects",
+  author = "Jablonski, Kim Philipp and Pirkl, Martin and {\'C}evid, Domagoj and B{\"u}hlmann, Peter and Beerenwinkel, Niko",
+  journal = "bioRxiv",
+  year = "2021"
 )

@@ -14,12 +14,23 @@ run.all.models <- function(
   methods = NULL,
   effect.type,
   adjustment.type,
-  latent
+  latent,
+  method
 ) {
+  if (any(c("car","dge") %in% methods) | is.null(methods)) {
+    group <- factor(c(rep(1,nrow(wt.X)),rep(2,nrow(mt.X))))
+    y <- DGEList(counts=cbind(t(wt.X),t(mt.X)),group=group)
+    y <- calcNormFactors(y)
+    design <- model.matrix(~group)
+    y <- estimateDisp(y,design)
+    fit <- glmQLFit(y,design)
+    qlf <- glmQLFTest(fit,coef=2)
+  }
+  G <- as(wt.graph.perturbed,"matrix")
+  G <- G[naturalorder(rownames(G)),naturalorder(colnames(G))]
   # for null model
   negweight.range <- c(-beta.magnitude, 0)
   posweight.range <- c(0, beta.magnitude)
-
   # ground truth
   if (effect.type == "direct") {
       # direct effects:
@@ -184,8 +195,12 @@ run.all.models <- function(
   # LDGM
   time.tmp <- Sys.time()
   if (is.null(methods) || "ldgm" %in% methods) {
-    res.ldgm <- list(dce = LDGM(log(wt.X.cor+1),log(mt.X.cor+1),as(wt.graph,"matrix")))
-    res.ldgm$dce_pvalue <- permutation_test(log(wt.X.cor+1),log(mt.X.cor+1),fun=LDGM,mode=2,g=as(wt.graph,"matrix"),iter=10)
+    res.ldgm <- list(dce = LDGM(log(wt.X.cor+1),log(mt.X.cor+1)))
+    if (ncol(wt.X.cor) > 10) {
+      res.ldgm$dce_pvalue <- 2*pnorm(-abs(res.ldgm$dce))
+    } else {
+      res.ldgm$dce_pvalue <- permutation_test(log(wt.X.cor+1),log(mt.X.cor+1),fun=LDGM,mode=2)
+    }
   } else {
     res.ldgm <- ground.truth
     res.ldgm$dce_pvalue <- ground.truth$dce*0
@@ -195,7 +210,7 @@ run.all.models <- function(
   # Carnival?
   time.tmp <- Sys.time()
   if (is.null(methods) || "car" %in% methods) {
-    res.car <- carWrap(wt.X.cor,mt.X.cor,as(wt.graph,"matrix"))
+    res.car <- carWrap(wt.X.cor,mt.X.cor,G , stats = qlf)
   } else {
     res.car <- ground.truth
     res.car$dce_pvalue <- ground.truth$dce*0
@@ -205,7 +220,7 @@ run.all.models <- function(
   # differential expression?
   time.tmp <- Sys.time()
   if (is.null(methods) || "dge" %in% methods) {
-    res.dge <- dge_net(wt.X,mt.X,as(wt.graph,"matrix"))
+    res.dge <- dge_net(wt.X,mt.X,G, stats = qlf)
   } else {
     res.dge <- ground.truth
     res.dge$dce_pvalue <- ground.truth$dce*0

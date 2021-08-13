@@ -44,7 +44,7 @@ create.plots <- function(df.bench, plot.dir, varied.parameter) {
 
   for (measure in performance.measures) {
     print(glue::glue("Plotting {measure}"))
-
+    
     xlabel <- switch(unique(df.bench$varied.parameter),
                      "Adjustment set" = 'Confounders',
                      "Effect magnitude" = 'Maximum absolute effect size',
@@ -54,10 +54,12 @@ create.plots <- function(df.bench, plot.dir, varied.parameter) {
                      "Number of samples" = 'Number of samples',
                      "Network size" = 'Number of genes in the network',
                      "Network perturbation" = 'Fraction of added/deleted edges',
-                     "Prevalence of positive edges" = 'Prevelance of true differential effects')
+                     "Prevalence of positive edges" = 'Prevelance of true differential effects',
+                     "Beta distribution" = "Beta distribution",
+                     "latent distribution" = "latent distribution")
 
     meth_order <- c('dce', 'cor', 'pcor', 'fggm', 'ldgm', 'car', 'dge', 'rand', 'dce (no library size correction)', 'dce (no latent correction)')
-    meth_color <- c('red', 'lightblue', 'blue', 'orange', 'brown', 'green', 'purple', 'grey', '#ff7777', 'darkred')
+    meth_color <- c('red', 'lightblue', 'blue', 'orange', 'pink', 'green', 'purple', 'grey', '#ff7777', 'darkred')
     meth_color <- meth_color[meth_order %in% colnames(df.bench)]
     meth_order <- meth_order[meth_order %in% colnames(df.bench)]
 
@@ -189,6 +191,11 @@ if (!dir.exists(target.dir)) {
 }
 
 df.bench <- read_csv(input.fname)
+
+ld.idx <- which(df.bench$varied.parameter == "latent.dist")
+df.bench$parameter[ld.idx] <- mgsub::mgsub(df.bench$parameter[ld.idx], c("1","2"), c("uniform", "exponential"))
+
+df.bench <- df.bench[!is.na(df.bench$varied.parameter), ]
 if (methods[1]!='NULL') {
   df.bench <- df.bench[,colnames(df.bench) %in% c(methods,'type','parameter','varied.parameter','rng.seed')]
 }
@@ -202,8 +209,9 @@ if (parameters[1]!='NULL') {
 
 # rename variables for paper ready (;)) figures:
 df.bench$varied.parameter <- mgsub::mgsub(df.bench$varied.parameter,
-                                          c("adjustment.type", "beta.magnitude", "dispersion", "latent", "lib.size.range", "mt.samples", "node.num", "perturb", "true.positives"),
-                                          c("Adjustment set", "Effect magnitude", "Dispersion", "Latent variables", "Library size range", "Number of samples", "Network size", "Network perturbation", "Prevalence of positive edges"))
+                                          c("adjustment.type", "beta.magnitude", "dispersion", "latent", "lib.size.range", "mt.samples", "node.num", "perturb", "true.positives","beta.dist","latent.dist"),
+                                          c("Adjustment set", "Effect magnitude", "Dispersion", "Latent variables", "Library size range", "Number of samples", "Network size", "Network perturbation", "Prevalence of positive edges", "Beta distribution",
+                                            "latent distribution"))
 colnames(df.bench) <- mgsub::mgsub(colnames(df.bench),
                                    c('dce.lm.tpm', 'fggm', 'cor', 'pcorz', 'dce.nolib', 'dce.lm.tpm.nolatent'),
                                    c('dce', 'fggm', 'cor', 'pcor', 'dce (no library size correction)', 'dce (no latent correction)'))
