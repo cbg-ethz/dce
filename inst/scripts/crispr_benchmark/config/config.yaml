@@ -6,7 +6,7 @@ pathway_constraints:
     max_pathway_edge_size: 1000
 
 studies:
-    - epistasis
+    - drug
     # - main
 
 databases:
