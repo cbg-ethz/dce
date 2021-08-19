@@ -583,3 +583,11 @@ summary.rlm_dce <- function(object, ...) {
     # TODO: fix this...
     stop("MASS:::summary.rlm is unexported...")
 }
+#' wrapper for column_to_rownames from tibble to make it
+#' work with the inconsistent readr package
+column_to_rownames_wrap <- function(x,...) {
+    if ("X1" %in% colnames(x)) {
+        colnames(x)[colnames(x) %in% "X1"] <- "...1"
+    }
+    return(column_to_rownames(x,...))
+}

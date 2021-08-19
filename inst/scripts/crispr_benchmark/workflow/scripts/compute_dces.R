@@ -2,7 +2,6 @@ library(tidyverse)
 
 devtools::load_all("../../../")
 
-
 # locate data
 fname.graph <- snakemake@input$graph_file
 fname.expr.wt <- snakemake@input$count_wt_file
@@ -31,10 +30,10 @@ print(params)
 
 # read data
 X.wt <- read_csv(fname.expr.wt) %>%
-  column_to_rownames("X1") %>%
+  column_to_rownames_wrap("...1") %>%
   t
 X.mt <- read_csv(fname.expr.mt) %>%
-  column_to_rownames("X1") %>%
+  column_to_rownames_wrap("...1") %>%
   t
 
 graph <- igraph::graph.data.frame(read_csv(fname.graph))
@@ -45,7 +44,7 @@ if (length(common.genes) > 0) {
   # compute DCEs
   res <- dce::dce(
     igraph::induced_subgraph(graph, common.genes),
-    X.wt, X.mt,
+    X.wt[,common.genes], X.mt[,common.genes],
     solver = "lm",
     test = "vcovHC",
     deconfounding = params$computation$deconfounding
@@ -65,7 +64,7 @@ if (length(common.genes) > 0) {
   )
   res_pcor$dce_pvalue <- dce::permutation_test(
     X.wt[, common.genes], X.mt[, common.genes],
-    fun = dce::pcor
+    fun = dce::pcor, iter = 10
   )
   
   # clean p-values
