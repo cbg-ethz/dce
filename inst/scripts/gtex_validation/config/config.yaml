@@ -1,0 +1,10 @@
+# `pathway_constraints` is ignored if `pathway_list` is non-null
+
+target_tissue:
+    Breast_Mammary_Tissue
+
+pathway:
+    Pathways in cancer
+
+deconfounding:
+    TRUE

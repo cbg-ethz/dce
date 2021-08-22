@@ -1,0 +1,70 @@
+import os
+#import pandas as pd
+#from snakemake.utils import Paramspace
+
+configfile: 'config/config.yaml'
+localrules: all
+
+TISSUES = [str.split('.')[0] for str in os.listdir('raw_data/GTEx_Analysis_v8_eQTL_expression_matrices')]
+
+rule all:
+  input:
+    "plots/gtex_combined.png"
+
+rule create_encodings:
+	input:
+		gencode = "raw_data/gencode.v26.GRCh38.genes.gtf",
+	output:
+		"processed_data/encodings.Rdata"
+	script:
+		"scripts/prepare_gene_encodings.R"
+
+rule get_dataset:
+	input:
+		gencode = "processed_data/encodings.Rdata",
+		#covariates = "raw_data/GTEx_Analysis_v8_eQTL_covariates/{tissue}.v8.covariates.txt",
+		expressions = "raw_data/GTEx_Analysis_v8_eQTL_expression_matrices/{tissue}.v8.normalized_expression.bed.gz",
+		covariates = "raw_data/GTEx_Analysis_v8_sQTL_covariates/{tissue}.v8.sqtl_covariates.txt"
+	output:
+		"processed_data/{tissue}.Rdata"
+	script:
+		"scripts/prepare_dataset.R"
+		
+		
+rule compare_tissues:
+	input:
+	  "processed_data/{tissue1}.Rdata",
+	  "processed_data/{tissue2}.Rdata"
+	output:
+		"output/{tissue1}#{tissue2}.Rdata"
+	script:
+		"scripts/compare_tissues.R"
+		
+
+TISSUES = [str.split('.')[0] for str in os.listdir('raw_data/GTEx_Analysis_v8_sQTL_covariates')]
+import pandas as pd
+valid_tissues = []
+for tissue in TISSUES:
+  df = pd.read_csv('raw_data/GTEx_Analysis_v8_sQTL_covariates/' + tissue + '.v8.sqtl_covariates.txt', sep='\t')
+  if len(df.columns) >= 200 and tissue not in [config['target_tissue'], 'Testis', 'Prostate']:
+    valid_tissues.append(tissue)
+print('{num} valid tissues: '.format(num=len(valid_tissues)), valid_tissues)
+
+
+rule aggregate_results:
+	input:
+	  expand("output/" + config['target_tissue'] + "#{tissue}.Rdata", tissue=valid_tissues)
+	output:
+		"output/statistics.Rdata"
+	script:
+		"scripts/get_statistics.R"	
+
+rule create_plots:
+  input:
+    "output/statistics.Rdata"
+  output:
+    "plots/gtex_mse.png",
+    "plots/gtex_correlation.png",
+    "plots/gtex_combined.png"
+  script:
+    "scripts/plot_results.R"
