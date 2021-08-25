@@ -1,8 +1,7 @@
 library(ggplot2)
 library(cowplot)
 
-#out = mget(load(snakemake@input[[1]], envir=(NE. <- new.env())), envir=NE.)
-out = mget(load("/Users/cevidd/Desktop/dce/inst/scripts/gtex_validation/results/output/Breast_Mammary_Tissue#Lung.Rdata", envir=(NE. <- new.env())), envir=NE.)
+out = mget(load(snakemake@input[[1]], envir=(NE. <- new.env())), envir=NE.)
 x1 = out$normal_fit_with_deconf$dce
 x2 = out$extended_fit_with_deconf$dce
 shared_genes = intersect(colnames(x1), colnames(x2))

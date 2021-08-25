@@ -1,12 +1,8 @@
-devtools::load_all("~/Documents/projects/CausalPathways/dce")
-#print(c(snakemake@config[['pathway']], snakemake@wildcards[['tissue1']], snakemake@wildcards[['tissue2']]))
+library(dce)
 
 if(snakemake@wildcards[['tissue1']] == snakemake@wildcards[['tissue2']]){
   quit()
 }
-
-#ds1 = mget(load("/Users/cevidd/Desktop/dce/inst/scripts/gtex_validation/processed_data/Lung.Rdata", 
-#                envir=(NE. <- new.env())), envir=NE.)
 
 ds1 = mget(load(snakemake@input[[1]], envir=(NE. <- new.env())), envir=NE.)
 ds2 = mget(load(snakemake@input[[2]], envir=(NE. <- new.env())), envir=NE.)
