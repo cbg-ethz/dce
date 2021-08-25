@@ -37,11 +37,11 @@ glue::glue(
 X1 = X1[, colnames(X1) %in% shared_genes]
 X2 = X2[, colnames(X2) %in% shared_genes]
 
-normal_fit_no_deconf <- dce::dce(subgraph, X1, X2, deconfounding=FALSE)#, test='vcovHC')
-normal_fit_with_deconf <- dce::dce(subgraph, X1, X2, deconfounding=snakemake@config[['deconfounding']])#, test='vcovHC')
+normal_fit_no_deconf <- dce::dce(subgraph, X1, X2, deconfounding=FALSE, test='vcovHC')
+normal_fit_with_deconf <- dce::dce(subgraph, X1, X2, deconfounding=snakemake@config[['deconfounding']], test='vcovHC')
 
-extended_fit_no_deconf <- dce::dce(extended, cbind(X1, H1), cbind(X2, H2), deconfounding=FALSE)#, test='vcovHC')
-extended_fit_with_deconf <- dce::dce(extended, cbind(X1, H1), cbind(X2, H2), deconfounding=snakemake@config[['deconfounding']])#, test='vcovHC')
+extended_fit_no_deconf <- dce::dce(extended, cbind(X1, H1), cbind(X2, H2), deconfounding=FALSE, test='vcovHC')
+extended_fit_with_deconf <- dce::dce(extended, cbind(X1, H1), cbind(X2, H2), deconfounding=snakemake@config[['deconfounding']], test='vcovHC')
 
 save(normal_fit_no_deconf,
      normal_fit_with_deconf,

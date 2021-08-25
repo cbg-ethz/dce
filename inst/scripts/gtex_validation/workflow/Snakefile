@@ -1,70 +1,119 @@
 import os
-#import pandas as pd
-#from snakemake.utils import Paramspace
+import pandas as pd
 
-configfile: 'config/config.yaml'
-localrules: all
 
-TISSUES = [str.split('.')[0] for str in os.listdir('raw_data/GTEx_Analysis_v8_eQTL_expression_matrices')]
+configfile: "config/config.yaml"
+
+
+localrules:
+    all,
+
 
 rule all:
-  input:
-    "plots/gtex_combined.png"
+    input:
+        "results/plots/gtex_combined.png",
+        "results/plots/gtex_dce.png",
+
+
+checkpoint download_input_data:
+    output:
+        gencode="results/raw_data/gencode.v26.GRCh38.genes.gtf",
+        expressions=directory(
+            "results/raw_data/GTEx_Analysis_v8_eQTL_expression_matrices/"
+        ),
+        covariates=directory("results/raw_data/GTEx_Analysis_v8_sQTL_covariates/"),
+    shell:
+        """
+        cd results/raw_data
+        wget https://storage.googleapis.com/gtex_analysis_v8/reference/gencode.v26.GRCh38.genes.gtf https://storage.googleapis.com/gtex_analysis_v8/single_tissue_qtl_data/GTEx_Analysis_v8_sQTL_covariates.tar.gz https://storage.googleapis.com/gtex_analysis_v8/single_tissue_qtl_data/GTEx_Analysis_v8_eQTL_expression_matrices.tar
+
+        tar -xvf GTEx_Analysis_v8_eQTL_expression_matrices.tar
+        tar -xvf GTEx_Analysis_v8_sQTL_covariates.tar.gz
+        """
+
 
 rule create_encodings:
-	input:
-		gencode = "raw_data/gencode.v26.GRCh38.genes.gtf",
-	output:
-		"processed_data/encodings.Rdata"
-	script:
-		"scripts/prepare_gene_encodings.R"
+    input:
+        gencode="results/raw_data/gencode.v26.GRCh38.genes.gtf",
+    output:
+        "results/processed_data/encodings.Rdata",
+    script:
+        "scripts/prepare_gene_encodings.R"
+
 
 rule get_dataset:
-	input:
-		gencode = "processed_data/encodings.Rdata",
-		#covariates = "raw_data/GTEx_Analysis_v8_eQTL_covariates/{tissue}.v8.covariates.txt",
-		expressions = "raw_data/GTEx_Analysis_v8_eQTL_expression_matrices/{tissue}.v8.normalized_expression.bed.gz",
-		covariates = "raw_data/GTEx_Analysis_v8_sQTL_covariates/{tissue}.v8.sqtl_covariates.txt"
-	output:
-		"processed_data/{tissue}.Rdata"
-	script:
-		"scripts/prepare_dataset.R"
-		
-		
-rule compare_tissues:
-	input:
-	  "processed_data/{tissue1}.Rdata",
-	  "processed_data/{tissue2}.Rdata"
-	output:
-		"output/{tissue1}#{tissue2}.Rdata"
-	script:
-		"scripts/compare_tissues.R"
-		
+    input:
+        gencode="results/processed_data/encodings.Rdata",
+        #covariates = "results/raw_data/GTEx_Analysis_v8_eQTL_covariates/{tissue}.v8.covariates.txt",
+        expressions="results/raw_data/GTEx_Analysis_v8_eQTL_expression_matrices/{tissue}.v8.normalized_expression.bed.gz",
+        covariates="results/raw_data/GTEx_Analysis_v8_sQTL_covariates/{tissue}.v8.sqtl_covariates.txt",
+    output:
+        "results/processed_data/{tissue}.Rdata",
+    script:
+        "scripts/prepare_dataset.R"
 
-TISSUES = [str.split('.')[0] for str in os.listdir('raw_data/GTEx_Analysis_v8_sQTL_covariates')]
-import pandas as pd
-valid_tissues = []
-for tissue in TISSUES:
-  df = pd.read_csv('raw_data/GTEx_Analysis_v8_sQTL_covariates/' + tissue + '.v8.sqtl_covariates.txt', sep='\t')
-  if len(df.columns) >= 200 and tissue not in [config['target_tissue'], 'Testis', 'Prostate']:
-    valid_tissues.append(tissue)
-print('{num} valid tissues: '.format(num=len(valid_tissues)), valid_tissues)
+
+rule compare_tissues:
+    input:
+        "results/processed_data/{tissue1}.Rdata",
+        "results/processed_data/{tissue2}.Rdata",
+    output:
+        "results/output/{tissue1}#{tissue2}.Rdata",
+    script:
+        "scripts/compare_tissues.R"
+
+
+def valid_tissues(wildcards):
+    file_directory = checkpoints.download_input_data.get().output[2]
+
+    valid_tissues = []
+    for filename in os.listdir(file_directory):
+        if filename.startswith("."):
+            continue
+        tissue = filename.split(".")[0]
+        df = pd.read_csv(os.path.join(file_directory, filename), sep="\t")
+        if len(df.columns) >= 200 and tissue not in [
+            config["target_tissue"],
+            "Testis",
+            "Prostate",
+        ]:
+            valid_tissues.append(tissue)
+
+    print("{num} valid tissues: ".format(num=len(valid_tissues)), valid_tissues)
+    return expand(
+        "results/output/" + config["target_tissue"] + "#{tissue}.Rdata",
+        tissue=valid_tissues,
+    )
 
 
 rule aggregate_results:
-	input:
-	  expand("output/" + config['target_tissue'] + "#{tissue}.Rdata", tissue=valid_tissues)
-	output:
-		"output/statistics.Rdata"
-	script:
-		"scripts/get_statistics.R"	
+    input:
+        valid_tissues,
+    output:
+        "results/output/statistics.Rdata",
+    script:
+        "scripts/get_statistics.R"
+
 
 rule create_plots:
-  input:
-    "output/statistics.Rdata"
-  output:
-    "plots/gtex_mse.png",
-    "plots/gtex_correlation.png",
-    "plots/gtex_combined.png"
-  script:
-    "scripts/plot_results.R"
+    input:
+        "results/output/statistics.Rdata",
+    output:
+        "results/plots/gtex_mse.png",
+        "results/plots/gtex_correlation.png",
+        "results/plots/gtex_combined.png",
+    script:
+        "scripts/plot_results.R"
+
+
+rule create_dce_plots:
+    input:
+        "results/output/"
+        + config["target_tissue"]
+        + "#"
+        + config["comparison_tissue"]
+        + ".Rdata",
+    output:
+        "results/plots/gtex_dce.png",
+    script:
+        "scripts/plot_dce.R"

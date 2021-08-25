@@ -1,7 +1,8 @@
-# `pathway_constraints` is ignored if `pathway_list` is non-null
-
 target_tissue:
     Breast_Mammary_Tissue
+
+comparison_tissue:
+    Lung
 
 pathway:
     Pathways in cancer
