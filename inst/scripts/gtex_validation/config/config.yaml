@@ -5,7 +5,7 @@ comparison_tissue:
     Lung
 
 pathway:
-    Pathways in cancer
+    Breast cancer
 
 deconfounding:
     TRUE

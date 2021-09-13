@@ -12,8 +12,8 @@ for(file in snakemake@input){
   shared_genes = intersect(colnames(x1), colnames(x2))
   x1 = x1[shared_genes, shared_genes]
   x2 = x2[shared_genes, shared_genes]
-  x1 = -log(c(x1)[is.na(c(x1))==FALSE])
-  x2 = -log(c(x2)[is.na(c(x2))==FALSE])
+  x1 = -log(c(x1)[is.na(c(x1))==FALSE] + 1e-10)
+  x2 = -log(c(x2)[is.na(c(x2))==FALSE] + 1e-10)
   mse_with_deconf = c(mse_with_deconf, mean((x1-x2)^2))
   cor_with_deconf = c(cor_with_deconf, cor(x1, x2))
   
@@ -22,8 +22,8 @@ for(file in snakemake@input){
   shared_genes = intersect(colnames(y1), colnames(y2))
   y1 = y1[shared_genes, shared_genes]
   y2 = y2[shared_genes, shared_genes]
-  y1 = -log(c(y1)[is.na(c(y1))==FALSE])
-  y2 = -log(c(y2)[is.na(c(y2))==FALSE])
+  y1 = -log(c(y1)[is.na(c(y1))==FALSE] + 1e-10)
+  y2 = -log(c(y2)[is.na(c(y2))==FALSE] + 1e-10)
   mse_no_deconf = c(mse_no_deconf, mean((y1-y2)^2))
   cor_no_deconf = c(cor_no_deconf, cor(y1, y2))
 }

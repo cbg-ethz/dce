@@ -1,6 +1,7 @@
 library(ggplot2)
 library(cowplot)
 
+print(snakemake@input[[1]])
 out = mget(load(snakemake@input[[1]], envir=(NE. <- new.env())), envir=NE.)
 x1 = out$normal_fit_with_deconf$dce
 x2 = out$extended_fit_with_deconf$dce
@@ -9,6 +10,10 @@ x1 = x1[shared_genes, shared_genes]
 x2 = x2[shared_genes, shared_genes]
 x1 = c(x1)[is.na(c(x1))==FALSE]
 x2 = c(x2)[is.na(c(x2))==FALSE]
+
+print(c('with deconfounding: ', cor(x1, x2)))
+
+
 y1 = out$normal_fit_no_deconf$dce
 y2 = out$extended_fit_no_deconf$dce
 shared_genes = intersect(colnames(y1), colnames(y2))
@@ -17,6 +22,7 @@ y2 = y2[shared_genes, shared_genes]
 y1 = c(y1)[is.na(c(y1))==FALSE]
 y2 = c(y2)[is.na(c(y2))==FALSE]
 
+print(c('without deconfounding: ', cor(y1, y2)))
 
 gg1 = ggplot(data.frame(x=x1, y=x2), aes(x=x, y=y))+
   geom_point(size=0.8, alpha=0.7)+

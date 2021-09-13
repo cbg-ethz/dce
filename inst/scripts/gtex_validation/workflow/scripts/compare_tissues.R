@@ -1,4 +1,4 @@
-library(dce)
+devtools::load_all("../../..")
 
 if(snakemake@wildcards[['tissue1']] == snakemake@wildcards[['tissue2']]){
   quit()
