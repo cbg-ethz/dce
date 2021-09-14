@@ -13,7 +13,8 @@ rule all:
     input:
         "results/plots/gtex_combined.png",
         "results/plots/gtex_dce.png",
-    
+
+
 checkpoint download_input_data:
     output:
         gencode="results/raw_data/gencode.v26.GRCh38.genes.gtf",
@@ -32,20 +33,27 @@ checkpoint download_input_data:
         rm GTEx_Analysis_v8_sQTL_covariates.tar.gz
         """
 
+
 def gencode_file(wildcards):
     return checkpoints.download_input_data.get().output.gencode
+
 
 def expressions_file(wildcards):
     file_directory = checkpoints.download_input_data.get().output.expressions_dir
     for file_name in os.listdir(file_directory):
-        if wildcards.tissue == file_name.split(".")[0] and file_name.split(".")[-1] == 'gz':
+        if (
+            wildcards.tissue == file_name.split(".")[0]
+            and file_name.split(".")[-1] == "gz"
+        ):
             return os.path.join(file_directory, file_name)
+
 
 def covariates_file(wildcards):
     file_directory = checkpoints.download_input_data.get().output.covariates_dir
     for file_name in os.listdir(file_directory):
         if wildcards.tissue == file_name.split(".")[0]:
             return os.path.join(file_directory, file_name)
+
 
 rule create_encodings:
     input:
