@@ -5,7 +5,7 @@
 [![pkgdown](https://github.com/cbg-ethz/dce/workflows/pkgdown/badge.svg)](https://github.com/cbg-ethz/dce/actions)
 [![BioC status](http://www.bioconductor.org/shields/build/devel/bioc/dce.svg)](https://bioconductor.org/checkResults/devel/bioc-LATEST/dce)
 
-Compute differential causal effects on (biological) networks.
+Compute differential causal effects on (biological) networks. Check out [our vignettes](https://cbg-ethz.github.io/dce/articles/dce.html) for more information.
 
 
 ## Installation
