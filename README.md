@@ -26,6 +26,7 @@ remotes::install_github("cbg-ethz/dce")
 * `.`: R package
 * `inst/scripts/`: Snakemake workflows for all investigations in publication
     * `crispr_benchmark`: Real-life data validation
+    * `gtex_validation`: Deconfounding validation
     * `ovarian_cancer`: How does Ovarian Cancer dysregulate pathways?
     * `synthetic_benchmark`: Synthetic data validation
     * `tcga_pipeline`: Compute effects for loads of data from TCGA
