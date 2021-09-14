@@ -1,0 +1,11 @@
+target_tissue:
+    Breast_Mammary_Tissue
+
+comparison_tissue:
+    Lung
+
+pathway:
+    Breast cancer
+
+deconfounding:
+    TRUE
