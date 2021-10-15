@@ -200,6 +200,59 @@
   <span class="fu">ggtitle</span><span class="op">(</span><span class="st">"Differential Causal Effects between WT and MT condition"</span><span class="op">)</span></code></pre></div>
 <p><img src="dce_files/figure-html/unnamed-chunk-7-1.png" width="700"></p>
 </div>
+<div id="dce-reconstruction-with-non-trivial-network" class="section level1">
+<h1 class="hasAnchor">
+<a href="#dce-reconstruction-with-non-trivial-network" class="anchor"></a>DCE reconstruction with non-trivial network</h1>
+<p>To get a better feeling for the behavior of <em>dce</em>, we will look at DCE estimates for a larger pathway. In particular, we create a <span class="math inline">\(20\)</span> node wild-type (WT) network with edge probability <span class="math inline">\(0.3\)</span> as well as a dysregulated mutated (MT) network.</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">1337</span><span class="op">)</span>
+
+<span class="co"># create wild-type and mutant networks</span>
+<span class="va">graph_wt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_random_DAG.html">create_random_DAG</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">0.3</span><span class="op">)</span>
+<span class="va">graph_mt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/resample_edge_weights.html">resample_edge_weights</a></span><span class="op">(</span><span class="va">graph_wt</span><span class="op">)</span>
+
+<span class="fu">cowplot</span><span class="fu">::</span><span class="fu"><a href="https://wilkelab.org/cowplot/reference/plot_grid.html">plot_grid</a></span><span class="op">(</span>
+  <span class="fu"><a href="../reference/plot_network.html">plot_network</a></span><span class="op">(</span><span class="fu">as</span><span class="op">(</span><span class="va">graph_wt</span>, <span class="st">"matrix"</span><span class="op">)</span>, labelsize <span class="op">=</span> <span class="fl">0</span>, arrow_size <span class="op">=</span> <span class="fl">0.01</span><span class="op">)</span>,
+  <span class="fu"><a href="../reference/plot_network.html">plot_network</a></span><span class="op">(</span><span class="fu">as</span><span class="op">(</span><span class="va">graph_mt</span>, <span class="st">"matrix"</span><span class="op">)</span>, labelsize <span class="op">=</span> <span class="fl">0</span>, arrow_size <span class="op">=</span> <span class="fl">0.01</span><span class="op">)</span>,
+  labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"WT"</span>, <span class="st">"MT"</span><span class="op">)</span>
+<span class="op">)</span></code></pre></div>
+<p><img src="dce_files/figure-html/unnamed-chunk-8-1.png" width="700"></p>
+<p>Next, we simulate gene expression data and compute DCEs.</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># simulate gene expression data for both networks</span>
+<span class="va">X_wt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_data.html">simulate_data</a></span><span class="op">(</span><span class="va">graph_wt</span><span class="op">)</span>
+<span class="va">X_mt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_data.html">simulate_data</a></span><span class="op">(</span><span class="va">graph_mt</span><span class="op">)</span>
+
+<span class="co"># compute DCEs</span>
+<span class="va">res</span> <span class="op">&lt;-</span> <span class="fu">dce</span><span class="fu">::</span><span class="fu"><a href="../reference/dce.html">dce</a></span><span class="op">(</span><span class="va">graph_wt</span>, <span class="va">X_wt</span>, <span class="va">X_mt</span><span class="op">)</span>
+
+<span class="va">df_dce</span> <span class="op">&lt;-</span> <span class="va">res</span> <span class="op">%&gt;%</span>
+  <span class="va">as.data.frame</span> <span class="op">%&gt;%</span>
+  <span class="va">drop_na</span> <span class="op">%&gt;%</span>
+  <span class="fu">arrange</span><span class="op">(</span><span class="va">dce_pvalue</span><span class="op">)</span></code></pre></div>
+<p>Finally, we compare the estimated to the ground truth DCEs.</p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># compute ground truth DCEs</span>
+<span class="va">dce_gt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/trueEffects.html">trueEffects</a></span><span class="op">(</span><span class="va">graph_mt</span><span class="op">)</span> <span class="op">-</span> <span class="fu"><a href="../reference/trueEffects.html">trueEffects</a></span><span class="op">(</span><span class="va">graph_wt</span><span class="op">)</span>
+<span class="va">dce_gt_ind</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/which.html">which</a></span><span class="op">(</span><span class="va">dce_gt</span> <span class="op">!=</span> <span class="fl">0</span>, arr.ind <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+
+<span class="co"># create plot</span>
+<span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>
+  source <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"n"</span>, <span class="va">dce_gt_ind</span><span class="op">[</span>, <span class="st">"row"</span><span class="op">]</span><span class="op">)</span>,
+  target <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"n"</span>, <span class="va">dce_gt_ind</span><span class="op">[</span>, <span class="st">"col"</span><span class="op">]</span><span class="op">)</span>,
+  dce_ground_truth <span class="op">=</span> <span class="va">dce_gt</span><span class="op">[</span><span class="va">dce_gt</span> <span class="op">!=</span> <span class="fl">0</span><span class="op">]</span>
+<span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu">inner_join</span><span class="op">(</span><span class="va">df_dce</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"source"</span>, <span class="st">"target"</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu">rename</span><span class="op">(</span>dce_estimate <span class="op">=</span> <span class="va">dce</span><span class="op">)</span> <span class="op">%&gt;%</span>
+<span class="fu">ggplot</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">dce_ground_truth</span>, y <span class="op">=</span> <span class="va">dce_estimate</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu">geom_abline</span><span class="op">(</span>color <span class="op">=</span> <span class="st">"gray"</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu">geom_point</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu">xlab</span><span class="op">(</span><span class="st">"DCE (ground truth"</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu">ylab</span><span class="op">(</span><span class="st">"DCE (estimate)"</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu">theme_minimal</span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<p><img src="dce_files/figure-html/unnamed-chunk-10-1.png" width="700"></p>
+<p>We observe that <em>dce</em> is able to nicely recover DCEs of moderate as well as large and small magnitude.</p>
+</div>
 <div id="application-to-real-data" class="section level1">
 <h1 class="hasAnchor">
 <a href="#application-to-real-data" class="anchor"></a>Application to real data</h1>
@@ -208,7 +261,7 @@
 <h2 class="hasAnchor">
 <a href="#retrieve-gene-expression-data" class="anchor"></a>Retrieve gene expression data</h2>
 <p>As a showcase, we download breast cancer (BRCA) RNA transcriptomics profiling data from TCGA <span class="citation">(Tomczak, Czerwińska, and Wiznerowicz 2015)</span>.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">brca</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/curatedTCGAData/man/curatedTCGAData.html">curatedTCGAData</a></span><span class="op">(</span>
   diseaseCode <span class="op">=</span> <span class="st">"BRCA"</span>,
   assays <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"RNASeq2*"</span><span class="op">)</span>,
@@ -245,7 +298,7 @@
 ##   removing 13161 sampleMap rows not in names(experiments)
 ##   removing 5 colData rownames not in sampleMap 'primary'</code></pre>
 <p>This will retrieve all available samples for the requested data sets. These samples can be classified according to their site of origin.</p>
-<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/TCGAutils/man/curatedTCGAData-helpers.html">sampleTables</a></span><span class="op">(</span><span class="va">brca</span><span class="op">)</span></code></pre></div>
 <pre><code>## $`BRCA_RNASeq2Gene-20160128`
 ## 
@@ -256,7 +309,7 @@
 ## 
 ##   01   06   11 
 ## 1093    7  112</code></pre>
-<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb46"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">sampleTypes</span>, package <span class="op">=</span> <span class="st">"TCGAutils"</span><span class="op">)</span>
 <span class="va">sampleTypes</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">Code</span> <span class="op">%in%</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"01"</span>, <span class="st">"06"</span>, <span class="st">"11"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
@@ -265,13 +318,13 @@
 ## 2   06          Metastatic                TM
 ## 3   11 Solid Tissue Normal                NT</code></pre>
 <p>We can extract Primary Solid Tumor and matched Solid Tissue Normale samples.</p>
-<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb48"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># split assays</span>
 <span class="va">brca_split</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/TCGAutils/man/curatedTCGAData-helpers.html">splitAssays</a></span><span class="op">(</span><span class="va">brca</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"01"</span>, <span class="st">"11"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <pre><code>## Warning: 'splitAssays' is deprecated.
 ## Use 'TCGAsplitAssays' instead.
 ## See help("Deprecated")</code></pre>
-<div class="sourceCode" id="cb47"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb50"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># only retain matching samples</span>
 <span class="va">brca_matched</span> <span class="op">&lt;-</span> <span class="fu">as</span><span class="op">(</span><span class="va">brca_split</span>, <span class="st">"MatchedAssayExperiment"</span><span class="op">)</span>
 
@@ -282,7 +335,7 @@
 <h2 class="hasAnchor">
 <a href="#retrieve-biological-pathway-of-interest" class="anchor"></a>Retrieve biological pathway of interest</h2>
 <p>KEGG <span class="citation">(Kanehisa et al. 2004)</span> provides the breast cancer related pathway <code>hsa05224</code>. It can be easily retrieved using <code>dce</code>.</p>
-<div class="sourceCode" id="cb48"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb51"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">pathways</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_pathways.html">get_pathways</a></span><span class="op">(</span>pathway_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>kegg <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Breast cancer"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <pre><code>## 'select()' returned 1:1 mapping between keys and columns
 ## 'select()' returned 1:1 mapping between keys and columns
@@ -290,10 +343,10 @@
 ## 'select()' returned 1:1 mapping between keys and columns
 ## 'select()' returned 1:1 mapping between keys and columns
 ## 'select()' returned 1:1 mapping between keys and columns</code></pre>
-<div class="sourceCode" id="cb50"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb53"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">brca_pathway</span> <span class="op">&lt;-</span> <span class="va">pathways</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">graph</span></code></pre></div>
 <p>Luckily, it shares all genes with the cancer data set.</p>
-<div class="sourceCode" id="cb51"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb54"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">shared_genes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sets.html">intersect</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/graph/man/graphNEL-class.html">nodes</a></span><span class="op">(</span><span class="va">brca_pathway</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span><span class="op">(</span><span class="va">brca_wt</span><span class="op">)</span><span class="op">)</span>
 <span class="fu">glue</span><span class="fu">::</span><span class="fu"><a href="https://glue.tidyverse.org/reference/glue.html">glue</a></span><span class="op">(</span>
   <span class="st">"Covered nodes: {length(shared_genes)}/{length(nodes(brca_pathway))}"</span>
@@ -304,10 +357,10 @@
 <h2 class="hasAnchor">
 <a href="#estimate-differential-causal-effects" class="anchor"></a>Estimate Differential Causal Effects</h2>
 <p>We can now estimate the differences in causal effects between matched tumor and normal samples on a breast cancer specific pathway.</p>
-<div class="sourceCode" id="cb53"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb56"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu">dce</span><span class="fu">::</span><span class="fu"><a href="../reference/dce.html">dce</a></span><span class="op">(</span><span class="va">brca_pathway</span>, <span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span><span class="op">(</span><span class="va">brca_wt</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span><span class="op">(</span><span class="va">brca_mt</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <p>Interpretations may now begin.</p>
-<div class="sourceCode" id="cb54"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb57"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">res</span> <span class="op">%&gt;%</span>
   <span class="va">as.data.frame</span> <span class="op">%&gt;%</span>
   <span class="va">drop_na</span> <span class="op">%&gt;%</span>
@@ -320,7 +373,7 @@
 ## 4  WNT7A   FZD4 -1334.3963   598.5797 2.680676e-02
 ## 5  FGF21  FGFR1  -917.1445  1128.4631 4.172471e-01
 ## 6  WNT8A   FZD7   817.6733   954.3545 3.924979e-01</code></pre>
-<div class="sourceCode" id="cb56"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb59"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span>
   <span class="va">res</span>,
   nodesize <span class="op">=</span> <span class="fl">20</span>, labelsize <span class="op">=</span> <span class="fl">1</span>,
@@ -328,13 +381,13 @@
   use_symlog <span class="op">=</span> <span class="cn">TRUE</span>,
   shadowtext <span class="op">=</span> <span class="cn">TRUE</span>
 <span class="op">)</span></code></pre></div>
-<p><img src="dce_files/figure-html/unnamed-chunk-14-1.png" width="700"></p>
+<p><img src="dce_files/figure-html/unnamed-chunk-17-1.png" width="700"></p>
 </div>
 </div>
 <div id="session-information" class="section level1">
 <h1 class="hasAnchor">
 <a href="#session-information" class="anchor"></a>Session information</h1>
-<div class="sourceCode" id="cb57"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb60"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <pre><code>## R version 4.1.1 (2021-08-10)
 ## Platform: x86_64-apple-darwin17.0 (64-bit)
@@ -388,7 +441,7 @@
 ##  [35] DEoptimR_1.0-9                fansi_0.5.0                  
 ##  [37] restfulr_0.0.13               progress_1.2.2               
 ##  [39] dbplyr_2.1.1                  readxl_1.3.1                 
-##  [41] Rgraphviz_2.36.0              igraph_1.2.6                 
+##  [41] Rgraphviz_2.36.0              igraph_1.2.7                 
 ##  [43] DBI_1.1.1                     tmvnsim_1.0-2                
 ##  [45] apcluster_1.4.8               RcppArmadillo_0.10.7.0.0     
 ##  [47] ellipsis_0.3.2                backports_1.2.1              
