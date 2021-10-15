@@ -1,3 +1,8 @@
+###
+# Wrapper for CARNIVAL (https://www.nature.com/articles/s41540-019-0118-z).
+###
+
+
 library(CARNIVAL)
 library(edgeR)
 

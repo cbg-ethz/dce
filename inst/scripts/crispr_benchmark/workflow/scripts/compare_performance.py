@@ -1,3 +1,9 @@
+"""
+Compare DCE estimation performance (ROC-AUC) between different
+deconfounding methods.
+"""
+
+
 from pathlib import Path
 
 import pandas as pd

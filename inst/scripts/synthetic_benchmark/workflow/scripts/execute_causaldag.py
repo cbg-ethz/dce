@@ -1,3 +1,8 @@
+"""
+Wrapper for causaldag (https://github.com/uhlerlab/causaldag).
+"""
+
+
 import sys
 import itertools
 

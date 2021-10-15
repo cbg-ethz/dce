@@ -1,3 +1,8 @@
+###
+# Convert GTF file to dataframe.
+###
+
+
 library(rtracklayer)
 gencode <- rtracklayer::import(snakemake@input[[1]])
 gencode = as.data.frame(gencode)

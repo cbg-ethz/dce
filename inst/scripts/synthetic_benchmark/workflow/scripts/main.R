@@ -1,3 +1,8 @@
+###
+# Core of synthetic benchmarking check usage string for more information.
+###
+
+
 library(tidyverse)
 library(magrittr)
 library(graph)

@@ -1,3 +1,9 @@
+###
+# Download gene expression data from TCGA
+# (https://www.cancer.gov/about-nci/organization/ccg/research/structural-genomics/tcga).
+###
+
+
 library(tidyverse)
 
 

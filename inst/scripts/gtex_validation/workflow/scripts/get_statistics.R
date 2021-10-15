@@ -1,3 +1,8 @@
+###
+# Compute performance measures (correlation, mean squared error).
+###
+
+
 print(snakemake@input[[1]])
 
 mse_with_deconf = c()
@@ -16,7 +21,7 @@ for(file in snakemake@input){
   x2 = -log(c(x2)[is.na(c(x2))==FALSE] + 1e-10)
   mse_with_deconf = c(mse_with_deconf, mean((x1-x2)^2))
   cor_with_deconf = c(cor_with_deconf, cor(x1, x2))
-  
+
   y1 = out$normal_fit_no_deconf$dce_pvalue
   y2 = out$extended_fit_no_deconf$dce_pvalue
   shared_genes = intersect(colnames(y1), colnames(y2))

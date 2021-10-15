@@ -1,3 +1,8 @@
+###
+# Plot performance comparison for all models.
+###
+
+
 library(tidyverse)
 
 # parse commandline arguments
@@ -44,7 +49,7 @@ create.plots <- function(df.bench, plot.dir, varied.parameter) {
 
   for (measure in performance.measures) {
     print(glue::glue("Plotting {measure}"))
-    
+
     xlabel <- switch(unique(df.bench$varied.parameter),
                      "Adjustment set" = 'Confounders',
                      "Effect magnitude" = 'Maximum absolute effect size',
