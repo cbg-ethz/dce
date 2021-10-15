@@ -116,6 +116,8 @@ rule all:
 checkpoint retrieve_pathways:
     output:
         pathway_dir = directory('results/pathways/')
+    conda:
+        'envs/stack.yaml'
     resources:
         mem_mb = 5_000
     script:
@@ -130,6 +132,8 @@ checkpoint pathway_statistics:
         out_dir = directory('results/pathway_statistics/')
     params:
         perturbed_genes = all_perturbed_genes
+    conda:
+        'envs/stack.yaml'
     resources:
         mem_mb = 10_000
     script:
@@ -142,6 +146,8 @@ rule analyze_single_perturbed_gene:
         count_mt_file = 'resources/data/{study}/Counts_{gene}_{treatment}.csv'
     output:
         out_dir = directory('results/perturbation_analysis/{study}/{gene}/{treatment}/')
+    conda:
+        'envs/stack.yaml'
     resources:
         mem_mb = 10_000
     script:
@@ -180,6 +186,8 @@ rule compute_dces:
         out_dir = directory(f'results/dce_results/{{pathway}}/{{gene}}/{{study}}/{{treatment}}/{paramspace.wildcard_pattern}/')
     params:
         computation = paramspace.instance
+    conda:
+        'envs/stack.yaml'
     resources:
         mem_mb = 10_000
     script:
@@ -218,6 +226,8 @@ rule additional_statistics:
     output:
         fname = f'results/aggregated_statistics/{paramspace.wildcard_pattern}/additional_statistics.csv',
         out_dir = directory(f'results/aggregated_statistics/{paramspace.wildcard_pattern}/additional_statistics_plots/')
+    conda:
+        'envs/stack.yaml'
     resources:
         mem_mb = 10_000
     script:
@@ -229,6 +239,8 @@ rule aggregated_statistics:
         fname = f'results/aggregated_statistics/{paramspace.wildcard_pattern}/dce_lists.csv'
     output:
         out_dir = directory(f'results/aggregated_statistics/{paramspace.wildcard_pattern}/details/')
+    conda:
+        'envs/stack.yaml'
     script:
         'scripts/aggregated_statistics.R'
 
@@ -238,6 +250,8 @@ rule compute_performance:
         fname = f'results/aggregated_statistics/{paramspace.wildcard_pattern}/dce_lists.csv'
     output:
         out_dir = directory(f'results/performance/results/{paramspace.wildcard_pattern}/threshold_{{threshold}}/')
+    conda:
+        'envs/stack.yaml'
     script:
         'scripts/compute_performance.py'
 
@@ -247,6 +261,8 @@ rule plot_performance:
         dname = f'results/performance/results/{paramspace.wildcard_pattern}/threshold_{{threshold}}/'
     output:
         out_dir = directory(f'results/performance/plots/{paramspace.wildcard_pattern}/threshold_{{threshold}}/')
+    conda:
+        'envs/stack.yaml'
     script:
         'scripts/plot_performance.py'
 
@@ -260,5 +276,7 @@ rule compare_performance:
         )
     output:
         dname = directory('results/performance/comparison/threshold_{threshold}/')
+    conda:
+        'envs/stack.yaml'
     script:
         'scripts/compare_performance.py'

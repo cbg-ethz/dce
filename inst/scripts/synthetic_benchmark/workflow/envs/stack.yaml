@@ -1,0 +1,58 @@
+channels:
+  - bioconda
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  # C++ deps for pip packages
+  - cython
+  - armadillo
+  - graph-tool
+
+  # Python dependencies
+  - numpy
+  - pandas
+  - networkx
+  - scikit-learn
+  - seaborn
+  - matplotlib
+  - statannot
+  - tqdm
+  - natsort
+  - sh
+
+  - pip
+  - pip:
+    - bioinf_common
+    - KEGGutils
+    - causaldag
+
+  # R dependencies
+  - r-devtools
+  - r-tidyverse
+  - r-igraph
+  - r-ggraph
+  - r-tidygraph
+  - r-cowplot
+  - r-matrixstats
+  - r-rstudioapi
+  - r-ggplotify
+  - r-rcppparallel
+  - r-harmonicmeanp
+  - r-naturalsort
+  - r-ggally
+  - r-pcalg
+  - r-mgsub
+  - bioconductor-enhancedvolcano
+  - bioconductor-biomart
+  - bioconductor-deseq2
+  - bioconductor-rgraphviz
+  - bioconductor-rtracklayer
+  - bioconductor-org.hs.eg.db
+  - bioconductor-hdf5array
+  - bioconductor-summarizedexperiment
+  - bioconductor-tcgabiolinks
+  - bioconductor-kegggraph
+  - bioconductor-annotationdbi
+  - bioconductor-edger
+  - bioconductor-carnival
