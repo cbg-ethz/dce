@@ -58,13 +58,14 @@ create.plots <- function(df.bench, plot.dir, varied.parameter) {
                      "Beta distribution" = "Beta distribution",
                      "latent distribution" = "latent distribution")
 
-    meth_order <- c('dce', 'cor', 'pcor', 'fggm', 'ldgm', 'car', 'dge', 'rand', 'dce (no library size correction)', 'dce (no latent correction)')
+    meth_order <- c('dce', 'cor', 'pcor', 'fggm', 'ldgm', 'car', 'dge', 'rand', 'dce (no library\n size correction)', 'dce (no latent\n correction)')
     meth_color <- c('red', 'lightblue', 'blue', 'orange', 'pink', 'green', 'purple', 'grey', '#ff7777', 'darkred')
     meth_color <- meth_color[meth_order %in% colnames(df.bench)]
     meth_order <- meth_order[meth_order %in% colnames(df.bench)]
 
     options(ggplot.discrete.fill = meth_color)
 
+    baseSize <- 15
     p <- df.bench %>%
       dplyr::filter(type == measure) %>%
       gather("variable", "value", -parameter, -type, -varied.parameter, -rng.seed) %>%
@@ -75,7 +76,7 @@ create.plots <- function(df.bench, plot.dir, varied.parameter) {
       ggtitle(paste(varied.parameter)) +
       ylab(glue::glue("{measure}")) +
       xlab(xlabel) +
-      theme_minimal(base_size=20) +
+      theme_minimal(base_size=baseSize) +
       theme(plot.title=element_text(hjust=0.5)) +
       guides(fill=guide_legend(title="Methods",
                                label.them = element_text(face = 'italic')))
@@ -85,7 +86,9 @@ create.plots <- function(df.bench, plot.dir, varied.parameter) {
     } else if (measure %in% c("precision", "recall", "f1-score", "pr-auc", "roc-auc", "roc-auc_es", "ROC-AUC", "ROC-AUC (ES)")) {
       p <- p + ylim(0, 1)
     }
-
+    
+  width <- 15
+  height <- 10
     ggsave(file.path(plot.dir, glue::glue("benchmark_{measure}.pdf")), plot = p,
            width = width, height = height, units = 'cm')
   }
@@ -118,7 +121,7 @@ create.plots <- function(df.bench, plot.dir, varied.parameter) {
     geom_boxplot() +
     ggtitle(paste(varied.parameter)) +
     ylab("value") +
-    theme_minimal(base_size=20) +
+    theme_minimal(base_size=baseSize) +
     theme(plot.title=element_text(hjust=0.5))
     ggsave(file.path(plot.dir, "benchmark_dce_range.pdf"),
            width = width, height = height, units = 'cm', plot = p)
@@ -130,7 +133,7 @@ create.plots <- function(df.bench, plot.dir, varied.parameter) {
     geom_boxplot() +
     ggtitle(paste(varied.parameter)) +
     ylab("value") +
-    theme_minimal(base_size=20) +
+    theme_minimal(base_size=baseSize) +
     theme(plot.title=element_text(hjust=0.5))
     ggsave(file.path(plot.dir, "benchmark_graph_features.pdf"),
            width = width, height = height, units = 'cm', plot = p)
@@ -142,7 +145,7 @@ create.plots <- function(df.bench, plot.dir, varied.parameter) {
     geom_boxplot() +
     ggtitle(paste(varied.parameter)) +
     ylab("value") +
-    theme_minimal(base_size=20) +
+    theme_minimal(base_size=baseSize) +
     theme(plot.title=element_text(hjust=0.5))
     ggsave(file.path(plot.dir, "benchmark_lib_size_stats.pdf"),
            width = width, height = height, units = 'cm', plot = p)
@@ -154,7 +157,7 @@ create.plots <- function(df.bench, plot.dir, varied.parameter) {
     geom_boxplot() +
     ggtitle(paste(varied.parameter)) +
     ylab("value") +
-    theme_minimal(base_size=20) +
+    theme_minimal(base_size=baseSize) +
     theme(plot.title=element_text(hjust=0.5))
     ggsave(file.path(plot.dir, "benchmark_dispersion_estimate.pdf"),
            width = width, height = height, units = 'cm', plot = p)
@@ -166,7 +169,7 @@ create.plots <- function(df.bench, plot.dir, varied.parameter) {
     geom_boxplot() +
     ggtitle(paste(varied.parameter)) +
     ylab("value") +
-    theme_minimal(base_size=20) +
+    theme_minimal(base_size=baseSize) +
     theme(plot.title=element_text(hjust=0.5))
     ggsave(file.path(plot.dir, "benchmark_mean_estimate.pdf"),
            width = width, height = height, units = 'cm', plot = p)
@@ -178,7 +181,7 @@ create.plots <- function(df.bench, plot.dir, varied.parameter) {
     geom_boxplot() +
     ggtitle(paste(varied.parameter)) +
     ylab("value") +
-    theme_minimal(base_size=20) +
+    theme_minimal(base_size=baseSize) +
     theme(plot.title=element_text(hjust=0.5))
     ggsave(file.path(plot.dir, "benchmark_prevalence.pdf"),
            width = width, height = height, units = 'cm', plot = p)
@@ -214,7 +217,7 @@ df.bench$varied.parameter <- mgsub::mgsub(df.bench$varied.parameter,
                                             "latent distribution"))
 colnames(df.bench) <- mgsub::mgsub(colnames(df.bench),
                                    c('dce.lm.tpm', 'fggm', 'cor', 'pcorz', 'dce.nolib', 'dce.lm.tpm.nolatent'),
-                                   c('dce', 'fggm', 'cor', 'pcor', 'dce (no library size correction)', 'dce (no latent correction)'))
+                                   c('dce', 'fggm', 'cor', 'pcor', 'dce (no library\n size correction)', 'dce (no latent\n correction)'))
 if (!'dce' %in% colnames(df.bench)) {
   colnames(df.bench) <- gsub('.HC', '', colnames(df.bench))
 }
