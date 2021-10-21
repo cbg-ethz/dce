@@ -1,3 +1,8 @@
+###
+# Preprocess GTEx datasets (not part of workflow).
+###
+
+
 rm(list=ls())
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 
@@ -20,16 +25,16 @@ for(fn in fns) {
   tissue_name <- strsplit(strsplit(fn, ".", fixed = T)[[1]][2], "/")[[1]][4]
   d_fn <- paste("./GTEx_Analysis_v8_eQTL_expression_matrices/", tissue_name, ".v8.normalized_expression.bed.gz", sep="")
   all_data <- read.csv(d_fn, header = T, sep="\t")
-  
+
   expr <- t(all_data[,5:ncol(all_data)])
   colnames(expr) = all_data$gene_id
   for(i in 1:ncol(expr)){
     colnames(expr)[i] = ens_to_symbol[[colnames(expr)[i]]]
   }
   chrs <- all_data$X.chr
-  
+
   covariates <- t(C[,2:ncol(C)])
-  
+
   L <- list()
   L$covariates <- covariates
   L$expr.normal <- expr

@@ -109,6 +109,68 @@ plot(res) +
 ```
 
 
+# DCE reconstruction with non-trivial network
+
+To get a better feeling for the behavior of *dce*, we will look at DCE estimates for a larger pathway.
+In particular, we create a $20$ node wild-type (WT) network with edge probability $0.3$ as well as a dysregulated mutated (MT) network.
+
+
+```{r}
+set.seed(1337)
+
+# create wild-type and mutant networks
+graph_wt <- create_random_DAG(20, 0.3)
+graph_mt <- resample_edge_weights(graph_wt)
+
+cowplot::plot_grid(
+  plot_network(as(graph_wt, "matrix"), labelsize = 0, arrow_size = 0.01),
+  plot_network(as(graph_mt, "matrix"), labelsize = 0, arrow_size = 0.01),
+  labels = c("WT", "MT")
+)
+```
+
+Next, we simulate gene expression data and compute DCEs.
+
+```{r}
+# simulate gene expression data for both networks
+X_wt <- simulate_data(graph_wt)
+X_mt <- simulate_data(graph_mt)
+
+# compute DCEs
+res <- dce::dce(graph_wt, X_wt, X_mt)
+
+df_dce <- res %>%
+  as.data.frame %>%
+  drop_na %>%
+  arrange(dce_pvalue)
+```
+
+Finally, we compare the estimated to the ground truth DCEs.
+
+```{r}
+# compute ground truth DCEs
+dce_gt <- trueEffects(graph_mt) - trueEffects(graph_wt)
+dce_gt_ind <- which(dce_gt != 0, arr.ind = TRUE)
+
+# create plot
+data.frame(
+  source = paste0("n", dce_gt_ind[, "row"]),
+  target = paste0("n", dce_gt_ind[, "col"]),
+  dce_ground_truth = dce_gt[dce_gt != 0]
+) %>%
+  inner_join(df_dce, by = c("source", "target")) %>%
+  rename(dce_estimate = dce) %>%
+ggplot(aes(x = dce_ground_truth, y = dce_estimate)) +
+  geom_abline(color = "gray") +
+  geom_point() +
+  xlab("DCE (ground truth") +
+  ylab("DCE (estimate)") +
+  theme_minimal()
+```
+
+We observe that *dce* is able to nicely recover DCEs of moderate as well as large and small magnitude.
+
+
 # Application to real data
 
 Pathway dysregulations are a common cancer hallmark [@hanahan2011hallmarks].

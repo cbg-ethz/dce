@@ -1,4 +1,8 @@
-## paper: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6659630/
+###
+# Wrapper for FastGGM (https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6659630/).
+###
+
+
 library(RcppParallel)
 library(FastGGM)
 
@@ -38,21 +42,21 @@ FastGGM_Diff <-function(case,control,alpha=0.05){
   w.upper = which(upper.tri(II))
   w.mat = which(upper.tri(II), arr.ind = TRUE)
   genepair = data.frame(gene1 = colnames(case)[w.mat[, 1]],gene2 = colnames(case)[w.mat[, 2]])
-  
+
   fastggm_case <- FastGGM_Parallel(case)
   fastggm_control <- FastGGM_Parallel(control)
-  
+
   fastggm_case_control = Diff.omega(fastggm_case$precision,fastggm_control$precision,n1,n2)
   pvalue_fastggm_Diff = 2*pnorm(-abs(fastggm_case_control[w.upper]))
-  
+
   results = data.frame(genepair = genepair,
-                       case_precision = fastggm_case$precision[w.upper], 
+                       case_precision = fastggm_case$precision[w.upper],
                        case_precision_p = fastggm_case$p_precision[w.upper],
-                       case_partialCor = fastggm_case$partialCor[w.upper], 
+                       case_partialCor = fastggm_case$partialCor[w.upper],
                        case_partialCor_p = fastggm_case$p_partialCor[w.upper],
                        control_precision = fastggm_control$precision[w.upper],
                        control_precision_p = fastggm_control$p_precision[w.upper],
-                       control_partialCor = fastggm_control$partialCor[w.upper], 
+                       control_partialCor = fastggm_control$partialCor[w.upper],
                        control_partialCor_p = fastggm_control$p_partialCor[w.upper],
                        W = fastggm_case_control[w.upper],
                        pvalue_fastggm_Diff = pvalue_fastggm_Diff,
@@ -61,17 +65,17 @@ FastGGM_Diff <-function(case,control,alpha=0.05){
   dce <- fastggm_case_control
   dce_pvalue <- dce*0
   dce_pvalue[upper.tri(dce_pvalue)] <- pvalue_fastggm_Diff
-  
-  
+
+
   ## M = max(fastggm_case_control^2);
   ## # Calculate p-value
   ## Global_p_value = 1-exp(-1/sqrt(8*3.14159)*exp(-(M-4*log(p)+log(log(p)))/2))
-  
-  
+
+
   ## FDR_selection = FDR_control(fastggm_case_control,p,alpha)
-  
+
   return(list(
       # M=M, Global_p_value=Global_p_value, results = results, W = fastggm_case_control[w.upper],FDR_results = results[FDR_selection,],
-      dce=dce,dce_pvalue=dce_pvalue)) 
-  
+      dce=dce,dce_pvalue=dce_pvalue))
+
 }

@@ -16,6 +16,8 @@ rule run_benchmark:
         benchmark_script = srcdir('scripts/main.R')
     resources:
         mem_mb = 5_000
+    # conda:
+    #     'envs/stack.yaml'
     run:
         import sh
 
@@ -47,6 +49,8 @@ rule aggregate_replicates:
             allow_missing=True)
     output:
         fname = 'results/bench_{benchmark}.csv'
+    # conda:
+    #     'envs/stack.yaml'
     run:
         import pandas as pd
 
@@ -61,6 +65,8 @@ rule plot_results:
         outdir = directory('results/plots_{benchmark}/')
     params:
         plotting_script = srcdir('scripts/plotting.R')
+    # conda:
+    #     'envs/stack.yaml'
     run:
         import sh
 

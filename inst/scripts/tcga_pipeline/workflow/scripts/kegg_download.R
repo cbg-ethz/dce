@@ -1,3 +1,8 @@
+###
+# Download pathways from KEGG.
+###
+
+
 library(tidyverse)
 
 library(KEGGgraph) # else: "data set `KEGGEdgeSubtype` not found"

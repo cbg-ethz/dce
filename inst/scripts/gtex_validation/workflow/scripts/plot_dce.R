@@ -1,3 +1,8 @@
+###
+# Compare estimated DCEs for original and extended pathway.
+###
+
+
 library(ggplot2)
 library(cowplot)
 
@@ -27,26 +32,26 @@ print(c('without deconfounding: ', cor(y1, y2)))
 gg1 = ggplot(data.frame(x=x1, y=x2), aes(x=x, y=y))+
   geom_point(size=0.8, alpha=0.7)+
   geom_abline(color='red', linetype='dashed') +
-  xlab('DCE for original pathway') + 
+  xlab('DCE for original pathway') +
   ylab('DCE for extended pathway') +
   theme_light() +
-  theme(legend.position='none', 
-        axis.text.y=element_text(size=13), 
-        axis.text.x=element_text(size=13), 
-        axis.title.x=element_text(size=14), 
+  theme(legend.position='none',
+        axis.text.y=element_text(size=13),
+        axis.text.x=element_text(size=13),
+        axis.title.x=element_text(size=14),
         axis.title.y=element_text(size=14))
 gg2 = ggplot(data.frame(x=y1, y=y2), aes(x=x, y=y))+
   geom_point(size=0.8, alpha=0.7)+
   geom_abline(color='red', linetype='dashed') +
-  xlab('DCE for original pathway') + 
+  xlab('DCE for original pathway') +
   ylab('DCE for extended pathway') +
   theme_light() +
-  theme(legend.position='none', 
-        axis.text.y=element_text(size=13), 
-        axis.text.x=element_text(size=13), 
+  theme(legend.position='none',
+        axis.text.y=element_text(size=13),
+        axis.text.x=element_text(size=13),
         axis.title.x=element_text(size=14),
         axis.title.y=element_text(size=14))
-gg = plot_grid(gg1, gg2, ncol=1, 
+gg = plot_grid(gg1, gg2, ncol=1,
                labels=c('with deconfounding', 'no deconfounding'), label_size = 16)
 
 ggsave(gg, filename=snakemake@output[[1]], width=6, height=6)

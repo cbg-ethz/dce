@@ -1,3 +1,8 @@
+###
+# Compute pathway statistics, such as node degrees.
+###
+
+
 library(tidyverse)
 
 

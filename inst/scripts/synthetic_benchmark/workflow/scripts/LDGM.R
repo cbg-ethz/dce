@@ -1,3 +1,8 @@
+###
+# Wrapper for LDGM (https://academic.oup.com/nar/article/44/17/e140/2468041).
+###
+
+
 LDGM <- function(wt.X,mt.X) {
     wt.LC <- sin((pi/2)*cor(wt.X,method="k"))
     diag(wt.LC) <- 1
@@ -12,6 +17,6 @@ LDGM <- function(wt.X,mt.X) {
     Theta <- as(read.csv(paste0("workflow/scripts/LDGM/",theta.f),header=FALSE),"matrix")
     system(paste0("rm ", wt.f))
     system(paste0("rm ", mt.f))
-    system(paste0("rm workflow/scripts/LDGM/", theta.f))    
+    system(paste0("rm workflow/scripts/LDGM/", theta.f))
     return(Theta)
 }

@@ -1,3 +1,8 @@
+###
+# Compute differentially expressed genes using edgeR.
+###
+
+
 library(edgeR)
 library(harmonicmeanp)
 
