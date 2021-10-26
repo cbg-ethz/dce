@@ -1,7 +1,7 @@
 Package: dce
 Type: Package
 Title: Pathway Enrichment Based on Differential Causal Effects
-Version: 1.2.0
+Version: 1.3.0
 Authors@R:
     c(
         person(
