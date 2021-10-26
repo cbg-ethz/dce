@@ -29,6 +29,7 @@ gg1 = ggplot(data.frame(x=x1, y=x2), aes(x=x, y=y))+
   geom_abline(color='red', linetype='dashed') +
   xlab('DCE for original pathway') + 
   ylab('DCE for extended pathway') +
+  xlim(c(-50, 50)) + ylim(c(-50, 50)) +
   theme_light() +
   theme(legend.position='none', 
         axis.text.y=element_text(size=13), 
@@ -40,6 +41,7 @@ gg2 = ggplot(data.frame(x=y1, y=y2), aes(x=x, y=y))+
   geom_abline(color='red', linetype='dashed') +
   xlab('DCE for original pathway') + 
   ylab('DCE for extended pathway') +
+  xlim(c(-50, 50)) + ylim(c(-50, 50)) +
   theme_light() +
   theme(legend.position='none', 
         axis.text.y=element_text(size=13), 

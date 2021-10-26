@@ -6,23 +6,18 @@ for(i in 1:nrow(gencode)){
   ens_to_symbol[[gencode$gene_id[i]]] <- gencode$gene_name[i]
 }
 
-C <- read.csv(snakemake@input$covariates, header=T, sep="\t")
-#if(dim(C)[2] < 300) {
-#  next()
-#}
-all_data <- read.csv(snakemake@input$expressions, header = T, sep="\t")
-  
-expr <- t(all_data[,5:ncol(all_data)])
-colnames(expr) = all_data$gene_id
+expr <- t(read.csv(snakemake@input$expressions, header=T, sep="\t"))
 for(i in 1:ncol(expr)){
   colnames(expr)[i] = ens_to_symbol[[colnames(expr)[i]]]
 }
-chrs <- all_data$X.chr
-  
+
+C <- read.csv(snakemake@input$covariates, header=T, sep="\t")
 covariates <- t(C[,2:ncol(C)])
-  
+
+common = intersect(rownames(expr), rownames(covariates))
+covariates = covariates[common, ]
+expr = expr[common,]
+
 expr.normal <- expr
 expr.unconfounded <- lm(expr ~ covariates)$residuals
-chromosomes <- chrs
-
-save(covariates, expr.normal, expr.unconfounded, chromosomes, file = snakemake@output[[1]])
+save(covariates, expr.normal, expr.unconfounded, file = snakemake@output[[1]])
