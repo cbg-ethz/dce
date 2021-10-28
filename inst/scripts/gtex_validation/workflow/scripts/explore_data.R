@@ -1,6 +1,11 @@
+###
+# Plot pathway under consideration.
+###
+
+
 library(tidyverse)
 library(cowplot)
-devtools::load_all("~/Documents/projects/CausalPathways/dce")
+devtools::load_all("../../..")
 
 View(dce::df_pathway_statistics %>%
        arrange(desc(node_num)))

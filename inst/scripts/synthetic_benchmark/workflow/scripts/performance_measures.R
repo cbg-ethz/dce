@@ -1,4 +1,8 @@
-# note regarding precision, recall, f1-score computation: https://github.com/dice-group/gerbil/wiki/Precision,-Recall-and-F1-measure
+###
+# Define performance measures.
+# Note regarding precision, recall, f1-score computation: https://github.com/dice-group/gerbil/wiki/Precision,-Recall-and-F1-measure
+#
+
 
 get.classification.counts <- function(df, col, alpha = 0.05) {
   # df.classification <- df %>%

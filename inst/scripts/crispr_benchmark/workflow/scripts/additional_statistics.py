@@ -1,3 +1,9 @@
+"""
+Plot gene expression and pathway (network) degree statistics for genes
+perturbed in study.
+"""
+
+
 from pathlib import Path
 
 import numpy as np

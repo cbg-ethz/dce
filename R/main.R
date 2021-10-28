@@ -576,7 +576,8 @@ dce_nb <- function(
         dce = dce_mat,
         dce_stderr = dce_stderr_mat,
         dce_pvalue = dce_pvalue_mat,
-        pathway_pvalue = pathway_pvalue
+        pathway_pvalue = pathway_pvalue,
+        deconfounding = deconfounding
     ), class = "dce")
 }
 

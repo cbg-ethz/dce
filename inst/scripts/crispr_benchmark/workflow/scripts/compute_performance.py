@@ -1,3 +1,8 @@
+"""
+Compute performance (ROC-AUC) of DCE and (partial) correlation estimates.
+"""
+
+
 from pathlib import Path
 
 import numpy as np

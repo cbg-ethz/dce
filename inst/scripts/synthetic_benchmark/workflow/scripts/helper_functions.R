@@ -1,3 +1,10 @@
+###
+# Utility functions for synthetic benchmark.
+# Includes network generation and perturbation, as well as
+# several statistics computations.
+###
+
+
 generate.random.graphs <- function(node.num, beta.magnitude, true.positives,
                                    mineff = 0, method = 'unif',
                                    edge.prob = runif(1, 0, 0.2), ...) {

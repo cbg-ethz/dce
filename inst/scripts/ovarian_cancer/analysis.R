@@ -1,3 +1,8 @@
+###
+# Download data, process sequencing data and compute DCEs.
+###
+
+
 library(tidyverse)
 
 # download sequencing data

@@ -1,3 +1,9 @@
+###
+# Investigate network edge distances between perturbed genes and
+# estimated DCEs.
+###
+
+
 library(tidyverse)
 
 

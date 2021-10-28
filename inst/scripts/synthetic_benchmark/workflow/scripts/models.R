@@ -1,3 +1,8 @@
+###
+# Define how to run all models considered in synthetic benchmark.
+###
+
+
 compute.tpm <- function(counts, len.kb = 1) {
   # TODO: is len.kb == 1 reasonable in our case?
   rpk <- counts / len.kb

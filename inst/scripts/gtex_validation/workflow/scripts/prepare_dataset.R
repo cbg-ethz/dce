@@ -1,3 +1,8 @@
+###
+# Preprocess GTEx datasets.
+###
+
+
 load(snakemake@input$gencode) #loads variable gencode
 
 library(hash)

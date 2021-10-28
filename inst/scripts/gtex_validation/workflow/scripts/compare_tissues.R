@@ -1,3 +1,8 @@
+###
+# Run dce with and without confounding for a pair of datasets.
+###
+
+
 devtools::load_all("../../..")
 
 if(snakemake@wildcards[['tissue1']] == snakemake@wildcards[['tissue2']]){
