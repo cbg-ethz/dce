@@ -13,7 +13,7 @@ vignette: >
 
 # Overview
 
-One cause of diseases like cancer is the deregulation of signalling pathways. The interaction of two or more genes is changed and cell behaviour is changed in the malignant tissue.
+One cause of diseases like cancer is the dysregulation of signalling pathways. The interaction of two or more genes is changed and cell behaviour is changed in the malignant tissue.
 
 The estimation of causal effects from observational data has previously been used to elucidate gene interactions. We extend this notion to compute Differential Causal Effects (DCE). We compare the causal effects between two conditions, such as a malignant tissue (e.g., from a tumor) and a healthy tissue to detect differences in the gene interactions.
 
