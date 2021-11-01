@@ -54,10 +54,34 @@ def read_data(dir_list):
                         'value': df.loc[g].mean(),
                     },
                     {
+                        'type': 'expression_count_median',
+                        'gene': gene,
+                        'source': f'{treatment} -- {g}',
+                        'value': df.loc[g].median(),
+                    },
+                    {
                         'type': 'expression_count_std',
                         'gene': gene,
                         'source': f'{treatment} -- {g}',
                         'value': df.loc[g].std(),
+                    },
+                    {
+                        'type': 'expression_count_mean_nonzero',
+                        'gene': gene,
+                        'source': f'{treatment} -- {g}',
+                        'value': df.loc[g].loc[lambda x: x > 0].mean(),
+                    },
+                    {
+                        'type': 'expression_count_median_nonzero',
+                        'gene': gene,
+                        'source': f'{treatment} -- {g}',
+                        'value': df.loc[g].loc[lambda x: x > 0].median(),
+                    },
+                    {
+                        'type': 'expression_count_std_nonzero',
+                        'gene': gene,
+                        'source': f'{treatment} -- {g}',
+                        'value': df.loc[g].loc[lambda x: x > 0].std(),
                     },
                 ]
             )
