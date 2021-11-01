@@ -174,30 +174,33 @@ to define the adjustment set Z for the regression</p></td>
     <p>matrix of partial correlations</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='va'>x</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='fl'>100</span><span class='op'>)</span>,<span class='fl'>10</span>,<span class='fl'>10</span><span class='op'>)</span>
-<span class='fu'>pcor</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='warning'>Warning: The inverse of variance-covariance matrix is calculated using Moore-Penrose generalized matrix invers due to its determinant of zero.</span></div><div class='output co'>#&gt; <span class='warning'>Warning: NaNs produced</span></div><div class='output co'>#&gt;             [,1]        [,2]       [,3]        [,4]         [,5]       [,6]
-#&gt;  [1,]  1.0000000 -0.70055605  0.6979819  0.62859084  0.775515686 -0.8665417
-#&gt;  [2,] -0.7005560  1.00000000  0.9860288  0.72706574  0.968294586 -0.9376398
-#&gt;  [3,]  0.6979819  0.98602878  1.0000000 -0.71563606 -0.957360956  0.9351657
-#&gt;  [4,]  0.6285908  0.72706574 -0.7156361  1.00000000 -0.658494940  0.7279581
-#&gt;  [5,]  0.7755157  0.96829459 -0.9573610 -0.65849494  1.000000000  0.9502226
-#&gt;  [6,] -0.8665417 -0.93763984  0.9351657  0.72795814  0.950222565  1.0000000
-#&gt;  [7,]  0.7997415  0.98125003 -0.9762323 -0.74382805 -0.965824742  0.9750838
-#&gt;  [8,]  0.8381308  0.86001764 -0.8858015 -0.65146627 -0.859238465  0.9403969
-#&gt;  [9,]  0.2342361 -0.08592856  0.1168653  0.01078242  0.004489181  0.1695102
-#&gt; [10,] -0.6333095 -0.94430452  0.9450270  0.69940280  0.889756452 -0.9083258
-#&gt;              [,7]       [,8]         [,9]      [,10]
-#&gt;  [1,]  0.79974149  0.8381308  0.234236077 -0.6333095
-#&gt;  [2,]  0.98125003  0.8600176 -0.085928564 -0.9443045
-#&gt;  [3,] -0.97623227 -0.8858015  0.116865275  0.9450270
-#&gt;  [4,] -0.74382805 -0.6514663  0.010782425  0.6994028
-#&gt;  [5,] -0.96582474 -0.8592385  0.004489181  0.8897565
-#&gt;  [6,]  0.97508382  0.9403969  0.169510178 -0.9083258
-#&gt;  [7,]  1.00000000 -0.9223709 -0.017162694  0.9457788
-#&gt;  [8,] -0.92237087  1.0000000 -0.188467530  0.8819946
-#&gt;  [9,] -0.01716269 -0.1884675  1.000000000 -0.0122611
-#&gt; [10,]  0.94577884  0.8819946 -0.012261102  1.0000000</div></pre>
+    <pre class="examples"><span class='r-in'><span class='va'>x</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='fl'>100</span><span class='op'>)</span>,<span class='fl'>10</span>,<span class='fl'>10</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'>pcor</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span></span>
+<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>The inverse of variance-covariance matrix is calculated using Moore-Penrose generalized matrix invers due to its determinant of zero.</span>
+<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>NaNs produced</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>             [,1]        [,2]       [,3]        [,4]         [,5]       [,6]</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [1,]  1.0000000 -0.70055605  0.6979819  0.62859084  0.775515686 -0.8665417</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [2,] -0.7005560  1.00000000  0.9860288  0.72706574  0.968294586 -0.9376398</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [3,]  0.6979819  0.98602878  1.0000000 -0.71563606 -0.957360956  0.9351657</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [4,]  0.6285908  0.72706574 -0.7156361  1.00000000 -0.658494940  0.7279581</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [5,]  0.7755157  0.96829459 -0.9573610 -0.65849494  1.000000000  0.9502226</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [6,] -0.8665417 -0.93763984  0.9351657  0.72795814  0.950222565  1.0000000</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [7,]  0.7997415  0.98125003 -0.9762323 -0.74382805 -0.965824742  0.9750838</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [8,]  0.8381308  0.86001764 -0.8858015 -0.65146627 -0.859238465  0.9403969</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [9,]  0.2342361 -0.08592856  0.1168653  0.01078242  0.004489181  0.1695102</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [10,] -0.6333095 -0.94430452  0.9450270  0.69940280  0.889756452 -0.9083258</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>              [,7]       [,8]         [,9]      [,10]</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [1,]  0.79974149  0.8381308  0.234236077 -0.6333095</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [2,]  0.98125003  0.8600176 -0.085928564 -0.9443045</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [3,] -0.97623227 -0.8858015  0.116865275  0.9450270</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [4,] -0.74382805 -0.6514663  0.010782425  0.6994028</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [5,] -0.96582474 -0.8592385  0.004489181  0.8897565</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [6,]  0.97508382  0.9403969  0.169510178 -0.9083258</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [7,]  1.00000000 -0.9223709 -0.017162694  0.9457788</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [8,] -0.92237087  1.0000000 -0.188467530  0.8819946</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [9,] -0.01716269 -0.1884675  1.000000000 -0.0122611</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [10,]  0.94577884  0.8819946 -0.012261102  1.0000000</span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

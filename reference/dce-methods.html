@@ -291,492 +291,493 @@ for the variables in the adjustment set</p></td>
     <p>list of matrices with dces and corresponding p-value</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='va'>dag</span> <span class='op'>&lt;-</span> <span class='fu'><a href='create_random_DAG.html'>create_random_DAG</a></span><span class='op'>(</span><span class='fl'>30</span>, <span class='fl'>0.2</span><span class='op'>)</span>
-<span class='va'>X.wt</span> <span class='op'>&lt;-</span> <span class='fu'><a href='simulate_data.html'>simulate_data</a></span><span class='op'>(</span><span class='va'>dag</span><span class='op'>)</span>
-<span class='va'>dag.mt</span> <span class='op'>&lt;-</span> <span class='fu'><a href='resample_edge_weights.html'>resample_edge_weights</a></span><span class='op'>(</span><span class='va'>dag</span><span class='op'>)</span>
-<span class='va'>X.mt</span> <span class='op'>&lt;-</span> <span class='fu'><a href='simulate_data.html'>simulate_data</a></span><span class='op'>(</span><span class='va'>dag</span><span class='op'>)</span>
-<span class='fu'>dce</span><span class='op'>(</span><span class='va'>dag</span>,<span class='va'>X.wt</span>,<span class='va'>X.mt</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; $graph
-#&gt;     n1 n2 n3 n4 n5 n6 n7 n8 n9 n10 n11 n12 n13 n14 n15 n16 n17 n18 n19 n20 n21
-#&gt; n1   0  0  1  0  0  0  0  0  0   0   0   0   0   1   1   1   1   0   0   0   0
-#&gt; n2   0  0  0  0  0  0  0  1  0   0   0   0   0   0   0   0   0   1   0   0   0
-#&gt; n3   0  0  0  0  0  1  0  0  0   0   0   0   0   0   0   0   0   0   0   0   0
-#&gt; n4   0  0  0  0  1  0  0  0  0   0   0   0   0   0   1   0   1   0   1   0   0
-#&gt; n5   0  0  0  0  0  1  0  0  0   0   0   0   0   0   0   0   0   0   0   0   0
-#&gt; n6   0  0  0  0  0  0  0  0  0   1   0   0   0   0   1   0   0   0   0   0   1
-#&gt; n7   0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0   1
-#&gt; n8   0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0   0
-#&gt; n9   0  0  0  0  0  0  0  0  0   0   1   0   0   0   0   1   0   0   0   1   0
-#&gt; n10  0  0  0  0  0  0  0  0  0   0   0   1   0   1   0   0   0   0   0   0   0
-#&gt; n11  0  0  0  0  0  0  0  0  0   0   0   0   0   1   0   1   0   0   0   0   1
-#&gt; n12  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   1   0   0   0
-#&gt; n13  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   1   0   0   1   0
-#&gt; n14  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   1   0
-#&gt; n15  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0   0
-#&gt; n16  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   0   1   0   0
-#&gt; n17  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   1   1   0   0
-#&gt; n18  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0   0
-#&gt; n19  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0   0
-#&gt; n20  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0   0
-#&gt; n21  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0   0
-#&gt; n22  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0   0
-#&gt; n23  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0   0
-#&gt; n24  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0   0
-#&gt; n25  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0   0
-#&gt; n26  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0   0
-#&gt; n27  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0   0
-#&gt; n28  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0   0
-#&gt; n29  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0   0
-#&gt; n30  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0   0
-#&gt;     n22 n23 n24 n25 n26 n27 n28 n29 n30
-#&gt; n1    0   0   1   1   1   0   1   1   0
-#&gt; n2    0   0   0   0   0   0   1   0   0
-#&gt; n3    1   0   0   0   0   0   0   0   0
-#&gt; n4    0   1   0   0   0   0   0   0   0
-#&gt; n5    0   0   0   1   0   0   0   0   0
-#&gt; n6    1   0   0   0   0   0   0   0   0
-#&gt; n7    0   0   0   0   0   0   0   0   1
-#&gt; n8    0   0   0   0   0   0   0   0   0
-#&gt; n9    0   0   0   1   0   0   0   0   0
-#&gt; n10   0   0   0   0   0   1   0   0   0
-#&gt; n11   0   0   0   0   0   0   0   0   1
-#&gt; n12   0   0   0   0   0   0   0   0   0
-#&gt; n13   0   0   0   0   0   0   0   0   0
-#&gt; n14   0   0   0   0   0   0   0   0   0
-#&gt; n15   1   0   0   0   0   0   0   0   0
-#&gt; n16   0   1   1   0   0   1   0   0   0
-#&gt; n17   0   0   1   0   0   0   0   0   1
-#&gt; n18   0   0   0   0   0   0   0   0   0
-#&gt; n19   0   0   0   0   0   0   0   0   0
-#&gt; n20   0   0   0   0   0   0   0   0   0
-#&gt; n21   0   0   0   0   1   0   0   0   0
-#&gt; n22   0   0   0   0   0   0   0   0   0
-#&gt; n23   0   0   0   0   0   1   0   0   0
-#&gt; n24   0   0   0   0   0   0   1   1   0
-#&gt; n25   0   0   0   0   0   0   0   0   0
-#&gt; n26   0   0   0   0   0   0   0   0   0
-#&gt; n27   0   0   0   0   0   0   0   0   0
-#&gt; n28   0   0   0   0   0   0   0   0   0
-#&gt; n29   0   0   0   0   0   0   0   0   0
-#&gt; n30   0   0   0   0   0   0   0   0   0
-#&gt; 
-#&gt; $dce
-#&gt;     n1 n2          n3 n4         n5          n6 n7         n8 n9        n10
-#&gt; n1  NA NA 0.004446906 NA         NA          NA NA         NA NA         NA
-#&gt; n2  NA NA          NA NA         NA          NA NA 0.02195047 NA         NA
-#&gt; n3  NA NA          NA NA         NA -0.10882355 NA         NA NA         NA
-#&gt; n4  NA NA          NA NA 0.01202434          NA NA         NA NA         NA
-#&gt; n5  NA NA          NA NA         NA  0.08412434 NA         NA NA         NA
-#&gt; n6  NA NA          NA NA         NA          NA NA         NA NA -0.1592655
-#&gt; n7  NA NA          NA NA         NA          NA NA         NA NA         NA
-#&gt; n8  NA NA          NA NA         NA          NA NA         NA NA         NA
-#&gt; n9  NA NA          NA NA         NA          NA NA         NA NA         NA
-#&gt; n10 NA NA          NA NA         NA          NA NA         NA NA         NA
-#&gt; n11 NA NA          NA NA         NA          NA NA         NA NA         NA
-#&gt; n12 NA NA          NA NA         NA          NA NA         NA NA         NA
-#&gt; n13 NA NA          NA NA         NA          NA NA         NA NA         NA
-#&gt; n14 NA NA          NA NA         NA          NA NA         NA NA         NA
-#&gt; n15 NA NA          NA NA         NA          NA NA         NA NA         NA
-#&gt; n16 NA NA          NA NA         NA          NA NA         NA NA         NA
-#&gt; n17 NA NA          NA NA         NA          NA NA         NA NA         NA
-#&gt; n18 NA NA          NA NA         NA          NA NA         NA NA         NA
-#&gt; n19 NA NA          NA NA         NA          NA NA         NA NA         NA
-#&gt; n20 NA NA          NA NA         NA          NA NA         NA NA         NA
-#&gt; n21 NA NA          NA NA         NA          NA NA         NA NA         NA
-#&gt; n22 NA NA          NA NA         NA          NA NA         NA NA         NA
-#&gt; n23 NA NA          NA NA         NA          NA NA         NA NA         NA
-#&gt; n24 NA NA          NA NA         NA          NA NA         NA NA         NA
-#&gt; n25 NA NA          NA NA         NA          NA NA         NA NA         NA
-#&gt; n26 NA NA          NA NA         NA          NA NA         NA NA         NA
-#&gt; n27 NA NA          NA NA         NA          NA NA         NA NA         NA
-#&gt; n28 NA NA          NA NA         NA          NA NA         NA NA         NA
-#&gt; n29 NA NA          NA NA         NA          NA NA         NA NA         NA
-#&gt; n30 NA NA          NA NA         NA          NA NA         NA NA         NA
-#&gt;             n11        n12 n13        n14          n15         n16         n17
-#&gt; n1           NA         NA  NA -0.0230885  0.009880227 -0.02258093 -0.17154210
-#&gt; n2           NA         NA  NA         NA           NA          NA          NA
-#&gt; n3           NA         NA  NA         NA           NA          NA          NA
-#&gt; n4           NA         NA  NA         NA -0.009786146          NA  0.08005795
-#&gt; n5           NA         NA  NA         NA           NA          NA          NA
-#&gt; n6           NA         NA  NA         NA  0.421949948          NA          NA
-#&gt; n7           NA         NA  NA         NA           NA          NA          NA
-#&gt; n8           NA         NA  NA         NA           NA          NA          NA
-#&gt; n9  -0.01931399         NA  NA         NA           NA  0.04194682          NA
-#&gt; n10          NA 0.01750228  NA -0.7103709           NA          NA          NA
-#&gt; n11          NA         NA  NA  0.5623870           NA -0.32408682          NA
-#&gt; n12          NA         NA  NA         NA           NA          NA          NA
-#&gt; n13          NA         NA  NA         NA           NA          NA  0.06782724
-#&gt; n14          NA         NA  NA         NA           NA          NA          NA
-#&gt; n15          NA         NA  NA         NA           NA          NA          NA
-#&gt; n16          NA         NA  NA         NA           NA          NA          NA
-#&gt; n17          NA         NA  NA         NA           NA          NA          NA
-#&gt; n18          NA         NA  NA         NA           NA          NA          NA
-#&gt; n19          NA         NA  NA         NA           NA          NA          NA
-#&gt; n20          NA         NA  NA         NA           NA          NA          NA
-#&gt; n21          NA         NA  NA         NA           NA          NA          NA
-#&gt; n22          NA         NA  NA         NA           NA          NA          NA
-#&gt; n23          NA         NA  NA         NA           NA          NA          NA
-#&gt; n24          NA         NA  NA         NA           NA          NA          NA
-#&gt; n25          NA         NA  NA         NA           NA          NA          NA
-#&gt; n26          NA         NA  NA         NA           NA          NA          NA
-#&gt; n27          NA         NA  NA         NA           NA          NA          NA
-#&gt; n28          NA         NA  NA         NA           NA          NA          NA
-#&gt; n29          NA         NA  NA         NA           NA          NA          NA
-#&gt; n30          NA         NA  NA         NA           NA          NA          NA
-#&gt;            n18        n19         n20         n21         n22         n23
-#&gt; n1          NA         NA          NA          NA          NA          NA
-#&gt; n2  0.10480319         NA          NA          NA          NA          NA
-#&gt; n3          NA         NA          NA          NA  0.11229107          NA
-#&gt; n4          NA 0.03918013          NA          NA          NA -0.01403817
-#&gt; n5          NA         NA          NA          NA          NA          NA
-#&gt; n6          NA         NA          NA -2.17031005 -0.16382283          NA
-#&gt; n7          NA         NA          NA  0.06284203          NA          NA
-#&gt; n8          NA         NA          NA          NA          NA          NA
-#&gt; n9          NA         NA -0.03351826          NA          NA          NA
-#&gt; n10         NA         NA          NA          NA          NA          NA
-#&gt; n11         NA         NA          NA -0.39607492          NA          NA
-#&gt; n12 0.35360501         NA          NA          NA          NA          NA
-#&gt; n13         NA         NA  0.01611799          NA          NA          NA
-#&gt; n14         NA         NA  1.86109513          NA          NA          NA
-#&gt; n15         NA         NA          NA          NA  0.04729577          NA
-#&gt; n16         NA 0.14752279          NA          NA          NA -0.08867837
-#&gt; n17 0.04397883 0.26253121          NA          NA          NA          NA
-#&gt; n18         NA         NA          NA          NA          NA          NA
-#&gt; n19         NA         NA          NA          NA          NA          NA
-#&gt; n20         NA         NA          NA          NA          NA          NA
-#&gt; n21         NA         NA          NA          NA          NA          NA
-#&gt; n22         NA         NA          NA          NA          NA          NA
-#&gt; n23         NA         NA          NA          NA          NA          NA
-#&gt; n24         NA         NA          NA          NA          NA          NA
-#&gt; n25         NA         NA          NA          NA          NA          NA
-#&gt; n26         NA         NA          NA          NA          NA          NA
-#&gt; n27         NA         NA          NA          NA          NA          NA
-#&gt; n28         NA         NA          NA          NA          NA          NA
-#&gt; n29         NA         NA          NA          NA          NA          NA
-#&gt; n30         NA         NA          NA          NA          NA          NA
-#&gt;             n24         n25       n26        n27        n28          n29
-#&gt; n1  -0.05487977  0.02395073 0.1172733         NA -0.1941715 -0.002244606
-#&gt; n2           NA          NA        NA         NA -0.3520006           NA
-#&gt; n3           NA          NA        NA         NA         NA           NA
-#&gt; n4           NA          NA        NA         NA         NA           NA
-#&gt; n5           NA -1.23990020        NA         NA         NA           NA
-#&gt; n6           NA          NA        NA         NA         NA           NA
-#&gt; n7           NA          NA        NA         NA         NA           NA
-#&gt; n8           NA          NA        NA         NA         NA           NA
-#&gt; n9           NA -0.04150957        NA         NA         NA           NA
-#&gt; n10          NA          NA        NA 0.55994927         NA           NA
-#&gt; n11          NA          NA        NA         NA         NA           NA
-#&gt; n12          NA          NA        NA         NA         NA           NA
-#&gt; n13          NA          NA        NA         NA         NA           NA
-#&gt; n14          NA          NA        NA         NA         NA           NA
-#&gt; n15          NA          NA        NA         NA         NA           NA
-#&gt; n16  0.11145093          NA        NA 0.08157446         NA           NA
-#&gt; n17  0.25553743          NA        NA         NA         NA           NA
-#&gt; n18          NA          NA        NA         NA         NA           NA
-#&gt; n19          NA          NA        NA         NA         NA           NA
-#&gt; n20          NA          NA        NA         NA         NA           NA
-#&gt; n21          NA          NA 0.3221807         NA         NA           NA
-#&gt; n22          NA          NA        NA         NA         NA           NA
-#&gt; n23          NA          NA        NA 0.13149386         NA           NA
-#&gt; n24          NA          NA        NA         NA  0.4075590  0.064234698
-#&gt; n25          NA          NA        NA         NA         NA           NA
-#&gt; n26          NA          NA        NA         NA         NA           NA
-#&gt; n27          NA          NA        NA         NA         NA           NA
-#&gt; n28          NA          NA        NA         NA         NA           NA
-#&gt; n29          NA          NA        NA         NA         NA           NA
-#&gt; n30          NA          NA        NA         NA         NA           NA
-#&gt;             n30
-#&gt; n1           NA
-#&gt; n2           NA
-#&gt; n3           NA
-#&gt; n4           NA
-#&gt; n5           NA
-#&gt; n6           NA
-#&gt; n7   0.06752828
-#&gt; n8           NA
-#&gt; n9           NA
-#&gt; n10          NA
-#&gt; n11 -0.06687664
-#&gt; n12          NA
-#&gt; n13          NA
-#&gt; n14          NA
-#&gt; n15          NA
-#&gt; n16          NA
-#&gt; n17 -0.48293346
-#&gt; n18          NA
-#&gt; n19          NA
-#&gt; n20          NA
-#&gt; n21          NA
-#&gt; n22          NA
-#&gt; n23          NA
-#&gt; n24          NA
-#&gt; n25          NA
-#&gt; n26          NA
-#&gt; n27          NA
-#&gt; n28          NA
-#&gt; n29          NA
-#&gt; n30          NA
-#&gt; 
-#&gt; $dce_stderr
-#&gt;     n1 n2          n3 n4         n5        n6 n7         n8 n9       n10
-#&gt; n1  NA NA 0.009209754 NA         NA        NA NA         NA NA        NA
-#&gt; n2  NA NA          NA NA         NA        NA NA 0.01315102 NA        NA
-#&gt; n3  NA NA          NA NA         NA 0.4523304 NA         NA NA        NA
-#&gt; n4  NA NA          NA NA 0.01525628        NA NA         NA NA        NA
-#&gt; n5  NA NA          NA NA         NA 0.2234551 NA         NA NA        NA
-#&gt; n6  NA NA          NA NA         NA        NA NA         NA NA 0.1391678
-#&gt; n7  NA NA          NA NA         NA        NA NA         NA NA        NA
-#&gt; n8  NA NA          NA NA         NA        NA NA         NA NA        NA
-#&gt; n9  NA NA          NA NA         NA        NA NA         NA NA        NA
-#&gt; n10 NA NA          NA NA         NA        NA NA         NA NA        NA
-#&gt; n11 NA NA          NA NA         NA        NA NA         NA NA        NA
-#&gt; n12 NA NA          NA NA         NA        NA NA         NA NA        NA
-#&gt; n13 NA NA          NA NA         NA        NA NA         NA NA        NA
-#&gt; n14 NA NA          NA NA         NA        NA NA         NA NA        NA
-#&gt; n15 NA NA          NA NA         NA        NA NA         NA NA        NA
-#&gt; n16 NA NA          NA NA         NA        NA NA         NA NA        NA
-#&gt; n17 NA NA          NA NA         NA        NA NA         NA NA        NA
-#&gt; n18 NA NA          NA NA         NA        NA NA         NA NA        NA
-#&gt; n19 NA NA          NA NA         NA        NA NA         NA NA        NA
-#&gt; n20 NA NA          NA NA         NA        NA NA         NA NA        NA
-#&gt; n21 NA NA          NA NA         NA        NA NA         NA NA        NA
-#&gt; n22 NA NA          NA NA         NA        NA NA         NA NA        NA
-#&gt; n23 NA NA          NA NA         NA        NA NA         NA NA        NA
-#&gt; n24 NA NA          NA NA         NA        NA NA         NA NA        NA
-#&gt; n25 NA NA          NA NA         NA        NA NA         NA NA        NA
-#&gt; n26 NA NA          NA NA         NA        NA NA         NA NA        NA
-#&gt; n27 NA NA          NA NA         NA        NA NA         NA NA        NA
-#&gt; n28 NA NA          NA NA         NA        NA NA         NA NA        NA
-#&gt; n29 NA NA          NA NA         NA        NA NA         NA NA        NA
-#&gt; n30 NA NA          NA NA         NA        NA NA         NA NA        NA
-#&gt;            n11       n12 n13       n14        n15       n16       n17
-#&gt; n1          NA        NA  NA 0.0833231 0.08868819 0.0598536 0.1153415
-#&gt; n2          NA        NA  NA        NA         NA        NA        NA
-#&gt; n3          NA        NA  NA        NA         NA        NA        NA
-#&gt; n4          NA        NA  NA        NA 0.03187977        NA 0.1228826
-#&gt; n5          NA        NA  NA        NA         NA        NA        NA
-#&gt; n6          NA        NA  NA        NA 0.29594859        NA        NA
-#&gt; n7          NA        NA  NA        NA         NA        NA        NA
-#&gt; n8          NA        NA  NA        NA         NA        NA        NA
-#&gt; n9  0.01837896        NA  NA        NA         NA 0.1333229        NA
-#&gt; n10         NA 0.1163578  NA 1.3413981         NA        NA        NA
-#&gt; n11         NA        NA  NA 0.8284598         NA 1.0400524        NA
-#&gt; n12         NA        NA  NA        NA         NA        NA        NA
-#&gt; n13         NA        NA  NA        NA         NA        NA 0.0577193
-#&gt; n14         NA        NA  NA        NA         NA        NA        NA
-#&gt; n15         NA        NA  NA        NA         NA        NA        NA
-#&gt; n16         NA        NA  NA        NA         NA        NA        NA
-#&gt; n17         NA        NA  NA        NA         NA        NA        NA
-#&gt; n18         NA        NA  NA        NA         NA        NA        NA
-#&gt; n19         NA        NA  NA        NA         NA        NA        NA
-#&gt; n20         NA        NA  NA        NA         NA        NA        NA
-#&gt; n21         NA        NA  NA        NA         NA        NA        NA
-#&gt; n22         NA        NA  NA        NA         NA        NA        NA
-#&gt; n23         NA        NA  NA        NA         NA        NA        NA
-#&gt; n24         NA        NA  NA        NA         NA        NA        NA
-#&gt; n25         NA        NA  NA        NA         NA        NA        NA
-#&gt; n26         NA        NA  NA        NA         NA        NA        NA
-#&gt; n27         NA        NA  NA        NA         NA        NA        NA
-#&gt; n28         NA        NA  NA        NA         NA        NA        NA
-#&gt; n29         NA        NA  NA        NA         NA        NA        NA
-#&gt; n30         NA        NA  NA        NA         NA        NA        NA
-#&gt;            n18       n19        n20        n21        n22       n23        n24
-#&gt; n1          NA        NA         NA         NA         NA        NA 0.07468137
-#&gt; n2  0.04614738        NA         NA         NA         NA        NA         NA
-#&gt; n3          NA        NA         NA         NA 0.27833017        NA         NA
-#&gt; n4          NA 0.1932808         NA         NA         NA 0.0464228         NA
-#&gt; n5          NA        NA         NA         NA         NA        NA         NA
-#&gt; n6          NA        NA         NA 1.35468001 0.12373419        NA         NA
-#&gt; n7          NA        NA         NA 0.05368548         NA        NA         NA
-#&gt; n8          NA        NA         NA         NA         NA        NA         NA
-#&gt; n9          NA        NA 0.12081547         NA         NA        NA         NA
-#&gt; n10         NA        NA         NA         NA         NA        NA         NA
-#&gt; n11         NA        NA         NA 0.93711459         NA        NA         NA
-#&gt; n12 1.26595074        NA         NA         NA         NA        NA         NA
-#&gt; n13         NA        NA 0.06756581         NA         NA        NA         NA
-#&gt; n14         NA        NA 0.65279421         NA         NA        NA         NA
-#&gt; n15         NA        NA         NA         NA 0.08545895        NA         NA
-#&gt; n16         NA 0.7051035         NA         NA         NA 0.3534113 0.34195927
-#&gt; n17 0.44737266 0.4308435         NA         NA         NA        NA 0.37279557
-#&gt; n18         NA        NA         NA         NA         NA        NA         NA
-#&gt; n19         NA        NA         NA         NA         NA        NA         NA
-#&gt; n20         NA        NA         NA         NA         NA        NA         NA
-#&gt; n21         NA        NA         NA         NA         NA        NA         NA
-#&gt; n22         NA        NA         NA         NA         NA        NA         NA
-#&gt; n23         NA        NA         NA         NA         NA        NA         NA
-#&gt; n24         NA        NA         NA         NA         NA        NA         NA
-#&gt; n25         NA        NA         NA         NA         NA        NA         NA
-#&gt; n26         NA        NA         NA         NA         NA        NA         NA
-#&gt; n27         NA        NA         NA         NA         NA        NA         NA
-#&gt; n28         NA        NA         NA         NA         NA        NA         NA
-#&gt; n29         NA        NA         NA         NA         NA        NA         NA
-#&gt; n30         NA        NA         NA         NA         NA        NA         NA
-#&gt;            n25       n26       n27       n28        n29       n30
-#&gt; n1  0.15048931 0.0845978        NA 0.1316451 0.01492463        NA
-#&gt; n2          NA        NA        NA 0.1346937         NA        NA
-#&gt; n3          NA        NA        NA        NA         NA        NA
-#&gt; n4          NA        NA        NA        NA         NA        NA
-#&gt; n5  1.39727660        NA        NA        NA         NA        NA
-#&gt; n6          NA        NA        NA        NA         NA        NA
-#&gt; n7          NA        NA        NA        NA         NA 0.1126504
-#&gt; n8          NA        NA        NA        NA         NA        NA
-#&gt; n9  0.07132867        NA        NA        NA         NA        NA
-#&gt; n10         NA        NA 1.5075671        NA         NA        NA
-#&gt; n11         NA        NA        NA        NA         NA 1.3820861
-#&gt; n12         NA        NA        NA        NA         NA        NA
-#&gt; n13         NA        NA        NA        NA         NA        NA
-#&gt; n14         NA        NA        NA        NA         NA        NA
-#&gt; n15         NA        NA        NA        NA         NA        NA
-#&gt; n16         NA        NA 0.5158197        NA         NA        NA
-#&gt; n17         NA        NA        NA        NA         NA 0.8407294
-#&gt; n18         NA        NA        NA        NA         NA        NA
-#&gt; n19         NA        NA        NA        NA         NA        NA
-#&gt; n20         NA        NA        NA        NA         NA        NA
-#&gt; n21         NA 0.3518717        NA        NA         NA        NA
-#&gt; n22         NA        NA        NA        NA         NA        NA
-#&gt; n23         NA        NA 0.2800887        NA         NA        NA
-#&gt; n24         NA        NA        NA 0.9336488 0.05774465        NA
-#&gt; n25         NA        NA        NA        NA         NA        NA
-#&gt; n26         NA        NA        NA        NA         NA        NA
-#&gt; n27         NA        NA        NA        NA         NA        NA
-#&gt; n28         NA        NA        NA        NA         NA        NA
-#&gt; n29         NA        NA        NA        NA         NA        NA
-#&gt; n30         NA        NA        NA        NA         NA        NA
-#&gt; 
-#&gt; $dce_pvalue
-#&gt;     n1 n2        n3 n4        n5        n6 n7         n8 n9       n10       n11
-#&gt; n1  NA NA 0.6297429 NA        NA        NA NA         NA NA        NA        NA
-#&gt; n2  NA NA        NA NA        NA        NA NA 0.09669235 NA        NA        NA
-#&gt; n3  NA NA        NA NA        NA 0.8101314 NA         NA NA        NA        NA
-#&gt; n4  NA NA        NA NA 0.4315571        NA NA         NA NA        NA        NA
-#&gt; n5  NA NA        NA NA        NA 0.7069782 NA         NA NA        NA        NA
-#&gt; n6  NA NA        NA NA        NA        NA NA         NA NA 0.2538768        NA
-#&gt; n7  NA NA        NA NA        NA        NA NA         NA NA        NA        NA
-#&gt; n8  NA NA        NA NA        NA        NA NA         NA NA        NA        NA
-#&gt; n9  NA NA        NA NA        NA        NA NA         NA NA        NA 0.2946099
-#&gt; n10 NA NA        NA NA        NA        NA NA         NA NA        NA        NA
-#&gt; n11 NA NA        NA NA        NA        NA NA         NA NA        NA        NA
-#&gt; n12 NA NA        NA NA        NA        NA NA         NA NA        NA        NA
-#&gt; n13 NA NA        NA NA        NA        NA NA         NA NA        NA        NA
-#&gt; n14 NA NA        NA NA        NA        NA NA         NA NA        NA        NA
-#&gt; n15 NA NA        NA NA        NA        NA NA         NA NA        NA        NA
-#&gt; n16 NA NA        NA NA        NA        NA NA         NA NA        NA        NA
-#&gt; n17 NA NA        NA NA        NA        NA NA         NA NA        NA        NA
-#&gt; n18 NA NA        NA NA        NA        NA NA         NA NA        NA        NA
-#&gt; n19 NA NA        NA NA        NA        NA NA         NA NA        NA        NA
-#&gt; n20 NA NA        NA NA        NA        NA NA         NA NA        NA        NA
-#&gt; n21 NA NA        NA NA        NA        NA NA         NA NA        NA        NA
-#&gt; n22 NA NA        NA NA        NA        NA NA         NA NA        NA        NA
-#&gt; n23 NA NA        NA NA        NA        NA NA         NA NA        NA        NA
-#&gt; n24 NA NA        NA NA        NA        NA NA         NA NA        NA        NA
-#&gt; n25 NA NA        NA NA        NA        NA NA         NA NA        NA        NA
-#&gt; n26 NA NA        NA NA        NA        NA NA         NA NA        NA        NA
-#&gt; n27 NA NA        NA NA        NA        NA NA         NA NA        NA        NA
-#&gt; n28 NA NA        NA NA        NA        NA NA         NA NA        NA        NA
-#&gt; n29 NA NA        NA NA        NA        NA NA         NA NA        NA        NA
-#&gt; n30 NA NA        NA NA        NA        NA NA         NA NA        NA        NA
-#&gt;           n12 n13       n14       n15       n16       n17        n18       n19
-#&gt; n1         NA  NA 0.7819984 0.9114099 0.7063816 0.1385547         NA        NA
-#&gt; n2         NA  NA        NA        NA        NA        NA 0.02423061        NA
-#&gt; n3         NA  NA        NA        NA        NA        NA         NA        NA
-#&gt; n4         NA  NA        NA 0.7591918        NA 0.5154871         NA 0.8395712
-#&gt; n5         NA  NA        NA        NA        NA        NA         NA        NA
-#&gt; n6         NA  NA        NA 0.1555631        NA        NA         NA        NA
-#&gt; n7         NA  NA        NA        NA        NA        NA         NA        NA
-#&gt; n8         NA  NA        NA        NA        NA        NA         NA        NA
-#&gt; n9         NA  NA        NA        NA 0.7533804        NA         NA        NA
-#&gt; n10 0.8805912  NA 0.5970122        NA        NA        NA         NA        NA
-#&gt; n11        NA  NA 0.4980518        NA 0.7556744        NA         NA        NA
-#&gt; n12        NA  NA        NA        NA        NA        NA 0.78029703        NA
-#&gt; n13        NA  NA        NA        NA        NA 0.2413714         NA        NA
-#&gt; n14        NA  NA        NA        NA        NA        NA         NA        NA
-#&gt; n15        NA  NA        NA        NA        NA        NA         NA        NA
-#&gt; n16        NA  NA        NA        NA        NA        NA         NA 0.8344995
-#&gt; n17        NA  NA        NA        NA        NA        NA 0.92179398 0.5430254
-#&gt; n18        NA  NA        NA        NA        NA        NA         NA        NA
-#&gt; n19        NA  NA        NA        NA        NA        NA         NA        NA
-#&gt; n20        NA  NA        NA        NA        NA        NA         NA        NA
-#&gt; n21        NA  NA        NA        NA        NA        NA         NA        NA
-#&gt; n22        NA  NA        NA        NA        NA        NA         NA        NA
-#&gt; n23        NA  NA        NA        NA        NA        NA         NA        NA
-#&gt; n24        NA  NA        NA        NA        NA        NA         NA        NA
-#&gt; n25        NA  NA        NA        NA        NA        NA         NA        NA
-#&gt; n26        NA  NA        NA        NA        NA        NA         NA        NA
-#&gt; n27        NA  NA        NA        NA        NA        NA         NA        NA
-#&gt; n28        NA  NA        NA        NA        NA        NA         NA        NA
-#&gt; n29        NA  NA        NA        NA        NA        NA         NA        NA
-#&gt; n30        NA  NA        NA        NA        NA        NA         NA        NA
-#&gt;             n20       n21       n22       n23       n24       n25      n26
-#&gt; n1           NA        NA        NA        NA 0.4633078 0.8737127 0.167247
-#&gt; n2           NA        NA        NA        NA        NA        NA       NA
-#&gt; n3           NA        NA 0.6870648        NA        NA        NA       NA
-#&gt; n4           NA        NA        NA 0.7626691        NA        NA       NA
-#&gt; n5           NA        NA        NA        NA        NA 0.3759789       NA
-#&gt; n6           NA 0.1107811 0.1870804        NA        NA        NA       NA
-#&gt; n7           NA 0.2431973        NA        NA        NA        NA       NA
-#&gt; n8           NA        NA        NA        NA        NA        NA       NA
-#&gt; n9  0.781739633        NA        NA        NA        NA 0.5612705       NA
-#&gt; n10          NA        NA        NA        NA        NA        NA       NA
-#&gt; n11          NA 0.6730160        NA        NA        NA        NA       NA
-#&gt; n12          NA        NA        NA        NA        NA        NA       NA
-#&gt; n13 0.811701825        NA        NA        NA        NA        NA       NA
-#&gt; n14 0.004840403        NA        NA        NA        NA        NA       NA
-#&gt; n15          NA        NA 0.5806178        NA        NA        NA       NA
-#&gt; n16          NA        NA        NA 0.8021462 0.7448445        NA       NA
-#&gt; n17          NA        NA        NA        NA 0.4938875        NA       NA
-#&gt; n18          NA        NA        NA        NA        NA        NA       NA
-#&gt; n19          NA        NA        NA        NA        NA        NA       NA
-#&gt; n20          NA        NA        NA        NA        NA        NA       NA
-#&gt; n21          NA        NA        NA        NA        NA        NA 0.361027
-#&gt; n22          NA        NA        NA        NA        NA        NA       NA
-#&gt; n23          NA        NA        NA        NA        NA        NA       NA
-#&gt; n24          NA        NA        NA        NA        NA        NA       NA
-#&gt; n25          NA        NA        NA        NA        NA        NA       NA
-#&gt; n26          NA        NA        NA        NA        NA        NA       NA
-#&gt; n27          NA        NA        NA        NA        NA        NA       NA
-#&gt; n28          NA        NA        NA        NA        NA        NA       NA
-#&gt; n29          NA        NA        NA        NA        NA        NA       NA
-#&gt; n30          NA        NA        NA        NA        NA        NA       NA
-#&gt;           n27         n28       n29       n30
-#&gt; n1         NA 0.141827199 0.8806068        NA
-#&gt; n2         NA 0.009661838        NA        NA
-#&gt; n3         NA          NA        NA        NA
-#&gt; n4         NA          NA        NA        NA
-#&gt; n5         NA          NA        NA        NA
-#&gt; n6         NA          NA        NA        NA
-#&gt; n7         NA          NA        NA 0.5495653
-#&gt; n8         NA          NA        NA        NA
-#&gt; n9         NA          NA        NA        NA
-#&gt; n10 0.7107258          NA        NA        NA
-#&gt; n11        NA          NA        NA 0.9614567
-#&gt; n12        NA          NA        NA        NA
-#&gt; n13        NA          NA        NA        NA
-#&gt; n14        NA          NA        NA        NA
-#&gt; n15        NA          NA        NA        NA
-#&gt; n16 0.8745103          NA        NA        NA
-#&gt; n17        NA          NA        NA 0.5663617
-#&gt; n18        NA          NA        NA        NA
-#&gt; n19        NA          NA        NA        NA
-#&gt; n20        NA          NA        NA        NA
-#&gt; n21        NA          NA        NA        NA
-#&gt; n22        NA          NA        NA        NA
-#&gt; n23 0.6392649          NA        NA        NA
-#&gt; n24        NA 0.662953132 0.2673751        NA
-#&gt; n25        NA          NA        NA        NA
-#&gt; n26        NA          NA        NA        NA
-#&gt; n27        NA          NA        NA        NA
-#&gt; n28        NA          NA        NA        NA
-#&gt; n29        NA          NA        NA        NA
-#&gt; n30        NA          NA        NA        NA
-#&gt; 
-#&gt; $pathway_pvalue
-#&gt; [1] 0.2620021
-#&gt; 
-#&gt; $deconfounding
-#&gt; [1] FALSE
-#&gt; 
-#&gt; attr(,"class")
-#&gt; [1] "dce"</div></pre>
+    <pre class="examples"><span class='r-in'><span class='va'>dag</span> <span class='op'>&lt;-</span> <span class='fu'><a href='create_random_DAG.html'>create_random_DAG</a></span><span class='op'>(</span><span class='fl'>30</span>, <span class='fl'>0.2</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>X.wt</span> <span class='op'>&lt;-</span> <span class='fu'><a href='simulate_data.html'>simulate_data</a></span><span class='op'>(</span><span class='va'>dag</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>dag.mt</span> <span class='op'>&lt;-</span> <span class='fu'><a href='resample_edge_weights.html'>resample_edge_weights</a></span><span class='op'>(</span><span class='va'>dag</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>X.mt</span> <span class='op'>&lt;-</span> <span class='fu'><a href='simulate_data.html'>simulate_data</a></span><span class='op'>(</span><span class='va'>dag</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'>dce</span><span class='op'>(</span><span class='va'>dag</span>,<span class='va'>X.wt</span>,<span class='va'>X.mt</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $graph</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     n1 n2 n3 n4 n5 n6 n7 n8 n9 n10 n11 n12 n13 n14 n15 n16 n17 n18 n19 n20 n21</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n1   0  0  1  0  0  0  0  0  0   0   0   0   0   1   1   1   1   0   0   0   0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n2   0  0  0  0  0  0  0  1  0   0   0   0   0   0   0   0   0   1   0   0   0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n3   0  0  0  0  0  1  0  0  0   0   0   0   0   0   0   0   0   0   0   0   0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n4   0  0  0  0  1  0  0  0  0   0   0   0   0   0   1   0   1   0   1   0   0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n5   0  0  0  0  0  1  0  0  0   0   0   0   0   0   0   0   0   0   0   0   0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n6   0  0  0  0  0  0  0  0  0   1   0   0   0   0   1   0   0   0   0   0   1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n7   0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0   1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n8   0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0   0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n9   0  0  0  0  0  0  0  0  0   0   1   0   0   0   0   1   0   0   0   1   0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n10  0  0  0  0  0  0  0  0  0   0   0   1   0   1   0   0   0   0   0   0   0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n11  0  0  0  0  0  0  0  0  0   0   0   0   0   1   0   1   0   0   0   0   1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n12  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   1   0   0   0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n13  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   1   0   0   1   0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n14  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   1   0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n15  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0   0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n16  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   0   1   0   0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n17  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   1   1   0   0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n18  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0   0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n19  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0   0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n20  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0   0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n21  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0   0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n22  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0   0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n23  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0   0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n24  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0   0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n25  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0   0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n26  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0   0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n27  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0   0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n28  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0   0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n29  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0   0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n30  0  0  0  0  0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0   0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     n22 n23 n24 n25 n26 n27 n28 n29 n30</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n1    0   0   1   1   1   0   1   1   0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n2    0   0   0   0   0   0   1   0   0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n3    1   0   0   0   0   0   0   0   0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n4    0   1   0   0   0   0   0   0   0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n5    0   0   0   1   0   0   0   0   0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n6    1   0   0   0   0   0   0   0   0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n7    0   0   0   0   0   0   0   0   1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n8    0   0   0   0   0   0   0   0   0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n9    0   0   0   1   0   0   0   0   0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n10   0   0   0   0   0   1   0   0   0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n11   0   0   0   0   0   0   0   0   1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n12   0   0   0   0   0   0   0   0   0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n13   0   0   0   0   0   0   0   0   0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n14   0   0   0   0   0   0   0   0   0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n15   1   0   0   0   0   0   0   0   0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n16   0   1   1   0   0   1   0   0   0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n17   0   0   1   0   0   0   0   0   1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n18   0   0   0   0   0   0   0   0   0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n19   0   0   0   0   0   0   0   0   0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n20   0   0   0   0   0   0   0   0   0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n21   0   0   0   0   1   0   0   0   0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n22   0   0   0   0   0   0   0   0   0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n23   0   0   0   0   0   1   0   0   0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n24   0   0   0   0   0   0   1   1   0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n25   0   0   0   0   0   0   0   0   0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n26   0   0   0   0   0   0   0   0   0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n27   0   0   0   0   0   0   0   0   0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n28   0   0   0   0   0   0   0   0   0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n29   0   0   0   0   0   0   0   0   0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n30   0   0   0   0   0   0   0   0   0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $dce</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     n1 n2          n3 n4         n5          n6 n7         n8 n9        n10</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n1  NA NA 0.004446906 NA         NA          NA NA         NA NA         NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n2  NA NA          NA NA         NA          NA NA 0.02195047 NA         NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n3  NA NA          NA NA         NA -0.10882355 NA         NA NA         NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n4  NA NA          NA NA 0.01202434          NA NA         NA NA         NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n5  NA NA          NA NA         NA  0.08412434 NA         NA NA         NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n6  NA NA          NA NA         NA          NA NA         NA NA -0.1592655</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n7  NA NA          NA NA         NA          NA NA         NA NA         NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n8  NA NA          NA NA         NA          NA NA         NA NA         NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n9  NA NA          NA NA         NA          NA NA         NA NA         NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n10 NA NA          NA NA         NA          NA NA         NA NA         NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n11 NA NA          NA NA         NA          NA NA         NA NA         NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n12 NA NA          NA NA         NA          NA NA         NA NA         NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n13 NA NA          NA NA         NA          NA NA         NA NA         NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n14 NA NA          NA NA         NA          NA NA         NA NA         NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n15 NA NA          NA NA         NA          NA NA         NA NA         NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n16 NA NA          NA NA         NA          NA NA         NA NA         NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n17 NA NA          NA NA         NA          NA NA         NA NA         NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n18 NA NA          NA NA         NA          NA NA         NA NA         NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n19 NA NA          NA NA         NA          NA NA         NA NA         NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n20 NA NA          NA NA         NA          NA NA         NA NA         NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n21 NA NA          NA NA         NA          NA NA         NA NA         NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n22 NA NA          NA NA         NA          NA NA         NA NA         NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n23 NA NA          NA NA         NA          NA NA         NA NA         NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n24 NA NA          NA NA         NA          NA NA         NA NA         NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n25 NA NA          NA NA         NA          NA NA         NA NA         NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n26 NA NA          NA NA         NA          NA NA         NA NA         NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n27 NA NA          NA NA         NA          NA NA         NA NA         NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n28 NA NA          NA NA         NA          NA NA         NA NA         NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n29 NA NA          NA NA         NA          NA NA         NA NA         NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n30 NA NA          NA NA         NA          NA NA         NA NA         NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>             n11        n12 n13        n14          n15         n16         n17</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n1           NA         NA  NA -0.0230885  0.009880227 -0.02258093 -0.17154210</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n2           NA         NA  NA         NA           NA          NA          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n3           NA         NA  NA         NA           NA          NA          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n4           NA         NA  NA         NA -0.009786146          NA  0.08005795</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n5           NA         NA  NA         NA           NA          NA          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n6           NA         NA  NA         NA  0.421949948          NA          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n7           NA         NA  NA         NA           NA          NA          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n8           NA         NA  NA         NA           NA          NA          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n9  -0.01931399         NA  NA         NA           NA  0.04194682          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n10          NA 0.01750228  NA -0.7103709           NA          NA          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n11          NA         NA  NA  0.5623870           NA -0.32408682          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n12          NA         NA  NA         NA           NA          NA          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n13          NA         NA  NA         NA           NA          NA  0.06782724</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n14          NA         NA  NA         NA           NA          NA          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n15          NA         NA  NA         NA           NA          NA          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n16          NA         NA  NA         NA           NA          NA          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n17          NA         NA  NA         NA           NA          NA          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n18          NA         NA  NA         NA           NA          NA          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n19          NA         NA  NA         NA           NA          NA          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n20          NA         NA  NA         NA           NA          NA          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n21          NA         NA  NA         NA           NA          NA          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n22          NA         NA  NA         NA           NA          NA          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n23          NA         NA  NA         NA           NA          NA          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n24          NA         NA  NA         NA           NA          NA          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n25          NA         NA  NA         NA           NA          NA          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n26          NA         NA  NA         NA           NA          NA          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n27          NA         NA  NA         NA           NA          NA          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n28          NA         NA  NA         NA           NA          NA          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n29          NA         NA  NA         NA           NA          NA          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n30          NA         NA  NA         NA           NA          NA          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>            n18        n19         n20         n21         n22         n23</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n1          NA         NA          NA          NA          NA          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n2  0.10480319         NA          NA          NA          NA          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n3          NA         NA          NA          NA  0.11229107          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n4          NA 0.03918013          NA          NA          NA -0.01403817</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n5          NA         NA          NA          NA          NA          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n6          NA         NA          NA -2.17031005 -0.16382283          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n7          NA         NA          NA  0.06284203          NA          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n8          NA         NA          NA          NA          NA          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n9          NA         NA -0.03351826          NA          NA          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n10         NA         NA          NA          NA          NA          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n11         NA         NA          NA -0.39607492          NA          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n12 0.35360501         NA          NA          NA          NA          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n13         NA         NA  0.01611799          NA          NA          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n14         NA         NA  1.86109513          NA          NA          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n15         NA         NA          NA          NA  0.04729577          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n16         NA 0.14752279          NA          NA          NA -0.08867837</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n17 0.04397883 0.26253121          NA          NA          NA          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n18         NA         NA          NA          NA          NA          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n19         NA         NA          NA          NA          NA          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n20         NA         NA          NA          NA          NA          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n21         NA         NA          NA          NA          NA          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n22         NA         NA          NA          NA          NA          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n23         NA         NA          NA          NA          NA          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n24         NA         NA          NA          NA          NA          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n25         NA         NA          NA          NA          NA          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n26         NA         NA          NA          NA          NA          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n27         NA         NA          NA          NA          NA          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n28         NA         NA          NA          NA          NA          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n29         NA         NA          NA          NA          NA          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n30         NA         NA          NA          NA          NA          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>             n24         n25       n26        n27        n28          n29</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n1  -0.05487977  0.02395073 0.1172733         NA -0.1941715 -0.002244606</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n2           NA          NA        NA         NA -0.3520006           NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n3           NA          NA        NA         NA         NA           NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n4           NA          NA        NA         NA         NA           NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n5           NA -1.23990020        NA         NA         NA           NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n6           NA          NA        NA         NA         NA           NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n7           NA          NA        NA         NA         NA           NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n8           NA          NA        NA         NA         NA           NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n9           NA -0.04150957        NA         NA         NA           NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n10          NA          NA        NA 0.55994927         NA           NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n11          NA          NA        NA         NA         NA           NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n12          NA          NA        NA         NA         NA           NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n13          NA          NA        NA         NA         NA           NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n14          NA          NA        NA         NA         NA           NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n15          NA          NA        NA         NA         NA           NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n16  0.11145093          NA        NA 0.08157446         NA           NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n17  0.25553743          NA        NA         NA         NA           NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n18          NA          NA        NA         NA         NA           NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n19          NA          NA        NA         NA         NA           NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n20          NA          NA        NA         NA         NA           NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n21          NA          NA 0.3221807         NA         NA           NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n22          NA          NA        NA         NA         NA           NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n23          NA          NA        NA 0.13149386         NA           NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n24          NA          NA        NA         NA  0.4075590  0.064234698</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n25          NA          NA        NA         NA         NA           NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n26          NA          NA        NA         NA         NA           NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n27          NA          NA        NA         NA         NA           NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n28          NA          NA        NA         NA         NA           NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n29          NA          NA        NA         NA         NA           NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n30          NA          NA        NA         NA         NA           NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>             n30</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n1           NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n2           NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n3           NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n4           NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n5           NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n6           NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n7   0.06752828</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n8           NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n9           NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n10          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n11 -0.06687664</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n12          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n13          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n14          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n15          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n16          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n17 -0.48293346</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n18          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n19          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n20          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n21          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n22          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n23          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n24          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n25          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n26          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n27          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n28          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n29          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n30          NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $dce_stderr</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     n1 n2          n3 n4         n5        n6 n7         n8 n9       n10</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n1  NA NA 0.009209754 NA         NA        NA NA         NA NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n2  NA NA          NA NA         NA        NA NA 0.01315102 NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n3  NA NA          NA NA         NA 0.4523304 NA         NA NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n4  NA NA          NA NA 0.01525628        NA NA         NA NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n5  NA NA          NA NA         NA 0.2234551 NA         NA NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n6  NA NA          NA NA         NA        NA NA         NA NA 0.1391678</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n7  NA NA          NA NA         NA        NA NA         NA NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n8  NA NA          NA NA         NA        NA NA         NA NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n9  NA NA          NA NA         NA        NA NA         NA NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n10 NA NA          NA NA         NA        NA NA         NA NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n11 NA NA          NA NA         NA        NA NA         NA NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n12 NA NA          NA NA         NA        NA NA         NA NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n13 NA NA          NA NA         NA        NA NA         NA NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n14 NA NA          NA NA         NA        NA NA         NA NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n15 NA NA          NA NA         NA        NA NA         NA NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n16 NA NA          NA NA         NA        NA NA         NA NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n17 NA NA          NA NA         NA        NA NA         NA NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n18 NA NA          NA NA         NA        NA NA         NA NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n19 NA NA          NA NA         NA        NA NA         NA NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n20 NA NA          NA NA         NA        NA NA         NA NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n21 NA NA          NA NA         NA        NA NA         NA NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n22 NA NA          NA NA         NA        NA NA         NA NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n23 NA NA          NA NA         NA        NA NA         NA NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n24 NA NA          NA NA         NA        NA NA         NA NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n25 NA NA          NA NA         NA        NA NA         NA NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n26 NA NA          NA NA         NA        NA NA         NA NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n27 NA NA          NA NA         NA        NA NA         NA NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n28 NA NA          NA NA         NA        NA NA         NA NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n29 NA NA          NA NA         NA        NA NA         NA NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n30 NA NA          NA NA         NA        NA NA         NA NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>            n11       n12 n13       n14        n15       n16       n17</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n1          NA        NA  NA 0.0833231 0.08868819 0.0598536 0.1153415</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n2          NA        NA  NA        NA         NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n3          NA        NA  NA        NA         NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n4          NA        NA  NA        NA 0.03187977        NA 0.1228826</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n5          NA        NA  NA        NA         NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n6          NA        NA  NA        NA 0.29594859        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n7          NA        NA  NA        NA         NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n8          NA        NA  NA        NA         NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n9  0.01837896        NA  NA        NA         NA 0.1333229        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n10         NA 0.1163578  NA 1.3413981         NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n11         NA        NA  NA 0.8284598         NA 1.0400524        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n12         NA        NA  NA        NA         NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n13         NA        NA  NA        NA         NA        NA 0.0577193</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n14         NA        NA  NA        NA         NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n15         NA        NA  NA        NA         NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n16         NA        NA  NA        NA         NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n17         NA        NA  NA        NA         NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n18         NA        NA  NA        NA         NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n19         NA        NA  NA        NA         NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n20         NA        NA  NA        NA         NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n21         NA        NA  NA        NA         NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n22         NA        NA  NA        NA         NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n23         NA        NA  NA        NA         NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n24         NA        NA  NA        NA         NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n25         NA        NA  NA        NA         NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n26         NA        NA  NA        NA         NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n27         NA        NA  NA        NA         NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n28         NA        NA  NA        NA         NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n29         NA        NA  NA        NA         NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n30         NA        NA  NA        NA         NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>            n18       n19        n20        n21        n22       n23        n24</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n1          NA        NA         NA         NA         NA        NA 0.07468137</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n2  0.04614738        NA         NA         NA         NA        NA         NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n3          NA        NA         NA         NA 0.27833017        NA         NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n4          NA 0.1932808         NA         NA         NA 0.0464228         NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n5          NA        NA         NA         NA         NA        NA         NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n6          NA        NA         NA 1.35468001 0.12373419        NA         NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n7          NA        NA         NA 0.05368548         NA        NA         NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n8          NA        NA         NA         NA         NA        NA         NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n9          NA        NA 0.12081547         NA         NA        NA         NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n10         NA        NA         NA         NA         NA        NA         NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n11         NA        NA         NA 0.93711459         NA        NA         NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n12 1.26595074        NA         NA         NA         NA        NA         NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n13         NA        NA 0.06756581         NA         NA        NA         NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n14         NA        NA 0.65279421         NA         NA        NA         NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n15         NA        NA         NA         NA 0.08545895        NA         NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n16         NA 0.7051035         NA         NA         NA 0.3534113 0.34195927</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n17 0.44737266 0.4308435         NA         NA         NA        NA 0.37279557</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n18         NA        NA         NA         NA         NA        NA         NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n19         NA        NA         NA         NA         NA        NA         NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n20         NA        NA         NA         NA         NA        NA         NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n21         NA        NA         NA         NA         NA        NA         NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n22         NA        NA         NA         NA         NA        NA         NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n23         NA        NA         NA         NA         NA        NA         NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n24         NA        NA         NA         NA         NA        NA         NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n25         NA        NA         NA         NA         NA        NA         NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n26         NA        NA         NA         NA         NA        NA         NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n27         NA        NA         NA         NA         NA        NA         NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n28         NA        NA         NA         NA         NA        NA         NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n29         NA        NA         NA         NA         NA        NA         NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n30         NA        NA         NA         NA         NA        NA         NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>            n25       n26       n27       n28        n29       n30</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n1  0.15048931 0.0845978        NA 0.1316451 0.01492463        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n2          NA        NA        NA 0.1346937         NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n3          NA        NA        NA        NA         NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n4          NA        NA        NA        NA         NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n5  1.39727660        NA        NA        NA         NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n6          NA        NA        NA        NA         NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n7          NA        NA        NA        NA         NA 0.1126504</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n8          NA        NA        NA        NA         NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n9  0.07132867        NA        NA        NA         NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n10         NA        NA 1.5075671        NA         NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n11         NA        NA        NA        NA         NA 1.3820861</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n12         NA        NA        NA        NA         NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n13         NA        NA        NA        NA         NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n14         NA        NA        NA        NA         NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n15         NA        NA        NA        NA         NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n16         NA        NA 0.5158197        NA         NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n17         NA        NA        NA        NA         NA 0.8407294</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n18         NA        NA        NA        NA         NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n19         NA        NA        NA        NA         NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n20         NA        NA        NA        NA         NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n21         NA 0.3518717        NA        NA         NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n22         NA        NA        NA        NA         NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n23         NA        NA 0.2800887        NA         NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n24         NA        NA        NA 0.9336488 0.05774465        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n25         NA        NA        NA        NA         NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n26         NA        NA        NA        NA         NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n27         NA        NA        NA        NA         NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n28         NA        NA        NA        NA         NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n29         NA        NA        NA        NA         NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n30         NA        NA        NA        NA         NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $dce_pvalue</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     n1 n2        n3 n4        n5        n6 n7         n8 n9       n10       n11</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n1  NA NA 0.6297429 NA        NA        NA NA         NA NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n2  NA NA        NA NA        NA        NA NA 0.09669235 NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n3  NA NA        NA NA        NA 0.8101314 NA         NA NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n4  NA NA        NA NA 0.4315571        NA NA         NA NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n5  NA NA        NA NA        NA 0.7069782 NA         NA NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n6  NA NA        NA NA        NA        NA NA         NA NA 0.2538768        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n7  NA NA        NA NA        NA        NA NA         NA NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n8  NA NA        NA NA        NA        NA NA         NA NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n9  NA NA        NA NA        NA        NA NA         NA NA        NA 0.2946099</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n10 NA NA        NA NA        NA        NA NA         NA NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n11 NA NA        NA NA        NA        NA NA         NA NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n12 NA NA        NA NA        NA        NA NA         NA NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n13 NA NA        NA NA        NA        NA NA         NA NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n14 NA NA        NA NA        NA        NA NA         NA NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n15 NA NA        NA NA        NA        NA NA         NA NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n16 NA NA        NA NA        NA        NA NA         NA NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n17 NA NA        NA NA        NA        NA NA         NA NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n18 NA NA        NA NA        NA        NA NA         NA NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n19 NA NA        NA NA        NA        NA NA         NA NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n20 NA NA        NA NA        NA        NA NA         NA NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n21 NA NA        NA NA        NA        NA NA         NA NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n22 NA NA        NA NA        NA        NA NA         NA NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n23 NA NA        NA NA        NA        NA NA         NA NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n24 NA NA        NA NA        NA        NA NA         NA NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n25 NA NA        NA NA        NA        NA NA         NA NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n26 NA NA        NA NA        NA        NA NA         NA NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n27 NA NA        NA NA        NA        NA NA         NA NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n28 NA NA        NA NA        NA        NA NA         NA NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n29 NA NA        NA NA        NA        NA NA         NA NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n30 NA NA        NA NA        NA        NA NA         NA NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>           n12 n13       n14       n15       n16       n17        n18       n19</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n1         NA  NA 0.7819984 0.9114099 0.7063816 0.1385547         NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n2         NA  NA        NA        NA        NA        NA 0.02423061        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n3         NA  NA        NA        NA        NA        NA         NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n4         NA  NA        NA 0.7591918        NA 0.5154871         NA 0.8395712</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n5         NA  NA        NA        NA        NA        NA         NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n6         NA  NA        NA 0.1555631        NA        NA         NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n7         NA  NA        NA        NA        NA        NA         NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n8         NA  NA        NA        NA        NA        NA         NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n9         NA  NA        NA        NA 0.7533804        NA         NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n10 0.8805912  NA 0.5970122        NA        NA        NA         NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n11        NA  NA 0.4980518        NA 0.7556744        NA         NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n12        NA  NA        NA        NA        NA        NA 0.78029703        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n13        NA  NA        NA        NA        NA 0.2413714         NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n14        NA  NA        NA        NA        NA        NA         NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n15        NA  NA        NA        NA        NA        NA         NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n16        NA  NA        NA        NA        NA        NA         NA 0.8344995</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n17        NA  NA        NA        NA        NA        NA 0.92179398 0.5430254</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n18        NA  NA        NA        NA        NA        NA         NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n19        NA  NA        NA        NA        NA        NA         NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n20        NA  NA        NA        NA        NA        NA         NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n21        NA  NA        NA        NA        NA        NA         NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n22        NA  NA        NA        NA        NA        NA         NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n23        NA  NA        NA        NA        NA        NA         NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n24        NA  NA        NA        NA        NA        NA         NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n25        NA  NA        NA        NA        NA        NA         NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n26        NA  NA        NA        NA        NA        NA         NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n27        NA  NA        NA        NA        NA        NA         NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n28        NA  NA        NA        NA        NA        NA         NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n29        NA  NA        NA        NA        NA        NA         NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n30        NA  NA        NA        NA        NA        NA         NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>             n20       n21       n22       n23       n24       n25      n26</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n1           NA        NA        NA        NA 0.4633078 0.8737127 0.167247</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n2           NA        NA        NA        NA        NA        NA       NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n3           NA        NA 0.6870648        NA        NA        NA       NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n4           NA        NA        NA 0.7626691        NA        NA       NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n5           NA        NA        NA        NA        NA 0.3759789       NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n6           NA 0.1107811 0.1870804        NA        NA        NA       NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n7           NA 0.2431973        NA        NA        NA        NA       NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n8           NA        NA        NA        NA        NA        NA       NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n9  0.781739633        NA        NA        NA        NA 0.5612705       NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n10          NA        NA        NA        NA        NA        NA       NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n11          NA 0.6730160        NA        NA        NA        NA       NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n12          NA        NA        NA        NA        NA        NA       NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n13 0.811701825        NA        NA        NA        NA        NA       NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n14 0.004840403        NA        NA        NA        NA        NA       NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n15          NA        NA 0.5806178        NA        NA        NA       NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n16          NA        NA        NA 0.8021462 0.7448445        NA       NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n17          NA        NA        NA        NA 0.4938875        NA       NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n18          NA        NA        NA        NA        NA        NA       NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n19          NA        NA        NA        NA        NA        NA       NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n20          NA        NA        NA        NA        NA        NA       NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n21          NA        NA        NA        NA        NA        NA 0.361027</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n22          NA        NA        NA        NA        NA        NA       NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n23          NA        NA        NA        NA        NA        NA       NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n24          NA        NA        NA        NA        NA        NA       NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n25          NA        NA        NA        NA        NA        NA       NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n26          NA        NA        NA        NA        NA        NA       NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n27          NA        NA        NA        NA        NA        NA       NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n28          NA        NA        NA        NA        NA        NA       NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n29          NA        NA        NA        NA        NA        NA       NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n30          NA        NA        NA        NA        NA        NA       NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>           n27         n28       n29       n30</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n1         NA 0.141827199 0.8806068        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n2         NA 0.009661838        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n3         NA          NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n4         NA          NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n5         NA          NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n6         NA          NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n7         NA          NA        NA 0.5495653</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n8         NA          NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n9         NA          NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n10 0.7107258          NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n11        NA          NA        NA 0.9614567</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n12        NA          NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n13        NA          NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n14        NA          NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n15        NA          NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n16 0.8745103          NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n17        NA          NA        NA 0.5663617</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n18        NA          NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n19        NA          NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n20        NA          NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n21        NA          NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n22        NA          NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n23 0.6392649          NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n24        NA 0.662953132 0.2673751        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n25        NA          NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n26        NA          NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n27        NA          NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n28        NA          NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n29        NA          NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> n30        NA          NA        NA        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $pathway_pvalue</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] 0.2620021</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $deconfounding</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] FALSE</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> attr(,"class")</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "dce"</span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
