@@ -291,9 +291,9 @@ For the unconfounded data `dce` estimates the differential causal effects well:
 res <- dce(graph_mt, X_wt, X_mt, deconfounding = FALSE)
 
 qplot(truth[truth != 0], res$dce[truth != 0]) +
-  geom_abline(color = 'red', linetype = 'dashed') +
-  xlab('true DCE') +
-  ylab('estimated DCE')
+  geom_abline(color = "red", linetype = "dashed") +
+  xlab("true DCE") +
+  ylab("estimated DCE")
 
 plot_network(graph_wt, value_matrix = -log(res$dce_pvalue)) +
   ggtitle("-log(p-values) for DCEs between WT and MT condition")
@@ -303,8 +303,8 @@ On the other hand, if our data come from two different batches, where the gene e
 
 ```{r}
 batch <- sample(c(0, 1), replace = TRUE, nrow(X_wt))
-bX_wt <- apply(X_wt, 2, function(x) { x + max(x) * runif(1) * batch })
-bX_mt <- apply(X_mt, 2, function(x) { x + max(x) * runif(1) * batch })
+bX_wt <- apply(X_wt, 2, function(x) x + max(x) * runif(1) * batch)
+bX_mt <- apply(X_mt, 2, function(x) x + max(x) * runif(1) * batch)
 
 res_without_deconf <- dce(graph_mt, bX_wt, bX_mt, deconfounding = FALSE)
 
@@ -315,10 +315,10 @@ cowplot::plot_grid(
   ) +
     ggtitle("-log(p-values) without deconfounding"),
   qplot(truth[truth != 0], res_without_deconf$dce[truth != 0]) +
-    geom_abline(color = 'red', linetype = 'dashed') +
-    xlab('true DCE') +
-    ylab('estimated DCE'),
-  nrow=1
+    geom_abline(color = "red", linetype = "dashed") +
+    xlab("true DCE") +
+    ylab("estimated DCE"),
+  nrow = 1
 )
 ```
 
@@ -333,10 +333,10 @@ cowplot::plot_grid(
   ) +
     ggtitle("-log(p-values) with deconfounding"),
   qplot(truth[truth != 0], res_with_deconf$dce[truth != 0]) +
-    geom_abline(color = 'red', linetype = 'dashed') +
-    xlab('true DCE') +
-    ylab('estimated DCE'),
-  nrow=1
+    geom_abline(color = "red", linetype = "dashed") +
+    xlab("true DCE") +
+    ylab("estimated DCE"),
+  nrow = 1
 )
 ```
 
