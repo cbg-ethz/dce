@@ -268,54 +268,75 @@ We first generate the unconfounded data:
 set.seed(1)
 epsilon <- 1e-100
 network_size <- 50
-graph_wt <- as(create_random_DAG(network_size, prob = .2,), "matrix")
+graph_wt <- as(create_random_DAG(network_size, prob = .2), "matrix")
 graph_wt["n1", "n2"] <- epsilon
 graph_mt <- graph_wt
 graph_mt["n1", "n2"] <- 2
 
 cowplot::plot_grid(
- plot_network(graph_wt, edgescale_limits = c(-2,2)),
- plot_network(graph_mt, edgescale_limits = c(-2,2)),
- labels = c("WT", "MT")
+  plot_network(graph_wt, edgescale_limits = c(-2, 2)),
+  plot_network(graph_mt, edgescale_limits = c(-2, 2)),
+  labels = c("WT", "MT")
 )
 
-truth = trueEffects(graph_mt)-trueEffects(graph_wt)
-plot_network(graph_wt, value_matrix=truth, edgescale_limits = c(-2,2))
+truth <- trueEffects(graph_mt) - trueEffects(graph_wt)
+plot_network(graph_wt, value_matrix = truth, edgescale_limits = c(-2, 2))
 
-X_wt <- simulate_data(n=100, graph_wt)
-X_mt <- simulate_data(n=100, graph_mt)
+X_wt <- simulate_data(n = 100, graph_wt)
+X_mt <- simulate_data(n = 100, graph_mt)
 ```
 
 For the unconfounded data `dce` estimates the differential causal effects well:
 ```{r}
-res <- dce(graph_mt, X_wt, X_mt, deconfounding=F)
-qplot(truth[truth!=0], res$dce[truth!=0]) + geom_abline(color='red', linetype='dashed') + xlab('true DCE') + ylab('estimated DCE')
-plot_network(graph_wt, value_matrix=-log(res$dce_pvalue)) +
+res <- dce(graph_mt, X_wt, X_mt, deconfounding = FALSE)
+
+qplot(truth[truth != 0], res$dce[truth != 0]) +
+  geom_abline(color = 'red', linetype = 'dashed') +
+  xlab('true DCE') +
+  ylab('estimated DCE')
+
+plot_network(graph_wt, value_matrix = -log(res$dce_pvalue)) +
   ggtitle("-log(p-values) for DCEs between WT and MT condition")
 ```
 
-On the other hand, if our data come from two different batches, where the gene expression of each gene is shifted by some amount depending on the batch, then `dce` will have many false positive findings: 
+On the other hand, if our data come from two different batches, where the gene expression of each gene is shifted by some amount depending on the batch, then `dce` will have many false positive findings:
 
 ```{r}
-batch <- sample(c(0, 1), replace=TRUE, nrow(X_wt))
-bX_wt <- apply(X_wt, 2, function(x){x + max(x)*runif(1)*batch})
-bX_mt <- apply(X_mt, 2, function(x){x + max(x)*runif(1)*batch})
+batch <- sample(c(0, 1), replace = TRUE, nrow(X_wt))
+bX_wt <- apply(X_wt, 2, function(x) { x + max(x) * runif(1) * batch })
+bX_mt <- apply(X_mt, 2, function(x) { x + max(x) * runif(1) * batch })
 
-res_without_deconf <- dce(graph_mt, bX_wt, bX_mt, deconfounding=F)
+res_without_deconf <- dce(graph_mt, bX_wt, bX_mt, deconfounding = FALSE)
 
 cowplot::plot_grid(
-  plot_network(graph_wt, value_matrix=-log(res_without_deconf$dce_pvalue + epsilon)) + ggtitle("-log(p-values) without deconfounding"),
-  qplot(truth[truth!=0], res_without_deconf$dce[truth!=0]) + geom_abline(color='red', linetype='dashed') + xlab('true DCE') + ylab('estimated DCE'), nrow=1
+  plot_network(
+    graph_wt,
+    value_matrix = -log(res_without_deconf$dce_pvalue + epsilon)
+  ) +
+    ggtitle("-log(p-values) without deconfounding"),
+  qplot(truth[truth != 0], res_without_deconf$dce[truth != 0]) +
+    geom_abline(color = 'red', linetype = 'dashed') +
+    xlab('true DCE') +
+    ylab('estimated DCE'),
+  nrow=1
 )
 ```
 
 However, the performance is improved when the confounding adjustment is used:
 ```{r}
-res_with_deconf <- dce(graph_mt, bX_wt, bX_mt, deconfounding=1)
+res_with_deconf <- dce(graph_mt, bX_wt, bX_mt, deconfounding = 1)
 
 cowplot::plot_grid(
-  plot_network(graph_wt, value_matrix=-log(res_with_deconf$dce_pvalue + epsilon)) + ggtitle("-log(p-values) with deconfounding"),
-  qplot(truth[truth!=0], res_with_deconf$dce[truth!=0]) + geom_abline(color='red', linetype='dashed') + xlab('true DCE') + ylab('estimated DCE'), nrow=1
+  plot_network(
+    graph_wt,
+    value_matrix = -log(res_with_deconf$dce_pvalue + epsilon)
+  ) +
+    ggtitle("-log(p-values) with deconfounding"),
+  qplot(truth[truth != 0], res_with_deconf$dce[truth != 0]) +
+    geom_abline(color = 'red', linetype = 'dashed') +
+    xlab('true DCE') +
+    ylab('estimated DCE'),
+  nrow=1
 )
 ```
 
