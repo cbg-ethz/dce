@@ -11,62 +11,64 @@ localrules:
 
 rule all:
     input:
-        "results/plots/gtex_combined.png",
         "results/plots/gtex_dce.png",
-
+        "results/plots/gtex_combined.png",
 
 checkpoint download_input_data:
     output:
         gencode="results/raw_data/gencode.v26.GRCh38.genes.gtf",
-        expressions_dir=directory(
-            "results/raw_data/GTEx_Analysis_v8_eQTL_expression_matrices/"
-        ),
+        all_expressions_file="results/raw_data/GTEx_Analysis_2017-06-05_v8_RNASeQCv1.1.9_gene_tpm.gct",
+        annotations_file="results/raw_data/GTEx_Analysis_v8_Annotations_SampleAttributesDS.txt",
         covariates_dir=directory("results/raw_data/GTEx_Analysis_v8_sQTL_covariates/"),
-    conda:
-        "envs/stack.yaml"
     shell:
         """
         cd results/raw_data
-        wget https://storage.googleapis.com/gtex_analysis_v8/reference/gencode.v26.GRCh38.genes.gtf https://storage.googleapis.com/gtex_analysis_v8/single_tissue_qtl_data/GTEx_Analysis_v8_sQTL_covariates.tar.gz https://storage.googleapis.com/gtex_analysis_v8/single_tissue_qtl_data/GTEx_Analysis_v8_eQTL_expression_matrices.tar
+        wget https://storage.googleapis.com/gtex_analysis_v8/reference/gencode.v26.GRCh38.genes.gtf https://storage.googleapis.com/gtex_analysis_v8/single_tissue_qtl_data/GTEx_Analysis_v8_sQTL_covariates.tar.gz https://storage.googleapis.com/gtex_analysis_v8/rna_seq_data/GTEx_Analysis_2017-06-05_v8_RNASeQCv1.1.9_gene_tpm.gct.gz https://storage.googleapis.com/gtex_analysis_v8/annotations/GTEx_Analysis_v8_Annotations_SampleAttributesDS.txt
 
-        tar -xvf GTEx_Analysis_v8_eQTL_expression_matrices.tar
-        rm GTEx_Analysis_v8_eQTL_expression_matrices.tar
+        gunzip GTEx_Analysis_2017-06-05_v8_RNASeQCv1.1.9_gene_tpm.gct.gz
         tar -xvf GTEx_Analysis_v8_sQTL_covariates.tar.gz
         rm GTEx_Analysis_v8_sQTL_covariates.tar.gz
         """
 
-
 def gencode_file(wildcards):
     return checkpoints.download_input_data.get().output.gencode
 
+def all_expressions_file(wildcards):
+    return checkpoints.download_input_data.get().output.all_expressions_file
 
-def expressions_file(wildcards):
-    file_directory = checkpoints.download_input_data.get().output.expressions_dir
-    for file_name in os.listdir(file_directory):
-        if (
-            wildcards.tissue == file_name.split(".")[0]
-            and file_name.split(".")[-1] == "gz"
-        ):
-            return os.path.join(file_directory, file_name)
-
-
+def annotations_file(wildcards):
+    return checkpoints.download_input_data.get().output.annotations_file
+    
 def covariates_file(wildcards):
     file_directory = checkpoints.download_input_data.get().output.covariates_dir
     for file_name in os.listdir(file_directory):
         if wildcards.tissue == file_name.split(".")[0]:
             return os.path.join(file_directory, file_name)
 
+checkpoint process_expressions:
+    input:
+        all_expressions_file=all_expressions_file,
+        annotations_file=annotations_file,
+    output:
+        expressions_dir=directory(
+            "results/raw_data/expression_matrices/"
+        ),
+    script:
+        "scripts/prepare_expressions.R"
 
-rule create_encodings:
+def expressions_file(wildcards):
+    file_directory = checkpoints.process_expressions.get().output.expressions_dir
+    for file_name in os.listdir(file_directory):
+        if wildcards.tissue == file_name.split(".")[0]:
+            return os.path.join(file_directory, file_name)
+
+rule process_encodings:
     input:
         gencode=gencode_file,
     output:
         "results/processed_data/encodings.Rdata",
-    conda:
-        "envs/stack.yaml"
     script:
         "scripts/prepare_gene_encodings.R"
-
 
 rule get_dataset:
     input:
@@ -75,11 +77,8 @@ rule get_dataset:
         covariates=covariates_file,
     output:
         "results/processed_data/{tissue}.Rdata",
-    conda:
-        "envs/stack.yaml"
     script:
         "scripts/prepare_dataset.R"
-
 
 rule compare_tissues:
     input:
@@ -87,14 +86,12 @@ rule compare_tissues:
         "results/processed_data/{tissue2}.Rdata",
     output:
         "results/output/{tissue1}#{tissue2}.Rdata",
-    conda:
-        "envs/stack.yaml"
     script:
         "scripts/compare_tissues.R"
 
 
 def valid_tissues(wildcards):
-    file_directory = checkpoints.download_input_data.get().output[2]
+    file_directory = checkpoints.download_input_data.get().output.covariates_dir
 
     valid_tissues = []
     for file_name in os.listdir(file_directory):
@@ -121,8 +118,6 @@ rule aggregate_results:
         valid_tissues,
     output:
         "results/output/statistics.Rdata",
-    conda:
-        "envs/stack.yaml"
     script:
         "scripts/get_statistics.R"
 
@@ -134,8 +129,6 @@ rule create_plots:
         "results/plots/gtex_mse.png",
         "results/plots/gtex_correlation.png",
         "results/plots/gtex_combined.png",
-    conda:
-        "envs/stack.yaml"
     script:
         "scripts/plot_results.R"
 
@@ -149,7 +142,5 @@ rule create_dce_plots:
         + ".Rdata",
     output:
         "results/plots/gtex_dce.png",
-    conda:
-        "envs/stack.yaml"
     script:
         "scripts/plot_dce.R"
