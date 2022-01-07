@@ -21,6 +21,8 @@ However, computing causal effects solely from given observations is difficult, b
 
 Overall, we can detect pathways which play a prominent role in tumorigenesis. We can even pinpoint specific interaction in the pathway that make a large contribution to the rise of the disease.
 
+You can learn more about the theory in our [publication](https://academic.oup.com/bioinformatics/advance-article-abstract/doi/10.1093/bioinformatics/btab847/6470558).
+
 # Installation
 
 ```{r eval=FALSE}

@@ -7,6 +7,7 @@
 
 Compute differential causal effects on (biological) networks. Check out [our vignettes](https://cbg-ethz.github.io/dce/articles/dce.html) for more information.
 
+> Publication: https://academic.oup.com/bioinformatics/advance-article-abstract/doi/10.1093/bioinformatics/btab847/6470558
 
 ## Installation
 
