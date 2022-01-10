@@ -1,13 +1,23 @@
 #' Simulate data
 #'
-#' Generate data for given DAG.
+#' Generate data for given DAG. The flexible framework allows for different
+#' distributions for source and child nodes. Default distributions are
+#' negative binomial (with mean = 100 and 1/dispersion = 100), and poisson,
+#' respectively.
 #' @param graph Graph to simulate on
 #' @param n Number of samples
-#' @param dist_mean distribution mean as numeric
-#' @param dist_dispersion distribution dispersion
-#' (actually dispersion^-1) as a scalar
-#' @param link special link function for the negative binomial
+#' @param dist_fun distribution function for nodes without parents
+#' @param dist_args list of arguments for dist_fun
+#' @param child_fun distribution function for nodes with parents
+#' @param child_args list of arguments for child_fun
+#' @param child_dep link_fun computes an output for the expression of
+#' nodes without parents. this output is than used as input for child_fun.
+#' child_dep defines the parameter (a a string) of child_fun, which is used for
+#' the input. E.g., the link_fun is the identity and the child_fun is rnorm, we
+#' usually set child_dep = "mean".
+#' @param link_fun special link function for the negative binomial
 #' distribution
+#' @param link_args list of arguments for link_fun
 #' @param pop_size numeric for the population size, e.g., pop_size=1000 adds
 #' 1000-n random genes not in the graph
 #' @param latent number of latent variables
@@ -26,8 +36,10 @@ setGeneric(
     "simulate_data",
     function(
         graph, n = 100,
-        dist_mean = 1000, dist_dispersion = 100,
-        link = negative.binomial.special()$linkfun,
+        dist_fun = rnbinom, dist_args = list(mu = 1000, size = 100),
+        child_fun = rpois, child_args = list(), child_dep = "lambda",
+        link_fun = negative.binomial.special()$linkfun,
+        link_args = list(offset = 1),
         pop_size = 0, latent = 0, latent_fun = "unif"
     ) {
         standardGeneric("simulate_data")
@@ -45,8 +57,10 @@ setMethod(
     signature = signature(graph = "igraph"),
     function(
         graph, n = 100,
-        dist_mean = 1000, dist_dispersion = 100,
-        link = negative.binomial.special()$linkfun,
+        dist_fun = rnbinom, dist_args = list(mu = 1000, size = 100),
+        child_fun = rpois, child_args = list(), child_dep = "lambda",
+        link_fun = negative.binomial.special()$linkfun,
+        link_args = list(offset = 1),
         pop_size = 0, latent = 0, latent_fun = "unif"
     ) {
         mat <- as(igraph::as_adjacency_matrix(graph, attr = "weight"),
@@ -67,8 +81,10 @@ setMethod(
     signature = signature(graph = "graphNEL"),
     function(
         graph, n = 100,
-        dist_mean = 1000, dist_dispersion = 100,
-        link = negative.binomial.special()$linkfun,
+        dist_fun = rnbinom, dist_args = list(mu = 1000, size = 100),
+        child_fun = rpois, child_args = list(), child_dep = "lambda",
+        link_fun = negative.binomial.special()$linkfun,
+        link_args = list(offset = 1),
         pop_size = 0, latent = 0, latent_fun = "unif"
     ) {
         a <- as(graph, "matrix")
@@ -89,8 +105,10 @@ setMethod(
     signature = signature(graph = "matrix"),
     function(
         graph, n = 100,
-        dist_mean = 1000, dist_dispersion = 100,
-        link = negative.binomial.special()$linkfun,
+        dist_fun = rnbinom, dist_args = list(mu = 1000, size = 100),
+        child_fun = rpois, child_args = list(), child_dep = "lambda",
+        link_fun = negative.binomial.special()$linkfun,
+        link_args = list(offset = 1),
         pop_size = 0, latent = 0, latent_fun = "unif"
     ) {
         start <- 2
@@ -125,9 +143,7 @@ setMethod(
         }
 
         # setup data
-        X <- matrix(rnbinom(n * p,
-                            size = dist_dispersion,
-                            mu = dist_mean),
+        X <- matrix(do.call(dist_fun, c(n * p, dist_args)),
                     nrow = n, ncol = p)
         colnames(X) <- colnames(graph)
 
@@ -138,16 +154,20 @@ setMethod(
 
             if (any(betas != 0)) {
                 # current node has parents
-                mu <- link(X[, ij, drop = FALSE] %*% betas, offset = 1)
-                X[, j] <- rpois(n, lambda = mu)
+                mu <- do.call(link_fun, c(list(X[, ij, drop = FALSE] %*% betas),
+                                          link_args))
+                X[, j] <- unlist(lapply(mu, function(x) {
+                    y_list <- c(1, child_args)
+                    y_list[[child_dep]] <- x
+                    y <- do.call(child_fun, y_list)
+                    return(y)
+                }))
             }
         }
 
         X <- X[, naturalorder(colnames(X))]
         if (pop_size > p & latent == 0) {
-            Y <- matrix(rnbinom(n * (pop_size - p),
-                                size = dist_dispersion,
-                                mu = dist_mean),
+            Y <- matrix(do.call(dist_fun, c(n * (pop_size - p), dist_args)),
                         nrow = n, ncol = pop_size - p)
             colnames(Y) <- paste0("n", (p + 1):pop_size)
             X <- cbind(X, Y)
@@ -158,7 +178,8 @@ setMethod(
             )
             Y <- X[, seq_len(latent), drop = FALSE] %*% H
             Y <- apply(Y, 2, function(x) {
-                y <- rpois(n, lambda = link(x, offset = 1))
+                y <- do.call(child_fun,
+                             c(list(n, do.call(link_fun, c(x, link_args)))))
                 return(y)
             })
             colnames(Y) <- paste0("n", (p + 1 - latent):pop_size)
