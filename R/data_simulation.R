@@ -68,8 +68,8 @@ setMethod(
         colnames(mat) <- rownames(mat) <- V(graph)
         mat <- mat[naturalorder(rownames(mat)), naturalorder(colnames(mat))]
         simulate_data(mat,
-            n, dist_mean, dist_dispersion,
-            link, pop_size, latent
+            n, dist_fun, dist_args, child_fun, child_args, child_dep,
+            link_fun, link_args, pop_size, latent
         )
     }
 )
@@ -91,8 +91,8 @@ setMethod(
         a <- a[naturalorder(rownames(a)), naturalorder(colnames(a))]
         simulate_data(
             a,
-            n, dist_mean, dist_dispersion,
-            link, pop_size, latent
+            n, dist_fun, dist_args, child_fun, child_args, child_dep,
+            link_fun, link_args, pop_size, latent
         )
     }
 )
