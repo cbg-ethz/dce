@@ -24,8 +24,7 @@ perturbed_genes %<>%
 
 
 # read auxiliary data
-df_expr_wt <- read_csv(fname_expr_wt) %>%
-  column_to_rownames_wrap("...1") %>% as.matrix
+df_expr_wt <- read_csv(fname_expr_wt) %>% column_to_rownames("X1") %>% as.matrix
 
 
 # compute per-pathway statistics

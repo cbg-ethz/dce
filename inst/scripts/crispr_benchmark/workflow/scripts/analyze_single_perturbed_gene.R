@@ -17,10 +17,8 @@ dir.create(out.dir, recursive = TRUE)
 
 
 # expression histograms
-df.expr.wt <- read_csv(fname.expr.wt) %>%
-  column_to_rownames_wrap("...1") %>% as.matrix
-df.expr.mt <- read_csv(fname.expr.mt) %>%
-  column_to_rownames_wrap("...1") %>% as.matrix
+df.expr.wt <- read_csv(fname.expr.wt) %>% column_to_rownames("X1") %>% as.matrix
+df.expr.mt <- read_csv(fname.expr.mt) %>% column_to_rownames("X1") %>% as.matrix
 
 
 # aggregate isoforms, etc

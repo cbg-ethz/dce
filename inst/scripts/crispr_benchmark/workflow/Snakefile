@@ -126,7 +126,7 @@ checkpoint retrieve_pathways:
 
 checkpoint pathway_statistics:
     input:
-        count_wt_file = 'resources/data/drug/Counts_Ctrl_1.csv',
+        count_wt_file = 'resources/data/epistasis/Counts_Ctrl_1.csv',
         graph_files = aggregate_pathway_files
     output:
         out_dir = directory('results/pathway_statistics/')
@@ -149,7 +149,7 @@ rule analyze_single_perturbed_gene:
     conda:
         'envs/stack.yaml'
     resources:
-        mem_mb = 32_000
+        mem_mb = 10_000
     script:
         'scripts/analyze_single_perturbed_gene.R'
 
@@ -189,7 +189,7 @@ rule compute_dces:
     conda:
         'envs/stack.yaml'
     resources:
-        mem_mb = 32_000
+        mem_mb = 10_000
     script:
         'scripts/compute_dces.R'
 
@@ -229,7 +229,7 @@ rule additional_statistics:
     conda:
         'envs/stack.yaml'
     resources:
-        mem_mb = 32_000
+        mem_mb = 10_000
     script:
         'scripts/additional_statistics.py'
 
