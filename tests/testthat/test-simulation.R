@@ -9,7 +9,7 @@ test_that("simple propagation works", {
     edge_weight = function() 10
   )
 
-  X <- simulate_data(graph, n = 1000, dist_args = list(mu = 42, size= 100))
+  X <- simulate_data(graph, n = 1000, dist_args = list(mu = 42, size = 100))
 
   X_summary <- X %>%
     as.data.frame %>%
