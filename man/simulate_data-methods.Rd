@@ -10,9 +10,13 @@
 simulate_data(
   graph,
   n = 100,
-  dist_mean = 1000,
-  dist_dispersion = 100,
-  link = negative.binomial.special()$linkfun,
+  dist_fun = rnbinom,
+  dist_args = list(mu = 1000, size = 100),
+  child_fun = rpois,
+  child_args = list(),
+  child_dep = "lambda",
+  link_fun = negative.binomial.special()$linkfun,
+  link_args = list(offset = 1),
   pop_size = 0,
   latent = 0,
   latent_fun = "unif"
@@ -21,9 +25,13 @@ simulate_data(
 \S4method{simulate_data}{igraph}(
   graph,
   n = 100,
-  dist_mean = 1000,
-  dist_dispersion = 100,
-  link = negative.binomial.special()$linkfun,
+  dist_fun = rnbinom,
+  dist_args = list(mu = 1000, size = 100),
+  child_fun = rpois,
+  child_args = list(),
+  child_dep = "lambda",
+  link_fun = negative.binomial.special()$linkfun,
+  link_args = list(offset = 1),
   pop_size = 0,
   latent = 0,
   latent_fun = "unif"
@@ -32,9 +40,13 @@ simulate_data(
 \S4method{simulate_data}{graphNEL}(
   graph,
   n = 100,
-  dist_mean = 1000,
-  dist_dispersion = 100,
-  link = negative.binomial.special()$linkfun,
+  dist_fun = rnbinom,
+  dist_args = list(mu = 1000, size = 100),
+  child_fun = rpois,
+  child_args = list(),
+  child_dep = "lambda",
+  link_fun = negative.binomial.special()$linkfun,
+  link_args = list(offset = 1),
   pop_size = 0,
   latent = 0,
   latent_fun = "unif"
@@ -43,9 +55,13 @@ simulate_data(
 \S4method{simulate_data}{matrix}(
   graph,
   n = 100,
-  dist_mean = 1000,
-  dist_dispersion = 100,
-  link = negative.binomial.special()$linkfun,
+  dist_fun = rnbinom,
+  dist_args = list(mu = 1000, size = 100),
+  child_fun = rpois,
+  child_args = list(),
+  child_dep = "lambda",
+  link_fun = negative.binomial.special()$linkfun,
+  link_args = list(offset = 1),
   pop_size = 0,
   latent = 0,
   latent_fun = "unif"
@@ -56,13 +72,24 @@ simulate_data(
 
 \item{n}{Number of samples}
 
-\item{dist_mean}{distribution mean as numeric}
+\item{dist_fun}{distribution function for nodes without parents}
 
-\item{dist_dispersion}{distribution dispersion
-(actually dispersion^-1) as a scalar}
+\item{dist_args}{list of arguments for dist_fun}
 
-\item{link}{special link function for the negative binomial
+\item{child_fun}{distribution function for nodes with parents}
+
+\item{child_args}{list of arguments for child_fun}
+
+\item{child_dep}{link_fun computes an output for the expression of
+nodes without parents. this output is than used as input for child_fun.
+child_dep defines the parameter (a a string) of child_fun, which is used for
+the input. E.g., the link_fun is the identity and the child_fun is rnorm, we
+usually set child_dep = "mean".}
+
+\item{link_fun}{special link function for the negative binomial
 distribution}
+
+\item{link_args}{list of arguments for link_fun}
 
 \item{pop_size}{numeric for the population size, e.g., pop_size=1000 adds
 1000-n random genes not in the graph}
@@ -76,7 +103,10 @@ coefficients}
 graph
 }
 \description{
-Generate data for given DAG.
+Generate data for given DAG. The flexible framework allows for different
+distributions for source and child nodes. Default distributions are
+negative binomial (with mean = 100 and 1/dispersion = 100), and poisson,
+respectively.
 }
 \examples{
 dag <- create_random_DAG(30, 0.2)

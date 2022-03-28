@@ -211,7 +211,7 @@ if (dim(df_volcano)[[1]] > 0) {
 df_final %>%
   dplyr::filter(!is.infinite(distance)) %>%
   drop_na %>%
-ggplot(aes(x = -log10(dce_pvalue), y = distance, color = dce)) +
+  ggplot(aes(x = -log10(dce_pvalue), y = distance, color = dce)) +
   geom_point() +
   xlab("-log10(DCE p-value)") +
   ylab("Graph distance perturbed-gene to DCE-edge") +
