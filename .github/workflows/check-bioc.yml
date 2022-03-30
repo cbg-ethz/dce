@@ -112,6 +112,9 @@ jobs:
           ## see also https://github.com/r-lib/actions/issues/78
           brew install --cask xquartz
 
+          # fftw3 for qqconf
+          brew install fftw
+
       - name: Install Windows system dependencies
         if: runner.os == 'Windows'
         run: |
