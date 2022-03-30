@@ -90,5 +90,4 @@ Imports:
     harmonicmeanp,
     org.Hs.eg.db,
     logger,
-    shadowtext,
-    qqconf
+    shadowtext
