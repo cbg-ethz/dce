@@ -25,7 +25,7 @@ jobs:
         config:
           - { os: ubuntu-latest, r: 'release', bioc: '3.13', cont: "bioconductor/bioconductor_docker:RELEASE_3_13", rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest" }
           - { os: macOS-latest, r: 'release', bioc: '3.13'}
-          - { os: windows-latest, r: 'release', bioc: '3.13'}
+          # - { os: windows-latest, r: 'release', bioc: '3.13'}
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
       RSPM: ${{ matrix.config.rspm }}
@@ -111,6 +111,9 @@ jobs:
           ## for installing packages which require X11
           ## see also https://github.com/r-lib/actions/issues/78
           brew install --cask xquartz
+
+          # fftw3 for qqconf
+          brew install fftw
 
       - name: Install Windows system dependencies
         if: runner.os == 'Windows'
