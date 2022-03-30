@@ -26,6 +26,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -38,18 +40,12 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">dce</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.99.6</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-<li>
-  <a href="../index.html">
-    <span class="fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
 <li>
   <a href="../articles/dce.html">Get started</a>
 </li>
@@ -57,7 +53,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -74,7 +70,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/cbg-ethz/dce/">
+  <a href="https://github.com/cbg-ethz/dce/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -93,288 +89,289 @@
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Get started</h1>
-                        <h4 class="author">Kim Philipp Jablonski, Martin Pirkl</h4>
+                        <h4 data-toc-skip class="author">Kim Philipp Jablonski, Martin Pirkl</h4>
             
-            <h4 class="date">2021-11-01</h4>
+            <h4 data-toc-skip class="date">2022-03-30</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/cbg-ethz/dce/blob/master/vignettes/dce.Rmd"><code>vignettes/dce.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/cbg-ethz/dce/blob/HEAD/vignettes/dce.Rmd" class="external-link"><code>vignettes/dce.Rmd</code></a></small>
       <div class="hidden name"><code>dce.Rmd</code></div>
 
     </div>
 
     
     
-<div id="overview" class="section level1">
-<h1 class="hasAnchor">
-<a href="#overview" class="anchor"></a>Overview</h1>
+<div class="section level2">
+<h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
+</h2>
 <p>One cause of diseases like cancer is the dysregulation of signalling pathways. The interaction of two or more genes is changed and cell behaviour is changed in the malignant tissue.</p>
 <p>The estimation of causal effects from observational data has previously been used to elucidate gene interactions. We extend this notion to compute Differential Causal Effects (DCE). We compare the causal effects between two conditions, such as a malignant tissue (e.g., from a tumor) and a healthy tissue to detect differences in the gene interactions.</p>
 <p>However, computing causal effects solely from given observations is difficult, because it requires reconstructing the gene network beforehand. To overcome this issue, we use prior knowledge from literature. This largely improves performance and makes the estimation of DCEs more accurate.</p>
 <p>Overall, we can detect pathways which play a prominent role in tumorigenesis. We can even pinpoint specific interaction in the pathway that make a large contribution to the rise of the disease.</p>
+<p>You can learn more about the theory in our <a href="https://academic.oup.com/bioinformatics/advance-article-abstract/doi/10.1093/bioinformatics/btab847/6470558" class="external-link">publication</a>.</p>
 </div>
-<div id="installation" class="section level1">
-<h1 class="hasAnchor">
-<a href="#installation" class="anchor"></a>Installation</h1>
+<div class="section level2">
+<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+</h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="st">"BiocManager"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>
-    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span>
-<span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html">install</a></span><span class="op">(</span><span class="st">"dce"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="st">"BiocManager"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>
+    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span>
+<span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"dce"</span><span class="op">)</span></code></pre></div>
 </div>
-<div id="load-required-packages" class="section level1">
-<h1 class="hasAnchor">
-<a href="#load-required-packages" class="anchor"></a>Load required packages</h1>
+<div class="section level2">
+<h2 id="load-required-packages">Load required packages<a class="anchor" aria-label="anchor" href="#load-required-packages"></a>
+</h2>
 <p>Load <code>dce</code> package and other required libraries.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># fix "object 'guide_edge_colourbar' of mode 'function' was not found"</span>
 <span class="co"># when building vignettes</span>
 <span class="co"># (see also https://github.com/thomasp85/ggraph/issues/75)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggraph.data-imaginist.com">ggraph</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggraph.data-imaginist.com" class="external-link">ggraph</a></span><span class="op">)</span>
 
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">curatedTCGAData</span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">TCGAutils</span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://bioconductor.org/packages/SummarizedExperiment">SummarizedExperiment</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">curatedTCGAData</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">TCGAutils</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://bioconductor.org/packages/SummarizedExperiment" class="external-link">SummarizedExperiment</a></span><span class="op">)</span>
 
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org">tidyverse</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://wilkelab.org/cowplot/">cowplot</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">graph</span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/cbg-ethz/dce">dce</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org" class="external-link">tidyverse</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://wilkelab.org/cowplot/" class="external-link">cowplot</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">graph</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/cbg-ethz/dce" class="external-link">dce</a></span><span class="op">)</span>
 
-<span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span></code></pre></div>
+<span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span></code></pre></div>
 </div>
-<div id="introductory-example" class="section level1">
-<h1 class="hasAnchor">
-<a href="#introductory-example" class="anchor"></a>Introductory example</h1>
+<div class="section level2">
+<h2 id="introductory-example">Introductory example<a class="anchor" aria-label="anchor" href="#introductory-example"></a>
+</h2>
 <p>To demonstrate the basic idea of Differential Causal Effects (DCEs), we first artificially create a wild-type network by setting up its adjacency matrix. The specified edge weights describe the direct causal effects and total causal effects are defined accordingly <span class="citation">(Pearl 2010)</span>. In this way, the detected dysregulations are endowed with a causal interpretation and spurious correlations are ignored. This can be achieved by using valid adjustment sets, assuming that the underlying network indeed models causal relationships accurately. In a biological setting, these networks correspond, for example, to a KEGG pathway <span class="citation">(Kanehisa et al. 2004)</span> in a healthy cell. Here, the edge weights correspond to proteins facilitating or inhibiting each others expression levels.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">graph_wt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">0</span><span class="op">)</span>, <span class="fl">3</span>, <span class="fl">3</span><span class="op">)</span>
-<span class="fu"><a href="https://tibble.tidyverse.org/reference/rownames.html">rownames</a></span><span class="op">(</span><span class="va">graph_wt</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/row_colnames.html">colnames</a></span><span class="op">(</span><span class="va">graph_wt</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">graph_wt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">0</span><span class="op">)</span>, <span class="fl">3</span>, <span class="fl">3</span><span class="op">)</span>
+<span class="fu"><a href="https://tibble.tidyverse.org/reference/rownames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">graph_wt</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/row_colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">graph_wt</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span><span class="op">)</span>
 <span class="va">graph_wt</span></code></pre></div>
-<pre><code>##   A B C
-## A 0 1 1
-## B 0 0 1
-## C 0 0 0</code></pre>
+<pre><code><span class="co">##   A B C</span>
+<span class="co">## A 0 1 1</span>
+<span class="co">## B 0 0 1</span>
+<span class="co">## C 0 0 0</span></code></pre>
 <p>In case of a disease, these pathways can become dysregulated. This can be expressed by a change in edge weights.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">graph_mt</span> <span class="op">&lt;-</span> <span class="va">graph_wt</span>
 <span class="va">graph_mt</span><span class="op">[</span><span class="st">"A"</span>, <span class="st">"B"</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">2.5</span> <span class="co"># dysregulation happens here!</span>
 <span class="va">graph_mt</span></code></pre></div>
-<pre><code>##   A   B C
-## A 0 2.5 1
-## B 0 0.0 1
-## C 0 0.0 0</code></pre>
+<pre><code><span class="co">##   A   B C</span>
+<span class="co">## A 0 2.5 1</span>
+<span class="co">## B 0 0.0 1</span>
+<span class="co">## C 0 0.0 0</span></code></pre>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">cowplot</span><span class="fu">::</span><span class="fu"><a href="https://wilkelab.org/cowplot/reference/plot_grid.html">plot_grid</a></span><span class="op">(</span>
-  <span class="fu"><a href="../reference/plot_network.html">plot_network</a></span><span class="op">(</span><span class="va">graph_wt</span>, edgescale_limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">3</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span>,
-  <span class="fu"><a href="../reference/plot_network.html">plot_network</a></span><span class="op">(</span><span class="va">graph_mt</span>, edgescale_limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">3</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span>,
-  labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"WT"</span>, <span class="st">"MT"</span><span class="op">)</span>
+<code class="sourceCode R"><span class="fu">cowplot</span><span class="fu">::</span><span class="fu"><a href="https://wilkelab.org/cowplot/reference/plot_grid.html" class="external-link">plot_grid</a></span><span class="op">(</span>
+  <span class="fu"><a href="../reference/plot_network.html">plot_network</a></span><span class="op">(</span><span class="va">graph_wt</span>, edgescale_limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">3</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span>,
+  <span class="fu"><a href="../reference/plot_network.html">plot_network</a></span><span class="op">(</span><span class="va">graph_mt</span>, edgescale_limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">3</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span>,
+  labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"WT"</span>, <span class="st">"MT"</span><span class="op">)</span>
 <span class="op">)</span></code></pre></div>
 <p><img src="dce_files/figure-html/unnamed-chunk-4-1.png" width="700"></p>
 <p>By computing the counts based on the edge weights (root nodes are randomly initialized), we can generate synthetic expression data for each node in both networks. Both <code>X_wt</code> and <code>X_mt</code> then induce causal effects as defined in their respective adjacency matrices.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">X_wt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_data.html">simulate_data</a></span><span class="op">(</span><span class="va">graph_wt</span><span class="op">)</span>
-<span class="va">X_mt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_data.html">simulate_data</a></span><span class="op">(</span><span class="va">graph_mt</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">X_wt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_data-methods.html">simulate_data</a></span><span class="op">(</span><span class="va">graph_wt</span><span class="op">)</span>
+<span class="va">X_mt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_data-methods.html">simulate_data</a></span><span class="op">(</span><span class="va">graph_mt</span><span class="op">)</span>
 
-<span class="va">X_wt</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
+<span class="va">X_wt</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
   <span class="va">head</span></code></pre></div>
-<pre><code>##         A   B    C
-## [1,] 1117 398  802
-## [2,]  964 244  501
-## [3,]  963 246  469
-## [4,] 1204 502 1032
-## [5,]  848 125  251
-## [6,] 1163 455  885</code></pre>
+<pre><code><span class="co">##         A   B    C</span>
+<span class="co">## [1,] 1117 398  802</span>
+<span class="co">## [2,]  964 244  501</span>
+<span class="co">## [3,]  963 246  469</span>
+<span class="co">## [4,] 1204 502 1032</span>
+<span class="co">## [5,]  848 125  251</span>
+<span class="co">## [6,] 1163 455  885</span></code></pre>
 <p>Given the network topology (without edge weights!) and expression data from both WT and MT conditions, we can estimate the difference in causal effects for each edge between the two conditions. These are the aforementioned Differential Causal Effects (DCEs).</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dce.html">dce</a></span><span class="op">(</span><span class="va">graph_wt</span>, <span class="va">X_wt</span>, <span class="va">X_mt</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dce-methods.html">dce</a></span><span class="op">(</span><span class="va">graph_wt</span>, <span class="va">X_wt</span>, <span class="va">X_mt</span><span class="op">)</span>
 
-<span class="va">res</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
-  <span class="va">as.data.frame</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
+<span class="va">res</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="va">as.data.frame</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
   <span class="va">drop_na</span></code></pre></div>
-<pre><code>##   source target       dce dce_stderr    dce_pvalue
-## 1      A      B 1.5443343 0.03062434 3.373144e-114
-## 2      A      C 1.5234426 0.04449333  1.207257e-84
-## 3      B      C 0.1152442 0.17882577  5.200452e-01</code></pre>
+<pre><code><span class="co">##   source target       dce dce_stderr    dce_pvalue</span>
+<span class="co">## 1      A      B 1.5443343 0.03062434 3.373144e-114</span>
+<span class="co">## 2      A      C 1.5234426 0.04449333  1.207257e-84</span>
+<span class="co">## 3      B      C 0.1152442 0.17882577  5.200452e-01</span></code></pre>
 <p>Visualizing the result shows that we can recover the dysregulation of the edge from <code>A</code> to <code>B</code>. Note that since we are computing total causal effects, the causal effect of <code>A</code> on <code>C</code> has changed as well.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ggtitle</a></span><span class="op">(</span><span class="st">"Differential Causal Effects between WT and MT condition"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Differential Causal Effects between WT and MT condition"</span><span class="op">)</span></code></pre></div>
 <p><img src="dce_files/figure-html/unnamed-chunk-7-1.png" width="700"></p>
 </div>
-<div id="dce-reconstruction-with-non-trivial-network" class="section level1">
-<h1 class="hasAnchor">
-<a href="#dce-reconstruction-with-non-trivial-network" class="anchor"></a>DCE reconstruction with non-trivial network</h1>
+<div class="section level2">
+<h2 id="dce-reconstruction-with-non-trivial-network">DCE reconstruction with non-trivial network<a class="anchor" aria-label="anchor" href="#dce-reconstruction-with-non-trivial-network"></a>
+</h2>
 <p>To get a better feeling for the behavior of <em>dce</em>, we will look at DCE estimates for a larger pathway. In particular, we create a <span class="math inline">\(20\)</span> node wild-type (WT) network with edge probability <span class="math inline">\(0.3\)</span> as well as a dysregulated mutated (MT) network.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">1337</span><span class="op">)</span>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1337</span><span class="op">)</span>
 
 <span class="co"># create wild-type and mutant networks</span>
 <span class="va">graph_wt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_random_DAG.html">create_random_DAG</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">0.3</span><span class="op">)</span>
 <span class="va">graph_mt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/resample_edge_weights.html">resample_edge_weights</a></span><span class="op">(</span><span class="va">graph_wt</span><span class="op">)</span>
 
-<span class="fu">cowplot</span><span class="fu">::</span><span class="fu"><a href="https://wilkelab.org/cowplot/reference/plot_grid.html">plot_grid</a></span><span class="op">(</span>
-  <span class="fu"><a href="../reference/plot_network.html">plot_network</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/methods/as.html">as</a></span><span class="op">(</span><span class="va">graph_wt</span>, <span class="st">"matrix"</span><span class="op">)</span>, labelsize <span class="op">=</span> <span class="fl">0</span>, arrow_size <span class="op">=</span> <span class="fl">0.01</span><span class="op">)</span>,
-  <span class="fu"><a href="../reference/plot_network.html">plot_network</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/methods/as.html">as</a></span><span class="op">(</span><span class="va">graph_mt</span>, <span class="st">"matrix"</span><span class="op">)</span>, labelsize <span class="op">=</span> <span class="fl">0</span>, arrow_size <span class="op">=</span> <span class="fl">0.01</span><span class="op">)</span>,
-  labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"WT"</span>, <span class="st">"MT"</span><span class="op">)</span>
+<span class="fu">cowplot</span><span class="fu">::</span><span class="fu"><a href="https://wilkelab.org/cowplot/reference/plot_grid.html" class="external-link">plot_grid</a></span><span class="op">(</span>
+  <span class="fu"><a href="../reference/plot_network.html">plot_network</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/methods/as.html" class="external-link">as</a></span><span class="op">(</span><span class="va">graph_wt</span>, <span class="st">"matrix"</span><span class="op">)</span>, labelsize <span class="op">=</span> <span class="fl">0</span>, arrow_size <span class="op">=</span> <span class="fl">0.01</span><span class="op">)</span>,
+  <span class="fu"><a href="../reference/plot_network.html">plot_network</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/methods/as.html" class="external-link">as</a></span><span class="op">(</span><span class="va">graph_mt</span>, <span class="st">"matrix"</span><span class="op">)</span>, labelsize <span class="op">=</span> <span class="fl">0</span>, arrow_size <span class="op">=</span> <span class="fl">0.01</span><span class="op">)</span>,
+  labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"WT"</span>, <span class="st">"MT"</span><span class="op">)</span>
 <span class="op">)</span></code></pre></div>
 <p><img src="dce_files/figure-html/unnamed-chunk-8-1.png" width="700"></p>
 <p>Next, we simulate gene expression data and compute DCEs.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># simulate gene expression data for both networks</span>
-<span class="va">X_wt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_data.html">simulate_data</a></span><span class="op">(</span><span class="va">graph_wt</span><span class="op">)</span>
-<span class="va">X_mt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_data.html">simulate_data</a></span><span class="op">(</span><span class="va">graph_mt</span><span class="op">)</span>
+<span class="va">X_wt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_data-methods.html">simulate_data</a></span><span class="op">(</span><span class="va">graph_wt</span><span class="op">)</span>
+<span class="va">X_mt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_data-methods.html">simulate_data</a></span><span class="op">(</span><span class="va">graph_mt</span><span class="op">)</span>
 
 <span class="co"># compute DCEs</span>
-<span class="va">res</span> <span class="op">&lt;-</span> <span class="fu">dce</span><span class="fu">::</span><span class="fu"><a href="../reference/dce.html">dce</a></span><span class="op">(</span><span class="va">graph_wt</span>, <span class="va">X_wt</span>, <span class="va">X_mt</span><span class="op">)</span>
+<span class="va">res</span> <span class="op">&lt;-</span> <span class="fu">dce</span><span class="fu">::</span><span class="fu"><a href="../reference/dce-methods.html">dce</a></span><span class="op">(</span><span class="va">graph_wt</span>, <span class="va">X_wt</span>, <span class="va">X_mt</span><span class="op">)</span>
 
-<span class="va">df_dce</span> <span class="op">&lt;-</span> <span class="va">res</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
-  <span class="va">as.data.frame</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
-  <span class="va">drop_na</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="va">dce_pvalue</span><span class="op">)</span></code></pre></div>
+<span class="va">df_dce</span> <span class="op">&lt;-</span> <span class="va">res</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="va">as.data.frame</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="va">drop_na</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">dce_pvalue</span><span class="op">)</span></code></pre></div>
 <p>Finally, we compare the estimated to the ground truth DCEs.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># compute ground truth DCEs</span>
 <span class="va">dce_gt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/trueEffects.html">trueEffects</a></span><span class="op">(</span><span class="va">graph_mt</span><span class="op">)</span> <span class="op">-</span> <span class="fu"><a href="../reference/trueEffects.html">trueEffects</a></span><span class="op">(</span><span class="va">graph_wt</span><span class="op">)</span>
-<span class="va">dce_gt_ind</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/which.html">which</a></span><span class="op">(</span><span class="va">dce_gt</span> <span class="op">!=</span> <span class="fl">0</span>, arr.ind <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+<span class="va">dce_gt_ind</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">dce_gt</span> <span class="op">!=</span> <span class="fl">0</span>, arr.ind <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 
 <span class="co"># create plot</span>
-<span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>
-  source <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"n"</span>, <span class="va">dce_gt_ind</span><span class="op">[</span>, <span class="st">"row"</span><span class="op">]</span><span class="op">)</span>,
-  target <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"n"</span>, <span class="va">dce_gt_ind</span><span class="op">[</span>, <span class="st">"col"</span><span class="op">]</span><span class="op">)</span>,
+<span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>
+  source <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"n"</span>, <span class="va">dce_gt_ind</span><span class="op">[</span>, <span class="st">"row"</span><span class="op">]</span><span class="op">)</span>,
+  target <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"n"</span>, <span class="va">dce_gt_ind</span><span class="op">[</span>, <span class="st">"col"</span><span class="op">]</span><span class="op">)</span>,
   dce_ground_truth <span class="op">=</span> <span class="va">dce_gt</span><span class="op">[</span><span class="va">dce_gt</span> <span class="op">!=</span> <span class="fl">0</span><span class="op">]</span>
-<span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">inner_join</a></span><span class="op">(</span><span class="va">df_dce</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"source"</span>, <span class="st">"target"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html">rename</a></span><span class="op">(</span>dce_estimate <span class="op">=</span> <span class="va">dce</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
-<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">dce_ground_truth</span>, y <span class="op">=</span> <span class="va">dce_estimate</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_abline</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"gray"</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">xlab</a></span><span class="op">(</span><span class="st">"DCE (ground truth"</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ylab</a></span><span class="op">(</span><span class="st">"DCE (estimate)"</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_minimal</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">inner_join</a></span><span class="op">(</span><span class="va">df_dce</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"source"</span>, <span class="st">"target"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span>dce_estimate <span class="op">=</span> <span class="va">dce</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">dce_ground_truth</span>, y <span class="op">=</span> <span class="va">dce_estimate</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_abline</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"gray"</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="st">"DCE (ground truth"</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="st">"DCE (estimate)"</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <p><img src="dce_files/figure-html/unnamed-chunk-10-1.png" width="700"></p>
 <p>We observe that <em>dce</em> is able to nicely recover DCEs of moderate as well as large and small magnitude.</p>
 </div>
-<div id="application-to-real-data" class="section level1">
-<h1 class="hasAnchor">
-<a href="#application-to-real-data" class="anchor"></a>Application to real data</h1>
+<div class="section level2">
+<h2 id="application-to-real-data">Application to real data<a class="anchor" aria-label="anchor" href="#application-to-real-data"></a>
+</h2>
 <p>Pathway dysregulations are a common cancer hallmark <span class="citation">(Hanahan and Weinberg 2011)</span>. It is thus of interest to investigate how the causal effect magnitudes in relevant pathways vary between normal and tumor samples.</p>
-<div id="retrieve-gene-expression-data" class="section level2">
-<h2 class="hasAnchor">
-<a href="#retrieve-gene-expression-data" class="anchor"></a>Retrieve gene expression data</h2>
+<div class="section level3">
+<h3 id="retrieve-gene-expression-data">Retrieve gene expression data<a class="anchor" aria-label="anchor" href="#retrieve-gene-expression-data"></a>
+</h3>
 <p>As a showcase, we download breast cancer (BRCA) RNA transcriptomics profiling data from TCGA <span class="citation">(Tomczak, Czerwińska, and Wiznerowicz 2015)</span>.</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">brca</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/curatedTCGAData/man/curatedTCGAData.html">curatedTCGAData</a></span><span class="op">(</span>
+<code class="sourceCode R"><span class="va">brca</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/curatedTCGAData/man/curatedTCGAData.html" class="external-link">curatedTCGAData</a></span><span class="op">(</span>
   diseaseCode <span class="op">=</span> <span class="st">"BRCA"</span>,
-  assays <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"RNASeq2*"</span><span class="op">)</span>,
+  assays <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"RNASeq2*"</span><span class="op">)</span>,
   version <span class="op">=</span> <span class="st">"2.0.1"</span>,
   dry.run <span class="op">=</span> <span class="cn">FALSE</span>
 <span class="op">)</span></code></pre></div>
-<pre><code>## snapshotDate(): 2021-05-18</code></pre>
-<pre><code>## Working on: BRCA_RNASeq2Gene-20160128</code></pre>
-<pre><code>## see ?curatedTCGAData and browseVignettes('curatedTCGAData') for documentation</code></pre>
-<pre><code>## downloading 1 resources</code></pre>
-<pre><code>## retrieving 1 resource</code></pre>
-<pre><code>## loading from cache</code></pre>
-<pre><code>## Working on: BRCA_RNASeq2GeneNorm-20160128</code></pre>
-<pre><code>## see ?curatedTCGAData and browseVignettes('curatedTCGAData') for documentation</code></pre>
-<pre><code>## downloading 1 resources</code></pre>
-<pre><code>## retrieving 1 resource</code></pre>
-<pre><code>## loading from cache</code></pre>
-<pre><code>## Working on: BRCA_colData-20160128</code></pre>
-<pre><code>## see ?curatedTCGAData and browseVignettes('curatedTCGAData') for documentation</code></pre>
-<pre><code>## downloading 1 resources</code></pre>
-<pre><code>## retrieving 1 resource</code></pre>
-<pre><code>## loading from cache</code></pre>
-<pre><code>## Working on: BRCA_metadata-20160128</code></pre>
-<pre><code>## see ?curatedTCGAData and browseVignettes('curatedTCGAData') for documentation</code></pre>
-<pre><code>## downloading 1 resources</code></pre>
-<pre><code>## retrieving 1 resource</code></pre>
-<pre><code>## loading from cache</code></pre>
-<pre><code>## Working on: BRCA_sampleMap-20160128</code></pre>
-<pre><code>## see ?curatedTCGAData and browseVignettes('curatedTCGAData') for documentation</code></pre>
-<pre><code>## downloading 1 resources</code></pre>
-<pre><code>## retrieving 1 resource</code></pre>
-<pre><code>## loading from cache</code></pre>
-<pre><code>## harmonizing input:
-##   removing 13161 sampleMap rows not in names(experiments)
-##   removing 5 colData rownames not in sampleMap 'primary'</code></pre>
+<pre><code><span class="co">## snapshotDate(): 2021-10-19</span></code></pre>
+<pre><code><span class="co">## Working on: BRCA_RNASeq2Gene-20160128</span></code></pre>
+<pre><code><span class="co">## see ?curatedTCGAData and browseVignettes('curatedTCGAData') for documentation</span></code></pre>
+<pre><code><span class="co">## downloading 1 resources</span></code></pre>
+<pre><code><span class="co">## retrieving 1 resource</span></code></pre>
+<pre><code><span class="co">## loading from cache</span></code></pre>
+<pre><code><span class="co">## Working on: BRCA_RNASeq2GeneNorm-20160128</span></code></pre>
+<pre><code><span class="co">## see ?curatedTCGAData and browseVignettes('curatedTCGAData') for documentation</span></code></pre>
+<pre><code><span class="co">## downloading 1 resources</span></code></pre>
+<pre><code><span class="co">## retrieving 1 resource</span></code></pre>
+<pre><code><span class="co">## loading from cache</span></code></pre>
+<pre><code><span class="co">## Working on: BRCA_colData-20160128</span></code></pre>
+<pre><code><span class="co">## see ?curatedTCGAData and browseVignettes('curatedTCGAData') for documentation</span></code></pre>
+<pre><code><span class="co">## downloading 1 resources</span></code></pre>
+<pre><code><span class="co">## retrieving 1 resource</span></code></pre>
+<pre><code><span class="co">## loading from cache</span></code></pre>
+<pre><code><span class="co">## Working on: BRCA_metadata-20160128</span></code></pre>
+<pre><code><span class="co">## see ?curatedTCGAData and browseVignettes('curatedTCGAData') for documentation</span></code></pre>
+<pre><code><span class="co">## downloading 1 resources</span></code></pre>
+<pre><code><span class="co">## retrieving 1 resource</span></code></pre>
+<pre><code><span class="co">## loading from cache</span></code></pre>
+<pre><code><span class="co">## Working on: BRCA_sampleMap-20160128</span></code></pre>
+<pre><code><span class="co">## see ?curatedTCGAData and browseVignettes('curatedTCGAData') for documentation</span></code></pre>
+<pre><code><span class="co">## downloading 1 resources</span></code></pre>
+<pre><code><span class="co">## retrieving 1 resource</span></code></pre>
+<pre><code><span class="co">## loading from cache</span></code></pre>
+<pre><code><span class="co">## harmonizing input:</span>
+<span class="co">##   removing 13161 sampleMap rows not in names(experiments)</span>
+<span class="co">##   removing 5 colData rownames not in sampleMap 'primary'</span></code></pre>
 <p>This will retrieve all available samples for the requested data sets. These samples can be classified according to their site of origin.</p>
 <div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/TCGAutils/man/curatedTCGAData-helpers.html">sampleTables</a></span><span class="op">(</span><span class="va">brca</span><span class="op">)</span></code></pre></div>
-<pre><code>## $`BRCA_RNASeq2Gene-20160128`
-## 
-##   01   06   11 
-## 1093    7  112 
-## 
-## $`BRCA_RNASeq2GeneNorm-20160128`
-## 
-##   01   06   11 
-## 1093    7  112</code></pre>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/TCGAutils/man/curatedTCGAData-helpers.html" class="external-link">sampleTables</a></span><span class="op">(</span><span class="va">brca</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">## $`BRCA_RNASeq2Gene-20160128`</span>
+<span class="co">## </span>
+<span class="co">##   01   06   11 </span>
+<span class="co">## 1093    7  112 </span>
+<span class="co">## </span>
+<span class="co">## $`BRCA_RNASeq2GeneNorm-20160128`</span>
+<span class="co">## </span>
+<span class="co">##   01   06   11 </span>
+<span class="co">## 1093    7  112</span></code></pre>
 <div class="sourceCode" id="cb46"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">sampleTypes</span>, package <span class="op">=</span> <span class="st">"TCGAutils"</span><span class="op">)</span>
-<span class="va">sampleTypes</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">Code</span> <span class="op"><a href="https://rdrr.io/pkg/BiocGenerics/man/match.html">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"01"</span>, <span class="st">"06"</span>, <span class="st">"11"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<pre><code>##   Code          Definition Short.Letter.Code
-## 1   01 Primary Solid Tumor                TP
-## 2   06          Metastatic                TM
-## 3   11 Solid Tissue Normal                NT</code></pre>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">sampleTypes</span>, package <span class="op">=</span> <span class="st">"TCGAutils"</span><span class="op">)</span>
+<span class="va">sampleTypes</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">Code</span> <span class="op"><a href="https://rdrr.io/pkg/BiocGenerics/man/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"01"</span>, <span class="st">"06"</span>, <span class="st">"11"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">##   Code          Definition Short.Letter.Code</span>
+<span class="co">## 1   01 Primary Solid Tumor                TP</span>
+<span class="co">## 2   06          Metastatic                TM</span>
+<span class="co">## 3   11 Solid Tissue Normal                NT</span></code></pre>
 <p>We can extract Primary Solid Tumor and matched Solid Tissue Normale samples.</p>
 <div class="sourceCode" id="cb48"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># split assays</span>
-<span class="va">brca_split</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/TCGAutils/man/curatedTCGAData-helpers.html">splitAssays</a></span><span class="op">(</span><span class="va">brca</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"01"</span>, <span class="st">"11"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<pre><code>## Warning: 'splitAssays' is deprecated.
-## Use 'TCGAsplitAssays' instead.
-## See help("Deprecated")</code></pre>
+<span class="va">brca_split</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/TCGAutils/man/curatedTCGAData-helpers.html" class="external-link">splitAssays</a></span><span class="op">(</span><span class="va">brca</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"01"</span>, <span class="st">"11"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">## Warning: 'splitAssays' is deprecated.</span>
+<span class="co">## Use 'TCGAsplitAssays' instead.</span>
+<span class="co">## See help("Deprecated")</span></code></pre>
 <div class="sourceCode" id="cb50"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># only retain matching samples</span>
-<span class="va">brca_matched</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/methods/as.html">as</a></span><span class="op">(</span><span class="va">brca_split</span>, <span class="st">"MatchedAssayExperiment"</span><span class="op">)</span>
+<span class="va">brca_matched</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/methods/as.html" class="external-link">as</a></span><span class="op">(</span><span class="va">brca_split</span>, <span class="st">"MatchedAssayExperiment"</span><span class="op">)</span>
 
-<span class="va">brca_wt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html">assay</a></span><span class="op">(</span><span class="va">brca_matched</span>, <span class="st">"01_BRCA_RNASeq2GeneNorm-20160128"</span><span class="op">)</span>
-<span class="va">brca_mt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html">assay</a></span><span class="op">(</span><span class="va">brca_matched</span>, <span class="st">"11_BRCA_RNASeq2GeneNorm-20160128"</span><span class="op">)</span></code></pre></div>
+<span class="va">brca_wt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">assay</a></span><span class="op">(</span><span class="va">brca_matched</span>, <span class="st">"01_BRCA_RNASeq2GeneNorm-20160128"</span><span class="op">)</span>
+<span class="va">brca_mt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">assay</a></span><span class="op">(</span><span class="va">brca_matched</span>, <span class="st">"11_BRCA_RNASeq2GeneNorm-20160128"</span><span class="op">)</span></code></pre></div>
 </div>
-<div id="retrieve-biological-pathway-of-interest" class="section level2">
-<h2 class="hasAnchor">
-<a href="#retrieve-biological-pathway-of-interest" class="anchor"></a>Retrieve biological pathway of interest</h2>
+<div class="section level3">
+<h3 id="retrieve-biological-pathway-of-interest">Retrieve biological pathway of interest<a class="anchor" aria-label="anchor" href="#retrieve-biological-pathway-of-interest"></a>
+</h3>
 <p>KEGG <span class="citation">(Kanehisa et al. 2004)</span> provides the breast cancer related pathway <code>hsa05224</code>. It can be easily retrieved using <code>dce</code>.</p>
 <div class="sourceCode" id="cb51"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">pathways</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_pathways.html">get_pathways</a></span><span class="op">(</span>pathway_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>kegg <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Breast cancer"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<pre><code>## 'select()' returned 1:1 mapping between keys and columns
-## 'select()' returned 1:1 mapping between keys and columns
-## 'select()' returned 1:1 mapping between keys and columns
-## 'select()' returned 1:1 mapping between keys and columns
-## 'select()' returned 1:1 mapping between keys and columns
-## 'select()' returned 1:1 mapping between keys and columns</code></pre>
+<code class="sourceCode R"><span class="va">pathways</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_pathways.html">get_pathways</a></span><span class="op">(</span>pathway_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>kegg <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Breast cancer"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">## 'select()' returned 1:1 mapping between keys and columns</span>
+<span class="co">## 'select()' returned 1:1 mapping between keys and columns</span>
+<span class="co">## 'select()' returned 1:1 mapping between keys and columns</span>
+<span class="co">## 'select()' returned 1:1 mapping between keys and columns</span>
+<span class="co">## 'select()' returned 1:1 mapping between keys and columns</span>
+<span class="co">## 'select()' returned 1:1 mapping between keys and columns</span></code></pre>
 <div class="sourceCode" id="cb53"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">brca_pathway</span> <span class="op">&lt;-</span> <span class="va">pathways</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">graph</span></code></pre></div>
 <p>Luckily, it shares all genes with the cancer data set.</p>
 <div class="sourceCode" id="cb54"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">shared_genes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://generics.r-lib.org/reference/setops.html">intersect</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/graph/man/graphNEL-class.html">nodes</a></span><span class="op">(</span><span class="va">brca_pathway</span><span class="op">)</span>, <span class="fu"><a href="https://tibble.tidyverse.org/reference/rownames.html">rownames</a></span><span class="op">(</span><span class="va">brca_wt</span><span class="op">)</span><span class="op">)</span>
-<span class="fu">glue</span><span class="fu">::</span><span class="fu"><a href="https://glue.tidyverse.org/reference/glue.html">glue</a></span><span class="op">(</span>
+<code class="sourceCode R"><span class="va">shared_genes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://generics.r-lib.org/reference/setops.html" class="external-link">intersect</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/graph/man/graphNEL-class.html" class="external-link">nodes</a></span><span class="op">(</span><span class="va">brca_pathway</span><span class="op">)</span>, <span class="fu"><a href="https://tibble.tidyverse.org/reference/rownames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">brca_wt</span><span class="op">)</span><span class="op">)</span>
+<span class="fu">glue</span><span class="fu">::</span><span class="fu"><a href="https://glue.tidyverse.org/reference/glue.html" class="external-link">glue</a></span><span class="op">(</span>
   <span class="st">"Covered nodes: {length(shared_genes)}/{length(nodes(brca_pathway))}"</span>
 <span class="op">)</span></code></pre></div>
-<pre><code>## Covered nodes: 145/145</code></pre>
+<pre><code><span class="co">## Covered nodes: 145/145</span></code></pre>
 </div>
-<div id="estimate-differential-causal-effects" class="section level2">
-<h2 class="hasAnchor">
-<a href="#estimate-differential-causal-effects" class="anchor"></a>Estimate Differential Causal Effects</h2>
+<div class="section level3">
+<h3 id="estimate-differential-causal-effects">Estimate Differential Causal Effects<a class="anchor" aria-label="anchor" href="#estimate-differential-causal-effects"></a>
+</h3>
 <p>We can now estimate the differences in causal effects between matched tumor and normal samples on a breast cancer specific pathway.</p>
 <div class="sourceCode" id="cb56"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu">dce</span><span class="fu">::</span><span class="fu"><a href="../reference/dce.html">dce</a></span><span class="op">(</span><span class="va">brca_pathway</span>, <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/t.html">t</a></span><span class="op">(</span><span class="va">brca_wt</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/t.html">t</a></span><span class="op">(</span><span class="va">brca_mt</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu">dce</span><span class="fu">::</span><span class="fu"><a href="../reference/dce-methods.html">dce</a></span><span class="op">(</span><span class="va">brca_pathway</span>, <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">brca_wt</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">brca_mt</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <p>Interpretations may now begin.</p>
 <div class="sourceCode" id="cb57"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">res</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
-  <span class="va">as.data.frame</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
-  <span class="va">drop_na</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html">desc</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">abs</a></span><span class="op">(</span><span class="va">dce</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
+<code class="sourceCode R"><span class="va">res</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="va">as.data.frame</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="va">drop_na</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html" class="external-link">desc</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="va">dce</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
   <span class="va">head</span></code></pre></div>
-<pre><code>##   source target        dce dce_stderr   dce_pvalue
-## 1  WNT8A   FZD4 -4342.2001  2876.9003 1.326486e-01
-## 2   FGF3  FGFR1 -1553.3334  1322.3358 2.413890e-01
-## 3  WNT8B   FZD4 -1540.1078   235.1719 4.038543e-10
-## 4  WNT7A   FZD4 -1334.3963   598.5797 2.680676e-02
-## 5  FGF21  FGFR1  -917.1445  1128.4631 4.172471e-01
-## 6  WNT8A   FZD7   817.6733   954.3545 3.924979e-01</code></pre>
+<pre><code><span class="co">##   source target        dce dce_stderr   dce_pvalue</span>
+<span class="co">## 1  WNT8A   FZD4 -4342.2001  2876.9003 1.326486e-01</span>
+<span class="co">## 2   FGF3  FGFR1 -1553.3334  1322.3358 2.413890e-01</span>
+<span class="co">## 3  WNT8B   FZD4 -1540.1078   235.1719 4.038543e-10</span>
+<span class="co">## 4  WNT7A   FZD4 -1334.3963   598.5797 2.680676e-02</span>
+<span class="co">## 5  FGF21  FGFR1  -917.1445  1128.4631 4.172471e-01</span>
+<span class="co">## 6  WNT8A   FZD7   817.6733   954.3545 3.924979e-01</span></code></pre>
 <div class="sourceCode" id="cb59"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span>
   <span class="va">res</span>,
   nodesize <span class="op">=</span> <span class="fl">20</span>, labelsize <span class="op">=</span> <span class="fl">1</span>,
   node_border_size <span class="op">=</span> <span class="fl">0.05</span>, arrow_size <span class="op">=</span> <span class="fl">0.01</span>,
@@ -384,231 +381,232 @@
 <p><img src="dce_files/figure-html/unnamed-chunk-17-1.png" width="700"></p>
 </div>
 </div>
-<div id="latent-confounding-adjustment" class="section level1">
-<h1 class="hasAnchor">
-<a href="#latent-confounding-adjustment" class="anchor"></a>Latent Confounding Adjustment</h1>
+<div class="section level2">
+<h2 id="latent-confounding-adjustment">Latent Confounding Adjustment<a class="anchor" aria-label="anchor" href="#latent-confounding-adjustment"></a>
+</h2>
 <p>We illustrate here how <code>dce</code> can help to adjust for some special types of unobserved confounding, such as batch effects. One needs a relatively large data set in order to detect confounding well.</p>
 <p>We first generate the unconfounded data:</p>
 <div class="sourceCode" id="cb60"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>
 <span class="va">epsilon</span> <span class="op">&lt;-</span> <span class="fl">1e-100</span>
 <span class="va">network_size</span> <span class="op">&lt;-</span> <span class="fl">50</span>
-<span class="va">graph_wt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/methods/as.html">as</a></span><span class="op">(</span><span class="fu"><a href="../reference/create_random_DAG.html">create_random_DAG</a></span><span class="op">(</span><span class="va">network_size</span>, prob <span class="op">=</span> <span class="fl">.2</span><span class="op">)</span>, <span class="st">"matrix"</span><span class="op">)</span>
+<span class="va">graph_wt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/methods/as.html" class="external-link">as</a></span><span class="op">(</span><span class="fu"><a href="../reference/create_random_DAG.html">create_random_DAG</a></span><span class="op">(</span><span class="va">network_size</span>, prob <span class="op">=</span> <span class="fl">.2</span><span class="op">)</span>, <span class="st">"matrix"</span><span class="op">)</span>
 <span class="va">graph_wt</span><span class="op">[</span><span class="st">"n1"</span>, <span class="st">"n2"</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">epsilon</span>
 <span class="va">graph_mt</span> <span class="op">&lt;-</span> <span class="va">graph_wt</span>
 <span class="va">graph_mt</span><span class="op">[</span><span class="st">"n1"</span>, <span class="st">"n2"</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">2</span>
 
-<span class="fu">cowplot</span><span class="fu">::</span><span class="fu"><a href="https://wilkelab.org/cowplot/reference/plot_grid.html">plot_grid</a></span><span class="op">(</span>
-  <span class="fu"><a href="../reference/plot_network.html">plot_network</a></span><span class="op">(</span><span class="va">graph_wt</span>, edgescale_limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span>,
-  <span class="fu"><a href="../reference/plot_network.html">plot_network</a></span><span class="op">(</span><span class="va">graph_mt</span>, edgescale_limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span>,
-  labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"WT"</span>, <span class="st">"MT"</span><span class="op">)</span>
+<span class="fu">cowplot</span><span class="fu">::</span><span class="fu"><a href="https://wilkelab.org/cowplot/reference/plot_grid.html" class="external-link">plot_grid</a></span><span class="op">(</span>
+  <span class="fu"><a href="../reference/plot_network.html">plot_network</a></span><span class="op">(</span><span class="va">graph_wt</span>, edgescale_limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span>,
+  <span class="fu"><a href="../reference/plot_network.html">plot_network</a></span><span class="op">(</span><span class="va">graph_mt</span>, edgescale_limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span>,
+  labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"WT"</span>, <span class="st">"MT"</span><span class="op">)</span>
 <span class="op">)</span></code></pre></div>
 <p><img src="dce_files/figure-html/unnamed-chunk-18-1.png" width="700"></p>
 <div class="sourceCode" id="cb61"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">truth</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/trueEffects.html">trueEffects</a></span><span class="op">(</span><span class="va">graph_mt</span><span class="op">)</span> <span class="op">-</span> <span class="fu"><a href="../reference/trueEffects.html">trueEffects</a></span><span class="op">(</span><span class="va">graph_wt</span><span class="op">)</span>
-<span class="fu"><a href="../reference/plot_network.html">plot_network</a></span><span class="op">(</span><span class="va">graph_wt</span>, value_matrix <span class="op">=</span> <span class="va">truth</span>, edgescale_limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<span class="fu"><a href="../reference/plot_network.html">plot_network</a></span><span class="op">(</span><span class="va">graph_wt</span>, value_matrix <span class="op">=</span> <span class="va">truth</span>, edgescale_limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <p><img src="dce_files/figure-html/unnamed-chunk-18-2.png" width="700"></p>
 <div class="sourceCode" id="cb62"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">X_wt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_data.html">simulate_data</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">100</span>, <span class="va">graph_wt</span><span class="op">)</span>
-<span class="va">X_mt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_data.html">simulate_data</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">100</span>, <span class="va">graph_mt</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="va">X_wt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_data-methods.html">simulate_data</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">100</span>, <span class="va">graph_wt</span><span class="op">)</span>
+<span class="va">X_mt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_data-methods.html">simulate_data</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">100</span>, <span class="va">graph_mt</span><span class="op">)</span></code></pre></div>
 <p>For the unconfounded data <code>dce</code> estimates the differential causal effects well:</p>
 <div class="sourceCode" id="cb63"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dce.html">dce</a></span><span class="op">(</span><span class="va">graph_mt</span>, <span class="va">X_wt</span>, <span class="va">X_mt</span>, deconfounding <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dce-methods.html">dce</a></span><span class="op">(</span><span class="va">graph_mt</span>, <span class="va">X_wt</span>, <span class="va">X_mt</span>, deconfounding <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
 
-<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/qplot.html">qplot</a></span><span class="op">(</span><span class="va">truth</span><span class="op">[</span><span class="va">truth</span> <span class="op">!=</span> <span class="fl">0</span><span class="op">]</span>, <span class="va">res</span><span class="op">$</span><span class="va">dce</span><span class="op">[</span><span class="va">truth</span> <span class="op">!=</span> <span class="fl">0</span><span class="op">]</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_abline</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"red"</span>, linetype <span class="op">=</span> <span class="st">"dashed"</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">xlab</a></span><span class="op">(</span><span class="st">"true DCE"</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ylab</a></span><span class="op">(</span><span class="st">"estimated DCE"</span><span class="op">)</span></code></pre></div>
-<pre><code>## Warning: Removed 34 rows containing missing values (geom_point).</code></pre>
+<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/qplot.html" class="external-link">qplot</a></span><span class="op">(</span><span class="va">truth</span><span class="op">[</span><span class="va">truth</span> <span class="op">!=</span> <span class="fl">0</span><span class="op">]</span>, <span class="va">res</span><span class="op">$</span><span class="va">dce</span><span class="op">[</span><span class="va">truth</span> <span class="op">!=</span> <span class="fl">0</span><span class="op">]</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_abline</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"red"</span>, linetype <span class="op">=</span> <span class="st">"dashed"</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="st">"true DCE"</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="st">"estimated DCE"</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">## Warning: Removed 34 rows containing missing values (geom_point).</span></code></pre>
 <p><img src="dce_files/figure-html/unnamed-chunk-19-1.png" width="700"></p>
 <div class="sourceCode" id="cb65"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/plot_network.html">plot_network</a></span><span class="op">(</span><span class="va">graph_wt</span>, value_matrix <span class="op">=</span> <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="va">res</span><span class="op">$</span><span class="va">dce_pvalue</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ggtitle</a></span><span class="op">(</span><span class="st">"-log(p-values) for DCEs between WT and MT condition"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="../reference/plot_network.html">plot_network</a></span><span class="op">(</span><span class="va">graph_wt</span>, value_matrix <span class="op">=</span> <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">res</span><span class="op">$</span><span class="va">dce_pvalue</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"-log(p-values) for DCEs between WT and MT condition"</span><span class="op">)</span></code></pre></div>
 <p><img src="dce_files/figure-html/unnamed-chunk-19-2.png" width="700"></p>
 <p>On the other hand, if our data come from two different batches, where the gene expression of each gene is shifted by some amount depending on the batch, then <code>dce</code> will have many false positive findings:</p>
 <div class="sourceCode" id="cb66"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">batch</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span>, replace <span class="op">=</span> <span class="cn">TRUE</span>, <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/nrow.html">nrow</a></span><span class="op">(</span><span class="va">X_wt</span><span class="op">)</span><span class="op">)</span>
-<span class="va">bX_wt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/apply.html">apply</a></span><span class="op">(</span><span class="va">X_wt</span>, <span class="fl">2</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="va">x</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span> <span class="op">*</span> <span class="va">batch</span><span class="op">)</span>
-<span class="va">bX_mt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/apply.html">apply</a></span><span class="op">(</span><span class="va">X_mt</span>, <span class="fl">2</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="va">x</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span> <span class="op">*</span> <span class="va">batch</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">batch</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span>, replace <span class="op">=</span> <span class="cn">TRUE</span>, <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">X_wt</span><span class="op">)</span><span class="op">)</span>
+<span class="va">bX_wt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/apply.html" class="external-link">apply</a></span><span class="op">(</span><span class="va">X_wt</span>, <span class="fl">2</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="va">x</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span> <span class="op">*</span> <span class="va">batch</span><span class="op">)</span>
+<span class="va">bX_mt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/apply.html" class="external-link">apply</a></span><span class="op">(</span><span class="va">X_mt</span>, <span class="fl">2</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="va">x</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span> <span class="op">*</span> <span class="va">batch</span><span class="op">)</span>
 
-<span class="va">res_without_deconf</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dce.html">dce</a></span><span class="op">(</span><span class="va">graph_mt</span>, <span class="va">bX_wt</span>, <span class="va">bX_mt</span>, deconfounding <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
+<span class="va">res_without_deconf</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dce-methods.html">dce</a></span><span class="op">(</span><span class="va">graph_mt</span>, <span class="va">bX_wt</span>, <span class="va">bX_mt</span>, deconfounding <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
 
-<span class="fu">cowplot</span><span class="fu">::</span><span class="fu"><a href="https://wilkelab.org/cowplot/reference/plot_grid.html">plot_grid</a></span><span class="op">(</span>
+<span class="fu">cowplot</span><span class="fu">::</span><span class="fu"><a href="https://wilkelab.org/cowplot/reference/plot_grid.html" class="external-link">plot_grid</a></span><span class="op">(</span>
   <span class="fu"><a href="../reference/plot_network.html">plot_network</a></span><span class="op">(</span>
     <span class="va">graph_wt</span>,
-    value_matrix <span class="op">=</span> <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="va">res_without_deconf</span><span class="op">$</span><span class="va">dce_pvalue</span> <span class="op">+</span> <span class="va">epsilon</span><span class="op">)</span>
+    value_matrix <span class="op">=</span> <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">res_without_deconf</span><span class="op">$</span><span class="va">dce_pvalue</span> <span class="op">+</span> <span class="va">epsilon</span><span class="op">)</span>
   <span class="op">)</span> <span class="op">+</span>
-    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ggtitle</a></span><span class="op">(</span><span class="st">"-log(p-values) without deconfounding"</span><span class="op">)</span>,
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/qplot.html">qplot</a></span><span class="op">(</span><span class="va">truth</span><span class="op">[</span><span class="va">truth</span> <span class="op">!=</span> <span class="fl">0</span><span class="op">]</span>, <span class="va">res_without_deconf</span><span class="op">$</span><span class="va">dce</span><span class="op">[</span><span class="va">truth</span> <span class="op">!=</span> <span class="fl">0</span><span class="op">]</span><span class="op">)</span> <span class="op">+</span>
-    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_abline</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"red"</span>, linetype <span class="op">=</span> <span class="st">"dashed"</span><span class="op">)</span> <span class="op">+</span>
-    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">xlab</a></span><span class="op">(</span><span class="st">"true DCE"</span><span class="op">)</span> <span class="op">+</span>
-    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ylab</a></span><span class="op">(</span><span class="st">"estimated DCE"</span><span class="op">)</span>,
+    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"-log(p-values) without deconfounding"</span><span class="op">)</span>,
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/qplot.html" class="external-link">qplot</a></span><span class="op">(</span><span class="va">truth</span><span class="op">[</span><span class="va">truth</span> <span class="op">!=</span> <span class="fl">0</span><span class="op">]</span>, <span class="va">res_without_deconf</span><span class="op">$</span><span class="va">dce</span><span class="op">[</span><span class="va">truth</span> <span class="op">!=</span> <span class="fl">0</span><span class="op">]</span><span class="op">)</span> <span class="op">+</span>
+    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_abline</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"red"</span>, linetype <span class="op">=</span> <span class="st">"dashed"</span><span class="op">)</span> <span class="op">+</span>
+    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="st">"true DCE"</span><span class="op">)</span> <span class="op">+</span>
+    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="st">"estimated DCE"</span><span class="op">)</span>,
   nrow <span class="op">=</span> <span class="fl">1</span>
 <span class="op">)</span></code></pre></div>
-<pre><code>## Warning: Removed 34 rows containing missing values (geom_point).</code></pre>
+<pre><code><span class="co">## Warning: Removed 34 rows containing missing values (geom_point).</span></code></pre>
 <p><img src="dce_files/figure-html/unnamed-chunk-20-1.png" width="700"></p>
 <p>However, the performance is improved when the confounding adjustment is used:</p>
 <div class="sourceCode" id="cb68"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">res_with_deconf</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dce.html">dce</a></span><span class="op">(</span><span class="va">graph_mt</span>, <span class="va">bX_wt</span>, <span class="va">bX_mt</span>, deconfounding <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">res_with_deconf</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dce-methods.html">dce</a></span><span class="op">(</span><span class="va">graph_mt</span>, <span class="va">bX_wt</span>, <span class="va">bX_mt</span>, deconfounding <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>
 
-<span class="fu">cowplot</span><span class="fu">::</span><span class="fu"><a href="https://wilkelab.org/cowplot/reference/plot_grid.html">plot_grid</a></span><span class="op">(</span>
+<span class="fu">cowplot</span><span class="fu">::</span><span class="fu"><a href="https://wilkelab.org/cowplot/reference/plot_grid.html" class="external-link">plot_grid</a></span><span class="op">(</span>
   <span class="fu"><a href="../reference/plot_network.html">plot_network</a></span><span class="op">(</span>
     <span class="va">graph_wt</span>,
-    value_matrix <span class="op">=</span> <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="va">res_with_deconf</span><span class="op">$</span><span class="va">dce_pvalue</span> <span class="op">+</span> <span class="va">epsilon</span><span class="op">)</span>
+    value_matrix <span class="op">=</span> <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">res_with_deconf</span><span class="op">$</span><span class="va">dce_pvalue</span> <span class="op">+</span> <span class="va">epsilon</span><span class="op">)</span>
   <span class="op">)</span> <span class="op">+</span>
-    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ggtitle</a></span><span class="op">(</span><span class="st">"-log(p-values) with deconfounding"</span><span class="op">)</span>,
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/qplot.html">qplot</a></span><span class="op">(</span><span class="va">truth</span><span class="op">[</span><span class="va">truth</span> <span class="op">!=</span> <span class="fl">0</span><span class="op">]</span>, <span class="va">res_with_deconf</span><span class="op">$</span><span class="va">dce</span><span class="op">[</span><span class="va">truth</span> <span class="op">!=</span> <span class="fl">0</span><span class="op">]</span><span class="op">)</span> <span class="op">+</span>
-    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_abline</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"red"</span>, linetype <span class="op">=</span> <span class="st">"dashed"</span><span class="op">)</span> <span class="op">+</span>
-    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">xlab</a></span><span class="op">(</span><span class="st">"true DCE"</span><span class="op">)</span> <span class="op">+</span>
-    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ylab</a></span><span class="op">(</span><span class="st">"estimated DCE"</span><span class="op">)</span>,
+    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"-log(p-values) with deconfounding"</span><span class="op">)</span>,
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/qplot.html" class="external-link">qplot</a></span><span class="op">(</span><span class="va">truth</span><span class="op">[</span><span class="va">truth</span> <span class="op">!=</span> <span class="fl">0</span><span class="op">]</span>, <span class="va">res_with_deconf</span><span class="op">$</span><span class="va">dce</span><span class="op">[</span><span class="va">truth</span> <span class="op">!=</span> <span class="fl">0</span><span class="op">]</span><span class="op">)</span> <span class="op">+</span>
+    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_abline</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"red"</span>, linetype <span class="op">=</span> <span class="st">"dashed"</span><span class="op">)</span> <span class="op">+</span>
+    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="st">"true DCE"</span><span class="op">)</span> <span class="op">+</span>
+    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="st">"estimated DCE"</span><span class="op">)</span>,
   nrow <span class="op">=</span> <span class="fl">1</span>
 <span class="op">)</span></code></pre></div>
-<pre><code>## Warning: Removed 34 rows containing missing values (geom_point).</code></pre>
+<pre><code><span class="co">## Warning: Removed 34 rows containing missing values (geom_point).</span></code></pre>
 <p><img src="dce_files/figure-html/unnamed-chunk-21-1.png" width="700"></p>
 </div>
-<div id="session-information" class="section level1">
-<h1 class="hasAnchor">
-<a href="#session-information" class="anchor"></a>Session information</h1>
+<div class="section level2">
+<h2 id="session-information">Session information<a class="anchor" aria-label="anchor" href="#session-information"></a>
+</h2>
 <div class="sourceCode" id="cb70"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<pre><code>## R version 4.1.1 (2021-08-10)
-## Platform: x86_64-apple-darwin17.0 (64-bit)
-## Running under: macOS Catalina 10.15.7
-## 
-## Matrix products: default
-## BLAS:   /Library/Frameworks/R.framework/Versions/4.1/Resources/lib/libRblas.0.dylib
-## LAPACK: /Library/Frameworks/R.framework/Versions/4.1/Resources/lib/libRlapack.dylib
-## 
-## locale:
-## [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
-## 
-## attached base packages:
-## [1] parallel  stats4    stats     graphics  grDevices utils     datasets 
-## [8] methods   base     
-## 
-## other attached packages:
-##  [1] org.Hs.eg.db_3.13.0         AnnotationDbi_1.54.1       
-##  [3] dce_0.99.6                  graph_1.70.0               
-##  [5] cowplot_1.1.1               forcats_0.5.1              
-##  [7] stringr_1.4.0               dplyr_1.0.7                
-##  [9] purrr_0.3.4                 readr_2.0.2                
-## [11] tidyr_1.1.4                 tibble_3.1.5               
-## [13] tidyverse_1.3.1             TCGAutils_1.12.0           
-## [15] curatedTCGAData_1.14.0      MultiAssayExperiment_1.18.0
-## [17] SummarizedExperiment_1.22.0 Biobase_2.52.0             
-## [19] GenomicRanges_1.44.0        GenomeInfoDb_1.28.4        
-## [21] IRanges_2.26.0              S4Vectors_0.30.2           
-## [23] BiocGenerics_0.38.0         MatrixGenerics_1.4.3       
-## [25] matrixStats_0.61.0          ggraph_2.0.5               
-## [27] ggplot2_3.3.5               BiocStyle_2.20.2           
-## 
-## loaded via a namespace (and not attached):
-##   [1] rappdirs_0.3.3                rtracklayer_1.52.1           
-##   [3] prabclus_2.3-2                ragg_1.1.3                   
-##   [5] bit64_4.0.5                   knitr_1.36                   
-##   [7] multcomp_1.4-17               DelayedArray_0.18.0          
-##   [9] data.table_1.14.2             wesanderson_0.3.6            
-##  [11] KEGGREST_1.32.0               RCurl_1.98-1.5               
-##  [13] generics_0.1.1                metap_1.5                    
-##  [15] GenomicFeatures_1.44.2        TH.data_1.1-0                
-##  [17] RSQLite_2.2.8                 shadowtext_0.0.9             
-##  [19] proxy_0.4-26                  CombinePValue_1.0            
-##  [21] bit_4.0.4                     tzdb_0.2.0                   
-##  [23] mutoss_0.1-12                 xml2_1.3.2                   
-##  [25] lubridate_1.8.0               httpuv_1.6.3                 
-##  [27] assertthat_0.2.1              viridis_0.6.2                
-##  [29] amap_0.8-18                   xfun_0.27                    
-##  [31] hms_1.1.1                     jquerylib_0.1.4              
-##  [33] evaluate_0.14                 promises_1.2.0.1             
-##  [35] DEoptimR_1.0-9                fansi_0.5.0                  
-##  [37] restfulr_0.0.13               progress_1.2.2               
-##  [39] dbplyr_2.1.1                  readxl_1.3.1                 
-##  [41] Rgraphviz_2.36.0              igraph_1.2.7                 
-##  [43] DBI_1.1.1                     tmvnsim_1.0-2                
-##  [45] apcluster_1.4.8               RcppArmadillo_0.10.7.0.0     
-##  [47] ellipsis_0.3.2                backports_1.3.0              
-##  [49] bookdown_0.24                 permute_0.9-5                
-##  [51] harmonicmeanp_3.0             biomaRt_2.48.3               
-##  [53] vctrs_0.3.8                   abind_1.4-5                  
-##  [55] Linnorm_2.16.0                RcppEigen_0.3.3.9.1          
-##  [57] cachem_1.0.6                  withr_2.4.2                  
-##  [59] sfsmisc_1.1-12                ggforce_0.3.3                
-##  [61] robustbase_0.93-9             bdsmatrix_1.3-4              
-##  [63] checkmate_2.0.0               vegan_2.5-7                  
-##  [65] GenomicAlignments_1.28.0      pcalg_2.7-3                  
-##  [67] prettyunits_1.1.1             mclust_5.4.7                 
-##  [69] mnormt_2.0.2                  cluster_2.1.2                
-##  [71] ExperimentHub_2.0.0           GenomicDataCommons_1.16.0    
-##  [73] crayon_1.4.2                  ellipse_0.4.2                
-##  [75] labeling_0.4.2                FMStable_0.1-2               
-##  [77] edgeR_3.34.1                  pkgconfig_2.0.3              
-##  [79] tweenr_1.0.2                  nlme_3.1-152                 
-##  [81] ggm_2.5                       nnet_7.3-16                  
-##  [83] rlang_0.4.12                  diptest_0.76-0               
-##  [85] lifecycle_1.0.1               sandwich_3.0-1               
-##  [87] filelock_1.0.2                BiocFileCache_2.0.0          
-##  [89] mathjaxr_1.4-0                modelr_0.1.8                 
-##  [91] AnnotationHub_3.0.2           cellranger_1.1.0             
-##  [93] rprojroot_2.0.2               polyclip_1.10-0              
-##  [95] Matrix_1.3-4                  zoo_1.8-9                    
-##  [97] reprex_2.0.1                  png_0.1-7                    
-##  [99] viridisLite_0.4.0             rjson_0.2.20                 
-## [101] bitops_1.0-7                  Biostrings_2.60.2            
-## [103] blob_1.2.2                    scales_1.1.1                 
-## [105] plyr_1.8.6                    memoise_2.0.0                
-## [107] graphite_1.38.0               magrittr_2.0.1               
-## [109] gdata_2.18.0                  zlibbioc_1.38.0              
-## [111] compiler_4.1.1                BiocIO_1.2.0                 
-## [113] clue_0.3-60                   plotrix_3.8-2                
-## [115] Rsamtools_2.8.0               cli_3.1.0                    
-## [117] XVector_0.32.0                MASS_7.3-54                  
-## [119] mgcv_1.8-36                   tidyselect_1.1.1             
-## [121] stringi_1.7.5                 textshaping_0.3.6            
-## [123] highr_0.9                     yaml_2.2.1                   
-## [125] locfit_1.5-9.4                ggrepel_0.9.1                
-## [127] grid_4.1.1                    sass_0.4.0                   
-## [129] tools_4.1.1                   rstudioapi_0.13              
-## [131] snowfall_1.84-6.1             gridExtra_2.3                
-## [133] farver_2.1.0                  Rtsne_0.15                   
-## [135] digest_0.6.28                 BiocManager_1.30.16          
-## [137] flexclust_1.4-0               shiny_1.7.1                  
-## [139] mnem_1.8.0                    fpc_2.2-9                    
-## [141] ppcor_1.1                     Rcpp_1.0.7                   
-## [143] broom_0.7.10                  BiocVersion_3.13.1           
-## [145] later_1.3.0                   httr_1.4.2                   
-## [147] ggdendro_0.1.22               naturalsort_0.1.3            
-## [149] kernlab_0.9-29                Rdpack_2.1.2                 
-## [151] colorspace_2.0-2              rvest_1.0.2                  
-## [153] XML_3.99-0.8                  fs_1.5.0                     
-## [155] splines_4.1.1                 RBGL_1.68.0                  
-## [157] statmod_1.4.36                sn_2.0.0                     
-## [159] expm_0.999-6                  pkgdown_1.6.1                
-## [161] graphlayouts_0.7.1            multtest_2.48.0              
-## [163] flexmix_2.3-17                systemfonts_1.0.2            
-## [165] xtable_1.8-4                  jsonlite_1.7.2               
-## [167] tidygraph_1.2.0               corpcor_1.6.10               
-## [169] modeltools_0.2-23             R6_2.5.1                     
-## [171] gmodels_2.18.1                TFisher_0.2.0                
-## [173] pillar_1.6.4                  htmltools_0.5.2              
-## [175] mime_0.12                     glue_1.4.2                   
-## [177] fastmap_1.1.0                 BiocParallel_1.26.2          
-## [179] class_7.3-19                  interactiveDisplayBase_1.30.0
-## [181] codetools_0.2-18              tsne_0.1-3                   
-## [183] mvtnorm_1.1-3                 utf8_1.2.2                   
-## [185] lattice_0.20-44               bslib_0.3.1                  
-## [187] logger_0.2.2                  numDeriv_2016.8-1.1          
-## [189] curl_4.3.2                    gtools_3.9.2                 
-## [191] survival_3.2-11               limma_3.48.3                 
-## [193] rmarkdown_2.11                fastICA_1.2-3                
-## [195] desc_1.4.0                    munsell_0.5.0                
-## [197] e1071_1.7-9                   fastcluster_1.2.3            
-## [199] GenomeInfoDbData_1.2.6        reshape2_1.4.4               
-## [201] haven_2.4.3                   gtable_0.3.0                 
-## [203] rbibutils_2.2.4</code></pre>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">## R version 4.1.3 (2022-03-10)</span>
+<span class="co">## Platform: x86_64-apple-darwin17.0 (64-bit)</span>
+<span class="co">## Running under: macOS Big Sur/Monterey 10.16</span>
+<span class="co">## </span>
+<span class="co">## Matrix products: default</span>
+<span class="co">## BLAS:   /Library/Frameworks/R.framework/Versions/4.1/Resources/lib/libRblas.0.dylib</span>
+<span class="co">## LAPACK: /Library/Frameworks/R.framework/Versions/4.1/Resources/lib/libRlapack.dylib</span>
+<span class="co">## </span>
+<span class="co">## locale:</span>
+<span class="co">## [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8</span>
+<span class="co">## </span>
+<span class="co">## attached base packages:</span>
+<span class="co">## [1] stats4    stats     graphics  grDevices utils     datasets  methods  </span>
+<span class="co">## [8] base     </span>
+<span class="co">## </span>
+<span class="co">## other attached packages:</span>
+<span class="co">##  [1] org.Hs.eg.db_3.14.0         AnnotationDbi_1.56.2       </span>
+<span class="co">##  [3] dce_0.99.6                  graph_1.72.0               </span>
+<span class="co">##  [5] cowplot_1.1.1               forcats_0.5.1              </span>
+<span class="co">##  [7] stringr_1.4.0               dplyr_1.0.8                </span>
+<span class="co">##  [9] purrr_0.3.4                 readr_2.1.2                </span>
+<span class="co">## [11] tidyr_1.2.0                 tibble_3.1.6               </span>
+<span class="co">## [13] tidyverse_1.3.1             TCGAutils_1.14.0           </span>
+<span class="co">## [15] curatedTCGAData_1.16.0      MultiAssayExperiment_1.20.0</span>
+<span class="co">## [17] SummarizedExperiment_1.24.0 Biobase_2.54.0             </span>
+<span class="co">## [19] GenomicRanges_1.46.1        GenomeInfoDb_1.30.1        </span>
+<span class="co">## [21] IRanges_2.28.0              S4Vectors_0.32.4           </span>
+<span class="co">## [23] BiocGenerics_0.40.0         MatrixGenerics_1.6.0       </span>
+<span class="co">## [25] matrixStats_0.61.0          ggraph_2.0.5               </span>
+<span class="co">## [27] ggplot2_3.3.5               BiocStyle_2.22.0           </span>
+<span class="co">## </span>
+<span class="co">## loaded via a namespace (and not attached):</span>
+<span class="co">##   [1] rappdirs_0.3.3                rtracklayer_1.54.0           </span>
+<span class="co">##   [3] prabclus_2.3-2                ragg_1.2.2                   </span>
+<span class="co">##   [5] bit64_4.0.5                   knitr_1.38                   </span>
+<span class="co">##   [7] multcomp_1.4-18               DelayedArray_0.20.0          </span>
+<span class="co">##   [9] data.table_1.14.2             wesanderson_0.3.6            </span>
+<span class="co">##  [11] KEGGREST_1.34.0               RCurl_1.98-1.6               </span>
+<span class="co">##  [13] generics_0.1.2                metap_1.8                    </span>
+<span class="co">##  [15] GenomicFeatures_1.46.5        TH.data_1.1-0                </span>
+<span class="co">##  [17] RSQLite_2.2.11                shadowtext_0.1.1             </span>
+<span class="co">##  [19] proxy_0.4-26                  CombinePValue_1.0            </span>
+<span class="co">##  [21] bit_4.0.4                     tzdb_0.3.0                   </span>
+<span class="co">##  [23] mutoss_0.1-12                 xml2_1.3.3                   </span>
+<span class="co">##  [25] lubridate_1.8.0               httpuv_1.6.5                 </span>
+<span class="co">##  [27] assertthat_0.2.1              viridis_0.6.2                </span>
+<span class="co">##  [29] amap_0.8-18                   xfun_0.30                    </span>
+<span class="co">##  [31] hms_1.1.1                     jquerylib_0.1.4              </span>
+<span class="co">##  [33] evaluate_0.15                 promises_1.2.0.1             </span>
+<span class="co">##  [35] DEoptimR_1.0-10               fansi_1.0.3                  </span>
+<span class="co">##  [37] restfulr_0.0.13               progress_1.2.2               </span>
+<span class="co">##  [39] dbplyr_2.1.1                  readxl_1.4.0                 </span>
+<span class="co">##  [41] Rgraphviz_2.38.0              igraph_1.2.11                </span>
+<span class="co">##  [43] DBI_1.1.2                     tmvnsim_1.0-2                </span>
+<span class="co">##  [45] apcluster_1.4.9               RcppArmadillo_0.10.8.1.0     </span>
+<span class="co">##  [47] ellipsis_0.3.2                backports_1.4.1              </span>
+<span class="co">##  [49] bookdown_0.25                 permute_0.9-7                </span>
+<span class="co">##  [51] harmonicmeanp_3.0             biomaRt_2.50.3               </span>
+<span class="co">##  [53] vctrs_0.4.0                   abind_1.4-5                  </span>
+<span class="co">##  [55] Linnorm_2.18.0                RcppEigen_0.3.3.9.1          </span>
+<span class="co">##  [57] cachem_1.0.6                  withr_2.5.0                  </span>
+<span class="co">##  [59] sfsmisc_1.1-12                ggforce_0.3.3                </span>
+<span class="co">##  [61] robustbase_0.93-9             bdsmatrix_1.3-4              </span>
+<span class="co">##  [63] checkmate_2.0.0               vegan_2.5-7                  </span>
+<span class="co">##  [65] GenomicAlignments_1.30.0      pcalg_2.7-5                  </span>
+<span class="co">##  [67] prettyunits_1.1.1             mclust_5.4.9                 </span>
+<span class="co">##  [69] mnormt_2.0.2                  cluster_2.1.2                </span>
+<span class="co">##  [71] ExperimentHub_2.2.1           GenomicDataCommons_1.18.0    </span>
+<span class="co">##  [73] crayon_1.5.1                  ellipse_0.4.2                </span>
+<span class="co">##  [75] labeling_0.4.2                FMStable_0.1-2               </span>
+<span class="co">##  [77] edgeR_3.36.0                  pkgconfig_2.0.3              </span>
+<span class="co">##  [79] qqconf_1.2.3                  tweenr_1.0.2                 </span>
+<span class="co">##  [81] nlme_3.1-155                  ggm_2.5                      </span>
+<span class="co">##  [83] nnet_7.3-17                   rlang_1.0.2                  </span>
+<span class="co">##  [85] diptest_0.76-0                lifecycle_1.0.1              </span>
+<span class="co">##  [87] sandwich_3.0-1                filelock_1.0.2               </span>
+<span class="co">##  [89] BiocFileCache_2.2.1           mathjaxr_1.6-0               </span>
+<span class="co">##  [91] modelr_0.1.8                  AnnotationHub_3.2.2          </span>
+<span class="co">##  [93] cellranger_1.1.0              rprojroot_2.0.2              </span>
+<span class="co">##  [95] polyclip_1.10-0               Matrix_1.4-0                 </span>
+<span class="co">##  [97] zoo_1.8-9                     reprex_2.0.1                 </span>
+<span class="co">##  [99] png_0.1-7                     viridisLite_0.4.0            </span>
+<span class="co">## [101] rjson_0.2.21                  bitops_1.0-7                 </span>
+<span class="co">## [103] Biostrings_2.62.0             blob_1.2.2                   </span>
+<span class="co">## [105] scales_1.1.1                  plyr_1.8.7                   </span>
+<span class="co">## [107] memoise_2.0.1                 graphite_1.40.0              </span>
+<span class="co">## [109] magrittr_2.0.3                gdata_2.18.0                 </span>
+<span class="co">## [111] zlibbioc_1.40.0               compiler_4.1.3               </span>
+<span class="co">## [113] BiocIO_1.4.0                  clue_0.3-60                  </span>
+<span class="co">## [115] plotrix_3.8-2                 Rsamtools_2.10.0             </span>
+<span class="co">## [117] cli_3.2.0                     XVector_0.34.0               </span>
+<span class="co">## [119] mgcv_1.8-39                   MASS_7.3-55                  </span>
+<span class="co">## [121] tidyselect_1.1.2              stringi_1.7.6                </span>
+<span class="co">## [123] textshaping_0.3.6             highr_0.9                    </span>
+<span class="co">## [125] yaml_2.3.5                    locfit_1.5-9.5               </span>
+<span class="co">## [127] ggrepel_0.9.1                 grid_4.1.3                   </span>
+<span class="co">## [129] sass_0.4.1                    tools_4.1.3                  </span>
+<span class="co">## [131] parallel_4.1.3                rstudioapi_0.13              </span>
+<span class="co">## [133] snowfall_1.84-6.1             gridExtra_2.3                </span>
+<span class="co">## [135] farver_2.1.0                  Rtsne_0.15                   </span>
+<span class="co">## [137] digest_0.6.29                 BiocManager_1.30.16          </span>
+<span class="co">## [139] flexclust_1.4-0               shiny_1.7.1                  </span>
+<span class="co">## [141] mnem_1.10.0                   fpc_2.2-9                    </span>
+<span class="co">## [143] ppcor_1.1                     Rcpp_1.0.8.3                 </span>
+<span class="co">## [145] broom_0.7.12                  BiocVersion_3.14.0           </span>
+<span class="co">## [147] later_1.3.0                   httr_1.4.2                   </span>
+<span class="co">## [149] ggdendro_0.1.23               naturalsort_0.1.3            </span>
+<span class="co">## [151] kernlab_0.9-29                Rdpack_2.3                   </span>
+<span class="co">## [153] colorspace_2.0-3              rvest_1.0.2                  </span>
+<span class="co">## [155] XML_3.99-0.9                  fs_1.5.2                     </span>
+<span class="co">## [157] splines_4.1.3                 RBGL_1.70.0                  </span>
+<span class="co">## [159] statmod_1.4.36                sn_2.0.2                     </span>
+<span class="co">## [161] expm_0.999-6                  pkgdown_2.0.2                </span>
+<span class="co">## [163] graphlayouts_0.8.0            multtest_2.50.0              </span>
+<span class="co">## [165] flexmix_2.3-17                systemfonts_1.0.4            </span>
+<span class="co">## [167] xtable_1.8-4                  jsonlite_1.8.0               </span>
+<span class="co">## [169] tidygraph_1.2.0               corpcor_1.6.10               </span>
+<span class="co">## [171] modeltools_0.2-23             R6_2.5.1                     </span>
+<span class="co">## [173] gmodels_2.18.1                TFisher_0.2.0                </span>
+<span class="co">## [175] pillar_1.7.0                  htmltools_0.5.2              </span>
+<span class="co">## [177] mime_0.12                     glue_1.6.2                   </span>
+<span class="co">## [179] fastmap_1.1.0                 BiocParallel_1.28.3          </span>
+<span class="co">## [181] class_7.3-20                  interactiveDisplayBase_1.32.0</span>
+<span class="co">## [183] codetools_0.2-18              tsne_0.1-3.1                 </span>
+<span class="co">## [185] mvtnorm_1.1-3                 utf8_1.2.2                   </span>
+<span class="co">## [187] lattice_0.20-45               bslib_0.3.1                  </span>
+<span class="co">## [189] logger_0.2.2                  numDeriv_2016.8-1.1          </span>
+<span class="co">## [191] curl_4.3.2                    gtools_3.9.2                 </span>
+<span class="co">## [193] survival_3.2-13               limma_3.50.1                 </span>
+<span class="co">## [195] rmarkdown_2.13                fastICA_1.2-3                </span>
+<span class="co">## [197] desc_1.4.1                    munsell_0.5.0                </span>
+<span class="co">## [199] e1071_1.7-9                   fastcluster_1.2.3            </span>
+<span class="co">## [201] GenomeInfoDbData_1.2.7        reshape2_1.4.4               </span>
+<span class="co">## [203] haven_2.4.3                   gtable_0.3.0                 </span>
+<span class="co">## [205] rbibutils_2.2.7</span></code></pre>
 </div>
-<div id="references" class="section level1 unnumbered">
-<h1 class="hasAnchor">
-<a href="#references" class="anchor"></a>References</h1>
+<div class="section level2">
+<h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+</h2>
 <div id="refs" class="references">
 <div id="ref-hanahan2011hallmarks">
 <p>Hanahan, Douglas, and Robert A Weinberg. 2011. “Hallmarks of Cancer: The Next Generation.” <em>Cell</em> 144 (5): 646–74.</p>
@@ -637,11 +635,13 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by Kim Philipp Jablonski, Martin Pirkl.</p>
+  <p></p>
+<p>Developed by Kim Philipp Jablonski, Martin Pirkl.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
 </div>
 
       </footer>
@@ -649,6 +649,8 @@
 
   
 
+
+  
 
   </body>
 </html>
