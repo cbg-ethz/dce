@@ -54,8 +54,7 @@ Suggests:
     SummarizedExperiment,
     RcppParallel,
     docopt,
-    CARNIVAL,
-    qqconf
+    CARNIVAL
 VignetteBuilder: knitr
 RoxygenNote: 7.1.2
 Imports:
@@ -91,4 +90,5 @@ Imports:
     harmonicmeanp,
     org.Hs.eg.db,
     logger,
-    shadowtext
+    shadowtext,
+    qqconf
