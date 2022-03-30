@@ -54,7 +54,8 @@ Suggests:
     SummarizedExperiment,
     RcppParallel,
     docopt,
-    CARNIVAL
+    CARNIVAL,
+    qqconf
 VignetteBuilder: knitr
 RoxygenNote: 7.1.2
 Imports:
