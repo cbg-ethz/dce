@@ -199,7 +199,7 @@ sampleTables(brca)
 
 data(sampleTypes, package = "TCGAutils")
 sampleTypes %>%
-  filter(Code %in% c("01", "06", "11"))
+  dplyr::filter(Code %in% c("01", "06", "11"))
 ```
 
 We can extract Primary Solid Tumor and matched Solid Tissue Normale samples.
