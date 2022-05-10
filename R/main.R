@@ -13,8 +13,7 @@
 #' the adjustment set Z for the regression
 #' @param effect_type method of computing causal effects
 #' @param p_method character string. "mean", "sum" for standard summary
-#' functions, "hmp" for harmonic mean, "test" for the selfcontained
-#' test of package 'CombinePValue' or any method from package 'metap',
+#' functions, "hmp" for harmonic mean or any method from package 'metap',
 #' e.g., "meanp" or "sump".
 #' @param test either "wald" for testing significance with the
 #' wald test or "lr" for using a likelihood ratio test. Alternatively,
@@ -38,7 +37,7 @@
 #' @importFrom graph graphNEL
 #' @importFrom igraph as_adjacency_matrix
 #' @importFrom Matrix sparseMatrix
-#' @import metap CombinePValue assertthat logger
+#' @import metap assertthat logger
 #' @examples
 #' dag <- create_random_DAG(30, 0.2)
 #' X.wt <- simulate_data(dag)
@@ -204,8 +203,7 @@ setMethod(
 #' the adjustment set Z for the regression
 #' @param effect_type method of computing causal effects
 #' @param p_method character string. "mean", "sum" for standard summary
-#' functions, "hmp" for harmonic mean, "test" for the selfcontained
-#' test of package 'CombinePValue' or any method from package 'metap',
+#' functions, "hmp" for harmonic mean or any method from package 'metap',
 #' e.g., "meanp" or "sump".
 #' @param test either "wald" for testing significance with the
 #' wald test or "lr" for using a likelihood ratio test
@@ -559,10 +557,6 @@ dce_nb <- function(
             pathway_pvalue <- as.numeric(harmonicmeanp::p.hmp(
                 tmp, L = length(tmp)
             ))
-        } else if (p_method == "test") {
-            pathway_pvalue <- CombinePValue::selfcontained.test(
-                tmp, weight = NA
-            )[[1]]
         } else if (p_method %in% c("mean", "median", "sum", "max", "min")) {
             pathway_pvalue <- do.call(p_method, list(x = tmp))
         } else {

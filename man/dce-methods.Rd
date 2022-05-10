@@ -90,8 +90,7 @@ the adjustment set Z for the regression}
 \item{effect_type}{method of computing causal effects}
 
 \item{p_method}{character string. "mean", "sum" for standard summary
-functions, "hmp" for harmonic mean, "test" for the selfcontained
-test of package 'CombinePValue' or any method from package 'metap',
+functions, "hmp" for harmonic mean or any method from package 'metap',
 e.g., "meanp" or "sump".}
 
 \item{test}{either "wald" for testing significance with the
