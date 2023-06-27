@@ -206,7 +206,7 @@ We can extract Primary Solid Tumor and matched Solid Tissue Normal samples.
 
 ```{r}
 # split assays
-brca_split <- splitAssays(brca, c("01", "11"))
+brca_split <- TCGAsplitAssays(brca, c("01", "11"))
 
 # only retain matching samples
 brca_matched <- as(brca_split, "MatchedAssayExperiment")
